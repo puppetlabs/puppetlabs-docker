@@ -10,6 +10,7 @@ define docker::exec(
   Optional[String] $command        = undef,
   Optional[String] $unless         = undef,
   Optional[Boolean] $sanitise_name = true,
+  Optional[Boolean] $refreshonly   = false,
 ) {
   include docker::params
 
@@ -37,6 +38,7 @@ define docker::exec(
   exec { $exec:
     environment => 'HOME=/root',
     path        => ['/bin', '/usr/bin'],
+    refreshonly => $refreshonly,
     timeout     => 0,
     unless      => $unless_command,
   }
