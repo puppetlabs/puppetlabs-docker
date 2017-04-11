@@ -5,7 +5,11 @@ require 'json'
 describe Facter::Util::Fact, type: :fact do
   before :each do
     Facter.clear
-    docker_network_list  = File.read(fixtures('facts', 'docker_network_list'))
+    Facter::Util::Resolution.stubs(:which).with('docker').returns('/usr/bin/docker')
+    docker_info = File.read(fixtures('facts', 'docker_info'))
+    Facter::Util::Resolution.stubs(:exec).with("docker info --format '{{json .}}'").returns(docker_info)
+
+    docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
     Facter::Util::Resolution.stubs(:exec).with('docker network ls | tail -n +2').returns(docker_network_list)
     docker_network_names = Array.new
     docker_network_list.each_line {|line| docker_network_names.push line.split[1] }
@@ -18,13 +22,17 @@ describe Facter::Util::Fact, type: :fact do
 
   describe 'docker fact with composer network' do
     before :each do
+        docker_info = File.read(fixtures('facts', 'docker_info'))
       Facter.fact(:interfaces).stubs(:value).returns('br-c5810f1e3113,docker0,eth0,lo')
+
     end
     it do
       fact = File.read(fixtures('facts', 'facts_with_compose'))
       fact = JSON.parse(fact.to_json, {:quirks_mode => true})
       facts = eval(fact)
-      expect(Facter.fact(:docker).value).to eq(facts)
+      expect(Facter.fact(:docker).value).to include(
+        'network' => facts['network']
+      )
     end
   end
 
@@ -37,7 +45,41 @@ describe Facter::Util::Fact, type: :fact do
       fact_json = fact.to_json
       facts = JSON.parse(fact_json, {:quirks_mode => true})
       facts = eval(facts)
-      expect(Facter.fact(:docker).value).to eq(facts)
+      expect(Facter.fact(:docker).value).to include(
+        'network' => facts['network']
+      )
+    end
+  end
+
+  describe'docker client version' do
+    before do
+      docker_version = File.read(fixtures('facts', 'docker_version'))
+      Facter.fact(:docker_version).stubs(:value).returns(JSON.parse(docker_version))
+    end
+    it do
+      expect(Facter.fact(:docker_client_version).value).to eq(
+        '17.03.1-ce-client'
+      )
+    end
+  end
+
+  describe 'docker server version' do
+    before do
+      docker_version = File.read(fixtures('facts', 'docker_version'))
+      Facter.fact(:docker_version).stubs(:value).returns(JSON.parse(docker_version))
+    end
+    it do
+      expect(Facter.fact(:docker_server_version).value).to eq(
+        '17.03.1-ce-server'
+      )
+    end
+  end
+
+  describe 'docker info' do
+    it 'has valid entries' do
+      expect(Facter.fact(:docker).value).to include(
+        'Architecture' => 'x86_64'
+      )
     end
   end
 end
