@@ -1,0 +1,63 @@
+{
+  "name": "garethr-docker",
+  "version": "5.3.0",
+  "author": "Gareth Rushgrove",
+  "summary": "Module for installing and managing docker",
+  "license": "Apache-2.0",
+  "source": "https://github.com/garethr/garethr-docker.git",
+  "project_page": "https://github.com/garethr/garethr-docker",
+  "issues_url": "https://github.com/garethr/garethr-docker/issues",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.1.0"},
+    {"name":"puppetlabs/apt","version_requirement":">= 1.8.0 <= 3.0.0"},
+    {"name":"stahnma/epel","version_requirement":">= 0.0.6"}
+  ],
+  "data_provider": null,
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "7",
+        "6.6"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7.8",
+        "8.0"
+      ]
+    },
+    {
+      "operatingsystem": "Archlinux"
+    },
+    {
+      "operatingsystem": "Gentoo"
+    },
+    {
+      "operatingsystem": "Fedora",
+      "operatingsystemrelease": [
+        "21"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 3.4.0"
+    }
+  ]
+}
