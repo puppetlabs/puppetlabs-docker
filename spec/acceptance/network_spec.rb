@@ -8,7 +8,7 @@ describe 'docker network' do
     apply_manifest(install_code, :catch_failures=>true)
   end
 
-  describe command("#{command} network help") do
+  describe command("#{command} network --help") do
     its(:exit_status) { should eq 0 }
   end
 
