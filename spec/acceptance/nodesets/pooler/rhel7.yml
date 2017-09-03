@@ -1,10 +1,10 @@
 HOSTS:
-  ubuntu-1604:
+  rhel7:
     roles:
       - default
-    platform: ubuntu-16.04-amd64
+    platform: el-7-x86_64
     hypervisor: vmpooler
-    template: Delivery/Quality Assurance/Templates/vCloud/ubuntu-1604-x86_64
+    template: Delivery/Quality Assurance/Templates/vCloud/redhat-7-x86_64
 CONFIG:
   nfs_server: none
   consoleport: 443
