@@ -59,6 +59,10 @@
 #  docker service scale, this can only be used with service name and 
 #  replicas
 #  
+# [*host_socket*]
+#  This will allow the service to connect to the host linux socket.
+#  defaults to undef
+#
 
 define docker::services(
 
@@ -77,6 +81,7 @@ define docker::services(
   $create = true,
   $update = false,
   $scale = false,
+  $host_socket = undef,
   ){
 
   include docker::params
@@ -92,6 +97,7 @@ define docker::services(
   validate_string($replicas)
   validate_string($user)
   validate_string($workdir)
+  validate_string($host_socket)
   validate_bool($detach)
   validate_bool($tty)
   validate_bool($create)
@@ -120,6 +126,7 @@ define docker::services(
     workdir => $workdir,
     extra_params => any2array($extra_params),
     image => $image,
+    host_socket => $host_socket,
     })
 
   $exec_create = "${docker_command} create --name ${docker_service_create_flags}"

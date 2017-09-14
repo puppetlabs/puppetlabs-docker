@@ -50,6 +50,10 @@ module Puppet::Parser::Functions
     if opts['image'].to_s != 'undef'
       flags << "'#{opts['image']}'"      
     end
+    
+    if opts['host_socket'].to_s != 'undef'
+      flags << "-H '#{opts['host_socket']}'"      
+    end
 
     flags.flatten.join(" ")
   end
