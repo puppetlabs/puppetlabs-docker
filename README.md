@@ -14,11 +14,10 @@ Endorsement](https://img.shields.io/puppetforge/e/garethr/docker.svg)](https://f
 This module is currently tested on:
 
 * Debian 8.0
-* Debian 7.8
-* Ubuntu 12.04
+* Debian 9.0
 * Ubuntu 14.04
+* Ubuntu 16.04
 * Centos 7.0
-* Centos 6.6
 
 It may work on other distros and additional operating systems will be
 supported in the future. It's definitely been used with the following
@@ -28,21 +27,6 @@ too:
 * Amazon Linux
 * Fedora
 * Gentoo
-
-## Examples
-
-* [Launch vNext app in Docker using Puppet](https://github.com/garethr/puppet-docker-vnext-example)
-  This example contains a fairly simple example using Vagrant to launch a
-  Linux virtual machine, then Puppet to install Docker, build an image and
-  run a container. For added spice the container runs a ASP.NET vNext
-  application.
-* [Multihost containers connected with
-  Consul](https://github.com/garethr/puppet-docker-example)
-  Launch multiple hosts running simple application containers and
-  connect them together using Nginx updated by Consul and Puppet.
-* [Configure Docker Swarm using
-  Puppet](https://github.com/garethr/puppet-docker-swarm-example)
-  Build a cluster of hosts running Docker Swarm configured by Puppet.
 
 ## Usage
 
@@ -408,7 +392,7 @@ docker::networks::networks:
     gateway: '192.168.1.1'
 ```
 The network defined can then be used on a `docker::run` resource with the `net` parameter.
-### Compose
+### Compose 
 
 Docker Compose allows for describing a set of containers in a simple
 YAML format, and then running a command to build and run those
@@ -466,6 +450,19 @@ docker_compose { '/tmp/docker-compose.yml':
 
 It is also possible to give options to the ```docker-compose up``` command
 such as ```--remove-orphans``` using the ```up_args``` option.
+
+If you are using a compose file v3.2 or above on a Docker Swarm cluster you will have to use the 
+`docker::stack` class. Like with older versions of Docker compose the file resource needs to be there 
+before you run the stack command. Then to deploy the stack please see the below example.
+```puppet
+docker::stack { 'yourapp':
+  ensure  => present,
+  stack_name => 'yourapp',
+  compose_file => '/tmp/docker-compose.yaml',
+  require => [Class['docker'], File['/tmp/docker-compose.yaml']],
+}
+```  
+To remove the stack set `ensure  => absent`
 
 ### Swarm mode
 Docker Engine 1.12 includes swarm mode for natively managing a cluster of Docker Engines called a swarm. You can now cluster your Docker engines with the one of the following Puppet resources.
@@ -525,6 +522,7 @@ docker::services {'redis_update':
   service_name => 'redis',
   replicas => '3',
 }
+```
 
 In this example we have taken the service that we created earlier `redis` set the `create => false` and this time added `update => true`. We then decleared the service name `redis` we have then updated the servce to have only 3 replicas, not 5. The `extra_params` resource is also available in the update class.
 
