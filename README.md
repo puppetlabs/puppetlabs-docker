@@ -429,7 +429,7 @@ docker_compose { '/tmp/docker-compose.yml':
 }
 ```
 
-Now when Puppet runs it will automatically run Compose is required,
+Now when Puppet runs it will automatically run Compose as required,
 for example because the relevant Compose services aren't running.
 
 You can also pass additional options (for example to enable experimental
