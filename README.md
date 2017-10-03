@@ -19,6 +19,12 @@ The Puppet docker module installs, configures, and manages [Docker](https://gith
 
 This module installs, configures, and manages [Docker](https://github.com/docker/docker).
 
+* Debian 8.0
+* Debian 9.0
+* Ubuntu 14.04
+* Ubuntu 16.04
+* Centos 7.0
+
 ## Usage
 
 To create the Docker hosted repository and to install the Docker package, add a single class to the manifest file:
@@ -353,6 +359,7 @@ A defined network can be used on a `docker::run` resource with the `net` paramet
 
 ### Compose
 
+
 Docker Compose describes a set of containers in YAML format and runs a command to build and run those containers. Included in the module is the `docker_compose` type. This enables Puppet to run Compose and remediate any issues to ensure reality matches the model in your Compose file.
 
 Before using the `docker_compose` type, the docker-compose utility must be installed. 
@@ -387,6 +394,7 @@ docker_compose { '/tmp/docker-compose.yml':
 Puppet automatically runs Compose, because the relevant Compose services aren't running. You can also include additional options, such as enabling experimental
 features, as well as including scaling rules. 
 
+
 The code below requests that two containers are running. Puppet runs Compose if the number of containers for a given service don't match the provided scale values.
 
 ```puppet
@@ -412,6 +420,19 @@ If you are using a v3.2 compose file or above on a Docker Swarm cluster, you mus
  ```  
  
  To remove the stack set `ensure  => absent`
+
+If you are using a compose file v3.2 or above on a Docker Swarm cluster you will have to use the 
+`docker::stack` class. Like with older versions of Docker compose the file resource needs to be there 
+before you run the stack command. Then to deploy the stack please see the below example.
+```puppet
+docker::stack { 'yourapp':
+  ensure  => present,
+  stack_name => 'yourapp',
+  compose_file => '/tmp/docker-compose.yaml',
+  require => [Class['docker'], File['/tmp/docker-compose.yaml']],
+}
+```  
+To remove the stack set `ensure  => absent`
 
 ### Swarm mode
 
