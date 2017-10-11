@@ -3,17 +3,17 @@
 #### Table of Contents
 
 1. [Description](#description)
-1. [Setup - The basics of getting started with kubernetes](#setup)
+2. [Setup - The basics of getting started with kubernetes](#setup)
     * [Setup requirements](#setup-requirements)
     * [Beginning with kubernetes](#beginning-with-kubernetes)
-1. [Usage - Configuration options and additional functionality](#usage)
-1. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-1. [Limitations - OS compatibility, etc.](#limitations)
-1. [Development - Guide for contributing to the module](#development)
+3. [Usage - Configuration options and additional functionality](#usage)
+4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+5. [Limitations - OS compatibility, etc.](#limitations)
+6. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
-The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [official repository](https://docs.docker.com/installation/) or alternatively from [EPEL on RedHat](https://docs.docker.io/en/latest/installation/rhel/) based distributions.
+The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/) or from the [EPEL on RedHat](https://docs.docker.io/en/latest/installation/rhel/) based distributions.
 
 ## Description
 
@@ -27,7 +27,7 @@ This module installs, configures, and manages [Docker](https://github.com/docker
 
 ## Usage
 
-To create the Docker hosted repository and to install the Docker package, add a single class to the manifest file:
+To create the Docker hosted repository and install the Docker package, add a single class to the manifest file:
 
 ```puppet
 include 'docker'
@@ -105,7 +105,7 @@ class { 'docker':
 }
 ```
 
-Only the latest version of Docker supports Archlinux. To install a specific version of Docker, add the following code to the manifest file: 
+Only the latest version of Docker supports Archlinux. To specify which version of Docker to install, add the following code to the manifest file: 
 
 ```puppet
 class { 'docker':
@@ -113,7 +113,7 @@ class { 'docker':
 }
 ```
 
-To install a specific Docker rpm package, add the following code to the manifest file:
+To specify which Docker rpm package to install, add the following code to the manifest file:
 
 ```puppet
 class { 'docker' :
@@ -159,7 +159,7 @@ class { 'docker':
 
 ### Images
 
-Each image name must be unique, otherwise the installation fails when a duplicate image name is detected. 
+Each image name must be unique, otherwise the installation fails when a duplicate name is detected. 
 
 To install a Docker image, add the `docker::image` defined type to the manifest file:
 
@@ -167,9 +167,17 @@ To install a Docker image, add the `docker::image` defined type to the manifest 
 docker::image { 'base': }
 ```
 
-The code above is equivalent to running the `docker pull base` command. However, it removes the default five minute timeout for execution. 
+The code above is equivalent to running the `docker pull base` command. However, it removes the default five minute execution timeout. 
 
-Takes an optional parameter for installing image tags that is the equivalent to running `docker pull -t="precise" ubuntu`:
+To include an optional parameter for installing image tags that is the equivalent to running `docker pull -t="precise" ubuntu`, add the following code to the manifest file:
+
+```puppet
+docker::image { 'ubuntu':
+  image_tag => 'precise'
+}
+```
+
+Including the `docker_file` parameter is equivalent to running the `docker build -t ubuntu - < /tmp/Dockerfile` command. To add or build an image from a dockerfile that includes the `docker_file` parameter, add the following code to the manifest file:
 
 ```puppet
 docker::image { 'ubuntu':
@@ -177,9 +185,7 @@ docker::image { 'ubuntu':
 }
 ```
 
-The above code adds an image from the listed Dockerfile. Including the `docker_file` parameter is equivalent to running the `docker build -t ubuntu - < /tmp/Dockerfile` command.
-
-You can also specify an image from a Docker directory by including the `docker_dir` parameter in the manifest file instead of the `docker_file` parameter. This is the same as running the `docker build -t ubuntu /tmp/ubuntu_image` command.
+Including the `docker_dir` parameter is equivalent to running the `docker build -t ubuntu /tmp/ubuntu_image` command. To add or build an image from a dockerfile that includes the `docker_dir` parameter, add the following code to the manifest file:
 
 ```puppet
 docker::image { 'ubuntu':
@@ -226,10 +232,9 @@ docker::images::images:
     image_tag: 'precise'
 ```
 
-
 ### Containers
 
-To launch the containers, add the following code to the manifest file:
+To launch containers, add the following code to the manifest file:
 
 ```puppet
 docker::run { 'helloworld':
@@ -238,34 +243,34 @@ docker::run { 'helloworld':
 }
 ```
 
-This is the same as running the  `docker run -d base /bin/sh -c "while true; do echo hello world; sleep 1; done"` command which launches a Docker container managed by the local init system.
+This is equivalent to running the  `docker run -d base /bin/sh -c "while true; do echo hello world; sleep 1; done"` command to launch a Docker container managed by the local init system.
 
 `run` includes a number of optional parameters: 
 
 ```puppet
 docker::run { 'helloworld':
-  image           => 'base',
-  command         => '/bin/sh -c "while true; do echo hello world; sleep 1; done"',
-  ports           => ['4444', '4555'],
-  expose          => ['4666', '4777'],
-  links           => ['mysql:db'],
-  net             => 'my-user-def-net',
-  volumes         => ['/var/lib/couchdb', '/var/log'],
-  volumes_from    => '6446ea52fbc9',
-  memory_limit    => '10m', # (format: '<number><unit>', where unit = b, k, m or g)
-  cpuset          => ['0', '3'],
-  username        => 'example',
-  hostname        => 'example.com',
-  env             => ['FOO=BAR', 'FOO2=BAR2'],
-  env_file        => ['/etc/foo', '/etc/bar'],
-  dns             => ['8.8.8.8', '8.8.4.4'],
-  restart_service => true,
-  privileged      => false,
-  pull_on_start   => false,
-  before_stop     => 'echo "So Long, and Thanks for All the Fish"',
-  before_start    => 'echo "Run this on the host before starting the Docker container"',
-  after           => [ 'container_b', 'mysql' ],
-  depends         => [ 'container_a', 'postgres' ],
+  image            => 'base',
+  command          => '/bin/sh -c "while true; do echo hello world; sleep 1; done"',
+  ports            => ['4444', '4555'],
+  expose           => ['4666', '4777'],
+  links            => ['mysql:db'],
+  net              => 'my-user-def-net',
+  volumes          => ['/var/lib/couchdb', '/var/log'],
+  volumes_from     => '6446ea52fbc9',
+  memory_limit     => '10m', # (format: '<number><unit>', where unit = b, k, m or g)
+  cpuset           => ['0', '3'],
+  username         => 'example',
+  hostname         => 'example.com',
+  env              => ['FOO=BAR', 'FOO2=BAR2'],
+  env_file         => ['/etc/foo', '/etc/bar'],
+  dns              => ['8.8.8.8', '8.8.4.4'],
+  restart_service  => true,
+  privileged       => false,
+  pull_on_start    => false,
+  before_stop      => 'echo "So Long, and Thanks for All the Fish"',
+  before_start     => 'echo "Run this on the host before starting the Docker container"',
+  after            => [ 'container_b', 'mysql' ],
+  depends          => [ 'container_a', 'postgres' ],
   extra_parameters => [ '--restart=always' ],
 }
 ```
@@ -276,15 +281,15 @@ To pull the image before it starts, specify the `pull_on_start` parameter.
 
 To execute a command before the container stops, specify the `before_stop` parameter. 
 
-Add the container name to the `after` parameter allows expressing containers that must be started before. This affects the generation of the `init.d/systemd` script.
+Add the container name to the `after` parameter to specify which containers start first. This affects the generation of the `init.d/systemd` script.
 
-Add container dependencies to the `depends` parameter. The container is started before this container and is stopped before the depended container. This affects the generation of the `init.d/systemd` script. Use the `depend_services` parameter to specify dependencies for generic services, not Docker related, that should be started before this container.
+Add container dependencies to the `depends` parameter. The container starts before this container and stops before the depended container. This affects the generation of the `init.d/systemd` script. Use the `depend_services` parameter to specify dependencies for generic services, which are not Docker related, that start before this container.
 
 The `extra_parameters` parameter contains an array of command line arguments to pass to the `docker run` command. This parameter is useful for adding additional or experimental options that the docker module currently does not support.
 
 By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems. 
 
-To use an image tag, append the tag name to the image name separated by a semicolon:
+To use an image tag, add the following code to the manifest file:
 
 ```puppet
 docker::run { 'helloworld':
@@ -293,8 +298,7 @@ docker::run { 'helloworld':
 }
 ```
 
-By default the generated init scripts remove the container (but not
-any associated volumes) when the service is stopped or started. To modify this behaviour, add the following code to the manifest file:
+By default, when the service is stopped or started the generated init scripts remove the container, but not the associated volumes. To change this behaviour, add the following code to the manifest file:
 
 ```puppet
 docker::run { 'helloworld':
@@ -320,7 +324,7 @@ If using Hiera, you can configure the `docker::run_instance` class:
 
 ### Networks
 
-Docker 1.9.x officially supports networks. To expose the `docker_network` type which is used to manage networks, add the following code to the manifest file:
+Docker 1.9.x officially supports networks. To expose the `docker_network` type, which is used to manage networks, add the following code to the manifest file:
 
 ```puppet
 docker_network { 'my-net':
@@ -332,8 +336,7 @@ docker_network { 'my-net':
 }
 ```
 
-The name value and the `ensure` parameter are required. If the `driver` value is not included, the default bridge is used. The Docker daemon must be configured for some networks and an example would be configuring the cluster store for the overlay network. 
-
+The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks and an example would be configuring the cluster store for the overlay network. 
 
 To configure the cluster store, update the `docker` class in the manifest file:
 
@@ -359,12 +362,11 @@ A defined network can be used on a `docker::run` resource with the `net` paramet
 
 ### Compose
 
+Docker Compose describes a set of containers in YAML format and runs a command to build and run those containers. Included in the docker module is the `docker_compose` type. This enables Puppet to run Compose and remediate any issues to ensure reality matches the model in your Compose file.
 
-Docker Compose describes a set of containers in YAML format and runs a command to build and run those containers. Included in the module is the `docker_compose` type. This enables Puppet to run Compose and remediate any issues to ensure reality matches the model in your Compose file.
+You must install the Docker Compose utility, before you use the `docker_compose` type. 
 
-Before using the `docker_compose` type, the docker-compose utility must be installed. 
-
-To install docker-commpose, add the following code to the manifest file:
+To install Docker Compose, add the following code to the manifest file:
 
 ```puppet
 class {'docker::compose': 
@@ -380,10 +382,7 @@ compose_test:
   command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
 ```
 
-The compose file can be added to the machine you're running Puppet, using a `file`
-resource or any other means.
-
-To define a `docker_compose` resource pointing to the Compose file, add the following code to the manifest file:
+Specify the `file` resource to add a Compose file to the machine you have Puppet running on. To define a `docker_compose` resource pointing to the Compose file, add the following code to the manifest file:
 
 ```puppet
 docker_compose { '/tmp/docker-compose.yml':
@@ -391,11 +390,9 @@ docker_compose { '/tmp/docker-compose.yml':
 }
 ```
 
-Puppet automatically runs Compose, because the relevant Compose services aren't running. You can also include additional options, such as enabling experimental
-features, as well as including scaling rules. 
+Puppet automatically runs Compose, because the relevant Compose services aren't running. You can include additional options, such as enabling experimental features, as well as including scaling rules.
 
-
-The code below requests that two containers are running. Puppet runs Compose if the number of containers for a given service don't match the provided scale values.
+In the example below, Puppet runs Compose when the number of containers specified for a service don't match the scale values.
 
 ```puppet
 docker_compose { '/tmp/docker-compose.yml':
@@ -406,9 +403,12 @@ docker_compose { '/tmp/docker-compose.yml':
   options => '--x-networking'
 }
 ```
+
 You can also give options to the ```docker-compose up``` command, such as ```--remove-orphans``, by using the ```up_args``` option.
 
-If you are using a v3.2 compose file or above on a Docker Swarm cluster, you must use the `docker::stack` class. The file resource needs to be there before you run the stack command. To deploy the stack, add the following code to the manifest file: 
+If you are using a v3.2 compose file or above on a Docker Swarm cluster, you must use the `docker::stack` class. Include the file resource before you run the stack command.
+
+To deploy the stack, add the following code to the manifest file:
 
 ```puppet
  docker::stack { 'yourapp':
@@ -416,14 +416,13 @@ If you are using a v3.2 compose file or above on a Docker Swarm cluster, you mus
    stack_name => 'yourapp',
    compose_file => '/tmp/docker-compose.yaml',
    require => [Class['docker'], File['/tmp/docker-compose.yaml']],
- }
- ```  
- 
- To remove the stack set `ensure  => absent`
+}
+```  
 
-If you are using a compose file v3.2 or above on a Docker Swarm cluster you will have to use the 
-`docker::stack` class. Like with older versions of Docker compose the file resource needs to be there 
-before you run the stack command. Then to deploy the stack please see the below example.
+To remove the stack set `ensure  => absent`.
+
+If you are using a compose file v3.2 or above on a Docker Swarm cluster, include the `docker::stack` class. Like with older versions of Docker, compose the file resource needs before you run the stack command. To deploy the stack, add the following code to the manifest file.
+
 ```puppet
 docker::stack { 'yourapp':
   ensure  => present,
@@ -432,7 +431,7 @@ docker::stack { 'yourapp':
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```  
-To remove the stack set `ensure  => absent`
+To remove the stack, set `ensure  => absent`.
 
 ### Swarm mode
 
@@ -510,7 +509,7 @@ docker::services {'redis_update':
 }
 ```
 
-To update the service and not create a new service, include the the `update => true` parameter and the `create => false` parameter.
+To update a service without creating a new one, include the the `update => true` parameter and the `create => false` parameter.
 
 To scale a service, add the following code to the manifest file:
 
@@ -523,7 +522,7 @@ docker::services {'redis_scale':
 }
 ```
 
-To scale the service and not create a new service, include the the `scale => true` parameter and the `create => false` parameter. In the above example, the service is scaled to 10. 
+To scale the service without creating a new one, include the the `scale => true` parameter and the `create => false` parameter. In the example above, the service is scaled to 10. 
 
 To remove a service, add the following code to the manifest file:
 
@@ -538,7 +537,7 @@ To remove the service from a swarm, include the `ensure => absent` parameter and
 
 ### Private registries
 
-If you do not specify a server, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, you must have a private repository without authentication. 
+If a server is not specified, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, create a private repository without authentication. 
 
 To configure authentication for a private registry, add the following code to the manifest file:
 
@@ -600,11 +599,11 @@ Defaults to `present`.
 
 #### `prerequired_packages`
 
-An array of additional packages that need to be installed to support docker. Defaults change depending on the operating system.
+An array of packages that are required to support Docker.
 
 #### `docker_cs`
 
-Specifies whether to use the Commercial Support (CS ) Docker packages.
+Specifies whether to use the Commercial Support (CS) Docker packages.
 
 Values `'true','false'`.
 
@@ -612,7 +611,7 @@ Defaults to `false`.
 
 #### `tcp_bind`
 
-The tcp socket to bind to. The format is tcp://127.0.0.1:4243
+The tcp socket to bind to. The format is tcp://127.0.0.1:4243.
 
 Defaults to `undefined`.
 
@@ -680,11 +679,11 @@ Enable the Docker unrestricted inter-container and the daemon host communication
 
 To disable, it requires `iptables=true`.
 
-Defaults to undef. The Docker daemon default value is `true`.
+Defaults to undef. The default value for the Docker daemon is `true`.
 
 #### `bip`
 
-Specify docker's network bridge IP, in CIDR notation.
+Specifies the Docker network bridge IP in CIDR notation.
 
 Defaults to `undefined`.
 
@@ -696,19 +695,19 @@ Defaults to `undefined`.
 
 #### `bridge`
 
-Attach containers to a pre-existing network bridge. Use `none` to disable container networking.
+Attach containers to a pre-existing network bridge. To disable container networking, include `none`.
 
 Defaults to `undefined`.
 
 #### `fixed_cidr`
 
-IPv4 subnet for fixed IPs 10.20.0.0/16
+IPv4 subnet for fixed IPs 10.20.0.0/16.
 
 Defaults to `undefined`.
 
 #### `default_gateway`
 
-IPv4 address of the container default gateway. This address must be part of the bridge subnet (which is defined by bridge).
+IPv4 address for the container default gateway. This address must be part of the bridge subnet (which is defined by bridge).
 
 Defaults to `undefined`.
 
@@ -720,15 +719,15 @@ Defaults to `unix:///var/run/docker.sock.`
 
 #### `log_level`
 
-Set the logging level.
+Sets the logging level.
 
-Defaults to undef. Docker defaults to `info` if no value specified.
+Defaults to undef. If no value is specified, Docker defaults to `info`.
 
-Valid values: `debug`, `info`, `warn`, `error`, `fatal`.
+Valid values: `debug`, `info`, `warn`, `error`, and `fatal`.
 
 #### `log_driver`
 
-Set the log driver.
+Sets the log driver.
 
 Defaults to undef.
 
@@ -737,12 +736,12 @@ Docker default is `json-file`.
 Valid values:
 
 * `none`: disables logging for the container. Docker logs are not available with this driver.
-* `json-file`: default logging driver for Docker that writes JSON messages to file.
-* `syslog`: syslog logging driver for Docker that writes log messages to syslog.
-* `journald`: journald logging driver for Docker that writes log messages to journald.
-* `gelf`: Graylog Extended Log Format (GELF) logging driver for Docker that writes log messages to a GELF endpoint: Graylog or Logstash.
-* `fluentd`: fluentd logging driver for Docker. that writes log messages to fluentd (forward input).
-* `splunk`: Splunk logging driver for Docker that writes log messages to Splunk (HTTP Event Collector).
+* `json-file`: the default Docker logging driver that writes JSON messages to file.
+* `syslog`: syslog logging driver that writes log messages to syslog.
+* `journald`: journald logging driver that writes log messages to journald.
+* `gelf`: Graylog Extended Log Format (GELF) logging driver that writes log messages to a GELF endpoint: Graylog or Logstash.
+* `fluentd`: fluentd logging driver that writes log messages to fluentd (forward input).
+* `splunk`: Splunk logging driver that writes log messages to Splunk (HTTP Event Collector).
 
 #### `log_opt`
 
@@ -774,23 +773,23 @@ Specifies whether to use the upstream package source.
 
 Valid values are `true`, `false`.
 
-If you run your own package mirror, set the value to `false`.
+When you run your own package mirror, set the value to `false`.
 
 #### `pin_upstream_package_source`
 
-Specifies whether to use the pin upstream package source. This option only effects apt-based distributions.  
+Specifies whether to use the pin upstream package source. This option relates to apt-based distributions.  
 
 Valid values are `true`, `false`.
 
 Defaults to `true`.
 
-Set to `false` to remove pinning on the upstream package repository.  See also `apt_source_pin_level`.
+Set to `false` to remove pinning on the upstream package repository. See also `apt_source_pin_level`.
 
 #### `apt_source_pin_level`
 
-The level to pin your source package repository to. This only is relevent if you're on an apt-based system (Debian, Ubuntu, etc) and $use_upstream_package_source is set to `true`.  
+The level to pin your source package repository to. This relates to an apt-based system (such as Debian, Ubuntu, etc). Include $use_upstream_package_source and set the value to `true`.  
 
-To disable pinning, set the value to `false`. To ensure the apt preferences file `apt::source` uses to define pins is removed, set value to undef.
+To disable pinning, set the value to `false`. 
 
 Defaults to `10`.
 
@@ -802,13 +801,13 @@ For Debian, the value defaults to `http://get.docker.com/ubuntu`.
 
 #### `service_state`
 
-Specifies whether to start the docker daemon.
+Specifies whether to start the Docker daemon.
 
 Defaults to `running`.
 
 #### `service_enable`
 
-Specifies whether the docker daemon starts up at boot.
+Specifies whether the Docker daemon starts up at boot.
 
 Valid values are `true`, `false`.
 
@@ -824,13 +823,13 @@ Defaults to `true'.
 
 #### `root_dir`
 
-Custom root directory for the containers.
+The custom root directory for the containers.
 
 Defaults to `undefined`.
 
 #### `manage_kernel`
 
-Specifies whether to install the Kernel required by docker.
+Specifies whether to install the Kernel required by Docker.
 
 Valid values are `true`, `false`.
 
@@ -856,7 +855,7 @@ Defaults to `undefined`.
 
 #### `extra_parameters`
 
-Extra parameters that should be passed to the docker daemon.
+Extra parameters that should be passed to the Docker daemon.
 
 Defaults to `undefined`.
 
@@ -910,13 +909,13 @@ Do not change this parameter after the lvm devices initialize.
 
 #### `dm_loopdatasize`
 
-Specifies the size to use when creating the loopback file for the "data" device which is used for the thin pool.
+Specifies the size to use when creating the loopback file for the data device which is used for the thin pool.
 
 Default size is `100G`.
 
 #### `dm_loopmetadatasize`
 
-Specifies the size to use when creating the loopback file for the "metadata" device which is used for the thin pool.
+Specifies the size to use when creating the loopback file for the metadata device which is used for the thin pool.
 
 Default size is `2G`.
 
