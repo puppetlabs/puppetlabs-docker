@@ -113,12 +113,12 @@ define docker::run(
   include docker::params
   if ($socket_connect != []) {
     $sockopts = join(any2array($socket_connect), ',')
-    $docker_command = "${docker::params::docker_command} -H ${sockopts}"
+    $docker_command = "${docker::docker_command} -H ${sockopts}"
   }else {
-    $docker_command = $docker::params::docker_command
+    $docker_command = $docker::docker_command
   }
-  $service_name = $docker::params::service_name
-  $docker_group = $docker::params::docker_group
+  $service_name = $docker::service_name
+  $docker_group = $docker::docker_group
 
   validate_re($image, '^[\S]*$')
   validate_re($title, '^[\S]*$')
