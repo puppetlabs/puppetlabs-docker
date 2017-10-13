@@ -3,13 +3,10 @@
 #### Table of Contents
 
 1. [Description](#description)
-2. [Setup - The basics of getting started with kubernetes](#setup)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with kubernetes](#beginning-with-kubernetes)
-3. [Usage - Configuration options and additional functionality](#usage)
-4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+2. [Usage - Configuration options and additional functionality](#usage)
+3. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+4. [Limitations - OS compatibility, etc.](#limitations)
+5. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
