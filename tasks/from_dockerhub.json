@@ -1,0 +1,17 @@
+{
+  "description": "Create a container from specified image on dockerhub",
+  "parameters": {
+    "options": {
+      "description": "Optional list of options for docker run command",
+      "type": "Optional[ String ]"
+    },
+    "image": {
+      "description": "The dockerhub image to create the container from",
+      "type": "String"
+    },
+    "command": {
+      "description": "Optional command to run in the container",
+      "type": "Optional[ String ]"
+    }
+  }
+}
