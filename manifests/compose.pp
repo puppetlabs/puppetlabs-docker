@@ -30,7 +30,7 @@ class docker::compose(
   validate_re($ensure, '^(present|absent)$')
   validate_absolute_path($install_path)
   if $proxy != undef {
-      validate_re($proxy, '^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
+      validate_re($proxy, '^(https?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([a-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
   if $ensure == 'present' {
