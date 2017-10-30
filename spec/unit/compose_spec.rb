@@ -45,7 +45,7 @@ describe 'docker::compose', :type => :class do
                      :version => '1.7.0'} }
     it { is_expected.to compile }
     it { is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-           'curl -s -L --proxy http://user:proxy@proxy.example.org:3128/ https://github.com/docker/compose/releases/download/1.7.0/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose-1.7.0')
+           'curl -s -L --proxy http://user:password@proxy.example.org:3128/ https://github.com/docker/compose/releases/download/1.7.0/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose-1.7.0')
     }
   end
 end
