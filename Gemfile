@@ -19,9 +19,9 @@ group :test do
   gem "rspec-retry"
   gem "simplecov", ">= 0.11.0"
   gem "simplecov-console"
-  gem 'parallel_tests' # requires at least Ruby 1.9.3  
+  gem 'parallel_tests' # requires at least Ruby 1.9.3
   gem "json_pure", "<= 2.0.1" # 2.0.2 requires Ruby 2+
-  
+
 end
 
 group :system_tests do
