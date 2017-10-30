@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-docker.svg?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-docker)
+
 # Docker
 
 #### Table of Contents
