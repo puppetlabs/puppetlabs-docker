@@ -1,0 +1,25 @@
+{
+  "description": "Create container from local dockerfile",
+  "parameters": {
+    "container_name": {
+      "description": "Optional name for the container",
+      "type": "Optional[ String ]"
+    },
+    "dockerfile_path": {
+      "description": "Path to Dockerfile",
+      "type": "String"
+    },
+    "build_options": {
+      "description": "Optional list of options for docker build command",
+      "type": "Optional[ String ]"
+    },
+    "options": {
+      "description": "Optional list of options for docker run command",
+      "type": "Optional[ String ]"
+    },
+    "command": {
+      "description": "The command to run in the docker container",
+      "type": "Optional[ String ]"
+    }
+  }
+}
