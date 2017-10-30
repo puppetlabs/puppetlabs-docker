@@ -55,7 +55,6 @@ require 'spec_helper'
         let(:params) { {'command' => 'command', 'image' => 'base'} }
         it { should compile.with_all_deps }
         it { should contain_service('docker-sample') }
-        it { should_not contain_service('docker') }
         if (osfamily == 'Debian')
           it { should contain_file(initscript).with_content(/\$docker run/) }
           it { should contain_file(initscript).with_content(/#{command}/) }

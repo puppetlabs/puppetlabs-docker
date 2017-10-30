@@ -196,13 +196,15 @@ class docker::service (
   }
 
   if $manage_service {
-    service { 'docker':
-      ensure     => $service_state,
-      name       => $service_name,
-      enable     => $service_enable,
-      hasstatus  => $service_hasstatus,
-      hasrestart => $service_hasrestart,
-      provider   => $service_provider,
+    if ! defined(Service['docker']) {
+      service { 'docker':
+        ensure     => $service_state,
+        name       => $service_name,
+        enable     => $service_enable,
+        hasstatus  => $service_hasstatus,
+        hasrestart => $service_hasrestart,
+        provider   => $service_provider,
+      }
     }
   }
 }

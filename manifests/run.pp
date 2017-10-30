@@ -110,7 +110,7 @@ define docker::run(
   $stop_wait_time = 0,
   $syslog_identifier = undef,
 ) {
-  include docker::params
+  include docker
   if ($socket_connect != []) {
     $sockopts = join(any2array($socket_connect), ',')
     $docker_command = "${docker::docker_command} -H ${sockopts}"
