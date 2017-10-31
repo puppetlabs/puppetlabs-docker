@@ -4,6 +4,7 @@
 class docker::repos {
 
   ensure_packages($docker::prerequired_packages)
+  os = downcase($os[name])
 
   case $::osfamily {
     'Debian': {
@@ -12,10 +13,15 @@ class docker::repos {
           $location = $docker::package_cs_source_location
           $key_source = $docker::package_cs_key_source
           $package_key = $docker::package_cs_key
+        } elsif ($docker::docker_ee) {
+          $location = $docker::package_ee_source_location
+          $key_source = $docker::package_ee_key_source
+          $package_key = $docker::package_ee_key
         } else {
-          $location = $docker::package_source_location
-          $key_source = $docker::package_key_source
-          $package_key = $docker::package_key
+            if ($docker::docker_ce) {
+              $location = "https://download.docker.com/linux/${os}"
+              $key_source = "https://download.docker.com/linux/${os}/gpg"
+            }
         }
         package {['debian-keyring', 'debian-archive-keyring']:
           ensure => installed,
@@ -54,13 +60,28 @@ class docker::repos {
 
     }
     'RedHat': {
-      if $docker::manage_package {
+      $os = downcase($::os[name])
+
+      if ($docker::manage_package) {
         if ($docker::docker_cs) {
           $baseurl = $docker::package_cs_source_location
           $gpgkey = $docker::package_cs_key_source
-        } else {
-          $baseurl = $docker::package_source_location
-          $gpgkey = $docker::package_key_source
+        }
+        elsif ($docker::docker_ee) {
+          $baseurl = $docker::package_ee_source_location
+          $gpgkey = $docker::package_ee_key_source
+        }
+        else {
+          if ($docker::docker_ce) {
+            $package_source_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker::docker_ce_channel}"
+            $package_key_source = 'https://download.docker.com/linux/centos/gpg'
+          } else {
+            $package_source_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
+            $package_key_source = 'https://yum.dockerproject.org/gpg'
+          }
+
+          $baseurl = $package_source_location
+          $gpgkey = $package_key_source
         }
         if ($docker::use_upstream_package_source) {
           yumrepo { 'docker':

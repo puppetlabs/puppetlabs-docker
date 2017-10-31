@@ -6,6 +6,9 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_cs                         = false
+  $docker_ee                         = false
+  $docker_ce                         = true
+  $docker_ce_channel                 = stable
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
@@ -56,7 +59,7 @@ class docker::params {
   $manage_package                    = true
   $package_source                    = undef
   $manage_kernel                     = true
-  $package_name_default              = 'docker-engine'
+  $package_name_default              = 'docker-ce'
   $service_name_default              = 'docker'
   $docker_command_default            = 'docker'
   $docker_group_default              = 'docker'
@@ -135,6 +138,9 @@ class docker::params {
       $package_cs_source_location = 'http://packages.docker.com/1.9/apt/repo'
       $package_cs_key_source = 'https://packages.docker.com/1.9/apt/gpg'
       $package_cs_key = '0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e'
+      $package_ee_source_location = $docker_ee_source_location
+      $package_ee_key_source = $docker_ee_key_source
+      $package_ee_key = $docker_ee_key
       $package_source_location = 'http://apt.dockerproject.org/repo'
       $package_key_source = 'https://apt.dockerproject.org/gpg'
       $package_key = '58118E89F3A912897C070ADBF76221572C52609D'
@@ -148,6 +154,7 @@ class docker::params {
 
     }
     'RedHat' : {
+      $os = downcase($::os[name])
       $service_config = '/etc/sysconfig/docker'
       $storage_config = '/etc/sysconfig/docker-storage'
       $storage_setup_file = '/etc/sysconfig/docker-storage-setup'
@@ -177,12 +184,9 @@ class docker::params {
         $use_upstream_package_source = true
         $manage_epel = false
       }
-      $package_key_source = 'https://yum.dockerproject.org/gpg'
-      if $::operatingsystem == 'Fedora' {
-        $package_source_location = "https://yum.dockerproject.org/repo/main/fedora/${::operatingsystemmajrelease}"
-      } else {
-        $package_source_location = "https://yum.dockerproject.org/repo/main/centos/${::operatingsystemmajrelease}"
-      }
+
+      $package_ee_source_location = $docker_ee_source_location
+      $package_ee_key_source = $docker_ee_key_source
       $package_cs_source_location = "https://packages.docker.com/1.9/yum/repo/main/centos/${::operatingsystemmajrelease}"
       $package_cs_key_source = 'https://packages.docker.com/1.9/yum/gpg'
       $package_key = undef

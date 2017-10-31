@@ -348,9 +348,13 @@ class docker(
   $version                           = $docker::params::version,
   $ensure                            = $docker::params::ensure,
   $prerequired_packages              = $docker::params::prerequired_packages,
+  $docker_ce                         = $docker::params::docker_ce,
+  $docker_ce_channel                 = $docker::params::docker_ce_channel,
   $docker_cs                         = $docker::params::docker_cs,
   $package_cs_source_location        = $docker::params::package_cs_source_location,
   $package_cs_key_source             = $docker::params::package_cs_key_source,
+  $package_ee_source_location        = $docker::params::package_ee_source_location,
+  $package_ee_key_source             = $docker::params::package_ee_key_source,
   $tcp_bind                          = $docker::params::tcp_bind,
   $tls_enable                        = $docker::params::tls_enable,
   $tls_verify                        = $docker::params::tls_verify,
@@ -529,4 +533,5 @@ class docker(
   Class['docker'] -> Docker::Registry <||> -> Docker::Image <||> -> Docker::Run <||>
   Class['docker'] -> Docker::Image <||> -> Docker::Run <||>
   Class['docker'] -> Docker::Run <||>
+
 }
