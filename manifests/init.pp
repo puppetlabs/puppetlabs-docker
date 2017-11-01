@@ -520,15 +520,12 @@ class docker(
     validate_string($tls_key)
   }
 
-  class { 'docker::repos': }
-  -> class { 'docker::install': }
-  -> class { 'docker::config': }
-  ~> class { 'docker::service': }
   contain 'docker::repos'
   contain 'docker::install'
   contain 'docker::config'
   contain 'docker::service'
 
+  Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] ~> Class['docker::service']
   Class['docker'] -> Docker::Registry <||> -> Docker::Image <||> -> Docker::Run <||>
   Class['docker'] -> Docker::Image <||> -> Docker::Run <||>
   Class['docker'] -> Docker::Run <||>
