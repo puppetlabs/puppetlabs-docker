@@ -4,7 +4,7 @@
 class docker::repos {
 
   ensure_packages($docker::prerequired_packages)
-  os = downcase($os[name])
+  $os = downcase($os[name])
 
   case $::osfamily {
     'Debian': {
@@ -21,6 +21,15 @@ class docker::repos {
             if ($docker::docker_ce) {
               $location = "https://download.docker.com/linux/${os}"
               $key_source = "https://download.docker.com/linux/${os}/gpg"
+              $package_key = "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
+              $package_repos = $docker::docker_ce_channel
+              $release = "${::lsbdistcodename}"
+            } else {
+              $location = "http://apt.dockerproject.org/repo"
+              $key_source = "https://apt.dockerproject.org/gpg"
+              $package_key = "58118E89F3A912897C070ADBF76221572C52609D"
+              $package_repos = 'main'
+              $release = "ubuntu-${::lsbdistcodename}"
             }
         }
         package {['debian-keyring', 'debian-archive-keyring']:
@@ -28,8 +37,8 @@ class docker::repos {
         }
         apt::source { 'docker':
           location => $location,
-          release  => $docker::package_release,
-          repos    => $docker::package_repos,
+          release  => $release,
+          repos    => $package_repos,
           key      => {
             id     => $package_key,
             source => $key_source,
@@ -60,7 +69,6 @@ class docker::repos {
 
     }
     'RedHat': {
-      $os = downcase($::os[name])
 
       if ($docker::manage_package) {
         if ($docker::docker_cs) {
