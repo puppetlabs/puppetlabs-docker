@@ -6,9 +6,12 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_cs                         = false
-  $docker_ee                         = false
   $docker_ce                         = true
   $docker_ce_channel                 = stable
+  $docker_ee                         = false
+  $docker_ee_source_location         = undef
+  $docker_ee_key_source              = undef
+  $docker_ee_key                     = undef
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
@@ -59,11 +62,9 @@ class docker::params {
   $manage_package                    = true
   $package_source                    = undef
   $manage_kernel                     = true
-  $package_name_default              = 'docker-ce'
+  $docker_command                    = 'docker'
   $service_name_default              = 'docker'
-  $docker_command_default            = 'docker'
   $docker_group_default              = 'docker'
-  $daemon_subcommand                 = 'daemon'
   $storage_devs                      = undef
   $storage_vg                        = undef
   $storage_root_size                 = undef
@@ -122,11 +123,8 @@ class docker::params {
       }
 
       $manage_epel = false
-      $package_name = $package_name_default
       $service_name = $service_name_default
-      $docker_command = $docker_command_default
       $docker_group = $docker_group_default
-      $package_repos = 'main'
       $use_upstream_package_source = true
       $pin_upstream_package_source = true
       $apt_source_pin_level = 10
@@ -141,9 +139,6 @@ class docker::params {
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
       $package_ee_key = $docker_ee_key
-      $package_source_location = 'http://apt.dockerproject.org/repo'
-      $package_key_source = 'https://apt.dockerproject.org/gpg'
-      $package_key = '58118E89F3A912897C070ADBF76221572C52609D'
 
       if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
         ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
@@ -196,7 +191,6 @@ class docker::params {
       $pin_upstream_package_source = undef
       $apt_source_pin_level = undef
       $service_name = $service_name_default
-      $docker_command = $docker_command_default
       if (versioncmp($::operatingsystemrelease, '7.0') < 0) or ($::operatingsystem == 'Amazon') {
         $detach_service_in_init = true
         if $::operatingsystem == 'OracleLinux' {
@@ -254,7 +248,6 @@ class docker::params {
       $package_cs_key_source = undef
       $package_name = 'docker'
       $service_name = $service_name_default
-      $docker_command = $docker_command_default
       $detach_service_in_init = false
       $repo_opt = undef
       $nowarn_kernel = false
@@ -282,7 +275,6 @@ class docker::params {
       $package_cs_key_source = undef
       $package_name = 'app-emulation/docker'
       $service_name = $service_name_default
-      $docker_command = $docker_command_default
       $detach_service_in_init = true
       $repo_opt = undef
       $nowarn_kernel = false
@@ -314,7 +306,6 @@ class docker::params {
       $service_provider = undef
       $package_name = $package_name_default
       $service_name = $service_name_default
-      $docker_command = $docker_command_default
       $detach_service_in_init = true
       $repo_opt = undef
       $nowarn_kernel = false

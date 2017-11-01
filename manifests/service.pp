@@ -38,8 +38,9 @@
 #
 class docker::service (
   $docker_command                    = $docker::docker_command,
+  $docker_start_command              = $docker::docker_start_command,
   $service_name                      = $docker::service_name,
-  $daemon_subcommand                 = $docker::daemon_subcommand,
+  # $daemon_subcommand                 = $docker::daemon_subcommand,
   $tcp_bind                          = $docker::tcp_bind,
   $ip_forward                        = $docker::ip_forward,
   $iptables                          = $docker::iptables,

@@ -378,11 +378,7 @@ class docker(
   $use_upstream_package_source       = $docker::params::use_upstream_package_source,
   $pin_upstream_package_source       = $docker::params::pin_upstream_package_source,
   $apt_source_pin_level              = $docker::params::apt_source_pin_level,
-  $package_source_location           = $docker::params::package_source_location,
   $package_release                   = $docker::params::package_release,
-  $package_repos                     = $docker::params::package_repos,
-  $package_key                       = $docker::params::package_key,
-  $package_key_source                = $docker::params::package_key_source,
   $service_state                     = $docker::params::service_state,
   $service_enable                    = $docker::params::service_enable,
   $manage_service                    = $docker::params::manage_service,
@@ -416,10 +412,7 @@ class docker(
   $manage_package                    = $docker::params::manage_package,
   $package_source                    = $docker::params::package_source,
   $manage_epel                       = $docker::params::manage_epel,
-  $package_name                      = $docker::params::package_name,
   $service_name                      = $docker::params::service_name,
-  $docker_command                    = $docker::params::docker_command,
-  $daemon_subcommand                 = $docker::params::daemon_subcommand,
   $docker_users                      = [],
   $docker_group                      = $docker::params::docker_group,
   $daemon_environment_files          = [],
@@ -444,6 +437,7 @@ class docker(
   $service_overrides_template        = $docker::params::service_overrides_template,
   $service_hasstatus                 = $docker::params::service_hasstatus,
   $service_hasrestart                = $docker::params::service_hasrestart,
+
 ) inherits docker::params {
 
   validate_string($version)
@@ -522,6 +516,11 @@ class docker(
     validate_string($tls_cacert)
     validate_string($tls_cert)
     validate_string($tls_key)
+  }
+  if ($docker_ce) {
+    $docker_start_command = 'dockerd'
+  } else {
+    $docker_start_command = 'docker daemon'
   }
 
   class { 'docker::repos': }
