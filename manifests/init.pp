@@ -517,11 +517,51 @@ class docker(
     validate_string($tls_cert)
     validate_string($tls_key)
   }
-  if ($docker_ce) {
-    $docker_start_command = 'dockerd'
-  } else {
-    $docker_start_command = 'docker daemon'
-  }
+
+  # if ( $docker::version =~ /^(17.0[0-5]|1.\d+)/ {
+  #   case $::osfamily {
+  #     'Debian' : {
+
+  #       $package_location = $docker::package_location
+  #       $package_key_source = $docker::package_key_source
+  #       $package_key = $docker::package_key
+  #       $package_repos = $docker::package_repos
+  #       $release = $docker::release_ce
+  #       }
+
+  #     'Redhat' : {
+
+  #       $package_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
+  #       $package_key_source = 'https://yum.dockerproject.org/gpg'
+  #     }
+
+  #   $docker_start_command = 'docker daemon'
+  #   $docker_package_name = 'docker-engine'
+
+  #   }
+
+  # } else {
+
+  #   case $::osfamily {
+  #     'Debian' : {
+
+  #       $package_location = $docker::package_location
+  #       $package_key_source = $docker::package_key_source
+  #       $package_key = $docker::package_key
+  #       $package_repos = $docker::package_repos
+  #       $release = $docker::release_ce
+  #       }
+
+  #     'Redhat' : {
+
+  #       $package_source_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker::docker_ce_channel}"
+  #       $package_key_source = 'https://download.docker.com/linux/centos/gpg'
+  #     }
+
+  #     $docker_start_command = 'dockerd'
+  #     $docker_package_name = 'docker-ce'
+  #   }
+  # }
 
   contain 'docker::repos'
   contain 'docker::install'

@@ -5,8 +5,8 @@
 class docker::params {
   $version                           = undef
   $ensure                            = present
-  $docker_cs                         = false
-  $docker_ce                         = true
+  $docker_ce_start_command           = 'dockerd'
+  $docker_start_command              = 'docker daemon'
   $docker_ce_channel                 = stable
   $docker_ee                         = false
   $docker_ee_source_location         = undef
@@ -122,6 +122,8 @@ class docker::params {
         }
       }
 
+      if ( $version =~ /^(17.0[0-5]|1.\d+)/ {
+
       $manage_epel = false
       $service_name = $service_name_default
       $docker_group = $docker_group_default
@@ -133,9 +135,12 @@ class docker::params {
       $service_config = undef
       $storage_setup_file = undef
 
-      $package_cs_source_location = 'http://packages.docker.com/1.9/apt/repo'
-      $package_cs_key_source = 'https://packages.docker.com/1.9/apt/gpg'
-      $package_cs_key = '0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e'
+      $package_ce_source_location = "https://download.docker.com/linux/${os}"
+      $package_ce_key_source = "https://download.docker.com/linux/${os}/gpg"
+      $package_ce_key_id = "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
+      $package_location = "http://apt.dockerproject.org/repo"
+      $package_key_source = "https://apt.dockerproject.org/gpg"
+      $package_key_id = "58118E89F3A912897C070ADBF76221572C52609D"
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
       $package_ee_key = $docker_ee_key

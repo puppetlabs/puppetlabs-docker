@@ -6,13 +6,6 @@
 #
 class docker::install {
   $docker_start_command = $docker::docker_start_command
-  if ($docker::docker_ce) {
-    $package_name = 'docker-ce'
-  } elsif ($docker::docker_ee) {
-    $package_name = 'docker-ee'
-  } else {
-    $package_name = 'docker-engine'
-  }
   validate_string($docker::version)
   validate_re($::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
               'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
