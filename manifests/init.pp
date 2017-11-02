@@ -348,13 +348,13 @@ class docker(
   $version                           = $docker::params::version,
   $ensure                            = $docker::params::ensure,
   $prerequired_packages              = $docker::params::prerequired_packages,
-  $docker_ce                         = $docker::params::docker_ce,
   $docker_ce_channel                 = $docker::params::docker_ce_channel,
-  $docker_cs                         = $docker::params::docker_cs,
-  $package_cs_source_location        = $docker::params::package_cs_source_location,
-  $package_cs_key_source             = $docker::params::package_cs_key_source,
-  $package_ee_source_location        = $docker::params::package_ee_source_location,
-  $package_ee_key_source             = $docker::params::package_ee_key_source,
+  $docker_ee                         = $docker::params::docker_ee,
+  $docker_ee_source_location         = $docker::params::docker_ee_source_location,
+  $docker_ee_key_source              = $docker::params::docker_ee_key_source,
+  $docker_ee_key                     = $docker::params::docker_ee_key,
+  $docker_ee_repos                   = $docker::params::docker_ee_repos,
+  $docker_ee_release                 = $docker::params::docker_ee_release,
   $tcp_bind                          = $docker::params::tcp_bind,
   $tls_enable                        = $docker::params::tls_enable,
   $tls_verify                        = $docker::params::tls_verify,
@@ -418,6 +418,7 @@ class docker(
   $daemon_environment_files          = [],
   $repo_opt                          = $docker::params::repo_opt,
   $nowarn_kernel                     = $docker::params::nowarn_kernel,
+  $os                                = $docker::params::os,
   $storage_devs                      = $docker::params::storage_devs,
   $storage_vg                        = $docker::params::storage_vg,
   $storage_root_size                 = $docker::params::storage_root_size,
@@ -445,7 +446,6 @@ class docker(
               'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
   validate_bool($manage_kernel)
   validate_bool($manage_package)
-  validate_bool($docker_cs)
   validate_bool($manage_service)
   validate_array($docker_users)
   validate_array($daemon_environment_files)
@@ -518,50 +518,69 @@ class docker(
     validate_string($tls_key)
   }
 
-  # if ( $docker::version =~ /^(17.0[0-5]|1.\d+)/ {
-  #   case $::osfamily {
-  #     'Debian' : {
 
-  #       $package_location = $docker::package_location
-  #       $package_key_source = $docker::package_key_source
-  #       $package_key = $docker::package_key
-  #       $package_repos = $docker::package_repos
-  #       $release = $docker::release_ce
-  #       }
+  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d-ce|1.\d+)/ ) {
+    if ( $docker_ee) {
 
-  #     'Redhat' : {
+      validate_string($docker_ee_source_location)
+      validate_string($docker_ee_key_source)
+      validate_string($docker_ee_key)
 
-  #       $package_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
-  #       $package_key_source = 'https://yum.dockerproject.org/gpg'
-  #     }
+      $package_location = $docker_ee_source_location
+      $package_key_source = $docker_ee_key_source
+      $package_key = $docker_ee_key
+      $package_repos = $docker_ee_repos
+      $release = $docker_ee_release
+      $docker_start_command = 'dockerd'
+      $docker_package_name = 'docker-ee'
+    } else {
 
-  #   $docker_start_command = 'docker daemon'
-  #   $docker_package_name = 'docker-engine'
+        case $::osfamily {
 
-  #   }
+          'Debian' : {
 
-  # } else {
+            $package_location = "https://download.docker.com/linux/${os}"
+            $package_key_source = "https://download.docker.com/linux/${os}/gpg"
+            $package_key = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+            $package_repos = $docker_ce_channel
+            $release = "${::lsbdistcodename}"
+            }
 
-  #   case $::osfamily {
-  #     'Debian' : {
+          'Redhat' : {
 
-  #       $package_location = $docker::package_location
-  #       $package_key_source = $docker::package_key_source
-  #       $package_key = $docker::package_key
-  #       $package_repos = $docker::package_repos
-  #       $release = $docker::release_ce
-  #       }
+            $package_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker::docker_ce_channel}"
+            $package_key_source = 'https://download.docker.com/linux/centos/gpg'
+          }
+        }
 
-  #     'Redhat' : {
+        $docker_start_command = 'dockerd'
+        $docker_package_name = 'docker-ce'
 
-  #       $package_source_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker::docker_ce_channel}"
-  #       $package_key_source = 'https://download.docker.com/linux/centos/gpg'
-  #     }
+    }
 
-  #     $docker_start_command = 'dockerd'
-  #     $docker_package_name = 'docker-ce'
-  #   }
-  # }
+  } else {
+
+    case $::osfamily {
+      'Debian' : {
+
+        $package_location = "http://apt.dockerproject.org/repo"
+        $package_key_source = "https://apt.dockerproject.org/gpg"
+        $package_key = "58118E89F3A912897C070ADBF76221572C52609D"
+        $package_repos = 'main'
+        $release = "ubuntu-${::lsbdistcodename}"
+        }
+
+      'Redhat' : {
+
+        $package_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
+        $package_key_source = 'https://yum.dockerproject.org/gpg'
+      }
+    }
+
+    $docker_start_command = 'docker daemon'
+    $docker_package_name = 'docker-engine'
+
+  }
 
   contain 'docker::repos'
   contain 'docker::install'
@@ -574,3 +593,4 @@ class docker(
   Class['docker'] -> Docker::Run <||>
 
 }
+

@@ -12,6 +12,8 @@ class docker::params {
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
   $docker_ee_key                     = undef
+  $docker_ee_repos                   = stable
+  $docker_ee_release                 = "${::lsbdistcodename}"
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
@@ -78,6 +80,7 @@ class docker::params {
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
+  $os                                = downcase($os[name])
 
   case $::osfamily {
     'Debian' : {
@@ -122,8 +125,6 @@ class docker::params {
         }
       }
 
-      if ( $version =~ /^(17.0[0-5]|1.\d+)/ {
-
       $manage_epel = false
       $service_name = $service_name_default
       $docker_group = $docker_group_default
@@ -154,7 +155,6 @@ class docker::params {
 
     }
     'RedHat' : {
-      $os = downcase($::os[name])
       $service_config = '/etc/sysconfig/docker'
       $storage_config = '/etc/sysconfig/docker-storage'
       $storage_setup_file = '/etc/sysconfig/docker-storage-setup'
