@@ -6,9 +6,13 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
-  $docker_start_command              = 'docker daemon'
+  $docker_ce_package_name            = 'docker-ce'
+  $docker_engine_start_command       = 'docker daemon'
+  $docker_engine_package_name        = 'docker-engine'
   $docker_ce_channel                 = stable
   $docker_ee                         = false
+  $docker_ee_start_command           = 'dockerd'
+  $docker_ee_package_name            = 'docker-ee'
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
   $docker_ee_key                     = undef
@@ -139,12 +143,14 @@ class docker::params {
       $package_ce_source_location = "https://download.docker.com/linux/${os}"
       $package_ce_key_source = "https://download.docker.com/linux/${os}/gpg"
       $package_ce_key_id = "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-      $package_location = "http://apt.dockerproject.org/repo"
+      $package_ce_release = "${::lsbdistcodename}"
+      $package_source_location = "http://apt.dockerproject.org/repo"
       $package_key_source = "https://apt.dockerproject.org/gpg"
       $package_key_id = "58118E89F3A912897C070ADBF76221572C52609D"
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
       $package_ee_key = $docker_ee_key
+      $package_ee_release = $docker_ee_release
 
       if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
         ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
@@ -185,16 +191,12 @@ class docker::params {
         $manage_epel = false
       }
 
+      $package_ce_source_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+      $package_ce_key_source = 'https://download.docker.com/linux/centos/gpg'
+      $package_source_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
+      $package_key_source = 'https://download.docker.com/linux/centos/gpg'
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
-      $package_cs_source_location = "https://packages.docker.com/1.9/yum/repo/main/centos/${::operatingsystemmajrelease}"
-      $package_cs_key_source = 'https://packages.docker.com/1.9/yum/gpg'
-      $package_key = undef
-      $package_cs_ke = undef
-      $package_repos = undef
-      $package_release = undef
-      $pin_upstream_package_source = undef
-      $apt_source_pin_level = undef
       $service_name = $service_name_default
       if (versioncmp($::operatingsystemrelease, '7.0') < 0) or ($::operatingsystem == 'Amazon') {
         $detach_service_in_init = true
@@ -237,62 +239,6 @@ class docker::params {
       } else {
         $nowarn_kernel = false
       }
-    }
-    'Archlinux' : {
-      include docker::systemd_reload
-
-      $manage_epel = false
-      $docker_group = $docker_group_default
-      $package_key_source = undef
-      $package_source_location = undef
-      $package_key = undef
-      $package_repos = undef
-      $package_release = undef
-      $use_upstream_package_source = false
-      $package_cs_source_location = undef
-      $package_cs_key_source = undef
-      $package_name = 'docker'
-      $service_name = $service_name_default
-      $detach_service_in_init = false
-      $repo_opt = undef
-      $nowarn_kernel = false
-      $service_provider   = 'systemd'
-      $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-archlinux.conf.erb'
-      $service_hasstatus  = true
-      $service_hasrestart = true
-      $service_config = '/etc/conf.d/docker'
-      $service_config_template = 'docker/etc/conf.d/docker.erb'
-      $storage_config = undef
-      $storage_setup_file = undef
-      $pin_upstream_package_source = undef
-      $apt_source_pin_level = undef
-    }
-    'Gentoo' : {
-      $manage_epel = false
-      $docker_group = $docker_group_default
-      $package_key_source = undef
-      $package_source_location = undef
-      $package_key = undef
-      $package_repos = undef
-      $package_release = undef
-      $use_upstream_package_source = false
-      $package_cs_source_location = undef
-      $package_cs_key_source = undef
-      $package_name = 'app-emulation/docker'
-      $service_name = $service_name_default
-      $detach_service_in_init = true
-      $repo_opt = undef
-      $nowarn_kernel = false
-      $service_provider   = 'openrc'
-      $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-archlinux.conf.erb'
-      $service_hasstatus  = true
-      $service_hasrestart = true
-      $service_config = '/etc/conf.d/docker'
-      $service_config_template = 'docker/etc/conf.d/docker.gentoo.erb'
-      $storage_config = undef
-      $storage_setup_file = undef
-      $pin_upstream_package_source = undef
-      $apt_source_pin_level = undef
     }
     default: {
       $manage_epel = false

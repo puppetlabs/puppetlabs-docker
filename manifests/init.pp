@@ -348,8 +348,21 @@ class docker(
   $version                           = $docker::params::version,
   $ensure                            = $docker::params::ensure,
   $prerequired_packages              = $docker::params::prerequired_packages,
+  $docker_ce_start_command           = $docker::params::docker_ce_start_command,
+  $docker_ce_package_name            = $docker::params::docker_ce_package_name,
+  $docker_ce_source_location         = $docker::params::package_ce_source_location,
+  $docker_ce_key_source              = $docker::params::package_ce_key_source,
+  $docker_ce_key_id                  = $docker::params::package_ce_key_id,
+  $docker_ce_release                 = $docker::params::package_ce_release,
+  $docker_package_location           = $docker::params::package_source_location,
+  $docker_package_key_source         = $docker::params::package_key_source,
+  $docker_package_key_id             = $docker::params::package_key_id,
+  $docker_package_release            = $docker::params::package_release,
+  $docker_engine_start_command       = $docker::params::docker_engine_start_command,
+  $docker_engine_package_name        = $docker::params::docker_engine_package_name,
   $docker_ce_channel                 = $docker::params::docker_ce_channel,
   $docker_ee                         = $docker::params::docker_ee,
+  $docker_ee_package_name            = $docker::params::docker_ee_package_name,
   $docker_ee_source_location         = $docker::params::docker_ee_source_location,
   $docker_ee_key_source              = $docker::params::docker_ee_key_source,
   $docker_ee_key                     = $docker::params::docker_ee_key,
@@ -518,68 +531,51 @@ class docker(
     validate_string($tls_key)
   }
 
-
   if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d-ce|1.\d+)/ ) {
     if ( $docker_ee) {
-
       validate_string($docker_ee_source_location)
       validate_string($docker_ee_key_source)
       validate_string($docker_ee_key)
-
       $package_location = $docker_ee_source_location
       $package_key_source = $docker_ee_key_source
       $package_key = $docker_ee_key
       $package_repos = $docker_ee_repos
       $release = $docker_ee_release
-      $docker_start_command = 'dockerd'
-      $docker_package_name = 'docker-ee'
+      $docker_start_command = $docker_ee_start_command
+      $docker_package_name = $docker_ee_package_name
     } else {
-
         case $::osfamily {
-
           'Debian' : {
-
-            $package_location = "https://download.docker.com/linux/${os}"
-            $package_key_source = "https://download.docker.com/linux/${os}/gpg"
-            $package_key = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+            $package_location = $docker_ce_source_location
+            $package_key_source = $docker_ce_key_source
+            $package_key = $docker_ce_key_id
             $package_repos = $docker_ce_channel
-            $release = "${::lsbdistcodename}"
+            $release = $docker_ce_release
             }
-
           'Redhat' : {
-
-            $package_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker::docker_ce_channel}"
-            $package_key_source = 'https://download.docker.com/linux/centos/gpg'
+            $package_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+            $package_key_source = $docker_ce_key_source
           }
         }
-
-        $docker_start_command = 'dockerd'
-        $docker_package_name = 'docker-ce'
-
+        $docker_start_command = $docker_ce_start_command
+        $docker_package_name = $docker_ce_package_name
     }
-
   } else {
-
     case $::osfamily {
       'Debian' : {
-
-        $package_location = "http://apt.dockerproject.org/repo"
-        $package_key_source = "https://apt.dockerproject.org/gpg"
-        $package_key = "58118E89F3A912897C070ADBF76221572C52609D"
+        $package_location = $docker_package_location
+        $package_key_source = $docker_package_key_source
+        $package_key = $docker_package_key_id
         $package_repos = 'main'
-        $release = "ubuntu-${::lsbdistcodename}"
+        $release = $docker_package_release
         }
-
       'Redhat' : {
-
-        $package_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
-        $package_key_source = 'https://yum.dockerproject.org/gpg'
+        $package_location = $docker_package_location
+        $package_key_source = $docker_package_key_source
       }
     }
-
-    $docker_start_command = 'docker daemon'
-    $docker_package_name = 'docker-engine'
-
+    $docker_start_command = $docker_engine_start_command
+    $docker_package_name = $docker_engine_package_name
   }
 
   contain 'docker::repos'
