@@ -2,18 +2,19 @@ require 'spec_helper'
 
 describe 'docker', :type => :class do
 
-  ['Debian', 'Ubuntu', 'RedHat', 'Archlinux', 'Gentoo'].each do |osfamily|
+  ['Debian', 'Ubuntu', 'RedHat'].each do |osfamily|
     context "on #{osfamily}" do
 
       if osfamily == 'Debian'
         let(:facts) { {
+          :architecture           => 'amd64',
           :osfamily               => 'Debian',
           :operatingsystem        => 'Debian',
           :lsbdistid              => 'Debian',
-          :lsbdistcodename        => 'wheezy',
-          :kernelrelease          => '3.2.0-4-amd64',
-          :operatingsystemrelease => '7.3',
-          :operatingsystemmajrelease => '7',
+          :lsbdistcodename        => 'stretch',
+          :kernelrelease          => '4.9.0-3-amd64',
+          :operatingsystemrelease => '9.0',
+          :operatingsystemmajrelease => '9',
         } }
         service_config_file = '/etc/default/docker'
         storage_config_file = '/etc/default/docker'
@@ -25,13 +26,14 @@ describe 'docker', :type => :class do
 
       if osfamily == 'Ubuntu'
         let(:facts) { {
+          :architecture           => 'amd64',
           :osfamily               => 'Debian',
           :operatingsystem        => 'Ubuntu',
           :lsbdistid              => 'Ubuntu',
-          :lsbdistcodename        => 'maverick',
-          :kernelrelease          => '3.8.0-29-generic',
-          :operatingsystemrelease => '10.04',
-          :operatingsystemmajrelease => '10',
+          :lsbdistcodename        => 'xenial',
+          :kernelrelease          => '4.4.0-21-generic',
+          :operatingsystemrelease => '16.04',
+          :operatingsystemmajrelease => '16.04',
         } }
         service_config_file = '/etc/default/docker'
         storage_config_file = '/etc/default/docker'
@@ -45,12 +47,12 @@ describe 'docker', :type => :class do
         end
       end
 
-      if osfamily == 'Ubuntu' or osfamily == 'Debian'
+      if osfamily == 'Ubuntu'
 
         it { should contain_class('apt') }
-        it { should contain_package('docker').with_name('docker-engine').with_ensure('present') }
-        it { should contain_apt__source('docker').with_location('http://apt.dockerproject.org/repo') }
-        it { should contain_apt__pin('docker').with_origin('apt.dockerproject.org') }
+        it { should contain_package('docker').with_name('docker-ce').with_ensure('present') }
+        it { should contain_apt__source('docker').with_location('https://download.docker.com/linux/ubuntu') }
+        it { should contain_apt__pin('docker').with_origin('download.docker.com') }
         it { should contain_package('docker').with_install_options(nil) }
 
         it { should contain_file('/etc/default/docker').without_content(/icc=/) }
@@ -64,7 +66,7 @@ describe 'docker', :type => :class do
           let(:params) { {'use_upstream_package_source' => false } }
           it { should_not contain_apt__source('docker') }
           it { should_not contain_apt__pin('docker') }
-          it { should contain_package('docker').with_name('docker-engine') }
+          it { should contain_package('docker').with_name('docker-ce') }
         end
 
         context 'with no upstream package source' do
@@ -901,7 +903,7 @@ describe 'docker', :type => :class do
       :kernelversion => '2.6.32',
     } }
 
-    it { should contain_package('docker').with_name('docker-engine') }
+    it { should contain_package('docker').with_name('docker-ce') }
     it { should contain_yumrepo('docker') }
     it { should_not contain_class('epel') }
     it { should contain_package('docker').with_install_options('--enablerepo=rhel7-extras') }
@@ -911,33 +913,6 @@ describe 'docker', :type => :class do
     it { should contain_file(service_config_file).with_content(/^http_proxy='http:\/\/127.0.0.1:3128'/) }
     it { should contain_file(service_config_file).with_content(/^  https_proxy='http:\/\/127.0.0.1:3128'/) }
     it { should contain_service('docker').with_provider('systemd').with_hasstatus(true).with_hasrestart(true) }
-  end
-
-  context 'specific to Oracle Linux 7 or above' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-      :operatingsystem => 'OracleLinux',
-      :operatingsystemrelease => '7.0',
-      :operatingsystemmajrelease => '7',
-      :kernelversion => '2.6.32',
-    } }
-
-    it { should contain_package('docker').with_name('docker-engine') }
-    it { should_not contain_class('epel') }
-    it { should contain_package('docker').with_install_options('--enablerepo=ol7_addons') }
-  end
-
-  context 'specific to Scientific Linux 7 or above' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-      :operatingsystem => 'Scientific',
-      :operatingsystemrelease => '7.0',
-      :operatingsystemmajrelease => '7',
-      :kernelversion => '2.6.32',
-    } }
-
-    it { should contain_package('docker').with_name('docker-engine') }
-    it { should_not contain_class('epel') }
   end
 
   context 'specific to Ubuntu Precise' do
@@ -965,7 +940,7 @@ describe 'docker', :type => :class do
       :kernelrelease          => '3.8.0-29-generic'
     } }
     it { should contain_service('docker').with_provider('upstart') }
-    it { should contain_package('docker').with_name('docker-engine').with_ensure('present')  }
+    it { should contain_package('docker').with_name('docker-ce').with_ensure('present')  }
     it { should contain_package('apparmor') }
   end
 
@@ -995,33 +970,6 @@ describe 'docker', :type => :class do
 
       it { should contain_service('docker').with_provider('systemd').with_hasstatus(true).with_hasrestart(true) }
     end
-  end
-
-
-  context 'specific to older RedHat based distros' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-      :operatingsystem => 'RedHat',
-      :operatingsystemrelease => '6.4',
-      :operatingsystemmajrelease => '6',
-      :kernelversion => '2.6.32',
-    } }
-    it do
-      expect {
-        should contain_package('docker')
-      }.to raise_error(Puppet::Error, /version to be at least 6.5/)
-    end
-  end
-
-  context 'specific to Amazon Linux (based on centos6) distros' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-      :operatingsystem => 'Amazon',
-      :operatingsystemrelease => '2015.09',
-      :operatingsystemmajrelease => '2015',
-      :kernelversion => '2.6.32',
-    } }
-    it {should contain_service('docker').without_provider }
   end
 
   context 'with an invalid distro name' do

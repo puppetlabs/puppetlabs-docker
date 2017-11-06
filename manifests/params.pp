@@ -84,7 +84,7 @@ class docker::params {
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
-  $os                                = downcase($os[name])
+  $os                                = downcase($operatingsystem)
 
   case $::osfamily {
     'Debian' : {
