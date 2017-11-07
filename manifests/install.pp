@@ -48,17 +48,6 @@ class docker::install {
       }
       $manage_kernel = false
     }
-    'Archlinux': {
-      $manage_kernel = false
-      if $docker::version {
-        notify { 'docker::version unsupported on Archlinux':
-          message => 'Versions other than latest are not supported on Arch Linux. This setting will be ignored.'
-        }
-      }
-    }
-    'Gentoo': {
-      $manage_kernel = false
-    }
     default: {}
   }
 
@@ -95,12 +84,25 @@ class docker::install {
         }
       }
 
-      ensure_resource('package', 'docker', merge($docker_hash, {
-        ensure   => $ensure,
-        provider => $pk_provider,
-        source   => $docker::package_source,
-        name     => $docker::docker_package_name,
-      }))
+      case $docker::package_source {
+        /docker-engine/ : {
+          ensure_resource('package', 'docker', merge($docker_hash, {
+            ensure   => $ensure,
+            provider => $pk_provider,
+            source   => $docker::package_source,
+            name     => $docker::docker_engine_package_name,
+          }))
+        }
+        /docker-ce/ : {
+          ensure_resource('package', 'docker', merge($docker_hash, {
+            ensure   => $ensure,
+            provider => $pk_provider,
+            source   => $docker::package_source,
+            name     => $docker::docker_ce_package_name,
+          }))
+        }
+        default : {}
+      }
 
     } else {
       ensure_resource('package', 'docker', merge($docker_hash, {

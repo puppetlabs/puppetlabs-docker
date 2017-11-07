@@ -362,12 +362,12 @@ class docker(
   $docker_engine_package_name        = $docker::params::docker_engine_package_name,
   $docker_ce_channel                 = $docker::params::docker_ce_channel,
   $docker_ee                         = $docker::params::docker_ee,
-  $docker_ee_package_name            = $docker::params::docker_ee_package_name,
-  $docker_ee_source_location         = $docker::params::docker_ee_source_location,
-  $docker_ee_key_source              = $docker::params::docker_ee_key_source,
-  $docker_ee_key                     = $docker::params::docker_ee_key,
-  $docker_ee_repos                   = $docker::params::docker_ee_repos,
-  $docker_ee_release                 = $docker::params::docker_ee_release,
+  $docker_ee_package_name            = $docker::params::package_ee_package_name,
+  $docker_ee_source_location         = $docker::params::package_ee_source_location,
+  $docker_ee_key_source              = $docker::params::package_ee_key_source,
+  $docker_ee_key_id                  = $docker::params::package_ee_key_id,
+  $docker_ee_repos                   = $docker::params::package_ee_repos,
+  $docker_ee_release                 = $docker::params::package_ee_release,
   $tcp_bind                          = $docker::params::tcp_bind,
   $tls_enable                        = $docker::params::tls_enable,
   $tls_verify                        = $docker::params::tls_verify,
@@ -538,7 +538,7 @@ class docker(
       validate_string($docker_ee_key)
       $package_location = $docker_ee_source_location
       $package_key_source = $docker_ee_key_source
-      $package_key = $docker_ee_key
+      $package_key = $docker_ee_key_id
       $package_repos = $docker_ee_repos
       $release = $docker_ee_release
       $docker_start_command = $docker_ee_start_command

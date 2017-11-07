@@ -15,9 +15,8 @@ class docker::params {
   $docker_ee_package_name            = 'docker-ee'
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
-  $docker_ee_key                     = undef
+  $docker_ee_key_id                  = undef
   $docker_ee_repos                   = stable
-  $docker_ee_release                 = "${::lsbdistcodename}"
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
@@ -149,8 +148,11 @@ class docker::params {
       $package_key_id = "58118E89F3A912897C070ADBF76221572C52609D"
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
-      $package_ee_key = $docker_ee_key
-      $package_ee_release = $docker_ee_release
+      $package_ee_key_id = $docker_ee_key_id
+      $package_ee_release = "${::lsbdistcodename}"
+      $package_ee_repos = $docker_ee_repos
+      $package_ee_package_name = $docker_ee_package_name
+
 
       if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
         ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
@@ -167,36 +169,29 @@ class docker::params {
       $service_hasstatus  = true
       $service_hasrestart = true
 
-      if ($::operatingsystem == 'Fedora') or (versioncmp($::operatingsystemrelease, '7.0') >= 0) and $::operatingsystem != 'Amazon' {
-        $service_provider           = 'systemd'
-        $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-        $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
-      } else {
-        $service_config_template    = 'docker/etc/sysconfig/docker.erb'
-        $service_provider           = undef
-        $service_overrides_template = undef
-      }
 
-      if (versioncmp($::operatingsystemrelease, '7.0') < 0) and $::operatingsystem != 'Amazon' {
-        $package_name = 'docker-io'
-        $use_upstream_package_source = false
-        $manage_epel = true
-      } elsif $::operatingsystem == 'Amazon' {
-        $package_name = 'docker'
-        $use_upstream_package_source = false
-        $manage_epel = false
-      } else {
-        $package_name = $package_name_default
-        $use_upstream_package_source = true
-        $manage_epel = false
-      }
+      $service_provider           = 'systemd'
+      $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
+      $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
+      $use_upstream_package_source = true
+      $manage_epel = false
 
       $package_ce_source_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
       $package_ce_key_source = 'https://download.docker.com/linux/centos/gpg'
+      $package_ce_key_id = undef
+      $package_ce_release = undef
+      $package_key_id = undef
+      $package_release = undef
       $package_source_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
       $package_key_source = 'https://download.docker.com/linux/centos/gpg'
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
+      $package_ee_key_id = $docker_ee_key_id
+      $package_ee_release = undef
+      $package_ee_repos = $docker_ee_repos
+      $package_ee_package_name = $docker_ee_package_name
+      $pin_upstream_package_source = undef
+      $apt_source_pin_level = undef
       $service_name = $service_name_default
       if (versioncmp($::operatingsystemrelease, '7.0') < 0) or ($::operatingsystem == 'Amazon') {
         $detach_service_in_init = true
@@ -245,17 +240,26 @@ class docker::params {
       $docker_group = $docker_group_default
       $package_key_source = undef
       $package_source_location = undef
-      $package_key = undef
-      $package_cs_source_location = undef
-      $package_cs_key_source = undef
+      $package_key_id = undef
       $package_repos = undef
       $package_release = undef
+      $package_ce_key_source = undef
+      $package_ce_source_location = undef
+      $package_ce_key_id = undef
+      $package_ce_repos = undef
+      $package_ce_release = undef
+      $package_ee_source_location = undef
+      $package_ee_key_source = undef
+      $package_ee_key_id = undef
+      $package_ee_release = undef
+      $package_ee_repos = undef
+      $package_ee_package_name = undef
       $use_upstream_package_source = true
       $service_overrides_template = undef
       $service_hasstatus  = undef
       $service_hasrestart = undef
       $service_provider = undef
-      $package_name = $package_name_default
+      $package_name = $docker_ce_package_name
       $service_name = $service_name_default
       $detach_service_in_init = true
       $repo_opt = undef

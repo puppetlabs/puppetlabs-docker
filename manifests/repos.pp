@@ -3,18 +3,16 @@
 #
 class docker::repos (
   $location = $docker::package_location,
-  $release = $docker::release,
-  $package_repos = $docker::package_repos,
-  $package_key = $docker::package_key,
   $key_source = $docker::package_key_source,
   ) {
-
-  notify {"$location":}
 
   ensure_packages($docker::prerequired_packages)
 
   case $::osfamily {
     'Debian': {
+      $release = $docker::release
+      $package_key = $docker::package_key
+      $package_repos = $docker::package_repos
       if ($docker::use_upstream_package_source) {
         package {['debian-keyring', 'debian-archive-keyring']:
           ensure => installed,
