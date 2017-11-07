@@ -29,7 +29,9 @@ class docker::repos {
             source => $key_source,
           },
           require  => Package['debian-keyring', 'debian-archive-keyring'],
-          include  => { 'src' => false, },
+          include  => {
+            src => false,
+            },
         }
         $url_split = split($location, '/')
         $repo_host = $url_split[2]
