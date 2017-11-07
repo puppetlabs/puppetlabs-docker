@@ -83,7 +83,7 @@ class docker::params {
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
-  $os                                = downcase($operatingsystem)
+  $os                                = downcase($::operatingsystem)
 
   case $::osfamily {
     'Debian' : {
@@ -141,15 +141,15 @@ class docker::params {
 
       $package_ce_source_location = "https://download.docker.com/linux/${os}"
       $package_ce_key_source = "https://download.docker.com/linux/${os}/gpg"
-      $package_ce_key_id = "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-      $package_ce_release = "${::lsbdistcodename}"
-      $package_source_location = "http://apt.dockerproject.org/repo"
-      $package_key_source = "https://apt.dockerproject.org/gpg"
-      $package_key_id = "58118E89F3A912897C070ADBF76221572C52609D"
+      $package_ce_key_id = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+      $package_ce_release = $::lsbdistcodename
+      $package_source_location = 'http://apt.dockerproject.org/repo'
+      $package_key_source = 'https://apt.dockerproject.org/gpg'
+      $package_key_id = '58118E89F3A912897C070ADBF76221572C52609D'
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
       $package_ee_key_id = $docker_ee_key_id
-      $package_ee_release = "${::lsbdistcodename}"
+      $package_ee_release = $::lsbdistcodename
       $package_ee_repos = $docker_ee_repos
       $package_ee_package_name = $docker_ee_package_name
 
@@ -182,7 +182,7 @@ class docker::params {
       $package_ce_release = undef
       $package_key_id = undef
       $package_release = undef
-      $package_source_location = "https://yum.dockerproject.org/repo/main/$os/${::operatingsystemmajrelease}"
+      $package_source_location = "https://yum.dockerproject.org/repo/main/${os}/${::operatingsystemmajrelease}"
       $package_key_source = 'https://download.docker.com/linux/centos/gpg'
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source

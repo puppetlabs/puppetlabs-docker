@@ -533,16 +533,16 @@ class docker(
 
   if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d-ce|1.\d+)/ ) {
     if ( $docker_ee) {
-      validate_string($docker_ee_source_location)
-      validate_string($docker_ee_key_source)
-      validate_string($docker_ee_key)
-      $package_location = $docker_ee_source_location
-      $package_key_source = $docker_ee_key_source
-      $package_key = $docker_ee_key_id
-      $package_repos = $docker_ee_repos
-      $release = $docker_ee_release
-      $docker_start_command = $docker_ee_start_command
-      $docker_package_name = $docker_ee_package_name
+      validate_string($docker::docker_ee_source_location)
+      validate_string($docker::docker_ee_key_source)
+      validate_string($docker::docker_ee_key)
+      $package_location = $docker::docker_ee_source_location
+      $package_key_source = $docker::docker_ee_key_source
+      $package_key = $docker::docker_ee_key_id
+      $package_repos = $docker::docker_ee_repos
+      $release = $docker::docker_ee_release
+      $docker_start_command = $docker::docker_ee_start_command
+      $docker_package_name = $docker::docker_ee_package_name
     } else {
         case $::osfamily {
           'Debian' : {
@@ -556,6 +556,7 @@ class docker(
             $package_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
             $package_key_source = $docker_ce_key_source
           }
+          default: {}
         }
         $docker_start_command = $docker_ce_start_command
         $docker_package_name = $docker_ce_package_name
@@ -573,6 +574,7 @@ class docker(
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source
       }
+      default : {}
     }
     $docker_start_command = $docker_engine_start_command
     $docker_package_name = $docker_engine_package_name
