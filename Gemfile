@@ -21,6 +21,7 @@ group :test do
   gem "simplecov-console"
   gem 'parallel_tests' # requires at least Ruby 1.9.3
   gem "json_pure", "<= 2.0.1" # 2.0.2 requires Ruby 2+
+  gem 'rspec_junit_formatter', '~> 0.2.3'
 
 end
 
