@@ -34,6 +34,7 @@ define docker::registry(
   $password    = undef,
   $email       = undef,
   $local_user  = 'root',
+  $version     = $docker::version,
 ) {
   include docker::params
 
@@ -42,7 +43,7 @@ define docker::registry(
   $docker_command = $docker::params::docker_command
 
   if $ensure == 'present' {
-    if $username != undef and $password != undef and $email != undef {
+    if $username != undef and $password != undef and $email != undef and $version =~ /1[.][1-9]0?/ {
       $auth_cmd = "${docker_command} login -u '${username}' -p \"\${password}\" -e '${email}' ${server}"
       $auth_environment = "password=${password}"
     }

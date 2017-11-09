@@ -183,7 +183,7 @@ class docker::params {
       $package_key_id = undef
       $package_release = undef
       $package_source_location = "https://yum.dockerproject.org/repo/main/${os}/${::operatingsystemmajrelease}"
-      $package_key_source = 'https://download.docker.com/linux/centos/gpg'
+      $package_key_source = 'https://yum.dockerproject.org/gpg'
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
       $package_ee_key_id = $docker_ee_key_id
