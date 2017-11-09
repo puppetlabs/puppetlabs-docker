@@ -1,29 +1,26 @@
 # == Class: docker::repos
 #
 #
-class docker::repos {
+class docker::repos (
+  $location = $docker::package_location,
+  $key_source = $docker::package_key_source,
+  ) {
 
   ensure_packages($docker::prerequired_packages)
 
   case $::osfamily {
     'Debian': {
+      $release = $docker::release
+      $package_key = $docker::package_key
+      $package_repos = $docker::package_repos
       if ($docker::use_upstream_package_source) {
-        if ($docker::docker_cs) {
-          $location = $docker::package_cs_source_location
-          $key_source = $docker::package_cs_key_source
-          $package_key = $docker::package_cs_key
-        } else {
-          $location = $docker::package_source_location
-          $key_source = $docker::package_key_source
-          $package_key = $docker::package_key
-        }
         package {['debian-keyring', 'debian-archive-keyring']:
           ensure => installed,
         }
         apt::source { 'docker':
           location => $location,
-          release  => $docker::package_release,
-          repos    => $docker::package_repos,
+          release  => $release,
+          repos    => $package_repos,
           key      => {
             id     => $package_key,
             source => $key_source,
@@ -56,19 +53,15 @@ class docker::repos {
 
     }
     'RedHat': {
-      if $docker::manage_package {
-        if ($docker::docker_cs) {
-          $baseurl = $docker::package_cs_source_location
-          $gpgkey = $docker::package_cs_key_source
-        } else {
-          $baseurl = $docker::package_source_location
-          $gpgkey = $docker::package_key_source
-        }
+
+      if ($docker::manage_package) {
+          $baseurl = $location
+          $gpgkey = $key_source
         if ($docker::use_upstream_package_source) {
           yumrepo { 'docker':
             descr    => 'Docker',
             baseurl  => $baseurl,
-            gpgkey   => $gpgkey,
+            gpgkey   => 'https://yum.dockerproject.org/gpg',
             gpgcheck => true,
           }
           Yumrepo['docker'] -> Package['docker']

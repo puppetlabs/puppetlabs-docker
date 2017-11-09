@@ -1,54 +1,37 @@
 require 'spec_helper'
 
-['Debian', 'RedHat', 'Archlinux', 'Amazon', 'Gentoo'].each do |osfamily|
+['Debian', 'RedHat'].each do |osfamily|
   describe 'docker::run', :type => :define do
     let(:title) { 'sample' }
     context "on #{osfamily}" do
 
       if osfamily == 'Debian'
         let(:facts) { {
-          :osfamily               => 'Debian',
-          :lsbdistid              => 'Ubuntu',
-          :operatingsystem        => 'Ubuntu',
-          :lsbdistcodename        => 'trusty',
-          :operatingsystemrelease => '14.04',
-          :kernelrelease          => '3.8.0-29-generic'
+          :architecture              => 'amd64',
+          :osfamily                  => 'Debian',
+          :operatingsystem           => 'Ubuntu',
+          :lsbdistid                 => 'Ubuntu',
+          :lsbdistcodename           => 'xenial',
+          :kernelrelease             => '4.4.0-21-generic',
+          :operatingsystemrelease    => '16.04',
+          :operatingsystemmajrelease => '16.04',
         } }
-        initscript = '/etc/init.d/docker-sample'
-        command = 'docker'
-        systemd = false
-      elsif osfamily == 'Archlinux'
-        let(:facts) { {:osfamily => osfamily} }
         initscript = '/etc/systemd/system/docker-sample.service'
         command = 'docker'
         systemd = true
-      elsif osfamily == 'Gentoo'
-        let(:facts) { {:osfamily => osfamily} }
-        initscript = '/etc/init.d/docker-sample'
-        command = 'docker'
-        systemd = false
       elsif osfamily == 'RedHat'
         let(:facts) { {
-          :osfamily => 'RedHat',
-          :operatingsystem => 'RedHat',
-          :operatingsystemrelease => '6.6',
-          :operatingsystemmajrelease => '6',
-          :kernelversion => '2.6.32',
+          :architecture               => 'x86_64',
+          :osfamily                   => osfamily,
+          :operatingsystem            => 'RedHat',
+          :lsbdistcodename            => 'xenial',
+          :operatingsystemrelease     => '7.2',
+          :operatingsystemmajrelease  => '7',
+          :kernelversion              => '3.10.0',
         } }
-        initscript = '/etc/init.d/docker-sample'
+        initscript = '/etc/systemd/system/docker-sample.service'
         command = 'docker'
-        systemd = false
-      else
-        let(:facts) { {
-          :osfamily => 'RedHat',
-          :operatingsystem => 'Amazon',
-          :operatingsystemrelease => '2015.09',
-          :operatingsystemmajrelease => '2015',
-          :kernelversion => '2.6.32',
-        } }
-        initscript = '/etc/init.d/docker-sample'
-        command = 'docker'
-        systemd = false
+        systemd = true
       end
 
       context 'passing the required params' do
@@ -56,7 +39,7 @@ require 'spec_helper'
         it { should compile.with_all_deps }
         it { should contain_service('docker-sample') }
         if (osfamily == 'Debian')
-          it { should contain_file(initscript).with_content(/\$docker run/) }
+          it { should contain_file(initscript).with_content(/docker run/) }
           it { should contain_file(initscript).with_content(/#{command}/) }
         else
           it { should contain_file(initscript).with_content(/#{command} run/).with_content(/base/) }
@@ -82,15 +65,9 @@ require 'spec_helper'
           it { should contain_file(initscript).with_content(/Wants=(.*\s+)?docker-bar.service/) }
           it { should contain_file(initscript).with_content(/Wants=(.*\s+)?docker-foo_bar-baz.service/) }
         else
-          if (osfamily == 'Gentoo')
-            it { should contain_file(initscript).with_content(/after.*\s+docker-foo/) }
-            it { should contain_file(initscript).with_content(/after.*\s+docker-bar/) }
-            it { should contain_file(initscript).with_content(/after.*\s+docker-foo_bar-baz/) }
-          else
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo/) }
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-bar/) }
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo_bar-baz/) }            
-          end
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo/) }
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-bar/) }
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo_bar-baz/) }
         end
       end
 
@@ -104,21 +81,12 @@ require 'spec_helper'
           it { should contain_file(initscript).with_content(/Requires=(.*\s+)?docker-bar.service/) }
           it { should contain_file(initscript).with_content(/Requires=(.*\s+)?docker-foo_bar-baz.service/) }
         else
-          if (osfamily == 'Gentoo')
-            it { should contain_file(initscript).with_content(/after.*\s+docker-foo/) }
-            it { should contain_file(initscript).with_content(/after.*\s+docker-bar/) }
-            it { should contain_file(initscript).with_content(/after.*\s+docker-foo_bar-baz/) }
-            it { should contain_file(initscript).with_content(/need.*\s+docker-foo/) }
-            it { should contain_file(initscript).with_content(/need.*\s+docker-bar/) }
-            it { should contain_file(initscript).with_content(/need.*\s+docker-foo_bar-baz/) }
-          else
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo/) }
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-bar/) }
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo_bar-baz/) }
-            it { should contain_file(initscript).with_content(/Required-Stop:.*\s+docker-foo/) }
-            it { should contain_file(initscript).with_content(/Required-Stop:.*\s+docker-bar/) }
-            it { should contain_file(initscript).with_content(/Required-Stop:.*\s+docker-foo_bar-baz/) }
-          end
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo/) }
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-bar/) }
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+docker-foo_bar-baz/) }
+          it { should contain_file(initscript).with_content(/Required-Stop:.*\s+docker-foo/) }
+          it { should contain_file(initscript).with_content(/Required-Stop:.*\s+docker-bar/) }
+          it { should contain_file(initscript).with_content(/Required-Stop:.*\s+docker-foo_bar-baz/) }
         end
       end
 
@@ -130,17 +98,10 @@ require 'spec_helper'
           it { should contain_file(initscript).with_content(/Requires=(.*\s+)?foo.service/) }
           it { should contain_file(initscript).with_content(/Requires=(.*\s+)?bar.service/) }
         else
-          if (osfamily == 'Gentoo')
-            it { should contain_file(initscript).with_content(/after.*\s+foo/) }
-            it { should contain_file(initscript).with_content(/after.*\s+bar/) }
-            it { should contain_file(initscript).with_content(/need.*\s+foo/) }
-            it { should contain_file(initscript).with_content(/need.*\s+bar/) }
-          else
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+foo/) }
-            it { should contain_file(initscript).with_content(/Required-Start:.*\s+bar/) }
-            it { should contain_file(initscript).with_content(/Required-Stop:.*\s+foo/) }
-            it { should contain_file(initscript).with_content(/Required-Stop:.*\s+bar/) }
-          end
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+foo/) }
+          it { should contain_file(initscript).with_content(/Required-Start:.*\s+bar/) }
+          it { should contain_file(initscript).with_content(/Required-Stop:.*\s+foo/) }
+          it { should contain_file(initscript).with_content(/Required-Stop:.*\s+bar/) }
         end
       end
 
@@ -495,11 +456,9 @@ require 'spec_helper'
         let(:params) { {'image' => 'base'} }
 
         if osfamily == 'Debian'
-          new_initscript = '/etc/init.d/docker-this-that'
-        elsif osfamily == 'Archlinux'
           new_initscript = '/etc/systemd/system/docker-this-that.service'
         else
-          new_initscript = '/etc/init.d/docker-this-that'
+          new_initscript = '/etc/systemd/system/docker-this-that.service'
         end
 
         it { should contain_service('docker-this-that') }
@@ -511,11 +470,9 @@ require 'spec_helper'
         let(:params) { {'image' => 'base', 'manage_service' => false} }
 
         if osfamily == 'Debian'
-          new_initscript = '/etc/init.d/docker-this-that'
-        elsif osfamily == 'Archlinux'
           new_initscript = '/etc/systemd/system/docker-this-that.service'
         else
-          new_initscript = '/etc/init.d/docker-this-that'
+          new_initscript = '/etc/systemd/system/docker-this-that.service'
         end
 
         it { should_not contain_service('docker-this-that') }
@@ -527,11 +484,9 @@ require 'spec_helper'
         let(:params) { {'image' => 'base', 'service_prefix' => ''} }
 
         if osfamily == 'Debian'
-          new_initscript = '/etc/init.d/this-that'
-        elsif osfamily == 'Archlinux'
           new_initscript = '/etc/systemd/system/this-that.service'
         else
-          new_initscript = '/etc/init.d/this-that'
+          new_initscript = '/etc/systemd/system/this-that.service'
         end
 
         it { should contain_service('this-that') }
@@ -552,11 +507,9 @@ require 'spec_helper'
         let(:params) { {'image' => 'base' } }
 
         if osfamily == 'Debian'
-          new_initscript = '/etc/init.d/docker-this-that_other'
-        elsif osfamily == 'Archlinux'
           new_initscript = '/etc/systemd/system/docker-this-that_other.service'
         else
-          new_initscript = '/etc/init.d/docker-this-that_other'
+          new_initscript = '/etc/systemd/system/docker-this-that_other.service'
         end
 
         it { should contain_service('docker-this-that_other') }

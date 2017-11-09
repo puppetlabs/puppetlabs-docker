@@ -39,18 +39,6 @@
         "8.0",
         "9.0"
       ]
-    },
-    {
-      "operatingsystem": "Archlinux"
-    },
-    {
-      "operatingsystem": "Gentoo"
-    },
-    {
-      "operatingsystem": "Fedora",
-      "operatingsystemrelease": [
-        "21"
-      ]
     }
   ],
   "requirements": [

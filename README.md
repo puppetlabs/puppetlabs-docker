@@ -13,7 +13,9 @@
 
 ## Overview
 
-The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/) or from the [EPEL on RedHat](https://docs.docker.io/en/latest/installation/rhel/) based distributions.
+The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) as well legacy releases.
+
+With new naming convention of the Docker packages, this module now differentiates between by prefacing any params referring to the release with `_ce` or `_engine`. There are examples of this through the README.
 
 ## Description
 
@@ -49,32 +51,61 @@ class { 'docker':
 }
 ```
 
-The latest Docker [repositories](https://blog.docker.com/2015/07/new-apt-and-yum-repos/#comment-247448) are now the default repositories for version 5 and above. To use previous repositories, add the following code to the manifest file:
+The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using a version prior to this, the old repositories will still be configured based on the version number passed into the module.
+
+The following example will ensure the modules configures the latest repositories
 
 ```puppet
 class { 'docker':
-  package_name => 'lxc-docker',
-  package_source_location => 'https://get.docker.com/ubuntu',
-  package_key_source => 'https://get.docker.com/gpg',
-  package_key => '36A1D7869245C8950F966E92D8576A8BA88D21E',
-  package_release => 'docker',
+  version => '17.09.0~ce-0~debian',
 }
 ```
 
-Docker provides a commercially supported version of the [Docker Engine](https://docs.docker.com/docker-trusted-registry/install/install-csengine/), called Docker CS. To install Docker DS, add the following code to the manifest file:
+Using a version prior to 17.06 will configure and install from the old repositories
 
 ```puppet
 class { 'docker':
-  docker_cs => true,
+  version => '1.12.0-0~wheezy',
 }
 ```
 
-For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the distribution packages, add the following code to the manifest file:
+Docker provides a enterprise addition of the [Docker Engine](https://www.docker.com/enterprise-edition), called Docker EE. To install Docker EE on Debian systems, add the following code to the manifest file:
+
+```puppet
+class { 'docker':
+  docker_ee => true,
+  docker_ee_source_location => 'https://<docker_ee_repo_url',
+  docker_ee_key_source => 'https://<docker_ee_key_source_url',
+  docker_ee_key_id => '<key id>',
+}
+```
+
+To install install Docker EE on RHEL/CentOS:
+
+```puppet
+class { 'docker':
+  docker_ee => true,
+  docker_ee_source_location => 'https://<docker_ee_repo_url',
+  docker_ee_key_source => 'https://<docker_ee_key_source_url',
+}
+```
+
+
+For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  package_name => 'docker',
+  package_engine_name => 'docker-name',
+}
+```
+
+To use the CE packages
+
+```puppet
+class { 'docker':
+  use_upstream_package_source => false,
+  package_ce_name => 'docker-ce',
 }
 ```
 
@@ -105,22 +136,14 @@ class { 'docker':
 }
 ```
 
-Only the latest version of Docker supports Archlinux. To specify which version of Docker to install, add the following code to the manifest file: 
-
-```puppet
-class { 'docker':
-  version => '0.5.5',
-}
-```
-
 To specify which Docker rpm package to install, add the following code to the manifest file:
 
 ```puppet
 class { 'docker' :
   manage_package              => true,
   use_upstream_package_source => false,
-  package_name                => 'docker-engine'
-  package_source              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+  package_engine_name         => 'docker-engine'
+  package_source_location     => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
   prerequired_packages        => [ 'glibc.i686', 'glibc.x86_64', 'sqlite.i686', 'sqlite.x86_64', 'device-mapper', 'device-mapper-libs', 'device-mapper-event-libs', 'device-mapper-event' ]
 }
 ```
@@ -130,6 +153,14 @@ To track the latest version of Docker, add the following code to the manifest fi
 ```puppet
 class { 'docker':
   version => 'latest',
+}
+```
+
+To install docker from a test or edge channel, add the following code to the manifest file:
+
+```puppet
+class { 'docker':
+  docker_ce_channel => 'test'
 }
 ```
 
@@ -159,7 +190,7 @@ class { 'docker':
 
 ### Images
 
-Each image name must be unique, otherwise the installation fails when a duplicate name is detected. 
+Each image name must be unique, otherwise the installation fails when a duplicate name is detected.
 
 To install a Docker image, add the `docker::image` defined type to the manifest file:
 
@@ -167,7 +198,7 @@ To install a Docker image, add the `docker::image` defined type to the manifest 
 docker::image { 'base': }
 ```
 
-The code above is equivalent to running the `docker pull base` command. However, it removes the default five minute execution timeout. 
+The code above is equivalent to running the `docker pull base` command. However, it removes the default five minute execution timeout.
 
 To include an optional parameter for installing image tags that is the equivalent to running `docker pull -t="precise" ubuntu`, add the following code to the manifest file:
 
@@ -245,7 +276,7 @@ docker::run { 'helloworld':
 
 This is equivalent to running the  `docker run -d base /bin/sh -c "while true; do echo hello world; sleep 1; done"` command to launch a Docker container managed by the local init system.
 
-`run` includes a number of optional parameters: 
+`run` includes a number of optional parameters:
 
 ```puppet
 docker::run { 'helloworld':
@@ -279,7 +310,7 @@ You can specify the ports, expose, env, dns, and volumes values with a single st
 
 To pull the image before it starts, specify the `pull_on_start` parameter.
 
-To execute a command before the container stops, specify the `before_stop` parameter. 
+To execute a command before the container stops, specify the `before_stop` parameter.
 
 Add the container name to the `after` parameter to specify which containers start first. This affects the generation of the `init.d/systemd` script.
 
@@ -287,7 +318,7 @@ Add container dependencies to the `depends` parameter. The container starts befo
 
 The `extra_parameters` parameter contains an array of command line arguments to pass to the `docker run` command. This parameter is useful for adding additional or experimental options that the docker module currently does not support.
 
-By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems. 
+By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems.
 
 To use an image tag, add the following code to the manifest file:
 
@@ -336,7 +367,7 @@ docker_network { 'my-net':
 }
 ```
 
-The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks and an example would be configuring the cluster store for the overlay network. 
+The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks and an example would be configuring the cluster store for the overlay network.
 
 To configure the cluster store, update the `docker` class in the manifest file:
 
@@ -364,12 +395,12 @@ A defined network can be used on a `docker::run` resource with the `net` paramet
 
 Docker Compose describes a set of containers in YAML format and runs a command to build and run those containers. Included in the docker module is the `docker_compose` type. This enables Puppet to run Compose and remediate any issues to ensure reality matches the model in your Compose file.
 
-You must install the Docker Compose utility, before you use the `docker_compose` type. 
+You must install the Docker Compose utility, before you use the `docker_compose` type.
 
 To install Docker Compose, add the following code to the manifest file:
 
 ```puppet
-class {'docker::compose': 
+class {'docker::compose':
   ensure => present,
 }
 ```
@@ -417,7 +448,7 @@ To deploy the stack, add the following code to the manifest file:
    compose_file => '/tmp/docker-compose.yaml',
    require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
-```  
+```
 
 To remove the stack set `ensure  => absent`.
 
@@ -430,19 +461,19 @@ docker::stack { 'yourapp':
   compose_file => '/tmp/docker-compose.yaml',
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
-```  
+```
 To remove the stack, set `ensure  => absent`.
 
 ### Swarm mode
 
-To natively manage a cluster of Docker Engines known as a swarm, Docker Engine 1.12 includes a swarm mode. 
+To natively manage a cluster of Docker Engines known as a swarm, Docker Engine 1.12 includes a swarm mode.
 
 To cluster your Docker engines, use one of the following Puppet resources:
 
 * [Swarm manager](#Swarm-manager)
 * [Swarm worker](#Swarm-worker)
 
-#### Swarm manager 
+#### Swarm manager
 
 To configure the swarm manager, add the following code to the manifest file:
 
@@ -450,8 +481,8 @@ To configure the swarm manager, add the following code to the manifest file:
 docker::swarm {'cluster_manager':
   init           => true,
   advertise_addr => '192.168.1.1',
-  listen_addr    => '192.168.1.1',  
-} 
+  listen_addr    => '192.168.1.1',
+}
 ```
 
 For a multihomed server and to enable cluster communications between the node, include the ```advertise_addr``` and ```listen_addr``` parameters.
@@ -467,10 +498,10 @@ advertise_addr => '192.168.1.2',
 listen_addr    => '192.168.1.2,
 manager_ip     => '192.168.1.1',
 token          => 'SWMTKN-1-2lw8bnr57qsu74d6iq2q1wr2wq2i334g7425dfr3zucimvh4bl-2vwn6gysbdj605l37c61iixie'
-} 
+}
 ```
 
-To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating another swarm manager and a worker node, separate tokens are required. 
+To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating another swarm manager and a worker node, separate tokens are required.
 
 To remove a node from a cluster, add the following code to the manifest file:
 
@@ -487,11 +518,11 @@ To create a Docker service, add the following code to the manifest file:
 
 ```puppet
 docker::services {'redis':
-    create => true,   
+    create => true,
     service_name => 'redis',
     image => 'redis:latest',
     publish => '6379:639',
-    replicas => '5', 
+    replicas => '5',
     extra_params => ['--update-delay 1m', '--restart-window 30s']
   }
 ```
@@ -500,7 +531,7 @@ To base the service off an image, include the `image` parameter and include the 
 
 To update the service, add the following code to the manifest file:
 
-```puppet 
+```puppet
 docker::services {'redis_update':
   create => false,
   update => true,
@@ -518,11 +549,11 @@ docker::services {'redis_scale':
   create => false,
   scale => true,
   service_name => 'redis',
-  replicas => '10', 
+  replicas => '10',
 }
 ```
 
-To scale the service without creating a new one, include the the `scale => true` parameter and the `create => false` parameter. In the example above, the service is scaled to 10. 
+To scale the service without creating a new one, include the the `scale => true` parameter and the `create => false` parameter. In the example above, the service is scaled to 10.
 
 To remove a service, add the following code to the manifest file:
 
@@ -537,7 +568,7 @@ To remove the service from a swarm, include the `ensure => absent` parameter and
 
 ### Private registries
 
-If a server is not specified, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, create a private repository without authentication. 
+If a server is not specified, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, create a private repository without authentication.
 
 To configure authentication for a private registry, add the following code to the manifest file:
 
@@ -566,7 +597,7 @@ To log out of a registry, add the following code to the manifest file:
 docker::registry { 'example.docker.io:5000':
   ensure => 'absent',
 }
-```   
+```
 
 ### Exec
 
@@ -713,7 +744,7 @@ Defaults to `undefined`.
 
 #### `socket_bind`
 
-The unix socket to bind to. 
+The unix socket to bind to.
 
 Defaults to `unix:///var/run/docker.sock.`
 
@@ -777,7 +808,7 @@ When you run your own package mirror, set the value to `false`.
 
 #### `pin_upstream_package_source`
 
-Specifies whether to use the pin upstream package source. This option relates to apt-based distributions.  
+Specifies whether to use the pin upstream package source. This option relates to apt-based distributions.
 
 Valid values are `true`, `false`.
 
@@ -787,15 +818,15 @@ Set to `false` to remove pinning on the upstream package repository. See also `a
 
 #### `apt_source_pin_level`
 
-The level to pin your source package repository to. This relates to an apt-based system (such as Debian, Ubuntu, etc). Include $use_upstream_package_source and set the value to `true`.  
+The level to pin your source package repository to. This relates to an apt-based system (such as Debian, Ubuntu, etc). Include $use_upstream_package_source and set the value to `true`.
 
-To disable pinning, set the value to `false`. 
+To disable pinning, set the value to `false`.
 
 Defaults to `10`.
 
 #### `package_source_location`
 
-Specifies the location of the package source. 
+Specifies the location of the package source.
 
 For Debian, the value defaults to `http://get.docker.com/ubuntu`.
 
@@ -1005,7 +1036,7 @@ Default is `OS and package specific`.
 
 #### `daemon_environment_files`
 
-Specifies additional environment files to add to the `service-overrides.conf` file. 
+Specifies additional environment files to add to the `service-overrides.conf` file.
 
 #### `repo_opt`
 

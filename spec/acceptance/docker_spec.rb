@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 
 describe 'docker' do
-  package_name = 'docker-engine'
+  package_name = 'docker-ce'
   service_name = 'docker'
   command = 'docker'
 
@@ -93,7 +93,7 @@ describe 'docker' do
       registry_host = 'localhost'
       registry_port = 5000
       @registry_address = "#{registry_host}:#{registry_port}"
-      @registry_email = 'user@example.com'
+      # @registry_email = 'user@example.com'
       @config_file = '/root/.docker/config.json'
       @manifest = <<-EOS
         class { 'docker': }
@@ -116,7 +116,6 @@ describe 'docker' do
         docker::registry { '#{@registry_address}':
           username => 'username',
           password => 'password',
-          email    => '#{@registry_email}',
         }
       EOS
       apply_manifest(manifest, :catch_failures=>true)
@@ -131,7 +130,7 @@ describe 'docker' do
       EOS
       apply_manifest(manifest, :catch_failures=>true)
       shell("grep #{@registry_address} #{@config_file}", :acceptable_exit_codes => [1,2])
-      shell("grep #{@registry_email} #{@config_file}", :acceptable_exit_codes => [1,2])
+      # shell("grep #{@registry_email} #{@config_file}", :acceptable_exit_codes => [1,2])
     end
   end
 
