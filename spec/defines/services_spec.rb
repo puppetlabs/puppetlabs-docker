@@ -28,7 +28,7 @@ describe 'docker::services', :type => :define do
     let(:params) { {
 	    'create'         => false,
 	    'update'         => true,
-            'service_name'   => 'foo',
+      'service_name'   => 'foo',
 	    'image'          => 'bar:latest',
     } }
     it { is_expected.to compile.with_all_deps }
