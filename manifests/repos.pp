@@ -61,7 +61,7 @@ class docker::repos (
           yumrepo { 'docker':
             descr    => 'Docker',
             baseurl  => $baseurl,
-            gpgkey   => 'https://yum.dockerproject.org/gpg',
+            gpgkey   => $gpgkey,
             gpgcheck => true,
           }
           Yumrepo['docker'] -> Package['docker']
