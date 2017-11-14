@@ -1,18 +1,18 @@
 # == Define: docker::services
-# 
-# A define that managers a Docker services 
+#
+# A define that managers a Docker services
 #
 # == Paramaters
 #
-# [*ensure*] 
+# [*ensure*]
 #  This ensures that the service is present or not.
 #  Defaults to present
 #
-# [*image*] 
-#  The Docker image to spwan the service from. 
-#  Defualts to undef  
+# [*image*]
+#  The Docker image to spwan the service from.
+#  Defualts to undef
 #
-# [*detach*] 
+# [*detach*]
 #  Exit immediately instead of waiting for the service to converge (default true)
 #  Defaults to true
 #
@@ -30,9 +30,9 @@
 #  Defaults to undef
 #
 # [*replicas*]
-#  Number of tasks (containers per service) 
+#  Number of tasks (containers per service)
 #  defaults to undef
-#  
+#
 # [*tty*]
 #  Allocate a pseudo-TTY
 #  Defaults to false
@@ -51,14 +51,14 @@
 #  defaults to []
 #
 # [*update*]
-#  This changes the docker command to 
-#  docker service update, you must pass a service name with this option 
+#  This changes the docker command to
+#  docker service update, you must pass a service name with this option
 #
 # [*scale*]
 #  This changes the docker command to
-#  docker service scale, this can only be used with service name and 
+#  docker service scale, this can only be used with service name and
 #  replicas
-#  
+#
 # [*host_socket*]
 #  This will allow the service to connect to the host linux socket.
 #  defaults to undef
@@ -154,6 +154,7 @@ define docker::services(
     workdir => $workdir,
     extra_params => any2array($extra_params),
     image => $image,
+    host_socket => $host_socket,
     })
 
   $exec_update = "${docker_command} update ${docker_service_flags}"
@@ -173,7 +174,7 @@ define docker::services(
     extra_params => any2array($extra_params),
     })
 
-  $exec_scale = "${docker_command} scale ${docker_service_flags}"
+  $exec_scale = "${docker_command} scale ${service_name}=${replicas}"
 
   exec { 'Docker service scale':
     command     => $exec_scale,
@@ -191,3 +192,4 @@ define docker::services(
     }
   }
 }
+

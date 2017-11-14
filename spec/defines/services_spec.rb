@@ -18,7 +18,7 @@ describe 'docker::services', :type => :define do
             'image'        => 'foo:bar',
 	    'publish'      => '80:80',
             'replicas'     => '5',
-            'extra_params' => ['--update-delay 1m', '--restart-window 30s']	    
+            'extra_params' => ['--update-delay 1m', '--restart-window 30s']
     } }
     it { is_expected.to compile.with_all_deps }
     it { should contain_exec('Docker service create').with_command(/docker service create/) }
@@ -28,24 +28,24 @@ describe 'docker::services', :type => :define do
     let(:params) { {
 	    'create'         => false,
 	    'update'         => true,
-            'service_name'   => 'foo',
+      'service_name'   => 'foo',
 	    'image'          => 'bar:latest',
     } }
     it { is_expected.to compile.with_all_deps }
     it { should contain_exec('Docker service update').with_command(/docker service update/) }
   end
- 
+
   context 'with ensure => present and service scale' do
     let(:params) { {
 	    'create'         => false,
 	    'scale'          => true,
-            'service_name'   => 'bar',
+      'service_name'   => 'bar',
 	    'replicas'       => '5',
     } }
     it { is_expected.to compile.with_all_deps }
     it { should contain_exec('Docker service scale').with_command(/docker service scale/) }
   end
- 
+
   context 'with ensure => absent' do
     let(:params) { {
 	    'ensure'         => 'absent',
