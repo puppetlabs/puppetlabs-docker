@@ -48,7 +48,7 @@ define docker::registry(
       $auth_environment = "password=${password}"
     }
     elsif $username != undef and $password != undef {
-      $auth_cmd = "${docker_command} login -u '${username}' -p \"\${password}\" ${server}"
+      $auth_cmd = "${docker_command} login -u '${username}' -p '${password}' ${server}"
       $auth_environment = "password=${password}"
     }
     else {
@@ -61,6 +61,14 @@ define docker::registry(
     $auth_environment = undef
   }
 
+  $local_user_strip = regsubst($local_user, '-', '', 'G')
+
+  file { "/root/.docker/registry-auth-puppet_receipt_${server}_${local_user}":
+    ensure  => $ensure,
+    content => pw_hash("${title}${auth_environment}${auth_cmd}${local_user}", 'SHA-512', $local_user_strip),
+    notify  => Exec["${title} auth"],
+  }
+
   exec { "${title} auth":
     environment => $auth_environment,
     command     => $auth_cmd,
@@ -68,6 +76,7 @@ define docker::registry(
     cwd         => '/root',
     path        => ['/bin', '/usr/bin'],
     timeout     => 0,
+    refreshonly => true,
   }
 
 }
