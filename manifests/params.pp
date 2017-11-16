@@ -163,9 +163,9 @@ class docker::params {
 
     }
     'RedHat' : {
-      $service_config = '/etc/sysconfig/docker'
-      $storage_config = '/etc/sysconfig/docker-storage'
-      $storage_setup_file = '/etc/sysconfig/docker-storage-setup'
+      $service_config = "/etc/sysconfig/${service_name}"
+      $storage_config = "/etc/sysconfig/${service_name}-storage"
+      $storage_setup_file = "/etc/sysconfig/${service_name}-storage-setup"
       $service_hasstatus  = true
       $service_hasrestart = true
 
