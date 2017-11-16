@@ -3,9 +3,9 @@
   "description": "Allows you to get the swarm token",
   "input_method": "stdin",
   "parameters": {
-    "swarm_master": {
-      "description": "Swarm master to connec to",
-      "type": "Optional[String[1]]"
+    "node_role": {
+      "description": "The role of the node joining the swarm",
+      "type": "String[1]"
     }
   }
 }
