@@ -1,0 +1,11 @@
+
+{
+  "description": "Allows you to get the swarm token",
+  "input_method": "stdin",
+  "parameters": {
+    "node_role": {
+      "description": "The role of the node joining the swarm",
+      "type": "String[1]"
+    }
+  }
+}
