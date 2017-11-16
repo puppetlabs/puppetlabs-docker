@@ -1,0 +1,11 @@
+
+{
+  "description": "Allows you to get the swarm token",
+  "input_method": "stdin",
+  "parameters": {
+    "swarm_master": {
+      "description": "Swarm master to connec to",
+      "type": "Optional[String[1]]"
+    }
+  }
+}
