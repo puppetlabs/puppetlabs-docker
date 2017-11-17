@@ -1,6 +1,6 @@
 
 {
-  "description": "Allows you to get the swarm token",
+  "description": "Gets the swarm token from the master",
   "input_method": "stdin",
   "parameters": {
     "node_role": {
