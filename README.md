@@ -1085,6 +1085,58 @@ Auto pool extension threshold (in % of pool size).
 
 Extends the pool by the specified percentage when the threshold is passed.
 
+### Tasks
+
+The docker module has an example task that allows a user to initialize, join and leave a swarm.
+
+```puppet
+bolt task run docker::swarm_init listen_addr=172.17.10.101 adverstise_addr=172.17.10.101 ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
+
+docker swarm init --advertise-addr=172.17.10.101 --listen-addr=172.17.10.101
+Swarm initialized: current node (w8syk0g286vd7d9kwzt7jl44z) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t 172.17.10.101:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+Ran on 1 node in 4.04 seconds
+```
+
+```puppet
+bolt task run docker::swarm_token node_role=worker ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
+
+SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t
+
+
+Ran on 1 node in 4.02 seconds
+
+```
+```puppet
+bolt task run docker::swarm_join listen_addr=172.17.10.102 adverstise_addr=172.17.10.102 token=<swarm_token> manager_ip=172.17.10.101:2377 --nodes swarm-02 --user root --password puppet --modulepath /tmp/modules
+
+
+This node joined a swarm as a worker.
+
+
+Ran on 1 node in 4.68 seconds
+```
+```puppet
+bolt task run docker::swarm_leave --nodes swarm-02 --user root --password puppet --modulepath --modulepath <module_path>
+
+Node left the swarm.
+
+
+Ran on 1 node in 6.16 seconds
+```
+
+
+
+
+For further explanation please refer to the[PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
+
 ## Limitations
 
 This module supports:
