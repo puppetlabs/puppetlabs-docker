@@ -9,50 +9,55 @@ module Puppet::Parser::Functions
     if opts['detach'].to_s != 'true'
       flags << '--detach'
     end
-    
+
     if opts['service_name'].to_s != 'undef'
-      flags << "'#{opts['service_name']}'"	    
+      flags << "'#{opts['service_name']}'"
     end
 
-    if opts['env'].to_s != 'undef'
-      flags << "--env '#{opts['env']}'"
+    if opts['env'].is_a? Array
+      opts['env'].each do |env|
+        flags << "--env #{env}"
+      end
     end
-    
-    if opts['label'].to_s != 'undef'
-      flags << "--label '#{opts['label']}'"
+
+    if opts['label'].is_a? Array
+      opts['label'].each do |label|
+        flags << "--label #{label}"
+      end
     end
 
     if opts['publish'].to_s != 'undef'
       flags << "--publish '#{opts['publish']}'"
     end
-    
+
     if opts['replicas'].to_s != 'undef'
       flags << "--replicas '#{opts['replicas']}'"
-    end      
+    end
 
     if opts['tty'].to_s != 'false'
       flags << '--tty'
-    end   
-    
+    end
+
     if opts['user'].to_s != 'undef'
       flags << "--user '#{opts['publish']}'"
-    end   
-    
+    end
+
     if opts['workdir'].to_s != 'undef'
       flags << "--workdir '#{opts['workdir']}'"
-    end  
-    
-    if opts['extra_params'].each do |param|
-      flags << param
-     end
     end
-   
+
+    if opts['extra_params'].is_a? Array
+      opts['extra_params'].each do |param|
+        flags << param
+      end
+    end
+
     if opts['image'].to_s != 'undef'
-      flags << "'#{opts['image']}'"      
+      flags << "'#{opts['image']}'"
     end
-    
+
     if opts['host_socket'].to_s != 'undef'
-      flags << "-H '#{opts['host_socket']}'"      
+      flags << "-H '#{opts['host_socket']}'"
     end
 
     flags.flatten.join(" ")
