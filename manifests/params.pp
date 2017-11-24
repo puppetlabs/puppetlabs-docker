@@ -176,13 +176,13 @@ class docker::params {
       $use_upstream_package_source = true
       $manage_epel = false
 
-      $package_ce_source_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+      $package_ce_source_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
       $package_ce_key_source = 'https://download.docker.com/linux/centos/gpg'
       $package_ce_key_id = undef
       $package_ce_release = undef
       $package_key_id = undef
       $package_release = undef
-      $package_source_location = "https://yum.dockerproject.org/repo/main/${os}/${::operatingsystemmajrelease}"
+      $package_source_location = "https://yum.dockerproject.org/repo/main/centos/${::operatingsystemmajrelease}"
       $package_key_source = 'https://yum.dockerproject.org/gpg'
       $package_ee_source_location = $docker_ee_source_location
       $package_ee_key_source = $docker_ee_key_source
