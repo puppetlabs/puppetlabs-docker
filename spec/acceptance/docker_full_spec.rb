@@ -89,6 +89,7 @@ describe 'the Puppet Docker module' do
         sleep 15
 
         shell('docker inspect container-3-6', :acceptable_exit_codes => [1])
+        shell('test -f /etc/systemd/system/container-3-6.service', :acceptable_exit_codes => [1])
       end
     end
 
