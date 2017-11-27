@@ -553,7 +553,7 @@ class docker(
             $release = $docker_ce_release
             }
           'Redhat' : {
-            $package_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+            $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
             $package_key_source = $docker_ce_key_source
           }
           default: {}
