@@ -18,6 +18,9 @@
 #   Password for authentication to private Docker registry. Leave undef if
 #   auth is not required.
 #
+# [*pass_hash*]
+#   The hash to be used for receipt. If left as undef, a hash will be generated
+#
 # [*email*]
 #   Email for registration to private Docker registry. Leave undef if
 #   auth is not required.
@@ -26,12 +29,15 @@
 #   The local user to log in as. Docker will store credentials in this
 #   users home directory
 #
+# [*receipt*]
+#   Required to be true for idempotency
 #
 define docker::registry(
   $server      = $title,
   $ensure      = 'present',
   $username    = undef,
   $password    = undef,
+  $pass_hash   = undef,
   $email       = undef,
   $local_user  = 'root',
   $version     = $docker::version,
@@ -66,9 +72,14 @@ define docker::registry(
     # no - with pw_hash
     $local_user_strip = regsubst($local_user, '-', '', 'G')
 
+    $_pass_hash = $pass_hash ? {
+      Undef   => pw_hash("${title}${auth_environment}${auth_cmd}${local_user}", 'SHA-512', $local_user_strip),
+      default => $pass_hash
+    }
+
     file { "/root/registry-auth-puppet_receipt_${server}_${local_user}":
       ensure  => $ensure,
-      content => pw_hash("${title}${auth_environment}${auth_cmd}${local_user}", 'SHA-512', $local_user_strip),
+      content => $_pass_hash,
       notify  => Exec["${title} auth"],
     }
   }
