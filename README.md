@@ -356,6 +356,14 @@ If using Hiera, you can configure the `docker::run_instance` class:
       command: '/bin/sh -c "while true; do echo hello world; sleep 1; done"'
 ```
 
+To remove a running container, add the following code to the manifest file. This will also remove the systemd service file associated with the container.
+
+'''puppet
+docker::run { 'helloworld':
+  ensure => absent,
+}
+'''
+
 ### Networks
 
 Docker 1.9.x officially supports networks. To expose the `docker_network` type, which is used to manage networks, add the following code to the manifest file:
