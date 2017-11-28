@@ -35,6 +35,10 @@ Puppet::Type.newtype(:docker_network) do
 		desc 'Additional options for the network driver'
 	end
 
+	newparam(:additional_flags) do
+		desc "Additional flags for the 'docker network create'"
+	end
+
 	newproperty(:id) do
 		desc 'The ID of the network provided by Docker'
     validate do |value|
