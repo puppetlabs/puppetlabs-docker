@@ -31,7 +31,8 @@ class docker::install {
           # on the $::kernelrelease fact
           default: { $kernelpackage = "linux-image-extra-${::kernelrelease}" }
         }
-        $manage_kernel = $docker::manage_kernel
+        #$manage_kernel = $docker::manage_kernel
+        $manage_kernel = false
       } else {
         # Debian does not need extra kernel packages
         $manage_kernel = false
