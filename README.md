@@ -94,12 +94,13 @@ class { 'docker':
 ```
 
 
-For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages, add the following code to the manifest file:
+For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS Extras repo, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  package_engine_name => 'docker-name',
+  service_overrides_template  => false,
+  docker_ce_package_name      => 'docker',
 }
 ```
 
