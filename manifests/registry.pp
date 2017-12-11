@@ -73,7 +73,7 @@ define docker::registry(
     $local_user_strip = regsubst($local_user, '-', '', 'G')
 
     $_pass_hash = $pass_hash ? {
-      Undef   => pw_hash("${title}${auth_environment}${auth_cmd}${local_user}", 'SHA-512', $local_user_strip),
+      'Undef'   => pw_hash("${title}${auth_environment}${auth_cmd}${local_user}", 'SHA-512', $local_user_strip),
       default => $pass_hash
     }
 
