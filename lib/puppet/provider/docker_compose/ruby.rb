@@ -11,20 +11,26 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     containers = docker([
       'ps',
       '--format',
-      "{{.Label \"com.docker.compose.service\"}}",
+      "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
       '--filter',
       "label=com.docker.compose.project=#{project}"
     ]).split("\n")
     counts = case compose_file["version"]
     when /^2(\.0)?$/, /^3(\.[0-2])?$/
-      Hash[*compose_file["services"].each_key.collect { |key|
-        Puppet.info("Checking for compose service #{key}")
-        [key, containers.count(key)]
+      if containers.count != compose_file["services"].count
+        return false
+      end
+      Hash[*compose_file["services"].each.collect { |key, array|
+        Puppet.info("Checking for compose service #{key} #{array['image']}")
+        ["#{key}-#{array['image']}", containers.count("#{key}-#{array['image']}")]
       }.flatten]
     when nil
-      Hash[*compose_file.each_key.collect { |key|
-        Puppet.info("Checking for compose service #{key}")
-        [key, containers.count(key)]
+      if containers.count != compose_file.count
+        return false
+      end
+      Hash[*compose_file.each.collect { |key, array|
+        Puppet.info("Checking for compose service #{key} #{array['image']}")
+        ["#{key}-#{array['image']}", containers.count("#{key}-#{array['image']}")]
       }.flatten]
     else
       raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file["version"]}\"!")
@@ -43,7 +49,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def create
     Puppet.info("Running compose project #{project}")
-    args = ['-f', name, 'up', '-d'].insert(2, resource[:options]).insert(5,resource[:up_args]).compact
+    args = ['-f', name, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5,resource[:up_args]).compact
     dockercompose(args)
     if resource[:scale]
       instructions = resource[:scale].collect { |k,v| "#{k}=#{v}" }
