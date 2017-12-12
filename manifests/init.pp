@@ -540,7 +540,6 @@ class docker(
     if ( $docker_ee) {
       validate_string($docker::docker_ee_source_location)
       validate_string($docker::docker_ee_key_source)
-      validate_string($docker::docker_ee_key)
       $package_location = $docker::docker_ee_source_location
       $package_key_source = $docker::docker_ee_key_source
       $package_key = $docker::docker_ee_key_id
