@@ -6,11 +6,15 @@
 #
 class docker::install {
   $docker_start_command = $docker::docker_start_command
-  validate_string($docker::version)
-  validate_re($::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
-              'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
-  validate_bool($docker::use_upstream_package_source)
-
+  if $docker::version {
+    assert_type(String[1], $docker::version)
+  }
+  if $::osfamily {
+    assert_type(Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/], $::osfamily) |$a, $b| {
+      fail('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
+    }
+  }
+  assert_type(Boolean, $docker::use_upstream_package_source)
   if $docker::version and $docker::ensure != 'absent' {
     $ensure = $docker::version
   } else {

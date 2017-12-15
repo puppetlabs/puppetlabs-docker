@@ -1,18 +1,22 @@
 define docker::secrets (
 
-  $ensure = 'present',
-  $label = [],
-  $secret_name = undef,
-  $secret_path = undef,
+  Optional[String] $ensure = 'present',
+  Variant[String,Array,Undef] $label = [],
+  Optional[String] $secret_name = undef,
+  Optional[String] $secret_path = undef,
 ){
   include docker::params
 
   $docker_command = "${docker::params::docker_command} secret"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($secret_name)
-  validate_string($secret_path)
-  validate_array($label)
+  assert_type(Pattern[/^present$|^absent$/], $ensure)
+  assert_type(String[1], $docker_command)
+  if $secret_name {
+  assert_type(String[1], $secret_name)
+  }
+  if $secret_path {
+  assert_type(String[1], $secret_path)
+  }
+  assert_type(Array, $label)
 
 
 

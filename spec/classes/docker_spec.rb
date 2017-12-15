@@ -594,12 +594,12 @@ describe 'docker', :type => :class do
       end
 
       context 'with service_enable set to false' do
-        let(:params) { {'service_enable' => 'false'} }
+        let(:params) { {'service_enable' => false} }
         it { should contain_service('docker').with_enable('false') }
       end
 
       context 'with service_enable set to true' do
-        let(:params) { {'service_enable' => 'true'} }
+        let(:params) { {'service_enable' => true} }
         it { should contain_service('docker').with_enable('true') }
       end
 

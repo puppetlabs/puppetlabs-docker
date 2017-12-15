@@ -21,15 +21,18 @@
 #   Proxy to use for downloading Docker Compose.
 #
 class docker::compose(
-  $ensure = 'present',
-  $version = $docker::params::compose_version,
-  $install_path = $docker::params::compose_install_path,
-  $proxy = undef
+  Optional[String] $ensure = 'present',
+  Optional[String] $version = $docker::params::compose_version,
+  Optional[String] $install_path = $docker::params::compose_install_path,
+  Optional[String] $proxy = undef
 ) inherits docker::params {
-  validate_string($version)
-  validate_re($ensure, '^(present|absent)$')
-  validate_absolute_path($install_path)
-  if $proxy != undef {
+  if $version {
+    assert_type(String[1], $version)
+  }
+  assert_type(Pattern[/^present$|^absent$/], $ensure)
+  assert_type(String[1], $install_path)
+  if $proxy  {
+      #assert_type(Pattern[/^(https?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$/], $proxy)
       validate_re($proxy, '^(https?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
