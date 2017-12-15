@@ -120,39 +120,40 @@ define docker::run(
   $service_name = $docker::service_name
   $docker_group = $docker::docker_group
 
-  validate_re($image, '^[\S]*$')
-  validate_re($title, '^[\S]*$')
-  validate_re($memory_limit, '^[\d]*(b|k|m|g)$')
-  validate_re($ensure, '^(present|absent)')
+  validate_legacy(String, 'validate_re', $image, '^[\S]*$')
+  validate_legacy(String, 'validate_re', $title, '^[\S]*$')
+  validate_legacy(String, 'validate_re', $memory_limit, '^[\d]*(b|k|m|g)$')
+  validate_legacy(String, 'validate_re', $ensure, '^present$|^absent$')
   if $restart {
-    validate_re($restart, '^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$')
+    validate_legacy(String, 'validate_re', $restart, '^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$')
   }
-  validate_string($docker_command)
-  validate_string($service_name)
-  validate_string($docker_group)
+  validate_legacy(String, 'validate_string', $docker_command)
+  validate_legacy(String, 'validate_string', $service_name)
+  validate_legacy(String, 'validate_string', $docker_group)
 
   if $command {
-    validate_string($command)
+    validate_legacy(String, 'validate_string', $command)
   }
   if $username {
-    validate_string($username)
+    validate_legacy(String, 'validate_string', $username)
   }
   if $hostname {
-    validate_string($hostname)
+    validate_legacy(String, 'validate_string', $hostname)
   }
-  validate_bool($running)
-  validate_bool($disable_network)
-  validate_bool($privileged)
-  validate_bool($restart_service)
-  validate_bool($restart_service_on_docker_refresh)
-  validate_bool($tty)
-  validate_bool($remove_container_on_start)
-  validate_bool($remove_container_on_stop)
-  validate_bool($remove_volume_on_start)
-  validate_bool($remove_volume_on_stop)
-  validate_bool($use_name)
 
-  validate_integer($stop_wait_time)
+  validate_legacy(Boolean, 'validate_bool', $running)
+  validate_legacy(Boolean, 'validate_bool', $disable_network)
+  validate_legacy(Boolean, 'validate_bool', $privileged)
+  validate_legacy(Boolean, 'validate_bool', $restart_service)
+  validate_legacy(Boolean, 'validate_bool', $restart_service_on_docker_refresh)
+  validate_legacy(Boolean, 'validate_bool', $tty)
+  validate_legacy(Boolean, 'validate_bool', $remove_container_on_start)
+  validate_legacy(Boolean, 'validate_bool', $remove_container_on_stop)
+  validate_legacy(Boolean, 'validate_bool', $remove_volume_on_start)
+  validate_legacy(Boolean, 'validate_bool', $remove_volume_on_stop)
+  validate_legacy(Boolean, 'validate_bool', $use_name)
+
+  validate_legacy(Integer, 'validate_integer', $stop_wait_time)
 
   if ($remove_volume_on_start and !$remove_container_on_start) {
     fail("In order to remove the volume on start for ${title} you need to also remove the container")
@@ -171,13 +172,13 @@ define docker::run(
 
   validate_hash($extra_systemd_parameters)
   if $systemd_restart {
-    validate_re($systemd_restart, '^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$')
+    validate_legacy(String, 'validate_re', $systemd_restart, '^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$')
   }
 
   if $detach == undef {
     $valid_detach = $docker::params::detach_service_in_init
   } else {
-    validate_bool($detach)
+    validate_legacy(Boolean, 'validate_bool', $detach)
     $valid_detach = $detach
   }
 

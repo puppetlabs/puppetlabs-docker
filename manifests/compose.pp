@@ -26,11 +26,11 @@ class docker::compose(
   $install_path = $docker::params::compose_install_path,
   $proxy = undef
 ) inherits docker::params {
-  validate_string($version)
-  validate_re($ensure, '^(present|absent)$')
-  validate_absolute_path($install_path)
+  validate_legacy(String, 'validate_string', $version)
+  validate_legacy(String, 'validate_re', $ensure, '^present$|^absent$')
+  validate_legacy(String, 'validate_absolute_path', $install_path)
   if $proxy != undef {
-      validate_re($proxy, '^(https?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
+      validate_legacy(String, 'validate_re', $proxy, '^(https?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
   if $ensure == 'present' {

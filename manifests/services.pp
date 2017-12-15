@@ -86,20 +86,20 @@ define docker::services(
   include docker::params
 
   $docker_command = "${docker::params::docker_command} service"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($image)
-  validate_string($service_name)
-  validate_string($publish)
-  validate_string($replicas)
-  validate_string($user)
-  validate_string($workdir)
-  validate_string($host_socket)
-  validate_bool($detach)
-  validate_bool($tty)
-  validate_bool($create)
-  validate_bool($update)
-  validate_bool($scale)
+  validate_legacy(String, 'validate_re', $ensure, '^present$|^absent$')
+  validate_legacy(String, 'validate_string', $docker_command)
+  validate_legacy(String, 'validate_string', $image)
+  validate_legacy(String, 'validate_string', $service_name)
+  validate_legacy(String, 'validate_string', $publish)
+  validate_legacy(String, 'validate_string', $replicas)
+  validate_legacy(String, 'validate_string', $user)
+  validate_legacy(String, 'validate_string', $workdir)
+  validate_legacy(String, 'validate_string', $host_socket)
+  validate_legacy(Boolean, 'validate_bool', $detach)
+  validate_legacy(Boolean, 'validate_bool', $tty)
+  validate_legacy(Boolean, 'validate_bool', $create)
+  validate_legacy(Boolean, 'validate_bool', $update)
+  validate_legacy(Boolean, 'validate_bool', $scale)
 
   if $ensure == 'absent' {
     if $update {
@@ -189,4 +189,3 @@ define docker::services(
     }
   }
 }
-

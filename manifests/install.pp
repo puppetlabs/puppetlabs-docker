@@ -6,11 +6,10 @@
 #
 class docker::install {
   $docker_start_command = $docker::docker_start_command
-  validate_string($docker::version)
-  validate_re($::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
+  validate_legacy(String, 'validate_string', $docker::version)
+  validate_legacy(String, 'validate_re', $::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
               'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
-  validate_bool($docker::use_upstream_package_source)
-
+  validate_legacy(Boolean, 'validate_bool', $docker::use_upstream_package_source)
   if $docker::version and $docker::ensure != 'absent' {
     $ensure = $docker::version
   } else {

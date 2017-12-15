@@ -1,10 +1,10 @@
 # == Define: docker::swarm
-# 
+#
 # A define that managers a Docker Swarm Mode cluster
 #
 # == Paramaters
 #
-# [*ensure*] 
+# [*ensure*]
 #  This ensures that the cluster is present or not.
 #  Defaults to present
 #  Note this forcefully removes a node from the cluster. Make sure all worker nodes
@@ -13,7 +13,7 @@
 # [*init*]
 #  This creates the first worker node for a new cluster.
 #  Set init to true to create a new cluster
-#  Defaults to false  
+#  Defaults to false
 #
 # [*join*]
 #  This adds either a worker or manger node to the cluster.
@@ -33,7 +33,7 @@
 # [*cert_expiry*]
 #  Validity period for node certificates (ns|us|ms|s|m|h) (default 2160h0m0s)
 #  defaults to undef
-#  
+#
 # [*dispatcher_heartbeat*]
 #  Dispatcher heartbeat period (ns|us|ms|s|m|h) (default 5s)
 #  Defaults to undef
@@ -91,20 +91,20 @@ define docker::swarm(
   include docker::params
 
   $docker_command = "${docker::params::docker_command} swarm"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($cert_expiry)
-  validate_string($dispatcher_heartbeat)
-  validate_string($external_ca)
-  validate_string($max_snapshots)
-  validate_string($snapshot_interval)
-  validate_string($token)
-  validate_ip_address($advertise_addr)
-  validate_ip_address($listen_addr)
-  validate_bool($init)
-  validate_bool($join)
-  validate_bool($autolock)
-  validate_bool($force_new_cluster)
+  validate_legacy(String, 'validate_re', $ensure, '^present$|^absent$')
+  validate_legacy(String, 'validate_string', $docker_command)
+  validate_legacy(String, 'validate_string', $cert_expiry)
+  validate_legacy(String, 'validate_string', $dispatcher_heartbeat)
+  validate_legacy(String, 'validate_string', $external_ca)
+  validate_legacy(String, 'validate_string', $max_snapshots)
+  validate_legacy(String, 'validate_string', $snapshot_interval)
+  validate_legacy(String, 'validate_string', $token)
+  validate_legacy(String, 'validate_string', $advertise_addr)
+  validate_legacy(String, 'validate_string', $listen_addr)
+  validate_legacy(Boolean, 'validate_bool', $init)
+  validate_legacy(Boolean, 'validate_bool', $join)
+  validate_legacy(Boolean, 'validate_bool', $autolock)
+  validate_legacy(Boolean, 'validate_bool', $force_new_cluster)
 
   if $init {
   $docker_swarm_init_flags = docker_swarm_init_flags({
