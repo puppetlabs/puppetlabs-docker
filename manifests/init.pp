@@ -536,7 +536,7 @@ class docker(
     validate_string($tls_key)
   }
 
-  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d-ce|1.\d+)/ ) {
+  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d(~|-)ce|1.\d+)/ ) {
     if ( $docker_ee) {
       validate_string($docker::docker_ee_source_location)
       validate_string($docker::docker_ee_key_source)
