@@ -1,10 +1,10 @@
 fixtures:
   forge_modules:
-    stdlib: 'puppetlabs-stdlib'
-    epel: 'stahnma-epel'
-  repositories:
+    stdlib: 
+      repo: 'puppetlabs/stdlib'
+    epel:
+      repo: 'stahnma/epel'
     apt:
-      repo: git://github.com/puppetlabs/puppetlabs-apt.git
-      ref: 2.1.0
-  symlinks:
-    docker: "#{source_dir}"
+      repo: 'puppetlabs/apt'
+    symlinks:
+    "docker": "#{source_dir}"  

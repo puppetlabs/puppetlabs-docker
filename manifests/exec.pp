@@ -14,14 +14,14 @@ define docker::exec(
   include docker::params
 
   $docker_command = $docker::params::docker_command
-  validate_string($docker_command)
-
-  validate_string($container)
-  validate_string($command)
-  validate_string($unless)
-  validate_bool($detach)
-  validate_bool($interactive)
-  validate_bool($tty)
+  validate_legacy(String, 'validate_string', $docker_command)
+  
+  validate_legacy(String, 'validate_string', $container)
+  validate_legacy(String, 'validate_string', $command)
+  validate_legacy(String, 'validate_string', $unless)
+  validate_legacy(Boolean, 'validate_bool', $detach)
+  validate_legacy(Boolean, 'validate_bool', $interactive)
+  validate_legacy(Boolean, 'validate_bool', $tty)
 
   $docker_exec_flags = docker_exec_flags({
     detach => $detach,

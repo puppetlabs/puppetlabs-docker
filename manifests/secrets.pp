@@ -8,11 +8,11 @@ define docker::secrets (
   include docker::params
 
   $docker_command = "${docker::params::docker_command} secret"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($secret_name)
-  validate_string($secret_path)
-  validate_array($label)
+  validate_legacy(String, 'validate_re', $ensure, '^present$|^absent$')
+  validate_legacy(String, 'validate_string', $docker_command)
+  validate_legacy(String, 'validate_string', $secret_name)
+  validate_legacy(String, 'validate_string', $secret_path)
+  validate_legacy(Tuple, 'validate_array', $label)
 
 
 

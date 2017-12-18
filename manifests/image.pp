@@ -35,9 +35,9 @@ define docker::image(
 ) {
   include docker::params
   $docker_command = $docker::params::docker_command
-  validate_re($ensure, '^(present|absent|latest)$')
-  validate_re($image, '^[\S]*$')
-  validate_bool($force)
+  validate_legacy(String, 'validate_re', $ensure, '^present$|^absent$')
+  validate_legacy(String, 'validate_re', $image, '^[\S]*$')
+  validate_legacy(Boolean, 'validate_bool', $force)
 
   # Wrapper used to ensure images are up to date
   ensure_resource('file', '/usr/local/bin/update_docker_image.sh',
