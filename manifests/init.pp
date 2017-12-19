@@ -360,6 +360,7 @@ class docker(
   $docker_ce_release                 = $docker::params::package_ce_release,
   $docker_package_location           = $docker::params::package_source_location,
   $docker_package_key_source         = $docker::params::package_key_source,
+  $docker_package_key_check_source   = $docker::params::package_key_check_source,
   $docker_package_key_id             = $docker::params::package_key_id,
   $docker_package_release            = $docker::params::package_release,
   $docker_engine_start_command       = $docker::params::docker_engine_start_command,
@@ -542,6 +543,7 @@ class docker(
       validate_string($docker::docker_ee_key_source)
       $package_location = $docker::docker_ee_source_location
       $package_key_source = $docker::docker_ee_key_source
+      $package_key_check_source = true
       $package_key = $docker::docker_ee_key_id
       $package_repos = $docker::docker_ee_repos
       $release = $docker::docker_ee_release
@@ -559,6 +561,7 @@ class docker(
           'Redhat' : {
             $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
             $package_key_source = $docker_ce_key_source
+            $package_key_check_source = true
           }
           default: {}
         }
@@ -570,6 +573,7 @@ class docker(
       'Debian' : {
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source
+        $package_key_check_source = $docker_package_key_check_source
         $package_key = $docker_package_key_id
         $package_repos = 'main'
         $release = $docker_package_release
@@ -577,6 +581,7 @@ class docker(
       'Redhat' : {
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source
+        $package_key_check_source = $docker_package_key_check_source
       }
       default : {}
     }
