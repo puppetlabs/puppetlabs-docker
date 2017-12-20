@@ -82,6 +82,7 @@ define docker::run(
   $dns_search = [],
   $lxc_conf = [],
   $service_prefix = 'docker-',
+  $service_provider = undef,
   $restart_service = true,
   $restart_service_on_docker_refresh = true,
   $manage_service = true,
@@ -129,6 +130,7 @@ define docker::run(
   }
   validate_string($docker_command)
   validate_string($service_name)
+  validate_string($service_provider)
   validate_string($docker_group)
 
   if $command {
@@ -175,7 +177,10 @@ define docker::run(
   }
 
   if $detach == undef {
-    $valid_detach = $docker::params::detach_service_in_init
+    $valid_detach = $service_provider ? {
+      'systemd' => false,
+      default   => $docker::params::detach_service_in_init,
+    }
   } else {
     validate_bool($detach)
     $valid_detach = $detach
@@ -245,54 +250,66 @@ define docker::run(
     }
   } else {
 
-    case $::osfamily {
-      'Debian': {
-        $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
-        $hasstatus  = true
-        if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
-          ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
-          $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-          $init_template = 'docker/etc/systemd/system/docker-run.erb'
-          $uses_systemd = true
-          $mode = '0640'
-        } else {
-          $uses_systemd = false
-          $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
-          $init_template = 'docker/etc/init.d/docker-run.erb'
-          $mode = '0750'
-        }
-      }
-      'RedHat': {
-        if ($::operatingsystem == 'Amazon') or (versioncmp($::operatingsystemrelease, '7.0') < 0) {
-          $initscript     = "/etc/init.d/${service_prefix}${sanitised_title}"
-          $init_template  = 'docker/etc/init.d/docker-run.erb'
-          $hasstatus      = undef
-          $mode           = '0750'
-          $uses_systemd   = false
-        } else {
-          $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-          $init_template  = 'docker/etc/systemd/system/docker-run.erb'
-          $hasstatus      = true
-          $mode           = '0640'
-          $uses_systemd   = true
-        }
-      }
-      'Archlinux': {
+    case $service_provider {
+      'systemd': {
         $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
         $init_template  = 'docker/etc/systemd/system/docker-run.erb'
         $hasstatus      = true
         $mode           = '0640'
         $uses_systemd   = true
       }
-      'Gentoo': {
-        $initscript     = "/etc/init.d/${service_prefix}${sanitised_title}"
-        $init_template  = 'docker/etc/init.d/docker-run.gentoo.erb'
-        $hasstatus      = true
-        $mode           = '0770'
-        $uses_systemd   = false
-      }
+
       default: {
-        fail('Docker needs a Debian, RedHat, Archlinux or Gentoo based system.')
+        case $::osfamily {
+          'Debian': {
+            $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
+            $hasstatus  = true
+            if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
+              ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+              $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+              $init_template = 'docker/etc/systemd/system/docker-run.erb'
+              $uses_systemd = true
+              $mode = '0640'
+            } else {
+              $uses_systemd = false
+              $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
+              $init_template = 'docker/etc/init.d/docker-run.erb'
+              $mode = '0750'
+            }
+          }
+          'RedHat': {
+            if ($::operatingsystem == 'Amazon') or (versioncmp($::operatingsystemrelease, '7.0') < 0) {
+              $initscript     = "/etc/init.d/${service_prefix}${sanitised_title}"
+              $init_template  = 'docker/etc/init.d/docker-run.erb'
+              $hasstatus      = undef
+              $mode           = '0750'
+              $uses_systemd   = false
+            } else {
+              $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+              $init_template  = 'docker/etc/systemd/system/docker-run.erb'
+              $hasstatus      = true
+              $mode           = '0640'
+              $uses_systemd   = true
+            }
+          }
+          'Archlinux': {
+            $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+            $init_template  = 'docker/etc/systemd/system/docker-run.erb'
+            $hasstatus      = true
+            $mode           = '0644'
+            $uses_systemd   = true
+          }
+          'Gentoo': {
+            $initscript     = "/etc/init.d/${service_prefix}${sanitised_title}"
+            $init_template  = 'docker/etc/init.d/docker-run.gentoo.erb'
+            $hasstatus      = true
+            $mode           = '0770'
+            $uses_systemd   = false
+          }
+          default: {
+            fail('Docker needs a Debian, RedHat, Archlinux or Gentoo based system.')
+          }
+        }
       }
     }
 

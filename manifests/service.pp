@@ -129,6 +129,8 @@ class docker::service (
   } else {
     if $::osfamily == 'Debian' {
       $_service_config = "/etc/default/${service_name}"
+    } else {
+      $_service_config = undef
     }
   }
 

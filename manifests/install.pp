@@ -48,7 +48,9 @@ class docker::install {
       }
       $manage_kernel = false
     }
-    default: {}
+    default: {
+      $manage_kernel = false
+    }
   }
 
   if $manage_kernel {
