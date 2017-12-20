@@ -121,7 +121,7 @@ class docker::service (
   $root_dir_flag                     = $docker::root_dir_flag,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat|windows)/ {
+  unless $::osfamily =~ /(Debian|RedHat|windows)/ or $::docker::acknowledge_unsupported_os {
     fail(translate('The docker::service class needs a Debian, Redhat or Windows based system.'))
   }
 
@@ -137,6 +137,8 @@ class docker::service (
   } else {
     if $::osfamily == 'Debian' {
       $_service_config = "/etc/default/${service_name}"
+    } else {
+      $_service_config = undef
     }
   }
 
