@@ -110,26 +110,28 @@ define docker::services(
     }
   }
 
-  if $create {
+
+  if $create == 'true' {
     $docker_service_create_flags = docker_service_flags({
-      detach       => $detach,
-      env          => any2array($env),
+      detach => $detach,
+      env => $env,
       service_name => $service_name,
-      label        => any2array($label),
-      publish      => $publish,
-      replicas     => $replicas,
-      tty          => $tty,
-      user         => $user,
-      workdir      => $workdir,
+      label => $label,
+      publish => $publish,
+      replicas => $replicas,
+      tty => $tty,
+      user => $user,
+      workdir => $workdir,
       extra_params => any2array($extra_params),
-      image        => $image,
-      host_socket  => $host_socket,
+      image => $image,
+      host_socket => $host_socket,
     })
 
     $exec_create = "${docker_command} create --name ${docker_service_create_flags}"
     $unless_create = "docker service ls | grep -w ${service_name}"
 
     exec { "${title} docker service create":
+
       command     => $exec_create,
       environment => 'HOME=/root',
       path        => ['/bin', '/usr/bin'],
@@ -138,20 +140,20 @@ define docker::services(
     }
   }
 
-  if $update {
+  if $update == 'true' {
     $docker_service_flags = docker_service_flags({
-      detach       => $detach,
+      detach => $detach,
       env          => any2array($env),
       service_name => $service_name,
       label        => any2array($label),
-      publish      => $publish,
-      replicas     => $replicas,
-      tty          => $tty,
-      user         => $user,
-      workdir      => $workdir,
+      publish => $publish,
+      replicas => $replicas,
+      tty => $tty,
+      user => $user,
+      workdir => $workdir,
       extra_params => any2array($extra_params),
-      image        => $image,
-      host_socket  => $host_socket,
+      image => $image,
+      host_socket => $host_socket,
     })
 
     $exec_update = "${docker_command} update ${docker_service_flags}"
@@ -164,10 +166,11 @@ define docker::services(
     }
   }
 
-  if $scale {
+
+  if $scale == 'true' {
     $docker_service_flags = docker_service_flags({
       service_name => $service_name,
-      replicas     => $replicas,
+      replicas => $replicas,
       extra_params => any2array($extra_params),
     })
 
@@ -189,4 +192,3 @@ define docker::services(
     }
   }
 }
-
