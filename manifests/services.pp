@@ -110,7 +110,7 @@ define docker::services(
     }
   }
 
-  if $create {
+  if $create == 'true' {
     $docker_service_create_flags = docker_service_flags({
       detach       => $detach,
       env          => any2array($env),
@@ -127,7 +127,7 @@ define docker::services(
     })
 
     $exec_create = "${docker_command} create --name ${docker_service_create_flags}"
-    $unless_create = "docker service ls | grep -w ${service_name}"
+    $unless_create = "${docker_command} service ls | grep -w ${service_name}"
 
     exec { "${title} docker service create":
       command     => $exec_create,
@@ -138,7 +138,7 @@ define docker::services(
     }
   }
 
-  if $update {
+  if $update == 'true' {
     $docker_service_flags = docker_service_flags({
       detach       => $detach,
       env          => any2array($env),
@@ -164,7 +164,7 @@ define docker::services(
     }
   }
 
-  if $scale {
+  if $scale == 'true' {
     $docker_service_flags = docker_service_flags({
       service_name => $service_name,
       replicas     => $replicas,
@@ -183,8 +183,8 @@ define docker::services(
 
   if $ensure == 'absent' {
     exec { "${title} docker service remove":
-      command => "docker service rm ${service_name}",
-      onlyif  => "docker service ls | grep -w ${service_name}",
+      command => "${docker_command} service rm ${service_name}",
+      onlyif  => "${docker_command} service ls | grep -w ${service_name}",
       path    => ['/bin', '/usr/bin'],
     }
   }
