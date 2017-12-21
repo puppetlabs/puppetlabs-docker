@@ -658,6 +658,7 @@ require 'spec_helper'
         it { should compile.with_all_deps }
         it { should contain_service('docker-sample').with_ensure(false) }
         it { should contain_exec("remove container docker-sample").with_command('docker rm -v sample') }
+        it { should_not contain_file('docker-sample.service')}
       end
 
     end

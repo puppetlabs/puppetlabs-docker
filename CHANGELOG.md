@@ -1,3 +1,11 @@
+# Version 1.0.2
+Various fixes for Github issues
+ - 9 
+ - 11
+ - 15
+ - 21
+Add tasks support for Docker Swarm
+
 # Version 1.0.1
 Updated metadata and CHANGELOG
 

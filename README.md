@@ -94,12 +94,13 @@ class { 'docker':
 ```
 
 
-For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages, add the following code to the manifest file:
+For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS Extras repo, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  package_engine_name => 'docker-name',
+  service_overrides_template  => false,
+  docker_ce_package_name      => 'docker',
 }
 ```
 
@@ -356,6 +357,14 @@ If using Hiera, you can configure the `docker::run_instance` class:
       command: '/bin/sh -c "while true; do echo hello world; sleep 1; done"'
 ```
 
+To remove a running container, add the following code to the manifest file. This will also remove the systemd service file associated with the container.
+
+'''puppet
+docker::run { 'helloworld':
+  ensure => absent,
+}
+'''
+
 ### Networks
 
 Docker 1.9.x officially supports networks. To expose the `docker_network` type, which is used to manage networks, add the following code to the manifest file:
@@ -573,13 +582,14 @@ To remove the service from a swarm, include the `ensure => absent` parameter and
 
 If a server is not specified, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, create a private repository without authentication.
 
-To configure authentication for a private registry, add the following code to the manifest file:
+To configure authentication for a private registry, add the following code to the manifest file , depending on what version of Docker you are running. If you are using Docker V1.10 or earlier add the following code to the manifest file ensuring that you specify the docker version:
 
 ```puppet
 docker::registry { 'example.docker.io:5000':
   username => 'user',
   password => 'secret',
   email    => 'user@example.com',
+  version  => '<docker_version>'
 }
 ```
 
@@ -591,8 +601,28 @@ docker::registry_auth::registries:
     username: 'user1'
     password: 'secret'
     email: 'user1@example.io'
+    version: '<docker_version>'
   }
 ```
+
+If using Docker V1.11 or later the docker login e-mail flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). Add the following code to the manifest file:
+
+'''puppet
+docker::registry { 'example.docker.io:5000'}
+  username => 'user',
+  password => 'secret',
+}
+''
+
+If using hiera, configure the 'docker::registry_auth' class:
+
+'''yaml
+docker::registry_auth::registries:
+  'example.docker.io:5000':
+    username: 'user1'
+    password: 'secret'
+  }
+'''
 
 To log out of a registry, add the following code to the manifest file:
 
@@ -1084,6 +1114,58 @@ Auto pool extension threshold (in % of pool size).
 #### `storage_pool_autoextend_percent`
 
 Extends the pool by the specified percentage when the threshold is passed.
+
+### Tasks
+
+The docker module has an example task that allows a user to initialize, join and leave a swarm.
+
+```puppet
+bolt task run docker::swarm_init listen_addr=172.17.10.101 adverstise_addr=172.17.10.101 ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
+
+docker swarm init --advertise-addr=172.17.10.101 --listen-addr=172.17.10.101
+Swarm initialized: current node (w8syk0g286vd7d9kwzt7jl44z) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t 172.17.10.101:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+Ran on 1 node in 4.04 seconds
+```
+
+```puppet
+bolt task run docker::swarm_token node_role=worker ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
+
+SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t
+
+
+Ran on 1 node in 4.02 seconds
+
+```
+```puppet
+bolt task run docker::swarm_join listen_addr=172.17.10.102 adverstise_addr=172.17.10.102 token=<swarm_token> manager_ip=172.17.10.101:2377 --nodes swarm-02 --user root --password puppet --modulepath /tmp/modules
+
+
+This node joined a swarm as a worker.
+
+
+Ran on 1 node in 4.68 seconds
+```
+```puppet
+bolt task run docker::swarm_leave --nodes swarm-02 --user root --password puppet --modulepath --modulepath <module_path>
+
+Node left the swarm.
+
+
+Ran on 1 node in 6.16 seconds
+```
+
+
+
+
+For further explanation please refer to the[PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
 
 ## Limitations
 

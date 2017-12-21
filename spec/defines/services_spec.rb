@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'docker::services', :type => :define do
-  let(:title) { 'create services' }
+  let(:title) { 'test_service' }
 	let(:facts) { {
 		:osfamily                  => 'Debian',
 		:operatingsystem           => 'Debian',
@@ -15,13 +15,30 @@ describe 'docker::services', :type => :define do
     let(:params) { {
 	    'create'       => true,
 	    'service_name' => 'foo',
-            'image'        => 'foo:bar',
+      'image'        => 'foo:bar',
 	    'publish'      => '80:80',
-            'replicas'     => '5',
-            'extra_params' => ['--update-delay 1m', '--restart-window 30s']
+      'replicas'     => '5',
+      'extra_params' => ['--update-delay 1m', '--restart-window 30s'],
+      'env'          => ['MY_ENV=1', 'MY_ENV2=2'],
+      'label'        => ['com.example.foo="bar"', 'bar=baz'],
     } }
     it { is_expected.to compile.with_all_deps }
-    it { should contain_exec('Docker service create').with_command(/docker service create/) }
+    it { should contain_exec('test_service docker service create').with_command(/docker service create/) }
+    it { should contain_exec('test_service docker service create').with_command(/--env MY_ENV=1/) }
+    it { should contain_exec('test_service docker service create').with_command(/--label bar=baz/) }
+
+    context 'multiple services declaration' do
+      let(:pre_condition) {
+        "
+        docker::services { 'test_service_2':
+          service_name => 'foo_2',
+          image        => 'foo:bar',
+        }
+        "
+      }
+      it { should contain_exec('test_service docker service create').with_command(/docker service create/) }
+      it { should contain_exec('test_service_2 docker service create').with_command(/docker service create/) }
+    end
   end
 
   context 'with ensure => present and service update' do
@@ -32,7 +49,7 @@ describe 'docker::services', :type => :define do
 	    'image'          => 'bar:latest',
     } }
     it { is_expected.to compile.with_all_deps }
-    it { should contain_exec('Docker service update').with_command(/docker service update/) }
+    it { should contain_exec('test_service docker service update').with_command(/docker service update/) }
   end
 
   context 'with ensure => present and service scale' do
@@ -43,7 +60,7 @@ describe 'docker::services', :type => :define do
 	    'replicas'       => '5',
     } }
     it { is_expected.to compile.with_all_deps }
-    it { should contain_exec('Docker service scale').with_command(/docker service scale/) }
+    it { should contain_exec('test_service docker service scale').with_command(/docker service scale/) }
   end
 
   context 'with ensure => absent' do
@@ -52,6 +69,6 @@ describe 'docker::services', :type => :define do
 	    'service_name'   => 'foo',
     } }
     it { is_expected.to compile.with_all_deps }
-    it { should contain_exec('Remove service').with_command(/docker service rm/) }
+    it { should contain_exec('test_service docker service remove').with_command(/docker service rm/) }
   end
 end

@@ -279,6 +279,10 @@
 #   synchronization, to continue even though the configuration may be buggy.
 #   Defaults to true
 #
+# [*overlay2_override_kernel_check*]
+#   Overrides the Linux kernel version check allowing using overlay2 with kernel < 4.0.
+#   Default value is false
+#
 # [*manage_package*]
 #   Won't install or define the docker package, useful if you want to use your own package
 #   Defaults to true
@@ -356,6 +360,7 @@ class docker(
   $docker_ce_release                 = $docker::params::package_ce_release,
   $docker_package_location           = $docker::params::package_source_location,
   $docker_package_key_source         = $docker::params::package_key_source,
+  $docker_package_key_check_source   = $docker::params::package_key_check_source,
   $docker_package_key_id             = $docker::params::package_key_id,
   $docker_package_release            = $docker::params::package_release,
   $docker_engine_start_command       = $docker::params::docker_engine_start_command,
@@ -421,6 +426,7 @@ class docker(
   $dm_use_deferred_deletion          = $docker::params::dm_use_deferred_deletion,
   $dm_blkdiscard                     = $docker::params::dm_blkdiscard,
   $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
+  $overlay2_override_kernel_check    = $docker::params::overlay2_override_kernel_check,
   $execdriver                        = $docker::params::execdriver,
   $manage_package                    = $docker::params::manage_package,
   $package_source                    = $docker::params::package_source,
@@ -531,13 +537,13 @@ class docker(
     validate_string($tls_key)
   }
 
-  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d-ce|1.\d+)/ ) {
+  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d(~|-|\.)ce|1.\d+)/ ) {
     if ( $docker_ee) {
       validate_string($docker::docker_ee_source_location)
       validate_string($docker::docker_ee_key_source)
-      validate_string($docker::docker_ee_key)
       $package_location = $docker::docker_ee_source_location
       $package_key_source = $docker::docker_ee_key_source
+      $package_key_check_source = true
       $package_key = $docker::docker_ee_key_id
       $package_repos = $docker::docker_ee_repos
       $release = $docker::docker_ee_release
@@ -553,8 +559,9 @@ class docker(
             $release = $docker_ce_release
             }
           'Redhat' : {
-            $package_location = "https://download.docker.com/linux/${os}/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+            $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
             $package_key_source = $docker_ce_key_source
+            $package_key_check_source = true
           }
           default: {}
         }
@@ -566,6 +573,7 @@ class docker(
       'Debian' : {
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source
+        $package_key_check_source = $docker_package_key_check_source
         $package_key = $docker_package_key_id
         $package_repos = 'main'
         $release = $docker_package_release
@@ -573,6 +581,7 @@ class docker(
       'Redhat' : {
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source
+        $package_key_check_source = $docker_package_key_check_source
       }
       default : {}
     }

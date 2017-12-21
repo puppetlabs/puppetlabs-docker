@@ -320,6 +320,10 @@ define docker::run(
             timeout     => 0
         }
 
+        file { "/etc/systemd/system/${service_prefix}${sanitised_title}.service":
+          ensure => absent,
+          path   => "/etc/systemd/system/${service_prefix}${sanitised_title}.service",
+        }
     }
     else {
       file { $initscript:

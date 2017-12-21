@@ -17,14 +17,27 @@ describe 'docker::secrets', :type => :define do
       'secret_path' => '/root/secret.txt',
       'label' => ['test'],
     } }
-    it { should contain_exec('docker secret create').with_command(/docker secret create/) }
+    it { should contain_exec('test_secret docker secret create').with_command(/docker secret create/) }
+    context 'multiple secrets declaration' do
+      let(:pre_condition) {
+        "
+        docker::secrets{'test_secret_2':
+          secret_name => 'test_secret_2',
+          secret_path => '/root/secret_2.txt',
+        }
+        "
+      }
+      it { should contain_exec('test_secret docker secret create').with_command(/docker secret create/) }
+      it { should contain_exec('test_secret_2 docker secret create').with_command(/docker secret create/) }
+    end
   end
 
   context 'with ensure => absent and secret_name => test_secret' do
     let(:params) { {
       'ensure' => 'absent',
       'secret_name' => 'test_secret'} }
-    it { should contain_exec('docker secret rm').with_command(/docker secret rm/) }
+    it { should contain_exec('test_secret docker secret rm').with_command(/docker secret rm/) }
   end
+
 
 end
