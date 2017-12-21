@@ -43,6 +43,7 @@ class docker::params {
   $service_enable                    = true
   $manage_service                    = true
   $root_dir                          = undef
+  $tmp_dir_config                    = true
   $tmp_dir                           = '/tmp/'
   $dns                               = undef
   $dns_search                        = undef
