@@ -78,6 +78,7 @@ class docker::service (
   $dm_loopmetadatasize               = $docker::dm_loopmetadatasize,
   $dm_datadev                        = $docker::dm_datadev,
   $dm_metadatadev                    = $docker::dm_metadatadev,
+  $tmp_dir_config                    = $docker::tmp_dir_config,
   $tmp_dir                           = $docker::tmp_dir,
   $nowarn_kernel                     = $docker::nowarn_kernel,
   $dm_thinpooldev                    = $docker::dm_thinpooldev,

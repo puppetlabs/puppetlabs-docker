@@ -348,6 +348,14 @@
 # [*storage_pool_autoextend_percent*]
 #   Extend the pool by specified percentage when threshold is hit.
 #
+# [*tmp_dir_config*]
+#    Whether to set the TMPDIR value in the systemd config file
+#    Default: true (set the value); false will comment out the line.
+#    Note: false is backwards compatible prior to PR #58
+#
+# [*tmp_dir*]
+#    Sets the tmp dir for Docker (path)
+#
 class docker(
   $version                           = $docker::params::version,
   $ensure                            = $docker::params::ensure,
@@ -401,6 +409,7 @@ class docker(
   $service_enable                    = $docker::params::service_enable,
   $manage_service                    = $docker::params::manage_service,
   $root_dir                          = $docker::params::root_dir,
+  $tmp_dir_config                    = $docker::params::tmp_dir_config,
   $tmp_dir                           = $docker::params::tmp_dir,
   $manage_kernel                     = $docker::params::manage_kernel,
   $dns                               = $docker::params::dns,
