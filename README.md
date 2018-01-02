@@ -571,6 +571,7 @@ To remove a service, add the following code to the manifest file:
 
 ```puppet
 docker::services {'redis':
+  create => false,
   ensure => 'absent',
   service_name => 'redis',
 }
