@@ -572,7 +572,11 @@ class docker(
             $package_key_source = $docker_ce_key_source
             $package_key_check_source = true
           }
-          default: {}
+          default: {
+            $package_location = $docker_package_location
+            $package_key_source = $docker_package_key_source
+            $package_key_check_source = $docker_package_key_check_source
+          }
         }
         $docker_start_command = $docker_ce_start_command
         $docker_package_name = $docker_ce_package_name
@@ -592,7 +596,11 @@ class docker(
         $package_key_source = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
-      default : {}
+      default : {
+        $package_location = $docker_package_location
+        $package_key_source = $docker_package_key_source
+        $package_key_check_source = $docker_package_key_check_source
+      }
     }
     $docker_start_command = $docker_engine_start_command
     $docker_package_name = $docker_engine_package_name
