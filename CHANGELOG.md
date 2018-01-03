@@ -1,3 +1,8 @@
+# Version 1.0.4
+
+Correcting changelog
+
+
 # Version 1.0.3
 Various fixes for Github issues
  - 33
