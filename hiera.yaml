@@ -6,9 +6,7 @@ hierarchy:
     backend: yaml
     paths:
       - "os/%{facts.os.family}/%{facts.os.name}/%{facts.os.release.major.minor}.yaml"
-      - "os/%{facts.os.family}/%{facts.os.name}/%{facts.os.distro.codename}.yaml"
       - "os/%{facts.os.family}/%{facts.os.name}.yaml"
+      - "os/%{facts.os.family}/%{facts.os.distro.codename}.yaml"
       - "os/%{facts.os.family}.yaml"
       - "common.yaml"
-
-

@@ -413,8 +413,7 @@ class docker(
   $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
   $overlay2_override_kernel_check    = $docker::params::overlay2_override_kernel_check,
   $execdriver                        = $docker::params::execdriver,
-  $manage_package                    = $docker::params::manage_package,
-  $manage_epel                       = $docker::params::manage_epel,
+  $manage_package                    = true
   $service_name                      = $docker::params::service_name,
   $docker_users                      = [],
   $docker_group                      = $docker::params::docker_group,
@@ -444,7 +443,7 @@ class docker(
 ) inherits docker::params {
 
   validate_string($version)
-  validate_re($::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
+  validate_re($facts['os']['family'], '^(Debian|RedHat|Archlinux|Gentoo)$',
               'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
   validate_bool($manage_kernel)
   validate_bool($manage_package)

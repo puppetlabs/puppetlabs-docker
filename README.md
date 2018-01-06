@@ -46,73 +46,6 @@ class { 'docker':
 }
 ```
 
-To configure package sources independently and disable automatically including sources, add the following code to the manifest file:
-
-```puppet
-class { 'docker':
-  use_upstream_package_source => false,
-}
-```
-
-The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using a version prior to this, the old repositories will still be configured based on the version number passed into the module.
-
-The following example will ensure the modules configures the latest repositories
-
-```puppet
-class { 'docker':
-  version => '17.09.0~ce-0~debian',
-}
-```
-
-Using a version prior to 17.06 will configure and install from the old repositories
-
-```puppet
-class { 'docker':
-  version => '1.12.0-0~wheezy',
-}
-```
-
-Docker provides a enterprise addition of the [Docker Engine](https://www.docker.com/enterprise-edition), called Docker EE. To install Docker EE on Debian systems, add the following code to the manifest file:
-
-```puppet
-class { 'docker':
-  docker_ee => true,
-  docker_ee_source_location => 'https://<docker_ee_repo_url',
-  docker_ee_key_source => 'https://<docker_ee_key_source_url',
-  docker_ee_key_id => '<key id>',
-}
-```
-
-To install install Docker EE on RHEL/CentOS:
-
-```puppet
-class { 'docker':
-  docker_ee => true,
-  docker_ee_source_location => 'https://<docker_ee_repo_url',
-  docker_ee_key_source => 'https://<docker_ee_key_source_url',
-}
-```
-
-
-For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS Extras repo, add the following code to the manifest file:
-
-```puppet
-class { 'docker':
-  use_upstream_package_source => false,
-  service_overrides_template  => false,
-  docker_ce_package_name      => 'docker',
-}
-```
-
-To use the CE packages
-
-```puppet
-class { 'docker':
-  use_upstream_package_source => false,
-  package_ce_name => 'docker-ce',
-}
-```
-
 By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. To change this parameter and to update the binding parameter to a tcp socket, add the following code to the manifest file:
 
 ```puppet
@@ -832,37 +765,6 @@ Valid values are `true`, `false`.
 
 Defaults to `false`.
 
-#### `use_upstream_package_source`
-
-Specifies whether to use the upstream package source.
-
-Valid values are `true`, `false`.
-
-When you run your own package mirror, set the value to `false`.
-
-#### `pin_upstream_package_source`
-
-Specifies whether to use the pin upstream package source. This option relates to apt-based distributions.
-
-Valid values are `true`, `false`.
-
-Defaults to `true`.
-
-Set to `false` to remove pinning on the upstream package repository. See also `apt_source_pin_level`.
-
-#### `apt_source_pin_level`
-
-The level to pin your source package repository to. This relates to an apt-based system (such as Debian, Ubuntu, etc). Include $use_upstream_package_source and set the value to `true`.
-
-To disable pinning, set the value to `false`.
-
-Defaults to `10`.
-
-#### `package_source_location`
-
-Specifies the location of the package source.
-
-For Debian, the value defaults to `http://get.docker.com/ubuntu`.
 
 #### `service_state`
 

@@ -3,12 +3,11 @@
 #
 class docker::repos (
   $package_repository = $docker::package_repository,
-  $prerequired_packages = $docker::prerequired_packages,
   $manage_repos = $docker::manage_repos,
 ) {
 
   ensure_packages($prerequired_packages)
-  
+
   if $manage_repos {
     case $facts['os']['family'] {
       'Debian': {
@@ -19,7 +18,7 @@ class docker::repos (
         create_resources('yumrepo', $docker_repository)
       }
       default: {
-        fail('A package repository must be provided if manage_repos=true') 
+        fail('A package repository must be provided if manage_repos=true')
       }
     }
   }
