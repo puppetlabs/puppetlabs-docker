@@ -666,14 +666,6 @@ Defaults to `present`.
 
 An array of packages that are required to support Docker.
 
-#### `docker_cs`
-
-Specifies whether to use the Commercial Support (CS) Docker packages.
-
-Values `'true','false'`.
-
-Defaults to `false`.
-
 #### `tcp_bind`
 
 The tcp socket to bind to. The format is tcp://127.0.0.1:4243.
