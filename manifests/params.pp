@@ -5,18 +5,7 @@
 class docker::params {
   $version                           = undef
   $ensure                            = present
-  $docker_ce_start_command           = 'dockerd'
-  $docker_ce_package_name            = 'docker-ce'
   $docker_engine_start_command       = 'docker daemon'
-  $docker_engine_package_name        = 'docker-engine'
-  $docker_ce_channel                 = stable
-  $docker_ee                         = false
-  $docker_ee_start_command           = 'dockerd'
-  $docker_ee_package_name            = 'docker-ee'
-  $docker_ee_source_location         = undef
-  $docker_ee_key_source              = undef
-  $docker_ee_key_id                  = undef
-  $docker_ee_repos                   = stable
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
@@ -133,28 +122,9 @@ class docker::params {
       $manage_epel = false
       $service_name = $service_name_default
       $docker_group = $docker_group_default
-      $use_upstream_package_source = true
-      $pin_upstream_package_source = true
-      $apt_source_pin_level = 10
-      $repo_opt = undef
       $nowarn_kernel = false
       $service_config = undef
       $storage_setup_file = undef
-
-      $package_ce_source_location = "https://download.docker.com/linux/${os}"
-      $package_ce_key_source = "https://download.docker.com/linux/${os}/gpg"
-      $package_ce_key_id = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
-      $package_ce_release = $::lsbdistcodename
-      $package_source_location = 'http://apt.dockerproject.org/repo'
-      $package_key_source = 'https://apt.dockerproject.org/gpg'
-      $package_key_check_source = undef
-      $package_key_id = '58118E89F3A912897C070ADBF76221572C52609D'
-      $package_ee_source_location = $docker_ee_source_location
-      $package_ee_key_source = $docker_ee_key_source
-      $package_ee_key_id = $docker_ee_key_id
-      $package_ee_release = $::lsbdistcodename
-      $package_ee_repos = $docker_ee_repos
-      $package_ee_package_name = $docker_ee_package_name
 
 
       if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
@@ -242,29 +212,10 @@ class docker::params {
     default: {
       $manage_epel = false
       $docker_group = $docker_group_default
-      $package_key_source = undef
-      $package_key_check_source = undef
-      $package_source_location = undef
-      $package_key_id = undef
-      $package_repos = undef
-      $package_release = undef
-      $package_ce_key_source = undef
-      $package_ce_source_location = undef
-      $package_ce_key_id = undef
-      $package_ce_repos = undef
-      $package_ce_release = undef
-      $package_ee_source_location = undef
-      $package_ee_key_source = undef
-      $package_ee_key_id = undef
-      $package_ee_release = undef
-      $package_ee_repos = undef
-      $package_ee_package_name = undef
-      $use_upstream_package_source = true
       $service_overrides_template = undef
       $service_hasstatus  = undef
       $service_hasrestart = undef
       $service_provider = undef
-      $package_name = $docker_ce_package_name
       $service_name = $service_name_default
       $detach_service_in_init = true
       $repo_opt = undef
@@ -273,22 +224,7 @@ class docker::params {
       $storage_config = undef
       $storage_setup_file = undef
       $service_config_template = undef
-      $pin_upstream_package_source = undef
-      $apt_source_pin_level = undef
     }
-  }
-
-  # Special extra packages are required on some OSes.
-  # Specifically apparmor is needed for Ubuntu:
-  # https://github.com/docker/docker/issues/4734
-  $prerequired_packages = $::osfamily ? {
-    'Debian' => $::operatingsystem ? {
-      'Debian' => ['cgroupfs-mount'],
-      'Ubuntu' => ['cgroup-lite', 'apparmor'],
-      default  => [],
-    },
-    'RedHat' => ['device-mapper'],
-    default  => [],
   }
 
 }

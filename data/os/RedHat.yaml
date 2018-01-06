@@ -1,0 +1,3 @@
+---
+docker::prerequired_packages:
+  - 'device-mapper'

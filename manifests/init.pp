@@ -359,28 +359,8 @@
 class docker(
   $version                           = $docker::params::version,
   $ensure                            = $docker::params::ensure,
-  $prerequired_packages              = $docker::params::prerequired_packages,
-  $docker_ce_start_command           = $docker::params::docker_ce_start_command,
-  $docker_ce_package_name            = $docker::params::docker_ce_package_name,
-  $docker_ce_source_location         = $docker::params::package_ce_source_location,
-  $docker_ce_key_source              = $docker::params::package_ce_key_source,
-  $docker_ce_key_id                  = $docker::params::package_ce_key_id,
-  $docker_ce_release                 = $docker::params::package_ce_release,
-  $docker_package_location           = $docker::params::package_source_location,
-  $docker_package_key_source         = $docker::params::package_key_source,
-  $docker_package_key_check_source   = $docker::params::package_key_check_source,
-  $docker_package_key_id             = $docker::params::package_key_id,
-  $docker_package_release            = $docker::params::package_release,
-  $docker_engine_start_command       = $docker::params::docker_engine_start_command,
-  $docker_engine_package_name        = $docker::params::docker_engine_package_name,
-  $docker_ce_channel                 = $docker::params::docker_ce_channel,
-  $docker_ee                         = $docker::params::docker_ee,
-  $docker_ee_package_name            = $docker::params::package_ee_package_name,
-  $docker_ee_source_location         = $docker::params::package_ee_source_location,
-  $docker_ee_key_source              = $docker::params::package_ee_key_source,
-  $docker_ee_key_id                  = $docker::params::package_ee_key_id,
-  $docker_ee_repos                   = $docker::params::package_ee_repos,
-  $docker_ee_release                 = $docker::params::package_ee_release,
+  $package_repository                = lookup('docker::package_repository'),
+  $prerequired_packages              = lookup('docker::prerequired_packages'),
   $tcp_bind                          = $docker::params::tcp_bind,
   $tls_enable                        = $docker::params::tls_enable,
   $tls_verify                        = $docker::params::tls_verify,
@@ -401,10 +381,6 @@ class docker(
   $log_driver                        = $docker::params::log_driver,
   $log_opt                           = $docker::params::log_opt,
   $selinux_enabled                   = $docker::params::selinux_enabled,
-  $use_upstream_package_source       = $docker::params::use_upstream_package_source,
-  $pin_upstream_package_source       = $docker::params::pin_upstream_package_source,
-  $apt_source_pin_level              = $docker::params::apt_source_pin_level,
-  $package_release                   = $docker::params::package_release,
   $service_state                     = $docker::params::service_state,
   $service_enable                    = $docker::params::service_enable,
   $manage_service                    = $docker::params::manage_service,
@@ -438,13 +414,11 @@ class docker(
   $overlay2_override_kernel_check    = $docker::params::overlay2_override_kernel_check,
   $execdriver                        = $docker::params::execdriver,
   $manage_package                    = $docker::params::manage_package,
-  $package_source                    = $docker::params::package_source,
   $manage_epel                       = $docker::params::manage_epel,
   $service_name                      = $docker::params::service_name,
   $docker_users                      = [],
   $docker_group                      = $docker::params::docker_group,
   $daemon_environment_files          = [],
-  $repo_opt                          = $docker::params::repo_opt,
   $nowarn_kernel                     = $docker::params::nowarn_kernel,
   $os                                = $docker::params::os,
   $storage_devs                      = $docker::params::storage_devs,
@@ -544,58 +518,6 @@ class docker(
     validate_string($tls_cacert)
     validate_string($tls_cert)
     validate_string($tls_key)
-  }
-
-  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d(~|-|\.)ce|1.\d+)/ ) {
-    if ( $docker_ee) {
-      validate_string($docker::docker_ee_source_location)
-      validate_string($docker::docker_ee_key_source)
-      $package_location = $docker::docker_ee_source_location
-      $package_key_source = $docker::docker_ee_key_source
-      $package_key_check_source = true
-      $package_key = $docker::docker_ee_key_id
-      $package_repos = $docker::docker_ee_repos
-      $release = $docker::docker_ee_release
-      $docker_start_command = $docker::docker_ee_start_command
-      $docker_package_name = $docker::docker_ee_package_name
-    } else {
-        case $::osfamily {
-          'Debian' : {
-            $package_location = $docker_ce_source_location
-            $package_key_source = $docker_ce_key_source
-            $package_key = $docker_ce_key_id
-            $package_repos = $docker_ce_channel
-            $release = $docker_ce_release
-            }
-          'Redhat' : {
-            $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
-            $package_key_source = $docker_ce_key_source
-            $package_key_check_source = true
-          }
-          default: {}
-        }
-        $docker_start_command = $docker_ce_start_command
-        $docker_package_name = $docker_ce_package_name
-    }
-  } else {
-    case $::osfamily {
-      'Debian' : {
-        $package_location = $docker_package_location
-        $package_key_source = $docker_package_key_source
-        $package_key_check_source = $docker_package_key_check_source
-        $package_key = $docker_package_key_id
-        $package_repos = 'main'
-        $release = $docker_package_release
-        }
-      'Redhat' : {
-        $package_location = $docker_package_location
-        $package_key_source = $docker_package_key_source
-        $package_key_check_source = $docker_package_key_check_source
-      }
-      default : {}
-    }
-    $docker_start_command = $docker_engine_start_command
-    $docker_package_name = $docker_engine_package_name
   }
 
   contain 'docker::repos'
