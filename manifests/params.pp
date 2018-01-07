@@ -76,7 +76,7 @@ class docker::params {
   $os                                = downcase($::operatingsystem)
 
   # As of docker 17.06, 'daemon' is no longer a valid docker command
-  if (versioncmp($version, `17.06`) >= 0) {
+  if (versioncmp($version, '17.06') >= 0) {
     $docker_binary_command = $docker_daemon_command
   } else{
     $docker_binary_command = "${docker_command} daemon"
