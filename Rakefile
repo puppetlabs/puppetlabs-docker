@@ -69,4 +69,5 @@ task :test => [
   :syntax,
   :lint,
   :metadata_lint,
+  :spec,
 ]
