@@ -148,38 +148,13 @@ class docker::params {
       $use_upstream_package_source = true
       $manage_epel = false
 
-      $package_ce_source_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
-      $package_ce_key_source = 'https://download.docker.com/linux/centos/gpg'
-      $package_ce_key_id = undef
-      $package_ce_release = undef
-      $package_key_id = undef
-      $package_release = undef
-      $package_source_location = "https://yum.dockerproject.org/repo/main/centos/${::operatingsystemmajrelease}"
-      $package_key_source = 'https://yum.dockerproject.org/gpg'
-      $package_key_check_source = true
-      $package_ee_source_location = $docker_ee_source_location
-      $package_ee_key_source = $docker_ee_key_source
-      $package_ee_key_id = $docker_ee_key_id
-      $package_ee_release = undef
-      $package_ee_repos = $docker_ee_repos
-      $package_ee_package_name = $docker_ee_package_name
-      $pin_upstream_package_source = undef
-      $apt_source_pin_level = undef
       $service_name = $service_name_default
-      if (versioncmp($::operatingsystemrelease, '7.0') < 0) or ($::operatingsystem == 'Amazon') {
+      if ($::operatingsystem == 'Amazon') {
         $detach_service_in_init = true
-        if $::operatingsystem == 'OracleLinux' {
-          $docker_group = 'dockerroot'
-        } else {
-          $docker_group = $docker_group_default
-        }
+        $docker_group = $docker_group_default
       } else {
         $detach_service_in_init = false
-        if $use_upstream_package_source {
-          $docker_group = $docker_group_default
-        } else {
-          $docker_group = 'dockerroot'
-        }
+        $docker_group = $docker_group_default
         include docker::systemd_reload
       }
 
