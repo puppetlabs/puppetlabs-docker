@@ -16,10 +16,6 @@
 #   An array of additional packages that need to be installed to support
 #   docker. Defaults change depending on the operating system.
 #
-# [*docker_cs*]
-#   Whether or not to use the CS (Commercial Support) Docker packages.
-#   Defaults to false.
-#
 # [*tcp_bind*]
 #   The tcp socket to bind to in the format
 #   tcp://127.0.0.1:4243
