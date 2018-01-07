@@ -413,7 +413,7 @@ class docker(
   $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
   $overlay2_override_kernel_check    = $docker::params::overlay2_override_kernel_check,
   $execdriver                        = $docker::params::execdriver,
-  $manage_package                    = true
+  $manage_package                    = true,
   $service_name                      = $docker::params::service_name,
   $docker_users                      = [],
   $docker_group                      = $docker::params::docker_group,
