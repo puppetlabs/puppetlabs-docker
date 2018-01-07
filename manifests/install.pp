@@ -5,8 +5,8 @@
 # and Archlinux based distributions.
 #
 class docker::install (
- $manage_package = $docker::manage_package,
- $prerequired_packages = $docker::prerequired_packages,
+  $manage_package = $docker::manage_package,
+  $prerequired_packages = $docker::prerequired_packages,
 ){
   ensure_packages($prerequired_packages,
     {
