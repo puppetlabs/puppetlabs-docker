@@ -2,5 +2,5 @@
 EnvironmentFile=-/etc/default/docker
 EnvironmentFile=-/etc/default/docker-storage
 ExecStart=
-ExecStart=/usr/bin/<%= @docker_start_command %> $OPTIONS \
+ExecStart=/usr/bin/<%= @docker_binary_command %> $OPTIONS \
         $DOCKER_STORAGE_OPTIONS

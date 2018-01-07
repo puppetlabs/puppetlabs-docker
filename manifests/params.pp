@@ -5,7 +5,6 @@
 class docker::params {
   $version                           = undef
   $ensure                            = present
-  $docker_engine_start_command       = 'docker daemon'
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
@@ -58,6 +57,7 @@ class docker::params {
   $package_source                    = undef
   $manage_kernel                     = true
   $docker_command                    = 'docker'
+  $docker_daemon_command             = 'dockerd'
   $service_name_default              = 'docker'
   $docker_group_default              = 'docker'
   $storage_devs                      = undef
@@ -75,6 +75,14 @@ class docker::params {
   $compose_install_path              = '/usr/local/bin'
   $os                                = downcase($::operatingsystem)
 
+  # As of docker 17.06, 'daemon' is no longer a valid docker command
+  if (versioncmp($version, `17.06`) >= 0) {
+    $docker_binary_command = $docker_daemon_command
+  } else{
+    $docker_binary_command = "${docker_command} daemon"
+  }
+
+  # set up service defaults based on OS service provider
   case $::osfamily {
     'Debian' : {
       case $::operatingsystem {

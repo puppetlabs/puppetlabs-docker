@@ -1,4 +1,5 @@
 ---
+docker::daemon_command: 'dockerd'
 docker::package_repository:
   'docker_repo':
     ensure: 'present'
