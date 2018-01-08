@@ -1,0 +1,11 @@
+---
+docker::daemon_command: 'dockerd'
+docker::package_repository:
+  'docker_repo':
+    ensure: 'present'
+    assumeyes: true
+    enabled: true
+    baseurl: 'https://download.docker.com/linux/centos/7/x86_64/stable'
+    gpgkey: 'https://download.docker.com/linux/centos/gpg'
+    repo_gpgcheck: true
+    sslverify: true

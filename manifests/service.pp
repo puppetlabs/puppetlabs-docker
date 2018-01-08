@@ -38,7 +38,7 @@
 #
 class docker::service (
   $docker_command                    = $docker::docker_command,
-  $docker_start_command              = $docker::docker_start_command,
+  $docker_daemon_command             = $docker::docker_daemon_command,
   $service_name                      = $docker::service_name,
   $tcp_bind                          = $docker::tcp_bind,
   $ip_forward                        = $docker::ip_forward,

@@ -2,79 +2,23 @@
 #
 #
 class docker::repos (
-  $location = $docker::package_location,
-  $key_source = $docker::package_key_source,
-  $key_check_source = $docker::package_key_check_source,
-  ) {
+  $package_repository = $docker::package_repository,
+  $manage_repos = $docker::manage_repos,
+) {
 
-  ensure_packages($docker::prerequired_packages)
-
-  case $::osfamily {
-    'Debian': {
-      $release = $docker::release
-      $package_key = $docker::package_key
-      $package_repos = $docker::package_repos
-      if ($docker::use_upstream_package_source) {
-        ensure_packages(['debian-keyring', 'debian-archive-keyring'])
-
-        apt::source { 'docker':
-          location => $location,
-          release  => $release,
-          repos    => $package_repos,
-          key      => {
-            id     => $package_key,
-            source => $key_source,
-          },
-          require  => Package['debian-keyring', 'debian-archive-keyring'],
-          include  => {
-            src => false,
-            },
-        }
-        $url_split = split($location, '/')
-        $repo_host = $url_split[2]
-        $pin_ensure = $docker::pin_upstream_package_source ? {
-            true    => 'present',
-            default => 'absent',
-        }
-        apt::pin { 'docker':
-          ensure   => $pin_ensure,
-          origin   => $repo_host,
-          priority => $docker::apt_source_pin_level,
-        }
-        if $docker::manage_package {
-          include apt
-          if $::operatingsystem == 'Debian' and $::lsbdistcodename == 'wheezy' {
-            include apt::backports
-          }
-          Exec['apt_update'] -> Package[$docker::prerequired_packages]
-          Apt::Source['docker'] -> Package['docker']
-        }
+  if $manage_repos {
+    case $facts['os']['family'] {
+      'Debian': {
+        include apt
+        create_resources('apt::source', $package_repository)
       }
-
-    }
-    'RedHat': {
-
-      if ($docker::manage_package) {
-          $baseurl = $location
-          $gpgkey = $key_source
-          $gpgkey_check = $key_check_source
-        if ($docker::use_upstream_package_source) {
-          yumrepo { 'docker':
-            descr    => 'Docker',
-            baseurl  => $baseurl,
-            gpgkey   => $gpgkey,
-            gpgcheck => $gpgkey_check,
-          }
-          Yumrepo['docker'] -> Package['docker']
-        }
-        if ($::operatingsystem != 'Amazon') and ($::operatingsystem != 'Fedora') {
-          if ($docker::manage_epel == true) {
-            include 'epel'
-            Class['epel'] -> Package['docker']
-          }
-        }
+      'RedHat': {
+        create_resources('yumrepo', $package_repository)
+      }
+      default: {
+        fail('A package repository must be provided if manage_repos=true')
       }
     }
-    default: {}
   }
+
 }

@@ -1,0 +1,4 @@
+docker::prerequired_packages:
+  - 'linux-image-extra-virtual'
+  - "linux-image-extra-%{facts.os.distro.id}"
+
