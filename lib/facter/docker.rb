@@ -5,11 +5,39 @@ def interfaces
   Facter.value(:interfaces).split(',')
 end
 
+Facter.add(:docker_client_version) do
+  setcode do
+    docker_version = Facter.value(:docker_version)
+    docker_version['Client']['Version'] if docker_version
+  end
+end
+
+Facter.add(:docker_server_version) do
+  setcode do
+    docker_version = Facter.value(:docker_version)
+    docker_version['Server']['Version'] if docker_version
+  end
+end
+
+Facter.add(:docker_version) do
+  setcode do
+    if Facter::Util::Resolution.which('docker')
+      value = Facter::Core::Execution.execute(
+        "docker version --format '{{json .}}'")
+      val = JSON.parse(value)
+    end
+    val
+  end
+end
+
 Facter.add(:docker) do
   setcode do
     if Facter::Util::Resolution.which('docker')
-      docker = Hash.new
+      docker_json_str = Facter::Util::Resolution.exec(
+        "docker info --format '{{json .}}'")
+      docker = JSON.parse(docker_json_str)
       docker['network'] = Hash.new
+
       docker['network']['managed_interfaces'] = Hash.new
       network_list = Facter::Util::Resolution.exec('docker network ls | tail -n +2')
       docker_network_names = Array.new
