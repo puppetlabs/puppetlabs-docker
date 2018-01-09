@@ -37,7 +37,7 @@ class docker::params {
   $log_driver                        = undef
   $log_opt                           = []
   $selinux_enabled                   = undef
-  $socket_group                      = undef
+  $socket_group_default              = 'docker'
   $labels                            = []
   $service_state                     = running
   $service_enable                    = true
@@ -133,6 +133,7 @@ class docker::params {
       $manage_epel = false
       $service_name = $service_name_default
       $docker_group = $docker_group_default
+      $socket_group = $socket_group_default
       $use_upstream_package_source = true
       $pin_upstream_package_source = true
       $apt_source_pin_level = 10
@@ -201,15 +202,19 @@ class docker::params {
         $detach_service_in_init = true
         if $::operatingsystem == 'OracleLinux' {
           $docker_group = 'dockerroot'
+          $socket_group = 'dockerroot'
         } else {
           $docker_group = $docker_group_default
+          $socket_group = $socket_group_default
         }
       } else {
         $detach_service_in_init = false
         if $use_upstream_package_source {
           $docker_group = $docker_group_default
+          $socket_group = $socket_group_default
         } else {
           $docker_group = 'dockerroot'
+          $socket_group = 'dockerroot'
         }
         include docker::systemd_reload
       }
@@ -242,6 +247,7 @@ class docker::params {
     default: {
       $manage_epel = false
       $docker_group = $docker_group_default
+      $socket_group = $socket_group_default
       $package_key_source = undef
       $package_key_check_source = undef
       $package_source_location = undef
