@@ -353,163 +353,157 @@
 #    Sets the tmp dir for Docker (path)
 #
 class docker(
-  $version                           = $docker::params::version,
-  $ensure                            = $docker::params::ensure,
-  $prerequired_packages              = $docker::params::prerequired_packages,
-  $docker_ce_start_command           = $docker::params::docker_ce_start_command,
-  $docker_ce_package_name            = $docker::params::docker_ce_package_name,
-  $docker_ce_source_location         = $docker::params::package_ce_source_location,
-  $docker_ce_key_source              = $docker::params::package_ce_key_source,
-  $docker_ce_key_id                  = $docker::params::package_ce_key_id,
-  $docker_ce_release                 = $docker::params::package_ce_release,
-  $docker_package_location           = $docker::params::package_source_location,
-  $docker_package_key_source         = $docker::params::package_key_source,
-  $docker_package_key_check_source   = $docker::params::package_key_check_source,
-  $docker_package_key_id             = $docker::params::package_key_id,
-  $docker_package_release            = $docker::params::package_release,
-  $docker_engine_start_command       = $docker::params::docker_engine_start_command,
-  $docker_engine_package_name        = $docker::params::docker_engine_package_name,
-  $docker_ce_channel                 = $docker::params::docker_ce_channel,
-  $docker_ee                         = $docker::params::docker_ee,
-  $docker_ee_package_name            = $docker::params::package_ee_package_name,
-  $docker_ee_source_location         = $docker::params::package_ee_source_location,
-  $docker_ee_key_source              = $docker::params::package_ee_key_source,
-  $docker_ee_key_id                  = $docker::params::package_ee_key_id,
-  $docker_ee_repos                   = $docker::params::package_ee_repos,
-  $docker_ee_release                 = $docker::params::package_ee_release,
-  $tcp_bind                          = $docker::params::tcp_bind,
-  $tls_enable                        = $docker::params::tls_enable,
-  $tls_verify                        = $docker::params::tls_verify,
-  $tls_cacert                        = $docker::params::tls_cacert,
-  $tls_cert                          = $docker::params::tls_cert,
-  $tls_key                           = $docker::params::tls_key,
-  $ip_forward                        = $docker::params::ip_forward,
-  $ip_masq                           = $docker::params::ip_masq,
-  $bip                               = $docker::params::bip,
-  $mtu                               = $docker::params::mtu,
-  $iptables                          = $docker::params::iptables,
-  $icc                               = $docker::params::icc,
-  $socket_bind                       = $docker::params::socket_bind,
-  $fixed_cidr                        = $docker::params::fixed_cidr,
-  $bridge                            = $docker::params::bridge,
-  $default_gateway                   = $docker::params::default_gateway,
-  $log_level                         = $docker::params::log_level,
-  $log_driver                        = $docker::params::log_driver,
-  $log_opt                           = $docker::params::log_opt,
-  $selinux_enabled                   = $docker::params::selinux_enabled,
-  $use_upstream_package_source       = $docker::params::use_upstream_package_source,
-  $pin_upstream_package_source       = $docker::params::pin_upstream_package_source,
-  $apt_source_pin_level              = $docker::params::apt_source_pin_level,
-  $package_release                   = $docker::params::package_release,
-  $service_state                     = $docker::params::service_state,
-  $service_enable                    = $docker::params::service_enable,
-  $manage_service                    = $docker::params::manage_service,
-  $root_dir                          = $docker::params::root_dir,
-  $tmp_dir_config                    = $docker::params::tmp_dir_config,
-  $tmp_dir                           = $docker::params::tmp_dir,
-  $manage_kernel                     = $docker::params::manage_kernel,
-  $dns                               = $docker::params::dns,
-  $dns_search                        = $docker::params::dns_search,
-  $socket_group                      = $docker::params::socket_group,
-  $labels                            = $docker::params::labels,
-  $extra_parameters                  = undef,
-  $shell_values                      = undef,
-  $proxy                             = $docker::params::proxy,
-  $no_proxy                          = $docker::params::no_proxy,
-  $storage_driver                    = $docker::params::storage_driver,
-  $dm_basesize                       = $docker::params::dm_basesize,
-  $dm_fs                             = $docker::params::dm_fs,
-  $dm_mkfsarg                        = $docker::params::dm_mkfsarg,
-  $dm_mountopt                       = $docker::params::dm_mountopt,
-  $dm_blocksize                      = $docker::params::dm_blocksize,
-  $dm_loopdatasize                   = $docker::params::dm_loopdatasize,
-  $dm_loopmetadatasize               = $docker::params::dm_loopmetadatasize,
-  $dm_datadev                        = $docker::params::dm_datadev,
-  $dm_metadatadev                    = $docker::params::dm_metadatadev,
-  $dm_thinpooldev                    = $docker::params::dm_thinpooldev,
-  $dm_use_deferred_removal           = $docker::params::dm_use_deferred_removal,
-  $dm_use_deferred_deletion          = $docker::params::dm_use_deferred_deletion,
-  $dm_blkdiscard                     = $docker::params::dm_blkdiscard,
-  $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
-  $overlay2_override_kernel_check    = $docker::params::overlay2_override_kernel_check,
-  $execdriver                        = $docker::params::execdriver,
-  $manage_package                    = $docker::params::manage_package,
-  $package_source                    = $docker::params::package_source,
-  $manage_epel                       = $docker::params::manage_epel,
-  $service_name                      = $docker::params::service_name,
-  $docker_users                      = [],
-  $docker_group                      = $docker::params::docker_group,
-  $daemon_environment_files          = [],
-  $repo_opt                          = $docker::params::repo_opt,
-  $nowarn_kernel                     = $docker::params::nowarn_kernel,
-  $os                                = $docker::params::os,
-  $storage_devs                      = $docker::params::storage_devs,
-  $storage_vg                        = $docker::params::storage_vg,
-  $storage_root_size                 = $docker::params::storage_root_size,
-  $storage_data_size                 = $docker::params::storage_data_size,
-  $storage_min_data_size             = $docker::params::storage_min_data_size,
-  $storage_chunk_size                = $docker::params::storage_chunk_size,
-  $storage_growpart                  = $docker::params::storage_growpart,
-  $storage_auto_extend_pool          = $docker::params::storage_auto_extend_pool,
-  $storage_pool_autoextend_threshold = $docker::params::storage_pool_autoextend_threshold,
-  $storage_pool_autoextend_percent   = $docker::params::storage_pool_autoextend_percent,
-  $storage_config                    = $docker::params::storage_config,
-  $storage_config_template           = $docker::params::storage_config_template,
-  $storage_setup_file                = $docker::params::storage_setup_file,
-  $service_provider                  = $docker::params::service_provider,
-  $service_config                    = $docker::params::service_config,
-  $service_config_template           = $docker::params::service_config_template,
-  $service_overrides_template        = $docker::params::service_overrides_template,
-  $service_hasstatus                 = $docker::params::service_hasstatus,
-  $service_hasrestart                = $docker::params::service_hasrestart,
+  Optional[String] $version                           = $docker::params::version,
+  String $ensure                                      = $docker::params::ensure,
+  Tuple $prerequired_packages                         = $docker::params::prerequired_packages,
+  String $docker_ce_start_command                     = $docker::params::docker_ce_start_command,
+  Optional[String] $docker_ce_package_name            = $docker::params::docker_ce_package_name,
+  Optional[String] $docker_ce_source_location         = $docker::params::package_ce_source_location,
+  Optional[String] $docker_ce_key_source              = $docker::params::package_ce_key_source,
+  Optional[String] $docker_ce_key_id                  = $docker::params::package_ce_key_id,
+  Optional[String] $docker_ce_release                 = $docker::params::package_ce_release,
+  Optional[String] $docker_package_location           = $docker::params::package_source_location,
+  Optional[String] $docker_package_key_source         = $docker::params::package_key_source,
+  Optional[Boolean] $docker_package_key_check_source  = $docker::params::package_key_check_source,
+  Optional[String] $docker_package_key_id             = $docker::params::package_key_id,
+  Optional[String] $docker_package_release            = $docker::params::package_release,
+  String $docker_engine_start_command                 = $docker::params::docker_engine_start_command,
+  String $docker_engine_package_name                  = $docker::params::docker_engine_package_name,
+  String $docker_ce_channel                           = $docker::params::docker_ce_channel,
+  Optional[Boolean] $docker_ee                        = $docker::params::docker_ee,
+  Optional[String] $docker_ee_package_name            = $docker::params::package_ee_package_name,
+  Optional[String] $docker_ee_source_location         = $docker::params::package_ee_source_location,
+  Optional[String] $docker_ee_key_source              = $docker::params::package_ee_key_source,
+  Optional[String] $docker_ee_key_id                  = $docker::params::package_ee_key_id,
+  Optional[String] $docker_ee_repos                   = $docker::params::package_ee_repos,
+  Optional[String] $docker_ee_release                 = $docker::params::package_ee_release,
+  Variant[String,Tuple,Undef] $tcp_bind               = $docker::params::tcp_bind,
+  Boolean $tls_enable                                 = $docker::params::tls_enable,
+  Boolean $tls_verify                                 = $docker::params::tls_verify,
+  Optional[String] $tls_cacert                        = $docker::params::tls_cacert,
+  Optional[String] $tls_cert                          = $docker::params::tls_cert,
+  Optional[String] $tls_key                           = $docker::params::tls_key,
+  Boolean $ip_forward                                 = $docker::params::ip_forward,
+  Boolean $ip_masq                                    = $docker::params::ip_masq,
+  Optional[String] $bip                               = $docker::params::bip,
+  Optional[String] $mtu                               = $docker::params::mtu,
+  Boolean $iptables                                   = $docker::params::iptables,
+  Optional[Boolean] $icc                              = $docker::params::icc,
+  String $socket_bind                                 = $docker::params::socket_bind,
+  Optional[String] $fixed_cidr                        = $docker::params::fixed_cidr,
+  Optional[String] $bridge                            = $docker::params::bridge,
+  Optional[String] $default_gateway                   = $docker::params::default_gateway,
+  Optional[String] $log_level                         = $docker::params::log_level,
+  Optional[String] $log_driver                        = $docker::params::log_driver,
+  Array $log_opt                                      = $docker::params::log_opt,
+  Optional[String] $selinux_enabled                   = $docker::params::selinux_enabled,
+  Optional[Boolean] $use_upstream_package_source      = $docker::params::use_upstream_package_source,
+  Optional[Boolean] $pin_upstream_package_source      = $docker::params::pin_upstream_package_source,
+  Optional[Integer] $apt_source_pin_level             = $docker::params::apt_source_pin_level,
+  Optional[String] $package_release                   = $docker::params::package_release,
+  String $service_state                               = $docker::params::service_state,
+  Boolean $service_enable                             = $docker::params::service_enable,
+  Boolean $manage_service                             = $docker::params::manage_service,
+  Optional[String] $root_dir                          = $docker::params::root_dir,
+  Optional[Boolean] $tmp_dir_config                    = $docker::params::tmp_dir_config,
+  Optional[String] $tmp_dir                           = $docker::params::tmp_dir,
+  Boolean $manage_kernel                              = $docker::params::manage_kernel,
+  Variant[String,Array,Undef] $dns                    = $docker::params::dns,
+  Variant[String,Array,Undef] $dns_search             = $docker::params::dns_search,
+  Optional[String] $socket_group                      = $docker::params::socket_group,
+  Array $labels                                       = $docker::params::labels,
+  Variant[String,Array,Undef] $extra_parameters       = undef,
+  Variant[String,Array,Undef] $shell_values           = undef,
+  Optional[String] $proxy                             = $docker::params::proxy,
+  Optional[String] $no_proxy                          = $docker::params::no_proxy,
+  Optional[String] $storage_driver                    = $docker::params::storage_driver,
+  Optional[String] $dm_basesize                       = $docker::params::dm_basesize,
+  Optional[String] $dm_fs                             = $docker::params::dm_fs,
+  Optional[String] $dm_mkfsarg                        = $docker::params::dm_mkfsarg,
+  Optional[String] $dm_mountopt                       = $docker::params::dm_mountopt,
+  Optional[String] $dm_blocksize                      = $docker::params::dm_blocksize,
+  Optional[String] $dm_loopdatasize                   = $docker::params::dm_loopdatasize,
+  Optional[String] $dm_loopmetadatasize               = $docker::params::dm_loopmetadatasize,
+  Optional[String] $dm_datadev                        = $docker::params::dm_datadev,
+  Optional[String] $dm_metadatadev                    = $docker::params::dm_metadatadev,
+  Optional[String] $dm_thinpooldev                    = $docker::params::dm_thinpooldev,
+  Optional[String] $dm_use_deferred_removal           = $docker::params::dm_use_deferred_removal,
+  Optional[String] $dm_use_deferred_deletion          = $docker::params::dm_use_deferred_deletion,
+  Optional[String] $dm_blkdiscard                     = $docker::params::dm_blkdiscard,
+  Optional[String] $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
+  Boolean $overlay2_override_kernel_check             = $docker::params::overlay2_override_kernel_check,
+  Optional[String] $execdriver                        = $docker::params::execdriver,
+  Boolean $manage_package                             = $docker::params::manage_package,
+  Optional[String] $package_source                    = $docker::params::package_source,
+  Boolean $manage_epel                                = $docker::params::manage_epel,
+  Optional[String] $service_name                      = $docker::params::service_name,
+  Array $docker_users                                 = [],
+  String $docker_group                                = $docker::params::docker_group,
+  Array $daemon_environment_files                     = [],
+  Variant[String,Hash,Undef] $repo_opt                = $docker::params::repo_opt,
+  Boolean $nowarn_kernel                              = $docker::params::nowarn_kernel,
+  Optional[String] $os                                = $docker::params::os,
+  Optional[String] $storage_devs                      = $docker::params::storage_devs,
+  Optional[String] $storage_vg                        = $docker::params::storage_vg,
+  Optional[String] $storage_root_size                 = $docker::params::storage_root_size,
+  Optional[String] $storage_data_size                 = $docker::params::storage_data_size,
+  Optional[String] $storage_min_data_size             = $docker::params::storage_min_data_size,
+  Optional[String] $storage_chunk_size                = $docker::params::storage_chunk_size,
+  Optional[String] $storage_growpart                  = $docker::params::storage_growpart,
+  Optional[String] $storage_auto_extend_pool          = $docker::params::storage_auto_extend_pool,
+  Optional[String] $storage_pool_autoextend_threshold = $docker::params::storage_pool_autoextend_threshold,
+  Optional[String] $storage_pool_autoextend_percent   = $docker::params::storage_pool_autoextend_percent,
+  Optional[String] $storage_config                    = $docker::params::storage_config,
+  Optional[String] $storage_config_template           = $docker::params::storage_config_template,
+  Optional[String] $storage_setup_file                = $docker::params::storage_setup_file,
+  Optional[String] $service_provider                  = $docker::params::service_provider,
+  Optional[String] $service_config                    = $docker::params::service_config,
+  Optional[String] $service_config_template           = $docker::params::service_config_template,
+  Optional[String] $service_overrides_template        = $docker::params::service_overrides_template,
+  Optional[Boolean] $service_hasstatus                = $docker::params::service_hasstatus,
+  Optional[Boolean] $service_hasrestart               = $docker::params::service_hasrestart,
 
 ) inherits docker::params {
 
-  validate_string($version)
-  validate_re($::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
-              'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
-  validate_bool($manage_kernel)
-  validate_bool($manage_package)
-  validate_bool($manage_service)
-  validate_array($docker_users)
-  validate_array($daemon_environment_files)
-  validate_array($log_opt)
-  validate_bool($tls_enable)
-  validate_bool($ip_forward)
-  validate_bool($iptables)
-  validate_bool($ip_masq)
-  if $icc != undef {
-    validate_bool($icc)
+
+  if $::osfamily {
+    assert_type(Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/], $::osfamily) |$a, $b| {
+      fail('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
+    }
   }
-  validate_string($bridge)
-  validate_string($fixed_cidr)
-  validate_string($default_gateway)
-  validate_string($bip)
 
   if ($default_gateway) and (!$bridge) {
     fail('You must provide the $bridge parameter.')
   }
 
   if $log_level {
-    validate_re($log_level, '^(debug|info|warn|error|fatal)$', 'log_level must be one of debug, info, warn, error or fatal')
+    assert_type(Pattern[/^(debug|info|warn|error|fatal)$/], $log_level) |$a, $b| {
+        fail('log_level must be one of debug, info, warn, error or fatal')
+    }
   }
 
   if $log_driver {
-    validate_re($log_driver, '^(none|json-file|syslog|journald|gelf|fluentd|splunk)$',
-                'log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk')
+    assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/], $log_driver) |$a, $b| {
+      fail('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk')
+    }
   }
 
   if $selinux_enabled {
-    validate_re($selinux_enabled, '^(true|false)$', 'selinux_enabled must be true or false')
+    assert_type(Pattern[/^(true|false)$/], $selinux_enabled) |$a, $b| {
+      fail('selinux_enabled must be true or false')
+    }
   }
 
   if $storage_driver {
-    validate_re($storage_driver, '^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$',
-                'Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.' )
+    assert_type(Pattern[/^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$/], $storage_driver) |$a, $b| {
+      fail('Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.')
+    }
   }
 
   if $dm_fs {
-    validate_re($dm_fs, '^(ext4|xfs)$', 'Only ext4 and xfs are supported currently for dm_fs.')
+    assert_type(Pattern[/^(ext4|xfs)$/], $dm_fs) |$a, $b| {
+      fail('Only ext4 and xfs are supported currently for dm_fs.')
+    }
   }
 
   if ($dm_loopdatasize or $dm_loopmetadatasize) and ($dm_datadev or $dm_metadatadev) {
@@ -537,15 +531,10 @@ class docker(
     if(!$tcp_bind) {
         fail('You need to provide tcp bind parameter for TLS.')
     }
-    validate_string($tls_cacert)
-    validate_string($tls_cert)
-    validate_string($tls_key)
   }
 
   if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.]\d(~|-|\.)ce|1.\d+)/ ) {
     if ( $docker_ee) {
-      validate_string($docker::docker_ee_source_location)
-      validate_string($docker::docker_ee_key_source)
       $package_location = $docker::docker_ee_source_location
       $package_key_source = $docker::docker_ee_key_source
       $package_key_check_source = true
@@ -605,4 +594,3 @@ class docker(
   Class['docker'] -> Docker::Run <||>
 
 }
-

@@ -9,14 +9,14 @@
 #  Defaults to present
 #
 # [*stack_name*]
-#   The name of the stack that you are deploying 
+#   The name of the stack that you are deploying
 #   Defaults to undef
 #
 # [*bundle_file*]
 #  Path to a Distributed Application Bundle file
 #  Please note this is experimental
 #  Defaults to undef
-# 
+#
 # [*compose_file*]
 #  Path to a Compose file
 #  Defaults to undef
@@ -36,22 +36,18 @@
 
 define docker::stack(
 
-  $ensure = 'present',
-  $stack_name = undef,
-  $bundle_file = undef,
-  $compose_file = undef,
-  $prune = undef,
-  $with_registry_auth = undef,
+  Optional[Pattern[/^present$|^absent$/]] $ensure             = 'present',
+  Optional[String] $stack_name                                = undef,
+  Optional[String] $bundle_file                               = undef,
+  Optional[String] $compose_file                              = undef,
+  Optional[String] $prune                                     = undef,
+  Optional[String] $with_registry_auth                        = undef,
 
   ){
 
   include docker::params
 
   $docker_command = "${docker::params::docker_command} stack"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($stack_name)
-  validate_string($bundle_file)
 
   if $ensure == 'present'{
       $docker_stack_flags = docker_stack_flags ({

@@ -60,55 +60,55 @@
 # Default: on-failure
 #
 define docker::run(
-  $image,
-  $ensure = 'present',
-  $command = undef,
-  $memory_limit = '0b',
-  $cpuset = [],
-  $ports = [],
-  $labels = [],
-  $expose = [],
-  $volumes = [],
-  $links = [],
-  $use_name = false,
-  $running = true,
-  $volumes_from = [],
-  $net = 'bridge',
-  $username = false,
-  $hostname = false,
-  $env = [],
-  $env_file = [],
-  $dns = [],
-  $dns_search = [],
-  $lxc_conf = [],
-  $service_prefix = 'docker-',
-  $restart_service = true,
-  $restart_service_on_docker_refresh = true,
-  $manage_service = true,
-  $docker_service = false,
-  $disable_network = false,
-  $privileged = false,
-  $detach = undef,
-  $extra_parameters = undef,
-  $systemd_restart = 'on-failure',
-  $extra_systemd_parameters = {},
-  $pull_on_start = false,
-  $after = [],
-  $after_service = [],
-  $depends = [],
-  $depend_services = [],
-  $tty = false,
-  $socket_connect = [],
-  $hostentries = [],
-  $restart = undef,
-  $before_start = false,
-  $before_stop = false,
-  $remove_container_on_start = true,
-  $remove_container_on_stop = true,
-  $remove_volume_on_start = false,
-  $remove_volume_on_stop = false,
-  $stop_wait_time = 0,
-  $syslog_identifier = undef,
+  Optional[Pattern[/^[\S]*$/]] $image,
+  Optional[Pattern[/^present$|^absent$/]] $ensure      = 'present',
+  Optional[String] $command                            = undef,
+  Optional[Pattern[/^[\d]*(b|k|m|g)$/]] $memory_limit  = '0b',
+  Variant[String,Array,Undef] $cpuset                  = [],
+  Variant[String,Array,Undef] $ports                   = [],
+  Variant[String,Array,Undef] $labels                  = [],
+  Variant[String,Array,Undef] $expose                  = [],
+  Variant[String,Array,Undef] $volumes                 = [],
+  Variant[String,Array,Undef] $links                   = [],
+  Optional[Boolean] $use_name                          = false,
+  Optional[Boolean] $running                           = true,
+  Variant[String,Array,Undef] $volumes_from            = [],
+  Optional[String] $net                                = 'bridge',
+  Variant[String,Boolean] $username                    = false,
+  Variant[String,Boolean] $hostname                    = false,
+  Variant[String,Array,Undef] $env                     = [],
+  Variant[String,Array,Undef] $env_file                = [],
+  Variant[String,Array,Undef] $dns                     = [],
+  Variant[String,Array,Undef] $dns_search              = [],
+  Variant[String,Array,Undef] $lxc_conf                = [],
+  Optional[String] $service_prefix                     = 'docker-',
+  Optional[Boolean] $restart_service                   = true,
+  Optional[Boolean] $restart_service_on_docker_refresh = true,
+  Optional[Boolean] $manage_service                    = true,
+  Variant[String,Boolean] $docker_service              = false,
+  Optional[Boolean] $disable_network                   = false,
+  Optional[Boolean] $privileged                        = false,
+  Optional[Boolean] $detach                            = undef,
+  Variant[String,Tuple,Undef] $extra_parameters        = undef,
+  Optional[String] $systemd_restart                    = 'on-failure',
+  Variant[String,Hash,Undef] $extra_systemd_parameters = {},
+  Optional[Boolean] $pull_on_start                     = false,
+  Variant[String,Array,Undef] $after                   = [],
+  Variant[String,Array,Undef] $after_service           = [],
+  Variant[String,Array,Undef] $depends                 = [],
+  Variant[String,Array,Undef] $depend_services         = [],
+  Optional[Boolean] $tty                               = false,
+  Variant[String,Array,Undef] $socket_connect          = [],
+  Variant[String,Array,Undef] $hostentries             = [],
+  Optional[String] $restart                            = undef,
+  Variant[String,Boolean] $before_start                = false,
+  Variant[String,Boolean] $before_stop                 = false,
+  Optional[Boolean] $remove_container_on_start         = true,
+  Optional[Boolean] $remove_container_on_stop          = true,
+  Optional[Boolean] $remove_volume_on_start            = false,
+  Optional[Boolean] $remove_volume_on_stop             = false,
+  Optional[Integer] $stop_wait_time                    = 0,
+  Optional[String] $syslog_identifier                  = undef,
 ) {
   include docker
   if ($socket_connect != []) {
@@ -120,39 +120,9 @@ define docker::run(
   $service_name = $docker::service_name
   $docker_group = $docker::docker_group
 
-  validate_re($image, '^[\S]*$')
-  validate_re($title, '^[\S]*$')
-  validate_re($memory_limit, '^[\d]*(b|k|m|g)$')
-  validate_re($ensure, '^(present|absent)')
   if $restart {
-    validate_re($restart, '^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$')
+    assert_type(Pattern[/^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$/], $restart)
   }
-  validate_string($docker_command)
-  validate_string($service_name)
-  validate_string($docker_group)
-
-  if $command {
-    validate_string($command)
-  }
-  if $username {
-    validate_string($username)
-  }
-  if $hostname {
-    validate_string($hostname)
-  }
-  validate_bool($running)
-  validate_bool($disable_network)
-  validate_bool($privileged)
-  validate_bool($restart_service)
-  validate_bool($restart_service_on_docker_refresh)
-  validate_bool($tty)
-  validate_bool($remove_container_on_start)
-  validate_bool($remove_container_on_stop)
-  validate_bool($remove_volume_on_start)
-  validate_bool($remove_volume_on_stop)
-  validate_bool($use_name)
-
-  validate_integer($stop_wait_time)
 
   if ($remove_volume_on_start and !$remove_container_on_start) {
     fail("In order to remove the volume on start for ${title} you need to also remove the container")
@@ -169,15 +139,13 @@ define docker::run(
     }
   }
 
-  validate_hash($extra_systemd_parameters)
   if $systemd_restart {
-    validate_re($systemd_restart, '^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$')
+    assert_type(Pattern[/^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$/], $systemd_restart)
   }
 
   if $detach == undef {
     $valid_detach = $docker::params::detach_service_in_init
   } else {
-    validate_bool($detach)
     $valid_detach = $detach
   }
 
