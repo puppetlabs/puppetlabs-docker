@@ -65,41 +65,27 @@
 #
 
 define docker::services(
-  $ensure       = 'present',
-  $create       = true,
-  $update       = false,
-  $scale        = false,
-  $detach       = true,
-  $tty          = false,
-  $env          = [],
-  $label        = [],
-  $extra_params = [],
-  $image        = undef,
-  $service_name = undef,
-  $publish      = undef,
-  $replicas     = undef,
-  $user         = undef,
-  $workdir      = undef,
-  $host_socket  = undef,
+  Optional[Pattern[/^present$|^absent$/]] $ensure        = 'present',
+  Optional[Boolean] $create                              = true,
+  Optional[Boolean] $update                              = false,
+  Optional[Boolean] $scale                               = false,
+  Optional[Boolean] $detach                              = true,
+  Optional[Boolean] $tty                                 = false,
+  Optional[Array] $env                                   = [],
+  Optional[Array] $label                                 = [],
+  Optional[Array] $extra_params                          = [],
+  Variant[String,Array,Undef] $image                     = undef,
+  Variant[String,Array,Undef] $service_name              = undef,
+  Variant[String,Array,Undef] $publish                   = undef,
+  Variant[String,Array,Undef] $replicas                  = undef,
+  Variant[String,Array,Undef] $user                      = undef,
+  Variant[String,Array,Undef] $workdir                   = undef,
+  Variant[String,Array,Undef] $host_socket               = undef,
 ){
 
   include docker::params
 
   $docker_command = "${docker::params::docker_command} service"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($image)
-  validate_string($service_name)
-  validate_string($publish)
-  validate_string($replicas)
-  validate_string($user)
-  validate_string($workdir)
-  validate_string($host_socket)
-  validate_bool($detach)
-  validate_bool($tty)
-  validate_bool($create)
-  validate_bool($update)
-  validate_bool($scale)
 
   if $ensure == 'absent' {
     if $update {
@@ -189,4 +175,3 @@ define docker::services(
     }
   }
 }
-

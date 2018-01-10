@@ -8,7 +8,7 @@
   "project_page": "https://github.com/puppetlabs/puppetlabs-docker",
   "issues_url": "https://github.com/puppetlabs/puppetlabs-docker/issues",
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 4.1.0"},
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.24.0"},
     {"name":"puppetlabs/apt","version_requirement":">= 2.1.0"},
     {"name":"stahnma/epel","version_requirement":">= 0.0.6"}
   ],

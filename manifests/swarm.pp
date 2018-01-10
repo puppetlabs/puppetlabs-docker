@@ -1,10 +1,10 @@
 # == Define: docker::swarm
-# 
+#
 # A define that managers a Docker Swarm Mode cluster
 #
 # == Paramaters
 #
-# [*ensure*] 
+# [*ensure*]
 #  This ensures that the cluster is present or not.
 #  Defaults to present
 #  Note this forcefully removes a node from the cluster. Make sure all worker nodes
@@ -13,7 +13,7 @@
 # [*init*]
 #  This creates the first worker node for a new cluster.
 #  Set init to true to create a new cluster
-#  Defaults to false  
+#  Defaults to false
 #
 # [*join*]
 #  This adds either a worker or manger node to the cluster.
@@ -33,7 +33,7 @@
 # [*cert_expiry*]
 #  Validity period for node certificates (ns|us|ms|s|m|h) (default 2160h0m0s)
 #  defaults to undef
-#  
+#
 # [*dispatcher_heartbeat*]
 #  Dispatcher heartbeat period (ns|us|ms|s|m|h) (default 5s)
 #  Defaults to undef
@@ -72,39 +72,25 @@
 
 define docker::swarm(
 
-  $ensure = 'present',
-  $init = false,
-  $join = false,
-  $advertise_addr = undef,
-  $autolock = false,
-  $cert_expiry = undef,
-  $dispatcher_heartbeat = undef,
-  $external_ca = undef,
-  $force_new_cluster = false,
-  $listen_addr = undef,
-  $max_snapshots = undef,
-  $snapshot_interval = undef,
-  $token = undef,
-  $manager_ip = undef,
+  Optional[Pattern[/^present$|^absent$/]] $ensure = 'present',
+  Optional[Boolean] $init                         = false,
+  Optional[Boolean] $join                         = false,
+  Optional[String] $advertise_addr                = undef,
+  Optional[Boolean] $autolock                     = false,
+  Optional[String] $cert_expiry                   = undef,
+  Optional[String] $dispatcher_heartbeat          = undef,
+  Optional[String] $external_ca                   = undef,
+  Optional[Boolean] $force_new_cluster            = false,
+  Optional[String] $listen_addr                   = undef,
+  Optional[String] $max_snapshots                 = undef,
+  Optional[String] $snapshot_interval             = undef,
+  Optional[String] $token                         = undef,
+  Optional[String] $manager_ip                    = undef,
   ){
 
   include docker::params
 
   $docker_command = "${docker::params::docker_command} swarm"
-  validate_re($ensure, '^(present|absent)$')
-  validate_string($docker_command)
-  validate_string($cert_expiry)
-  validate_string($dispatcher_heartbeat)
-  validate_string($external_ca)
-  validate_string($max_snapshots)
-  validate_string($snapshot_interval)
-  validate_string($token)
-  validate_ip_address($advertise_addr)
-  validate_ip_address($listen_addr)
-  validate_bool($init)
-  validate_bool($join)
-  validate_bool($autolock)
-  validate_bool($force_new_cluster)
 
   if $init {
   $docker_swarm_init_flags = docker_swarm_init_flags({
