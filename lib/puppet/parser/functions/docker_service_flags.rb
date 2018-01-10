@@ -60,6 +60,10 @@ module Puppet::Parser::Functions
       flags << "-H '#{opts['host_socket']}'"
     end
 
+    if opts['registry_mirror'].to_s != 'undef'
+      flags << "--registry-mirror='#{opts['registry_mirror']}'"
+    end
+
     flags.flatten.join(" ")
   end
 end

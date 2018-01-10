@@ -88,6 +88,21 @@ describe 'docker' do
     end
   end
 
+  context "When registry_mirror is set" do
+    let(:pp) {"
+      class { 'docker':
+        registry_mirror => 'http://testmirror.io'
+      }
+    "}
+     it 'should apply with no errors' do
+       apply_manifest(pp, :catch_failures=>true)
+     end
+
+    describe file('/etc/default/docker') do
+      it { should contain 'registry-mirror' }
+    end
+  end
+
   context 'registry' do
     before(:all) do
       registry_host = 'localhost'

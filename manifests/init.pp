@@ -352,6 +352,10 @@
 # [*tmp_dir*]
 #    Sets the tmp dir for Docker (path)
 #
+# [*registry_mirror*]
+#   Sets the prefered container registry mirror.
+#   Default: undef
+#    
 class docker(
   Optional[String] $version                           = $docker::params::version,
   String $ensure                                      = $docker::params::ensure,
@@ -462,7 +466,7 @@ class docker(
   Optional[String] $service_overrides_template        = $docker::params::service_overrides_template,
   Optional[Boolean] $service_hasstatus                = $docker::params::service_hasstatus,
   Optional[Boolean] $service_hasrestart               = $docker::params::service_hasrestart,
-
+  Optional[String] $registry_mirror                   = $docker::params::registry_mirror,
 ) inherits docker::params {
 
 
