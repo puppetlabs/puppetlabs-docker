@@ -403,6 +403,42 @@ docker::networks::networks:
 
 A defined network can be used on a `docker::run` resource with the `net` parameter.
 
+### Volumes
+
+Docker 1.9.x added support for Volumes. These are *NOT* to be confused with the legacy volumes, now known as `bind mounts`. To expose the `docker_volume` type, which is used to manage volumes, add the following code to the manifest file:
+
+```puppet
+docker_volume { 'my-volume':
+  ensure => present,
+}
+```
+
+The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
+
+Some of the key advantages for using `volumes` over `bind mounts` are:
+* Easier to back up or migrate than `bind mounts` (legacy volumes).
+* Managed with Docker CLI or API (Puppet type uses the CLI commands).
+* Work on both Windows and Linux.
+* More easily shared between containers.
+* Allows for the store volumes on remote hosts or cloud providers.
+* Encrypt contents of volumes.
+* Add other functionality
+* New volume's contents can be pre-populated by a container.
+
+When using the `volumes` array with `docker::run`, the command on the backend will know if it needs to use `bind mounts` or `volumes` based off the data passed to the `-v` option.
+
+Running `docker::run` with native volumes:
+
+```puppet
+docker::run { 'helloworld':
+  image   => 'ubuntu:precise',
+  command => '/bin/sh -c "while true; do echo hello world; sleep 1; done"',
+  volumes => ['my-volume:/var/log'],
+}
+```
+
+For more information on volumes see the [Docker Volumes](https://docs.docker.com/engine/admin/volumes/volumes) documentation
+
 ### Compose
 
 Docker Compose describes a set of containers in YAML format and runs a command to build and run those containers. Included in the docker module is the `docker_compose` type. This enables Puppet to run Compose and remediate any issues to ensure reality matches the model in your Compose file.
