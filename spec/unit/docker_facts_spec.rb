@@ -8,6 +8,8 @@ describe Facter::Util::Fact, type: :fact do
     Facter::Util::Resolution.stubs(:which).with('docker').returns('/usr/bin/docker')
     docker_info = File.read(fixtures('facts', 'docker_info'))
     Facter::Util::Resolution.stubs(:exec).with("docker info --format '{{json .}}'").returns(docker_info)
+    processors = File.read(fixtures('facts', 'processors'))
+    Facter.fact(:processors).stubs(:value).returns(JSON.parse(processors))
 
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
     Facter::Util::Resolution.stubs(:exec).with('docker network ls | tail -n +2').returns(docker_network_list)
@@ -55,6 +57,8 @@ describe Facter::Util::Fact, type: :fact do
     before do
       docker_version = File.read(fixtures('facts', 'docker_version'))
       Facter.fact(:docker_version).stubs(:value).returns(JSON.parse(docker_version))
+      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+
     end
     it do
       expect(Facter.fact(:docker_client_version).value).to eq(
@@ -67,6 +71,7 @@ describe Facter::Util::Fact, type: :fact do
     before do
       docker_version = File.read(fixtures('facts', 'docker_version'))
       Facter.fact(:docker_version).stubs(:value).returns(JSON.parse(docker_version))
+      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it do
       expect(Facter.fact(:docker_server_version).value).to eq(
