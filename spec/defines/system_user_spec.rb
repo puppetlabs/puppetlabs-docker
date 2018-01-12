@@ -9,6 +9,7 @@ describe 'docker::system_user', :type => :define do
 		:lsbdistcodename           => 'jessie',
 		:kernelrelease             => '3.2.0-4-amd64',
 		:operatingsystemmajrelease => '8',
+                :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
 	} }
 
   context 'with default' do

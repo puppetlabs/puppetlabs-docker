@@ -15,6 +15,7 @@ require 'spec_helper'
           :kernelrelease             => '4.4.0-21-generic',
           :operatingsystemrelease    => '16.04',
           :operatingsystemmajrelease => '16.04',
+          :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } } 
         } }
         initscript = '/etc/systemd/system/docker-sample.service'
         command = 'docker'
@@ -28,6 +29,7 @@ require 'spec_helper'
           :operatingsystemrelease     => '7.2',
           :operatingsystemmajrelease  => '7',
           :kernelversion              => '3.10.0',
+          :os                         => { :distro => { :codename => 'wheezy' }, :family => osfamily, :name => osfamily, :release => { :major => '7', :full => '7.0' } }
         } }
         initscript = '/etc/systemd/system/docker-sample.service'
         command = 'docker'

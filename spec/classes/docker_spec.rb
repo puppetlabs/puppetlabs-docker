@@ -7,14 +7,15 @@ describe 'docker', :type => :class do
 
       if osfamily == 'Debian'
         let(:facts) { {
-          :architecture           => 'amd64',
-          :osfamily               => 'Debian',
-          :operatingsystem        => 'Debian',
-          :lsbdistid              => 'Debian',
-          :lsbdistcodename        => 'stretch',
-          :kernelrelease          => '4.9.0-3-amd64',
-          :operatingsystemrelease => '9.0',
+          :architecture              => 'amd64',
+          :osfamily                  => 'Debian',
+          :operatingsystem           => 'Debian',
+          :lsbdistid                 => 'Debian',
+          :lsbdistcodename           => 'stretch',
+          :kernelrelease             => '4.9.0-3-amd64',
+          :operatingsystemrelease    => '9.0',
           :operatingsystemmajrelease => '9',
+          :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
         } }
         service_config_file = '/etc/default/docker'
         storage_config_file = '/etc/default/docker-storage'
@@ -26,14 +27,15 @@ describe 'docker', :type => :class do
 
       if osfamily == 'Ubuntu'
         let(:facts) { {
-          :architecture           => 'amd64',
-          :osfamily               => 'Debian',
-          :operatingsystem        => 'Ubuntu',
-          :lsbdistid              => 'Ubuntu',
-          :lsbdistcodename        => 'xenial',
-          :kernelrelease          => '4.4.0-21-generic',
-          :operatingsystemrelease => '16.04',
+          :architecture              => 'amd64',
+          :osfamily                  => 'Debian',
+          :operatingsystem           => 'Ubuntu',
+          :lsbdistid                 => 'Ubuntu',
+          :lsbdistcodename           => 'xenial',
+          :kernelrelease             => '4.4.0-21-generic',
+          :operatingsystemrelease    => '16.04',
           :operatingsystemmajrelease => '16.04',
+          :os                        => { :distro => { :codename =>  'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } } 
         } }
         service_config_file = '/etc/default/docker'
         storage_config_file = '/etc/default/docker-storage'
@@ -726,6 +728,7 @@ describe 'docker', :type => :class do
       :lsbdistcodename        => 'maverick',
       :kernelrelease          => '3.8.0-29-generic',
       :operatingsystemrelease => '10.04',
+      :os                     => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
     } }
 
     context 'with no parameters' do
@@ -746,13 +749,14 @@ describe 'docker', :type => :class do
 
   context 'specific to Debian wheezy' do
     let(:facts) { {
-      :osfamily        => 'Debian',
-      :operatingsystem => 'Debian',
-      :lsbdistid       => 'Debian',
-      :lsbdistcodename => 'wheezy',
-      :operatingsystemrelease => '7.9',
+      :osfamily                  => 'Debian',
+      :operatingsystem           => 'Debian',
+      :lsbdistid                 => 'Debian',
+      :lsbdistcodename           => 'wheezy',
+      :operatingsystemrelease    => '7.9',
       :operatingsystemmajrelease => '7',
-      :kernelrelease   => '3.12-1-amd64'
+      :kernelrelease             => '3.12-1-amd64',
+      :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
     } }
 
     it { should_not contain_package('linux-image-extra-3.8.0-29-generic') }
@@ -771,12 +775,13 @@ describe 'docker', :type => :class do
   ['RedHat', 'CentOS'].each do |operatingsystem|
     context "on #{operatingsystem}" do
       let(:facts) { {
-        :architecture => 'x86_64',
-        :osfamily => 'RedHat',
-        :operatingsystem => operatingsystem,
-        :operatingsystemrelease => '7.0',
+        :architecture              => 'x86_64',
+        :osfamily                  => 'RedHat',
+        :operatingsystem           => operatingsystem,
+        :operatingsystemrelease    => '7.0',
         :operatingsystemmajrelease => '7',
-        :kernelversion => '3.10.0',
+        :kernelversion             => '3.10.0',
+        :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
       } }
 
       storage_setup_file = '/etc/sysconfig/docker-storage-setup'
@@ -852,7 +857,8 @@ describe 'docker', :type => :class do
       :operatingsystem        => 'Ubuntu',
       :lsbdistcodename        => 'precise',
       :operatingsystemrelease => '12.04',
-      :kernelrelease          => '3.8.0-29-generic'
+      :kernelrelease          => '3.8.0-29-generic',
+      :os                     => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
     } }
     it { should contain_package('linux-image-generic-lts-trusty') }
     it { should contain_package('linux-headers-generic-lts-trusty') }
@@ -868,7 +874,8 @@ describe 'docker', :type => :class do
       :operatingsystem        => 'Ubuntu',
       :lsbdistcodename        => 'trusty',
       :operatingsystemrelease => '14.04',
-      :kernelrelease          => '3.8.0-29-generic'
+      :kernelrelease          => '3.8.0-29-generic',
+      :os                     => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
     } }
     it { should contain_service('docker').with_provider('upstart') }
     it { should contain_package('docker').with_name('docker-ce').with_ensure('present')  }
@@ -884,7 +891,8 @@ describe 'docker', :type => :class do
         :operatingsystem        => 'Ubuntu',
         :lsbdistcodename        => 'trusty',
         :operatingsystemrelease => '15.04',
-        :kernelrelease          => '3.8.0-29-generic'
+        :kernelrelease          => '3.8.0-29-generic',
+        :os                     => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
       } }
 
       it { should contain_service('docker').with_provider('systemd').with_hasstatus(true).with_hasrestart(true) }
@@ -899,6 +907,7 @@ describe 'docker', :type => :class do
         :lsbdistcodename           => 'jessie',
         :kernelrelease             => '3.2.0-4-amd64',
         :operatingsystemmajrelease => '8',
+        :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
       } }
 
       it { should contain_service('docker').with_provider('systemd').with_hasstatus(true).with_hasrestart(true) }
@@ -914,6 +923,7 @@ describe 'docker', :type => :class do
         :lsbdistcodename           => 'Whatever',
         :kernelrelease             => 'Whatever',
         :operatingsystemmajrelease => 'Whatever',
+        :os                        => { :distro => { :codename => 'Whatever' }, :family => 'Whatever', :name => 'Whatever', :release => { :major => 'Whatever', :full => 'Whatever' } }
       } }
     it do
       expect {
