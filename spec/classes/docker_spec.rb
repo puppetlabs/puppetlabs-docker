@@ -720,33 +720,6 @@ describe 'docker', :type => :class do
 
   end
 
-  context 'specific to Ubuntu Maverick' do
-    let(:facts) { {
-      :osfamily               => 'Debian',
-      :operatingsystem        => 'Ubuntu',
-      :lsbdistid              => 'Ubuntu',
-      :lsbdistcodename        => 'maverick',
-      :kernelrelease          => '3.8.0-29-generic',
-      :operatingsystemrelease => '10.04',
-      :os                     => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
-    } }
-
-    context 'with no parameters' do
-      it { should contain_package('linux-image-extra-3.8.0-29-generic') }
-      it { should contain_package('apparmor') }
-    end
-
-    context 'with no upstream package source' do
-      let(:params) { {'use_upstream_package_source' => false } }
-      it { should contain_package('linux-image-extra-3.8.0-29-generic') }
-    end
-
-    context 'when not managing the kernel' do
-      let(:params) { {'manage_kernel' => false} }
-      it { should_not contain_package('linux-image-extra-3.8.0-29-generic') }
-    end
-  end
-
   context 'specific to Debian wheezy' do
     let(:facts) { {
       :osfamily                  => 'Debian',
@@ -847,23 +820,6 @@ describe 'docker', :type => :class do
       end
 
     end
-  end
-
-  context 'specific to Ubuntu Precise' do
-    let(:facts) { {
-      :architecture           => 'amd64',
-      :osfamily               => 'Debian',
-      :lsbdistid              => 'Ubuntu',
-      :operatingsystem        => 'Ubuntu',
-      :lsbdistcodename        => 'precise',
-      :operatingsystemrelease => '12.04',
-      :kernelrelease          => '3.8.0-29-generic',
-      :os                     => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
-    } }
-    it { should contain_package('linux-image-generic-lts-trusty') }
-    it { should contain_package('linux-headers-generic-lts-trusty') }
-    it { should contain_service('docker').with_provider('upstart') }
-    it { should contain_package('apparmor') }
   end
 
   context 'specific to Ubuntu Trusty' do
