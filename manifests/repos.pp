@@ -2,9 +2,10 @@
 #
 #
 class docker::repos (
-  $location = $docker::package_location,
-  $key_source = $docker::package_key_source,
+  $location         = $docker::package_location,
+  $key_source       = $docker::package_key_source,
   $key_check_source = $docker::package_key_check_source,
+  $architecture     = $facts['architecture'],
   ) {
 
   ensure_packages($docker::prerequired_packages)
@@ -18,10 +19,11 @@ class docker::repos (
         ensure_packages(['debian-keyring', 'debian-archive-keyring'])
 
         apt::source { 'docker':
-          location => $location,
-          release  => $release,
-          repos    => $package_repos,
-          key      => {
+          location     => $location,
+          architecture => $architecture,
+          release      => $release,
+          repos        => $package_repos,
+          key          => {
             id     => $package_key,
             source => $key_source,
           },
