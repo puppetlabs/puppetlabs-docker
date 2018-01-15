@@ -38,14 +38,6 @@ To create the Docker hosted repository and install the Docker package, add a sin
 include 'docker'
 ```
 
-If you are using Ubuntu, all the required Kernel extensions are installed. To disable this feature, add the following code to the manifest file:
-
-```puppet
-class { 'docker':
-  manage_kernel => false,
-}
-```
-
 To configure package sources independently and disable automatically including sources, add the following code to the manifest file:
 
 ```puppet
@@ -919,14 +911,6 @@ Defaults to `true'.
 The custom root directory for the containers.
 
 Defaults to `undefined`.
-
-#### `manage_kernel`
-
-Specifies whether to install the Kernel required by Docker.
-
-Valid values are `true`, `false`.
-
-Defaults to `true`.
 
 #### `dns`
 

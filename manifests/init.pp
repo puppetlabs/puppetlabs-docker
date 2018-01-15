@@ -187,10 +187,6 @@
 #   Custom root directory for containers
 #   Defaults to undefined
 #
-# [*manage_kernel*]
-#   Attempt to install the correct Kernel required by docker
-#   Defaults to true
-#
 # [*dns*]
 #   Custom dns server address
 #   Defaults to undefined
@@ -407,7 +403,6 @@ class docker(
   Optional[String] $root_dir                          = $docker::params::root_dir,
   Optional[Boolean] $tmp_dir_config                    = $docker::params::tmp_dir_config,
   Optional[String] $tmp_dir                           = $docker::params::tmp_dir,
-  Boolean $manage_kernel                              = $docker::params::manage_kernel,
   Variant[String,Array,Undef] $dns                    = $docker::params::dns,
   Variant[String,Array,Undef] $dns_search             = $docker::params::dns_search,
   Optional[String] $socket_group                      = $docker::params::socket_group,

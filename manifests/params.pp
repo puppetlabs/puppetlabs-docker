@@ -68,7 +68,6 @@ class docker::params {
   $overlay2_override_kernel_check    = false
   $manage_package                    = true
   $package_source                    = undef
-  $manage_kernel                     = true
   $docker_command                    = 'docker'
   $service_name_default              = 'docker'
   $docker_group_default              = 'docker'
