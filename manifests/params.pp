@@ -82,6 +82,7 @@ class docker::params {
   $storage_pool_autoextend_threshold = undef
   $storage_pool_autoextend_percent   = undef
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
+  $registry_mirror                   = undef
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
   $os                                = downcase($::operatingsystem)

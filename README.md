@@ -636,28 +636,35 @@ docker::registry_auth::registries:
 
 If using Docker V1.11 or later the docker login e-mail flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). Add the following code to the manifest file:
 
-'''puppet
+```puppet
 docker::registry { 'example.docker.io:5000'}
   username => 'user',
   password => 'secret',
 }
-''
+```
 
 If using hiera, configure the 'docker::registry_auth' class:
 
-'''yaml
+```yaml
 docker::registry_auth::registries:
   'example.docker.io:5000':
     username: 'user1'
     password: 'secret'
   }
-'''
+```
 
 To log out of a registry, add the following code to the manifest file:
 
 ```puppet
 docker::registry { 'example.docker.io:5000':
   ensure => 'absent',
+}
+```
+
+To set a preferred registry mirror, add the following code to the manifest file:
+```puppet
+class { 'docker':
+  registry_mirror => 'http://testmirror.io'
 }
 ```
 

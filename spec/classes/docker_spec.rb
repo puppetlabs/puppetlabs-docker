@@ -201,8 +201,7 @@ describe 'docker', :type => :class do
         context 'with custom service_name' do
           let(:params) {{ 'service_name' => 'docker.io' }}
           it { should contain_file('/etc/default/docker.io') }
-        end
-
+       end
       end
 
       if osfamily == 'RedHat'
@@ -228,6 +227,11 @@ describe 'docker', :type => :class do
         context 'with no_proxy param' do
           let(:params) { {'no_proxy' => '.github.com' } }
           it { should contain_file(service_config_file).with_content(/no_proxy='.github.com'/) }
+        end
+
+        context 'with registry_mirror param set to mirror value' do
+          let(:params) {{ 'registry_mirror' => 'https://mirror.gcr.io' }}
+          it { should contain_file('/etc/sysconfig/docker').with_content(/registry-mirror/) }
         end
 
         context 'when given a specific tmp_dir' do
