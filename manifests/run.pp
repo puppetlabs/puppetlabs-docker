@@ -245,22 +245,8 @@ define docker::run(
           $uses_systemd   = true
         }
       }
-      'Archlinux': {
-        $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-        $init_template  = 'docker/etc/systemd/system/docker-run.erb'
-        $hasstatus      = true
-        $mode           = '0640'
-        $uses_systemd   = true
-      }
-      'Gentoo': {
-        $initscript     = "/etc/init.d/${service_prefix}${sanitised_title}"
-        $init_template  = 'docker/etc/init.d/docker-run.gentoo.erb'
-        $hasstatus      = true
-        $mode           = '0770'
-        $uses_systemd   = false
-      }
       default: {
-        fail translate(('Docker needs a Debian, RedHat, Archlinux or Gentoo based system.'))
+        fail translate(('Docker needs a Debian, RedHat based system.'))
       }
     }
 
