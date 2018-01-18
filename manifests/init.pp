@@ -355,7 +355,7 @@
 class docker(
   Optional[String] $version                           = $docker::params::version,
   String $ensure                                      = $docker::params::ensure,
-  Tuple $prerequired_packages                         = $docker::params::prerequired_packages,
+  Variant[Array[String], Hash] $prerequired_packages  = $docker::params::prerequired_packages,
   String $docker_ce_start_command                     = $docker::params::docker_ce_start_command,
   Optional[String] $docker_ce_package_name            = $docker::params::docker_ce_package_name,
   Optional[String] $docker_ce_source_location         = $docker::params::package_ce_source_location,
@@ -377,7 +377,7 @@ class docker(
   Optional[String] $docker_ee_key_id                  = $docker::params::package_ee_key_id,
   Optional[String] $docker_ee_repos                   = $docker::params::package_ee_repos,
   Optional[String] $docker_ee_release                 = $docker::params::package_ee_release,
-  Variant[String,Tuple,Undef] $tcp_bind               = $docker::params::tcp_bind,
+  Variant[String,Array[String],Undef] $tcp_bind       = $docker::params::tcp_bind,
   Boolean $tls_enable                                 = $docker::params::tls_enable,
   Boolean $tls_verify                                 = $docker::params::tls_verify,
   Optional[String] $tls_cacert                        = $docker::params::tls_cacert,
