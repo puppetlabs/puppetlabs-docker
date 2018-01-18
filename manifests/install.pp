@@ -8,7 +8,7 @@ class docker::install {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
     assert_type(Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/], $::osfamily) |$a, $b| {
-      fail('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
+      fail translate(('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'))
     }
   }
   if $docker::version and $docker::ensure != 'absent' {

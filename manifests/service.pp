@@ -116,7 +116,7 @@ class docker::service (
 ) {
 
   unless $::osfamily =~ /(Debian|RedHat|Archlinux|Gentoo)/ {
-    fail('The docker::service class needs a Debian, RedHat, Archlinux or Gentoo based system.')
+    fail translate(('The docker::service class needs a Debian, RedHat, Archlinux or Gentoo based system.'))
   }
 
   $dns_array = any2array($dns)

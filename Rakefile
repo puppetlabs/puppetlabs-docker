@@ -2,6 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'puppetlabs_spec_helper/rake_tasks'
+require 'puppet_pot_generator/rake_tasks'
 
 # These gems aren't always present, for instance
 # on Travis with --without development

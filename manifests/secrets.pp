@@ -1,3 +1,4 @@
+ # == Define: docker::secrets
 define docker::secrets (
 
   Optional[Pattern[/^present$|^absent$/]] $ensure = 'present',

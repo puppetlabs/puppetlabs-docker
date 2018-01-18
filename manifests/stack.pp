@@ -1,4 +1,4 @@
- # == Define: docker::stack
+# == Define: docker::stack
 #
 # A define that deploys Docker stacks or compose v3
 #

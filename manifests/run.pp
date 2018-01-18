@@ -125,11 +125,11 @@ define docker::run(
   }
 
   if ($remove_volume_on_start and !$remove_container_on_start) {
-    fail("In order to remove the volume on start for ${title} you need to also remove the container")
+    fail translate(("In order to remove the volume on start for ${title} you need to also remove the container"))
   }
 
   if ($remove_volume_on_stop and !$remove_container_on_stop) {
-    fail("In order to remove the volume on stop for ${title} you need to also remove the container")
+    fail translate(("In order to remove the volume on stop for ${title} you need to also remove the container"))
   }
 
   if $use_name {
@@ -260,7 +260,7 @@ define docker::run(
         $uses_systemd   = false
       }
       default: {
-        fail('Docker needs a Debian, RedHat, Archlinux or Gentoo based system.')
+        fail translate(('Docker needs a Debian, RedHat, Archlinux or Gentoo based system.'))
       }
     }
 
