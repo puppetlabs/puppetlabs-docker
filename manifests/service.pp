@@ -126,7 +126,7 @@ class docker::service (
   $shell_values_array = any2array($shell_values)
   $tcp_bind_array = any2array($tcp_bind)
 
-  if $service_config {
+  if $service_config != undef {
     $_service_config = $service_config
   } else {
     if $::osfamily == 'Debian' {
