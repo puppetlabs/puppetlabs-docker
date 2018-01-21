@@ -85,7 +85,7 @@ class docker::params {
   $registry_mirror                   = undef
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
-  $os                                = downcase($::operatingsystem)
+  $os_lc                             = downcase($::operatingsystem)
 
   case $::osfamily {
     'Debian' : {
@@ -142,8 +142,8 @@ class docker::params {
       $service_config = undef
       $storage_setup_file = undef
 
-      $package_ce_source_location = "https://download.docker.com/linux/${os}"
-      $package_ce_key_source = "https://download.docker.com/linux/${os}/gpg"
+      $package_ce_source_location = "https://download.docker.com/linux/${os_lc}"
+      $package_ce_key_source = "https://download.docker.com/linux/${os_lc}/gpg"
       $package_ce_key_id = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
       $package_ce_release = $::lsbdistcodename
       $package_source_location = 'http://apt.dockerproject.org/repo'
