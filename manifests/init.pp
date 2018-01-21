@@ -441,7 +441,7 @@ class docker(
   Array $daemon_environment_files                           = [],
   Variant[String,Hash,Undef] $repo_opt                      = $docker::params::repo_opt,
   Boolean $nowarn_kernel                                    = $docker::params::nowarn_kernel,
-  Optional[String] $os                                      = $docker::params::os,
+  Optional[String] $os_lc                                   = $docker::params::os_lc,
   Optional[String] $storage_devs                            = $docker::params::storage_devs,
   Optional[String] $storage_vg                              = $docker::params::storage_vg,
   Optional[String] $storage_root_size                       = $docker::params::storage_root_size,
