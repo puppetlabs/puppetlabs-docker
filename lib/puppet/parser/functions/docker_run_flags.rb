@@ -60,7 +60,7 @@ module Puppet::Parser::Functions
       ['--link %s',         'links'],
       ['--lxc-conf="%s"',   'lxc_conf'],
       ['--volumes-from %s', 'volumes_from'],
-      ['-e %s',             'env'],
+      ['-e "%s"',           'env'],
       ['--env-file %s',     'env_file'],
       ['-p %s',             'ports'],
       ['-l %s',             'labels'],
