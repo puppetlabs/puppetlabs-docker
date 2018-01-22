@@ -320,12 +320,12 @@ require 'spec_helper'
 
       context 'when passing serveral environment variables' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'env' => ['FOO=BAR', 'FOO2=BAR2']} }
-        it { should contain_file(initscript).with_content(/-e FOO=BAR/).with_content(/-e FOO2=BAR2/) }
+        it { should contain_file(initscript).with_content(/-e "FOO=BAR"/).with_content(/-e "FOO2=BAR2"/) }
       end
 
       context 'when passing an environment variable' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'env' => 'FOO=BAR'} }
-        it { should contain_file(initscript).with_content(/-e FOO=BAR/) }
+        it { should contain_file(initscript).with_content(/-e "FOO=BAR"/) }
       end
 
       context 'when passing serveral environment files' do
