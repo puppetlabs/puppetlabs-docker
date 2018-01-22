@@ -28,7 +28,7 @@ class docker::compose(
 ) inherits docker::params {
 
   if $proxy != undef {
-      validate_re($proxy, '^(https?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
+      validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
   if $ensure == 'present' {
