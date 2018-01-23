@@ -1,5 +1,7 @@
 require 'shellwords'
-
+#
+# docker_secrets_flags.rb
+#
 module Puppet::Parser::Functions
   # Transforms a hash into a string of docker swarm init flags
   newfunction(:docker_secrets_flags, :type => :rvalue) do |args|
@@ -23,13 +25,13 @@ module Puppet::Parser::Functions
       filtered.map { |val| sprintf(format + " \\\n", val) }
     }
     [
-      ['-l %s', 'label']
+      ['-l %s', 'label'],
     ].each do |(format, key)|
       values    = opts[key]
       new_flags = multi_flags.call(values, format)
       flags.concat(new_flags)
     end
 
-    flags.flatten.join(" ")
+    flags.flatten.join(' ')
   end
 end

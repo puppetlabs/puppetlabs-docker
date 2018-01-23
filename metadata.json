@@ -10,7 +10,8 @@
   "dependencies": [
     {"name":"puppetlabs/stdlib","version_requirement":">= 4.24.0"},
     {"name":"puppetlabs/apt","version_requirement":">= 4.4.1"},
-    {"name":"stahnma/epel","version_requirement":">= 0.0.6"}
+    {"name":"stahnma/epel","version_requirement":">= 0.0.6"},
+    {"name":"puppetlabs/translate","version_requirement":">= 0.0.1 < 1.1.0"}
   ],
   "data_provider": null,
   "operatingsystem_support": [

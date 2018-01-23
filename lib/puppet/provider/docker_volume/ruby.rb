@@ -4,10 +4,10 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
   desc 'Support for Docker Volumes'
 
   mk_resource_methods
-  commands :docker => 'docker'
+  commands docker: 'docker'
 
   def volume_conf
-    flags = ['volume', 'create']
+    flags = %w[volume create]
     multi_flags = lambda { |values, format|
       filtered = [values].flatten.compact
       filtered.map { |val| sprintf(format, val) }
@@ -15,7 +15,7 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
 
     [
       ['--driver=%s', :driver],
-      ['--opt=%s', :options]
+      ['--opt=%s', :options],
     ].each do |(format, key)|
       values = resource[key]
       new_flags = multi_flags.call(values, format)
@@ -25,26 +25,26 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
   end
 
   def self.instances
-    output = docker(['volume', 'ls'])
+    output = docker(%w[volume ls])
     lines = output.split("\n")
     lines.shift # remove header row
-    lines.collect do |line|
+    lines.map do |line|
       driver, name = line.split(' ')
       inspect = docker(['volume', 'inspect', name])
       obj = JSON.parse(inspect).first
-      new({
-        :name    => name,
+      new(
+        :name => name,
         :mountpoint => obj['Mountpoint'],
         :options => obj['Options'],
         :ensure  => :present,
-        :driver  => driver
-      })
+        :driver  => driver,
+      )
     end
   end
 
   def self.prefetch(resources)
     instances.each do |prov|
-      if resource = resources[prov.name] # rubocop:disable Lint/AssignmentInCondition
+      if (resource = resources[prov.name])
         resource.provider = prov
       end
     end

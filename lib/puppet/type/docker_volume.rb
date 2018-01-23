@@ -18,7 +18,7 @@ Puppet::Type.newtype(:docker_volume) do
   newproperty(:mountpoint) do
     desc 'The location that the volume is mounted to'
     validate do |value|
-      fail "#{self.name.to_s} is read-only and is only available via puppet resource."
+      raise(Puppet::ParseError, "#{value} is read-only and is only available via puppet resource.")
     end
   end
 end

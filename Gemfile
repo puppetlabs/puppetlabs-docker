@@ -9,8 +9,8 @@ group :test do
   else
     gem "puppet"
   end
-  gem "puppet-lint"
-  gem "puppet-lint-unquoted_string-check"
+  gem "puppet-lint", "2.3.3"
+  gem "puppet-lint-unquoted_string-check", "0.3.0"
   gem "rspec-puppet"
   gem "puppet-syntax"
   gem "puppetlabs_spec_helper"
@@ -22,7 +22,11 @@ group :test do
   gem 'parallel_tests' # requires at least Ruby 1.9.3
   gem "json_pure", "<= 2.0.1" # 2.0.2 requires Ruby 2+
   gem 'rspec_junit_formatter', '~> 0.2.3'
-
+  gem "puppet-lint-i18n"
+  gem "puppet_pot_generator"
+  gem 'rubocop-i18n'
+  gem 'gettext-setup'
+  gem 'rubocop-rspec'
 end
 
 group :system_tests do
