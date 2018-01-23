@@ -69,12 +69,6 @@ class docker::repos (
           }
           Yumrepo['docker'] -> Package['docker']
         }
-        if ($::operatingsystem != 'Amazon') and ($::operatingsystem != 'Fedora') {
-          if ($docker::manage_epel == true) {
-            include 'epel'
-            Class['epel'] -> Package['docker']
-          }
-        }
       }
     }
     default: {}

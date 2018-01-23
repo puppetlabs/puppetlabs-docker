@@ -88,7 +88,6 @@ describe 'docker', :type => :class do
           let(:params) { {'use_upstream_package_source' => false } }
           it { should_not contain_apt__source('docker') }
           it { should_not contain_apt__pin('docker') }
-          it { should_not contain_class('epel') }
           it { should contain_package('docker') }
         end
 
@@ -406,13 +405,6 @@ describe 'docker', :type => :class do
           end
         end
 
-        context 'with no epel repo' do
-          let(:params) { {'manage_epel' => false } }
-          it { should_not contain_class('epel') }
-          it { should contain_package('docker').with_name('docker-ce').with_ensure('present') }
-          it { should_not contain_apt__source('docker') }
-          it { should_not contain_package('linux-image-extra-3.8.0-29-generic') }
-        end
       end
 
       it { should compile.with_all_deps }

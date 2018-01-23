@@ -1,7 +1,6 @@
 fixtures:
   forge_modules:
     stdlib: 'puppetlabs-stdlib'
-    epel: 'stahnma-epel'
     apt: 'puppetlabs-apt'
     translate: 'puppetlabs-translate'
   symlinks:
