@@ -130,7 +130,6 @@ class docker::params {
         }
       }
 
-      $manage_epel = false
       $service_name = $service_name_default
       $docker_group = $docker_group_default
       $socket_group = $socket_group_default
@@ -178,7 +177,6 @@ class docker::params {
       $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
       $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
       $use_upstream_package_source = true
-      $manage_epel = false
 
       $package_ce_source_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
       $package_ce_key_source = 'https://download.docker.com/linux/centos/gpg'
@@ -245,7 +243,6 @@ class docker::params {
       }
     }
     default: {
-      $manage_epel = false
       $docker_group = $docker_group_default
       $socket_group = $socket_group_default
       $package_key_source = undef

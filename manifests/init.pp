@@ -434,7 +434,6 @@ class docker(
   Optional[String] $execdriver                              = $docker::params::execdriver,
   Boolean $manage_package                                   = $docker::params::manage_package,
   Optional[String] $package_source                          = $docker::params::package_source,
-  Boolean $manage_epel                                      = $docker::params::manage_epel,
   Optional[String] $service_name                            = $docker::params::service_name,
   Array $docker_users                                       = [],
   String $docker_group                                      = $docker::params::docker_group,
