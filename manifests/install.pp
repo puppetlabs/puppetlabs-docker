@@ -1,14 +1,13 @@
 # == Class: docker
 #
 # Module to install an up-to-date version of Docker from a package repository.
-# This module currently works only on Debian, Red Hat
-# and Archlinux based distributions.
+# This module currently works only on Debian and Red Hat based distributions.
 #
 class docker::install {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'))
+    assert_type(Pattern[/^(Debian|RedHat)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian or Red Hat based systems.'))
     }
   }
   if $docker::version and $docker::ensure != 'absent' {
@@ -32,9 +31,6 @@ class docker::install {
         }
         'RedHat' : {
           $pk_provider = 'rpm'
-        }
-        'Gentoo' : {
-          $pk_provider = 'portage'
         }
         default : {
           $pk_provider = undef

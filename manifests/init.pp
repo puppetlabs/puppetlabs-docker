@@ -465,8 +465,8 @@ class docker(
 
 
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'))
+    assert_type(Pattern[/^(Debian|RedHat)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian or Red Hat based systems'))
     }
   }
 

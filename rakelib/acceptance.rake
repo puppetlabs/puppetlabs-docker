@@ -14,7 +14,6 @@ end
 namespace :acceptance do
   {
     :vagrant => [
-       'centos-66-x64',
        'centos-70-x64',
        'debian-78-x64',
        'debian-81-x64',
@@ -23,7 +22,6 @@ namespace :acceptance do
        'ubuntu-1604-x64',
     ],
     :pooler => [
-      'centos6',
       'centos7',
       'rhel6',
       'rhel7',
