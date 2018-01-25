@@ -115,8 +115,8 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat|Archlinux|Gentoo)/ {
-    fail translate(('The docker::service class needs a Debian, RedHat, Archlinux or Gentoo based system.'))
+  unless $::osfamily =~ /(Debian|RedHat)/ {
+    fail translate(('The docker::service class needs a Debian or Redhat based system.'))
   }
 
   $dns_array = any2array($dns)

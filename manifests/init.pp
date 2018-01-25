@@ -351,7 +351,7 @@
 # [*registry_mirror*]
 #   Sets the prefered container registry mirror.
 #   Default: undef
-#    
+#
 class docker(
   Optional[String] $version                                 = $docker::params::version,
   String $ensure                                            = $docker::params::ensure,
@@ -439,7 +439,6 @@ class docker(
   String $docker_group                                      = $docker::params::docker_group,
   Array $daemon_environment_files                           = [],
   Variant[String,Hash,Undef] $repo_opt                      = $docker::params::repo_opt,
-  Boolean $nowarn_kernel                                    = $docker::params::nowarn_kernel,
   Optional[String] $os_lc                                   = $docker::params::os_lc,
   Optional[String] $storage_devs                            = $docker::params::storage_devs,
   Optional[String] $storage_vg                              = $docker::params::storage_vg,
@@ -465,8 +464,8 @@ class docker(
 
 
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'))
+    assert_type(Pattern[/^(Debian|RedHat)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian or Red Hat based systems.'))
     }
   }
 
