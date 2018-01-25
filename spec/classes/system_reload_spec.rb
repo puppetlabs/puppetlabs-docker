@@ -6,10 +6,10 @@ describe 'docker::systemd_reload', :type => :class do
     :osfamily               => 'Debian',
     :operatingsystem        => 'Debian',
     :lsbdistid              => 'Debian',
-    :lsbdistcodename        => 'wheezy',
-    :kernelrelease          => '3.2.0-4-amd64',
-    :operatingsystemrelease => '7.3',
-    :operatingsystemmajrelease => '7',
+    :lsbdistcodename        => 'stretch',
+    :kernelrelease          => '9.3.0-amd64',
+    :operatingsystemrelease => '9.3',
+    :operatingsystemmajrelease => '9',
   } }
 
   context 'with systems that have systemd' do
