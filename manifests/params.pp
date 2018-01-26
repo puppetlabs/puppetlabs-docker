@@ -183,8 +183,9 @@ class docker::params {
       $package_ee_repos = $docker_ee_repos
       $package_ee_package_name = $docker_ee_package_name
       $pin_upstream_package_source = undef
+      $apt_source_pin_level = undef
       $service_name = $service_name_default
-      $detach_service_in_init = true
+      $detach_service_in_init = false
       $docker_group = $docker_group_default
       $socket_group = $socket_group_default
 
