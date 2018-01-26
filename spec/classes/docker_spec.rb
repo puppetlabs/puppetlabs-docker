@@ -341,12 +341,12 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm'
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm'
           } }
           it do
             should contain_package('docker').with(
               'ensure' => 'present',
-              'source' => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source' => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'   => 'docker-engine'
             )
           end
@@ -357,13 +357,13 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
             'repo_opt'                    => '--enablerepo=rhel7-extras'
           } }
           it do
             should contain_package('docker').with(
               'ensure'          => 'present',
-              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'            => 'docker-engine',
               'install_options' => '--enablerepo=rhel7-extras'
             )
@@ -375,12 +375,12 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm'
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm'
           } }
           it do
             should contain_package('docker').with(
               'ensure'          => 'present',
-              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'            => 'docker-engine',
               'install_options' => /--enablerepo/
             )
@@ -392,13 +392,13 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
             'repo_opt'                    => ''
           } }
           it do
             should contain_package('docker').with(
               'ensure'          => 'present',
-              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'            => 'docker-engine',
               'install_options' => nil
             )

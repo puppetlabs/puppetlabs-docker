@@ -15,7 +15,6 @@ namespace :acceptance do
   {
     :vagrant => [
        'centos-70-x64',
-       'debian-78-x64',
        'debian-81-x64',
        'ubuntu-1404-x64',
        'ubuntu-1604-x64',
