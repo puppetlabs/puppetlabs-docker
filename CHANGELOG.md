@@ -1,3 +1,29 @@
+# Version 1.0.5
+Various fixes for github issues
+
+ - 124
+ - 98
+ - 73
+ - 38
+ - 14
+
+Adding in the following fetures/functionality:
+
+ - Adding resource type and provider for docker_volumes
+ - Fixing docker registry $pass_hash condition and allowing $server param to contain slashes
+ - Remove docker_cs param
+ - Spec test updates
+ - Add facts from docker version and info
+ - Adding registry mirror flag for docker daemon
+ - Removing deprecated supported Operating systems
+ - Fixing systemd escaping
+ - Add docker::compose accepting http proxy
+ - Allow deactivation of service_config management
+ - Fixingtypedef of storage_config , service_config and overides template
+ - Replacing variant Tuple with Array[String]
+ - updating apt module to the latest version
+ - Replaced validate functions with datatypes and assert_type function.
+
 # Version 1.0.4
 
 Correcting changelog
