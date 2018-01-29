@@ -150,7 +150,7 @@ class docker::params {
       if ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
         $detach_service_in_init = false
       } else {
-        $detach_svervice_in_init = true
+        $detach_service_in_init = true
       }
 
     }
