@@ -111,22 +111,13 @@ class docker::params {
         }
         default: {
           $package_release = "debian-${::lsbdistcodename}"
-          if (versioncmp($::operatingsystemmajrelease, '8') >= 0) {
-            $service_provider           = 'systemd'
-            $storage_config             = '/etc/default/docker-storage'
-            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
-            $service_hasstatus          = true
-            $service_hasrestart         = true
-            include docker::systemd_reload
-          } else {
-            $service_provider           = undef
-            $storage_config             = undef
-            $service_config_template    = 'docker/etc/default/docker.erb'
-            $service_overrides_template = undef
-            $service_hasstatus          = undef
-            $service_hasrestart         = undef
-          }
+          $service_provider           = 'systemd'
+          $storage_config             = '/etc/default/docker-storage'
+          $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
+          $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+          $service_hasstatus          = true
+          $service_hasrestart         = true
+          include docker::systemd_reload
         }
       }
 
@@ -137,7 +128,6 @@ class docker::params {
       $pin_upstream_package_source = true
       $apt_source_pin_level = 10
       $repo_opt = undef
-      $nowarn_kernel = false
       $service_config = undef
       $storage_setup_file = undef
 
@@ -157,11 +147,10 @@ class docker::params {
       $package_ee_package_name = $docker_ee_package_name
 
 
-      if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
-        ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+      if ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
         $detach_service_in_init = false
       } else {
-        $detach_service_in_init = true
+        $detach_svervice_in_init = true
       }
 
     }
@@ -196,50 +185,17 @@ class docker::params {
       $pin_upstream_package_source = undef
       $apt_source_pin_level = undef
       $service_name = $service_name_default
-      if (versioncmp($::operatingsystemrelease, '7.0') < 0) or ($::operatingsystem == 'Amazon') {
-        $detach_service_in_init = true
-        if $::operatingsystem == 'OracleLinux' {
-          $docker_group = 'dockerroot'
-          $socket_group = 'dockerroot'
-        } else {
-          $docker_group = $docker_group_default
-          $socket_group = $socket_group_default
-        }
-      } else {
-        $detach_service_in_init = false
-        if $use_upstream_package_source {
-          $docker_group = $docker_group_default
-          $socket_group = $socket_group_default
-        } else {
-          $docker_group = 'dockerroot'
-          $socket_group = 'dockerroot'
-        }
-        include docker::systemd_reload
-      }
+      $detach_service_in_init = false
+      $docker_group = $docker_group_default
+      $socket_group = $socket_group_default
 
       # repo_opt to specify install_options for docker package
-      if (versioncmp($::operatingsystemmajrelease, '7') == 0) {
-        if $::operatingsystem == 'RedHat' {
-          $repo_opt = '--enablerepo=rhel7-extras'
-        } elsif $::operatingsystem == 'CentOS' {
-          $repo_opt = '--enablerepo=extras'
-        } elsif $::operatingsystem == 'OracleLinux' {
-          $repo_opt = '--enablerepo=ol7_addons'
-        } elsif $::operatingsystem == 'Scientific' {
-          $repo_opt = ''
-        } else {
-          $repo_opt = undef
-        }
-      } elsif (versioncmp($::operatingsystemrelease, '7.0') < 0 and $::operatingsystem == 'OracleLinux') {
-          # FIXME is 'public_ol6_addons' available on all OL6 installs?
-          $repo_opt = '--enablerepo=public_ol6_addons,public_ol6_latest'
+      if $::operatingsystem == 'RedHat' {
+        $repo_opt = '--enablerepo=rhel7-extras'
+      } elsif $::operatingsystem == 'CentOS' {
+        $repo_opt = '--enablerepo=extras'
       } else {
         $repo_opt = undef
-      }
-      if $::kernelversion == '2.6.32' {
-        $nowarn_kernel = true
-      } else {
-        $nowarn_kernel = false
       }
     }
     default: {

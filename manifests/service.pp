@@ -80,7 +80,6 @@ class docker::service (
   $dm_metadatadev                    = $docker::dm_metadatadev,
   $tmp_dir_config                    = $docker::tmp_dir_config,
   $tmp_dir                           = $docker::tmp_dir,
-  $nowarn_kernel                     = $docker::nowarn_kernel,
   $dm_thinpooldev                    = $docker::dm_thinpooldev,
   $dm_use_deferred_removal           = $docker::dm_use_deferred_removal,
   $dm_use_deferred_deletion          = $docker::dm_use_deferred_deletion,
@@ -115,8 +114,8 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat|Archlinux|Gentoo)/ {
-    fail translate(('The docker::service class needs a Debian, RedHat, Archlinux or Gentoo based system.'))
+  unless $::osfamily =~ /(Debian|RedHat)/ {
+    fail translate(('The docker::service class needs a Debian or Redhat based system.'))
   }
 
   $dns_array = any2array($dns)

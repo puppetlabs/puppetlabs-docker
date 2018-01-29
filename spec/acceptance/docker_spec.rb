@@ -98,8 +98,10 @@ describe 'docker' do
        apply_manifest(pp, :catch_failures=>true)
      end
 
-    describe file('/etc/default/docker') do
-      it { should contain 'registry-mirror' }
+    it 'should have a registry mirror set' do
+      shell('ps -aux | grep docker') do |r|
+        expect(r.stdout).to match(/--registry-mirror=http:\/\/testmirror.io/)
+      end
     end
   end
 

@@ -71,14 +71,18 @@ This fires up a new virtual machine (using vagrant) and runs a series of
 simple tests against it after applying the module. You can run this
 with:
 
-    bundle exec rake beaker
+    bundle exec rake acceptance
 
-This will run the tests on an Ubuntu 12.04 virtual machine. You can also
-run the integration tests against Centos 6.5 with:
+This will run the tests on an Ubuntu 16.04 virtual machine. You can also
+run the integration tests against RHEL, CentOS and Debian.
 
-    BEAKER_set=centos-70-x64 bundle exec rake beaker
-
-Or with Ubuntu 14.04 with:
-
-    BEAKER_set=ubuntu-1404-x64 bundle exec rake beaker
+    bundle exec rake acceptance:pooler:centos7
+    bundle exec rake acceptance:pooler:rhel7
+    bundle exec rake acceptance:pooler:ubuntu-1404
+    bundle exec rake acceptance:pooler:ubuntu-1604
+    bundle exec rake acceptance:pooler:ubuntu-1610
+    bundle exec rake acceptance:vagrant:centos-70-x64
+    bundle exec rake acceptance:vagrant:debian-81-x64
+    bundle exec rake acceptance:vagrant:ubuntu-1404-x64
+    bundle exec rake acceptance:vagrant:ubuntu-1604-x64
 

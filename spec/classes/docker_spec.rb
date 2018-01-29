@@ -35,7 +35,7 @@ describe 'docker', :type => :class do
           :kernelrelease             => '4.4.0-21-generic',
           :operatingsystemrelease    => '16.04',
           :operatingsystemmajrelease => '16.04',
-          :os                        => { :distro => { :codename =>  'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } } 
+          :os                        => { :distro => { :codename =>  'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
         } }
         service_config_file = '/etc/default/docker'
         storage_config_file = '/etc/default/docker-storage'
@@ -341,12 +341,12 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm'
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm'
           } }
           it do
             should contain_package('docker').with(
               'ensure' => 'present',
-              'source' => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source' => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'   => 'docker-engine'
             )
           end
@@ -357,13 +357,13 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
             'repo_opt'                    => '--enablerepo=rhel7-extras'
           } }
           it do
             should contain_package('docker').with(
               'ensure'          => 'present',
-              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'            => 'docker-engine',
               'install_options' => '--enablerepo=rhel7-extras'
             )
@@ -375,12 +375,12 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm'
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm'
           } }
           it do
             should contain_package('docker').with(
               'ensure'          => 'present',
-              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'            => 'docker-engine',
               'install_options' => /--enablerepo/
             )
@@ -392,13 +392,13 @@ describe 'docker', :type => :class do
             'manage_package'              => true,
             'use_upstream_package_source' => false,
             'docker_engine_package_name'  => 'docker-engine',
-            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+            'package_source'              => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
             'repo_opt'                    => ''
           } }
           it do
             should contain_package('docker').with(
               'ensure'          => 'present',
-              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-6/RPMS/x86_64/docker-engine-1.7.0-1.el6.x86_64.rpm',
+              'source'          => 'https://get.docker.com/rpm/1.7.0/centos-7/RPMS/x86_64/docker-engine-1.7.0-1.el7.x86_64.rpm',
               'name'            => 'docker-engine',
               'install_options' => nil
             )
@@ -714,31 +714,6 @@ describe 'docker', :type => :class do
 
     end
 
-  end
-
-  context 'specific to Debian wheezy' do
-    let(:facts) { {
-      :osfamily                  => 'Debian',
-      :operatingsystem           => 'Debian',
-      :lsbdistid                 => 'Debian',
-      :lsbdistcodename           => 'wheezy',
-      :operatingsystemrelease    => '7.9',
-      :operatingsystemmajrelease => '7',
-      :kernelrelease             => '3.12-1-amd64',
-      :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } }
-    } }
-
-    it { should_not contain_package('linux-image-extra-3.8.0-29-generic') }
-    it { should_not contain_package('linux-image-generic-lts-raring') }
-    it { should_not contain_package('linux-headers-generic-lts-raring') }
-    it { should contain_service('docker').without_provider }
-
-    context 'with no upstream package source' do
-      let(:params) { {'use_upstream_package_source' => false } }
-      it { should_not contain_apt__source('docker') }
-      it { should_not contain_apt__pin('docker') }
-      it { should contain_package('docker').with_name('docker-ce') }
-    end
   end
 
   ['RedHat', 'CentOS'].each do |operatingsystem|
