@@ -1,7 +1,29 @@
+# Version 1.0.5
+
+Various fixes for Github issues
+- 98
+- 104
+- 115
+- 122
+- 124
+
+Adding in the following features/functionality
+
+- Removed all unsupported OS related code from module
+- Removed EPEL dependency
+- Added http support in compose proxy
+- Added in rubocop support and i18 gem support
+- Type and provider for docker volumes
+- Update apt module to latest
+- Added in support for a registry mirror
+- Facts for docker version and docker info
+- Fixes for $pass_hash undef
+- Fixed typo in param.pp
+- Replaced deprecated stblib functions with data types
+
 # Version 1.0.4
 
 Correcting changelog
-
 
 # Version 1.0.3
 Various fixes for Github issues
