@@ -75,7 +75,7 @@ class { 'docker':
 }
 ```
 
-To install install Docker EE on RHEL/CentOS:
+To install Docker EE on RHEL/CentOS:
 
 ```puppet
 class { 'docker':
