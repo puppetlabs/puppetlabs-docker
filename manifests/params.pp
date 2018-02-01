@@ -186,8 +186,14 @@ class docker::params {
       $apt_source_pin_level = undef
       $service_name = $service_name_default
       $detach_service_in_init = false
-      $docker_group = $docker_group_default
-      $socket_group = $socket_group_default
+
+      if $use_upstream_package_source {
+        $docker_group = $docker_group_default
+        $socket_group = $socket_group_default
+      } else {
+        $docker_group = 'dockerroot'
+        $socket_group = 'dockerroot'
+      }
 
       # repo_opt to specify install_options for docker package
       if $::operatingsystem == 'RedHat' {
