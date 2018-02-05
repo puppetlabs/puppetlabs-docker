@@ -631,7 +631,6 @@ docker::registry_auth::registries:
     password: 'secret'
     email: 'user1@example.io'
     version: '<docker_version>'
-  }
 ```
 
 If using Docker V1.11 or later the docker login e-mail flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). Add the following code to the manifest file:
@@ -650,7 +649,6 @@ docker::registry_auth::registries:
   'example.docker.io:5000':
     username: 'user1'
     password: 'secret'
-  }
 ```
 
 To log out of a registry, add the following code to the manifest file:
