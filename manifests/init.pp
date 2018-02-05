@@ -396,7 +396,7 @@ class docker(
   Optional[String] $log_level                               = $docker::params::log_level,
   Optional[String] $log_driver                              = $docker::params::log_driver,
   Array $log_opt                                            = $docker::params::log_opt,
-  Optional[String] $selinux_enabled                         = $docker::params::selinux_enabled,
+  Optional[Boolean] $selinux_enabled                        = $docker::params::selinux_enabled,
   Optional[Boolean] $use_upstream_package_source            = $docker::params::use_upstream_package_source,
   Optional[Boolean] $pin_upstream_package_source            = $docker::params::pin_upstream_package_source,
   Optional[Integer] $apt_source_pin_level                   = $docker::params::apt_source_pin_level,
@@ -426,10 +426,10 @@ class docker(
   Optional[String] $dm_datadev                              = $docker::params::dm_datadev,
   Optional[String] $dm_metadatadev                          = $docker::params::dm_metadatadev,
   Optional[String] $dm_thinpooldev                          = $docker::params::dm_thinpooldev,
-  Optional[String] $dm_use_deferred_removal                 = $docker::params::dm_use_deferred_removal,
-  Optional[String] $dm_use_deferred_deletion                = $docker::params::dm_use_deferred_deletion,
-  Optional[String] $dm_blkdiscard                           = $docker::params::dm_blkdiscard,
-  Optional[String] $dm_override_udev_sync_check             = $docker::params::dm_override_udev_sync_check,
+  Optional[Boolean] $dm_use_deferred_removal                = $docker::params::dm_use_deferred_removal,
+  Optional[Boolean] $dm_use_deferred_deletion               = $docker::params::dm_use_deferred_deletion,
+  Optional[Boolean] $dm_blkdiscard                          = $docker::params::dm_blkdiscard,
+  Optional[Boolean] $dm_override_udev_sync_check            = $docker::params::dm_override_udev_sync_check,
   Boolean $overlay2_override_kernel_check                   = $docker::params::overlay2_override_kernel_check,
   Optional[String] $execdriver                              = $docker::params::execdriver,
   Boolean $manage_package                                   = $docker::params::manage_package,
@@ -446,7 +446,7 @@ class docker(
   Optional[String] $storage_data_size                       = $docker::params::storage_data_size,
   Optional[String] $storage_min_data_size                   = $docker::params::storage_min_data_size,
   Optional[String] $storage_chunk_size                      = $docker::params::storage_chunk_size,
-  Optional[String] $storage_growpart                        = $docker::params::storage_growpart,
+  Optional[Boolean] $storage_growpart                      = $docker::params::storage_growpart,
   Optional[String] $storage_auto_extend_pool                = $docker::params::storage_auto_extend_pool,
   Optional[String] $storage_pool_autoextend_threshold       = $docker::params::storage_pool_autoextend_threshold,
   Optional[String] $storage_pool_autoextend_percent         = $docker::params::storage_pool_autoextend_percent,
@@ -482,12 +482,6 @@ class docker(
   if $log_driver {
     assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/], $log_driver) |$a, $b| {
       fail translate(('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'))
-    }
-  }
-
-  if $selinux_enabled {
-    assert_type(Pattern[/^(true|false)$/], $selinux_enabled) |$a, $b| {
-      fail translate(('selinux_enabled must be true or false'))
     }
   }
 

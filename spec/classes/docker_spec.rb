@@ -490,7 +490,7 @@ describe 'docker', :type => :class do
       context 'with use deferred removal param' do
         let(:params) {
           { 'storage_driver' => 'devicemapper',
-            'dm_use_deferred_removal' => 'true'
+            'dm_use_deferred_removal' => true
           }
         }
         it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.use_deferred_removal=true/) }
@@ -499,7 +499,7 @@ describe 'docker', :type => :class do
       context 'with use deferred deletion param' do
         let(:params) {
           { 'storage_driver' => 'devicemapper',
-            'dm_use_deferred_deletion' => 'true'
+            'dm_use_deferred_deletion' => true
           }
         }
         it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.use_deferred_deletion=true/) }
@@ -508,7 +508,7 @@ describe 'docker', :type => :class do
       context 'with block discard param' do
         let(:params) {
           { 'storage_driver' => 'devicemapper',
-            'dm_blkdiscard' => 'true'
+            'dm_blkdiscard' => true
           }
         }
         it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.blkdiscard=true/) }
@@ -517,7 +517,7 @@ describe 'docker', :type => :class do
       context 'with override udev sync check param' do
         let(:params) {
           { 'storage_driver' => 'devicemapper',
-            'dm_override_udev_sync_check' => 'true'
+            'dm_override_udev_sync_check' => true
           }
         }
         it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.override_udev_sync_check=true/) }
@@ -675,7 +675,7 @@ describe 'docker', :type => :class do
       end
 
       context 'with specific selinux_enabled parameter' do
-        let(:params) { { 'selinux_enabled' => 'true' } }
+        let(:params) { { 'selinux_enabled' => true } }
         it { should contain_file(service_config_file).with_content(/--selinux-enabled=true/) }
       end
 
@@ -684,7 +684,7 @@ describe 'docker', :type => :class do
         it do
           expect {
             should contain_package('docker')
-          }.to raise_error(Puppet::Error, /selinux_enabled must be true or false/)
+          }.to raise_error(Puppet::Error, /got String/)
         end
       end
 
@@ -766,7 +766,7 @@ describe 'docker', :type => :class do
       end
 
       context 'with storage grow partition' do
-        let(:params) { { 'storage_growpart' => 'true' }}
+        let(:params) { { 'storage_growpart' => true }}
         it { should contain_file(storage_setup_file).with_content(/^GROWPART=true/) }
       end
 
