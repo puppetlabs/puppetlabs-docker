@@ -10,6 +10,6 @@ rvm:
 script: bundle exec rake test
 env:
   - PUPPET_GEM_VERSION="~> 4.0"
-  - PUPPET_GEM_VERSION="~> 5.0"
+  - PUPPET_GEM_VERSION="5.3.3"
 matrix:
   fast_finish: true
