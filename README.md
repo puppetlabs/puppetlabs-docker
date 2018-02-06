@@ -101,7 +101,7 @@ To use the CE packages
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  package_ce_name => 'docker-ce',
+  docker_package_ce_name      => 'docker-ce',
 }
 ```
 
