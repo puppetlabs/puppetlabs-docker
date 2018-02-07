@@ -7,7 +7,10 @@ rvm:
   - 2.1.6
   - 2.2.5
   - 2.3.3
-script: bundle exec rake test
+script:
+  - bundle exec rake test
+  - bundle exec rubocop lib
+  - bundle exec puppet-lint --no-autoloader_layout-check manifests
 env:
   - PUPPET_GEM_VERSION="~> 4.0"
   - PUPPET_GEM_VERSION="5.3.3"
