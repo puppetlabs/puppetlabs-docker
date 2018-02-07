@@ -24,7 +24,7 @@ group :test do
   gem 'rspec_junit_formatter', '~> 0.2.3'
   gem "puppet-lint-i18n"
   gem "puppet_pot_generator"
-  gem 'rubocop-i18n'
+  gem 'rubocop-i18n', '~> 1.2.0'
   gem 'gettext-setup'
   gem 'rubocop-rspec'
 end
