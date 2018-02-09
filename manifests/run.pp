@@ -109,6 +109,7 @@ define docker::run(
   Optional[Boolean] $remove_volume_on_stop              = false,
   Optional[Integer] $stop_wait_time                     = 0,
   Optional[String] $syslog_identifier                   = undef,
+  Optional[Boolean] $read_only                          = false,
 ) {
   include docker
   if ($socket_connect != []) {
@@ -178,6 +179,7 @@ define docker::run(
     username        => $username,
     volumes         => any2array($volumes),
     volumes_from    => any2array($volumes_from),
+    read_only       => $read_only,
   })
 
   $sanitised_title = regsubst($title, '[^0-9A-Za-z.\-_]', '-', 'G')

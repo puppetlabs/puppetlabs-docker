@@ -50,6 +50,10 @@ module Puppet::Parser::Functions
       flags << '-t'
     end
 
+    if opts['read_only']
+      flags << '--read-only=true'
+    end
+
     multi_flags = lambda { |values, format|
       filtered = [values].flatten.compact
       filtered.map { |val| sprintf(format + " \\\n", val) }
