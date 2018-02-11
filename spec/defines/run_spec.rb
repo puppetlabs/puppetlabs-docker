@@ -397,6 +397,11 @@ require 'spec_helper'
         it { should contain_file(initscript).with_content(/-t/) }
       end
 
+      context 'when running with read-only image' do
+        let(:params) { {'command' => 'command', 'image' => 'base', 'read_only' => true} }
+        it { should contain_file(initscript).with_content(/--read-only=true/) }
+      end
+
       context 'when passing serveral extra parameters' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'extra_parameters' => ['--rm', '-w /tmp']} }
         it { should contain_file(initscript).with_content(/--rm/).with_content(/-w \/tmp/) }
