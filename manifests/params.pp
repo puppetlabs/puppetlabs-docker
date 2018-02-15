@@ -37,7 +37,7 @@ class docker::params {
   $log_driver                        = undef
   $log_opt                           = []
   $selinux_enabled                   = undef
-  $socket_group_default              = 'docker'
+  $socket_group_default              = undef
   $labels                            = []
   $service_state                     = running
   $service_enable                    = true
@@ -191,8 +191,8 @@ class docker::params {
         $docker_group = $docker_group_default
         $socket_group = $socket_group_default
       } else {
-        $docker_group = 'dockerroot'
-        $socket_group = 'dockerroot'
+        $docker_group = $docker_group_default
+        $socket_group = $socket_group_default
       }
 
       # repo_opt to specify install_options for docker package
