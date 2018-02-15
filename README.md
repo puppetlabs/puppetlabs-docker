@@ -105,8 +105,7 @@ class { 'docker':
 }
 ```
 
-By default, the Docker daemon binds to a unix 
-at `/var/run/docker.sock`. To change this parameter and to update the binding parameter to a tcp socket, add the following code to the manifest file:
+By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. To change this parameter and to update the binding parameter to a tcp socket, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -941,6 +940,7 @@ Defaults to `undefined`.
 Group ownership of the unix control socket.
 
 Default is `OS and package specific`.
+
 
 #### `extra_parameters`
 
