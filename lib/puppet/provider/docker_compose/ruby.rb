@@ -16,7 +16,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
                           "label=com.docker.compose.project=#{project}",
                         ]).split("\n")
     counts = case compose_file['version']
-             when %r{^2(\.0)?$/, /^3(\.[0-2])?$}
+             when %r{^2(\.0)?$}, %r{^3(\.[0-2])?$}
                if containers.count != compose_file['services'].count
                  return false
                end
