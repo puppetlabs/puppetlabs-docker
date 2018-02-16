@@ -939,7 +939,8 @@ Defaults to `undefined`.
 
 Group ownership of the unix control socket.
 
-Defaults to `undefined`.
+Default is `OS and package specific`.
+
 
 #### `extra_parameters`
 
