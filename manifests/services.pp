@@ -63,6 +63,10 @@
 #  This will allow the service to connect to the host linux socket.
 #  defaults to undef
 #
+# [*registry_mirror*]
+#  This will allow the service to set a registry mirror.
+#  defaults to undef
+#
 
 define docker::services(
   Optional[Pattern[/^present$|^absent$/]] $ensure        = 'present',
@@ -81,6 +85,7 @@ define docker::services(
   Variant[String,Array,Undef] $user                      = undef,
   Variant[String,Array,Undef] $workdir                   = undef,
   Variant[String,Array,Undef] $host_socket               = undef,
+  Variant[String,Array,Undef] $registry_mirror           = undef,
 ){
 
   include docker::params
@@ -98,18 +103,19 @@ define docker::services(
 
   if $create {
     $docker_service_create_flags = docker_service_flags({
-      detach       => $detach,
-      env          => any2array($env),
-      service_name => $service_name,
-      label        => any2array($label),
-      publish      => $publish,
-      replicas     => $replicas,
-      tty          => $tty,
-      user         => $user,
-      workdir      => $workdir,
-      extra_params => any2array($extra_params),
-      image        => $image,
-      host_socket  => $host_socket,
+      detach          => $detach,
+      env             => any2array($env),
+      service_name    => $service_name,
+      label           => any2array($label),
+      publish         => $publish,
+      replicas        => $replicas,
+      tty             => $tty,
+      user            => $user,
+      workdir         => $workdir,
+      extra_params    => any2array($extra_params),
+      image           => $image,
+      host_socket     => $host_socket,
+      registry_mirror => $registry_mirror,
     })
 
     $exec_create = "${docker_command} create --name ${docker_service_create_flags}"
@@ -126,18 +132,19 @@ define docker::services(
 
   if $update {
     $docker_service_flags = docker_service_flags({
-      detach       => $detach,
-      env          => any2array($env),
-      service_name => $service_name,
-      label        => any2array($label),
-      publish      => $publish,
-      replicas     => $replicas,
-      tty          => $tty,
-      user         => $user,
-      workdir      => $workdir,
-      extra_params => any2array($extra_params),
-      image        => $image,
-      host_socket  => $host_socket,
+      detach          => $detach,
+      env             => any2array($env),
+      service_name    => $service_name,
+      label           => any2array($label),
+      publish         => $publish,
+      replicas        => $replicas,
+      tty             => $tty,
+      user            => $user,
+      workdir         => $workdir,
+      extra_params    => any2array($extra_params),
+      image           => $image,
+      host_socket     => $host_socket,
+      registry_mirror => $registry_mirror,
     })
 
     $exec_update = "${docker_command} update ${docker_service_flags}"
