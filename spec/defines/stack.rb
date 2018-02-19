@@ -25,5 +25,4 @@ describe 'docker::stack', :type => :define do
       'stack_name' => 'foo'} }
     it { should contain_exec('docker stack rm').with_command(/docker stack rm/) }
   end
-
-
+end
