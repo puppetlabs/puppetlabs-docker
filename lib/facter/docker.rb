@@ -33,28 +33,31 @@ end
 
 Facter.add(:docker) do
   setcode do
-    if Facter::Util::Resolution.which('docker')
-      docker_json_str = Facter::Util::Resolution.exec(
-        "docker info --format '{{json .}}'",
-      )
-      docker = JSON.parse(docker_json_str)
-      docker['network'] = {}
+    docker_version = Facter.value(:docker_client_version)
+    if docker_version !~ %r{1[.][0-9][0-2]?[.]\w+}
+      if Facter::Util::Resolution.which('docker')
+        docker_json_str = Facter::Util::Resolution.exec(
+          "docker info --format '{{json .}}'",
+        )
+        docker = JSON.parse(docker_json_str)
+        docker['network'] = {}
 
-      docker['network']['managed_interfaces'] = {}
-      network_list = Facter::Util::Resolution.exec('docker network ls | tail -n +2')
-      docker_network_names = []
-      network_list.each_line { |line| docker_network_names.push line.split[1] }
-      docker_network_ids = []
-      network_list.each_line { |line| docker_network_ids.push line.split[0] }
-      docker_network_names.each do |network|
-        inspect = JSON.parse(Facter::Util::Resolution.exec("docker network inspect #{network}"))
-        docker['network'][network] = inspect[0]
-        network_id = docker['network'][network]['Id'][0..11]
-        interfaces.each do |iface|
-          docker['network']['managed_interfaces'][iface] = network if iface =~ %r{#{network_id}}
+        docker['network']['managed_interfaces'] = {}
+        network_list = Facter::Util::Resolution.exec('docker network ls | tail -n +2')
+        docker_network_names = []
+        network_list.each_line { |line| docker_network_names.push line.split[1] }
+        docker_network_ids = []
+        network_list.each_line { |line| docker_network_ids.push line.split[0] }
+        docker_network_names.each do |network|
+          inspect = JSON.parse(Facter::Util::Resolution.exec("docker network inspect #{network}"))
+          docker['network'][network] = inspect[0]
+          network_id = docker['network'][network]['Id'][0..11]
+          interfaces.each do |iface|
+            docker['network']['managed_interfaces'][iface] = network if iface =~ %r{#{network_id}}
+          end
         end
+        docker
       end
-      docker
     end
   end
 end
