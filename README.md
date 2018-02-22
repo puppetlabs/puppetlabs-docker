@@ -448,8 +448,12 @@ To install Docker Compose, add the following code to the manifest file:
 ```puppet
 class {'docker::compose':
   ensure => present,
+  version => '1.9.0',
+  
 }
 ```
+The param `version` can be set to any version that you need to install.
+
 
 This is a example of a Compose file:
 
