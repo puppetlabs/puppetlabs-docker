@@ -47,10 +47,6 @@ define docker::image(
     }
   )
 
-  if ($docker_file) and ($docker_dir) {
-    fail translate('docker::image must not have both $docker_file and $docker_dir set')
-  }
-
   if ($docker_file) and ($docker_tar) {
     fail translate('docker::image must not have both $docker_file and $docker_tar set')
   }
@@ -91,7 +87,9 @@ define docker::image(
     $image_find    = "${docker_command} images | cut -d ' ' -f 1 | egrep '^(docker\\.io/)?${image}$'"
   }
 
-  if $docker_dir {
+  if ($docker_dir) and ($docker_file) {
+    $image_install = "${docker_command} build -t ${image_arg} -f ${docker_file} ${docker_dir}"
+  } elsif $docker_dir {
     $image_install = "${docker_command} build -t ${image_arg} ${docker_dir}"
   } elsif $docker_file {
     $image_install = "${docker_command} build -t ${image_arg} - < ${docker_file}"
