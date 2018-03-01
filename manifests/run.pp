@@ -219,7 +219,8 @@ define docker::run(
       'Debian': {
         $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
         $hasstatus  = true
-        if ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+        if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
+          ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
           $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
           $init_template = 'docker/etc/systemd/system/docker-run.erb'
           $uses_systemd = true
