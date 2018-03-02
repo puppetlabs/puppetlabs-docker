@@ -215,24 +215,17 @@ define docker::run(
     }
   } else {
 
-    case $::osfamily {
-      'Debian': {
-        if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
-          ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
-          $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-          $init_template = 'docker/etc/systemd/system/docker-run.erb'
-          $mode = '0640'
-        } else {
-          $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
-          $init_template = 'docker/etc/init.d/docker-run.erb'
-          $mode = '0750'
-        }
+    case $docker::params::service_provider {
+      'systemd': {
+        $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+        $init_template = 'docker/etc/systemd/system/docker-run.erb'
+        $mode = '0640'
       }
-      'RedHat': {
-        $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-        $init_template  = 'docker/etc/systemd/system/docker-run.erb'
-        $mode           = '0640'
-    }
+      'upstart': {
+        $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
+        $init_template = 'docker/etc/init.d/docker-run.erb'
+        $mode = '0750'
+      }
       default: {
         fail translate(('Docker needs a Debian or RedHat based system.'))
       }
