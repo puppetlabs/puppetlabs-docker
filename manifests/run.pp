@@ -217,7 +217,6 @@ define docker::run(
 
     case $::osfamily {
       'Debian': {
-        $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
         if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
           ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
           $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
