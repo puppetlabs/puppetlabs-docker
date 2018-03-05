@@ -147,7 +147,7 @@ class docker::params {
       $package_ee_package_name = $docker_ee_package_name
 
 
-      if ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+      if ($service_provider == 'systemd') {
         $detach_service_in_init = false
       } else {
         $detach_service_in_init = true
