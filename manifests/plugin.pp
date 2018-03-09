@@ -1,13 +1,61 @@
+# == Define: docker::plugin
+#
+# A define that manages a docker plugin
+#
+# == Parameters
+#
+# [*plugin_name*]
+#  This ensures whether the plugin is installed or not.
+#  Defaults to present
+#  Note that the default behaviour of docker plugin
+#  requires a plugin be disabled before it can be removed
+#
+# [*plugin_name*]
+#  The name of the docker plugin
+#  Defaults to the $title used in the define.
+#
+# [*enabled*]
+#  A setting to enable or disable an installed plugin.
+#  Defaults to true
+#
+# [*timeout*]
+#  The number of seconds to wait when enabling a plugin
+#  Defaults to undef
+#
+# [*plugin_alias*]
+#  An alternative name to use for an installed plugin
+#  Defaults to undef
+#
+# [*disable_on_install*]
+#  Alters the default behaviour of enabling a plugin upon install
+#  Defaults to false
+#
+# [*disable_content_trust*]
+#  Skip image verification
+#  Defaults to true
+#
+# [*grant_all_permissions]
+#  Grant all permissions necessary to run the plugin
+#  Defaults to true
+#
+# [*force_remove*]
+#  Force the removal of an active plugin
+#  Defaults to true
+#
+# [*settings*]
+#  Any additional settings to pass to the plugin during install
+#  Defaults to undef
+#
+
 define docker::plugin(
+  Optional[Pattern[/^present$|^absent$/]] $ensure = 'present',
   String $plugin_name                      = $title,
   Optional[Boolean] $enabled               = true,
-  Optional[Pattern[/^present$|^absent$/]] $ensure = 'present',
   Optional[String] $timeout                = undef,
   Optional[String] $plugin_alias           = undef,
   Optional[Boolean] $disable_on_install     = false,
   Optional[Boolean] $disable_content_trust  = true,
   Optional[Boolean] $grant_all_permissions = true,
-  Optional[String] $install_options        = undef,
   Optional[Boolean] $force_remove          = true,
   Optional[Array] $settings                = [],
   ){
