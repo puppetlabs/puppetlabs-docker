@@ -6,7 +6,6 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
-  $docker_ce_package_name            = 'docker-ce'
   $docker_engine_start_command       = 'docker daemon'
   $docker_engine_package_name        = 'docker-engine'
   $docker_ce_channel                 = stable
@@ -99,6 +98,7 @@ class docker::params {
             $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
             $service_hasstatus       = true
             $service_hasrestart      = true
+            $manage_repo             = true
             include docker::systemd_reload
           } else {
             $service_config_template = 'docker/etc/default/docker.erb'
@@ -107,6 +107,7 @@ class docker::params {
             $service_hasstatus       = true
             $service_hasrestart      = false
             $storage_config          = undef
+            $manage_repo             = true
           }
         }
         default: {
@@ -117,6 +118,7 @@ class docker::params {
           $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
           $service_hasstatus          = true
           $service_hasrestart         = true
+          $manage_repo                = true
           include docker::systemd_reload
         }
       }
@@ -135,6 +137,7 @@ class docker::params {
       $package_ce_key_source = "https://download.docker.com/linux/${os_lc}/gpg"
       $package_ce_key_id = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
       $package_ce_release = $::lsbdistcodename
+      $docker_ce_package_name = 'docker-ce'
       $package_source_location = 'http://apt.dockerproject.org/repo'
       $package_key_source = 'https://apt.dockerproject.org/gpg'
       $package_key_check_source = undef
@@ -167,6 +170,7 @@ class docker::params {
       $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
       $use_upstream_package_source = true
 
+      $docker_ce_package_name = 'docker-ce'
       $package_ce_source_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
       $package_ce_key_source = 'https://download.docker.com/linux/centos/gpg'
       $package_ce_key_id = undef
@@ -204,6 +208,41 @@ class docker::params {
         $repo_opt = undef
       }
     }
+    'Archlinux': {
+      $docker_ce_package_name      = 'docker'
+      $service_config              = undef
+      $storage_setup_file          = undef
+      $repo_opt                    = undef
+      $docker_group                = 'docker'
+      $service_name                = 'docker'
+      $socket_group                = 'docker'
+      $apt_source_pin_level        = undef
+      $pin_upstream_package_source = undef
+      $use_upstream_package_source = undef
+      $package_ee_release         = undef
+      $package_ee_repos           = undef
+      $package_ee_key_id          = undef
+      $package_ee_key_source      = undef
+      $package_ee_source_location = undef
+      $package_ee_package_name    = undef
+      $package_release            = undef
+      $package_key_id             = undef
+      $package_key_check_source   = undef
+      $package_key_source         = undef
+      $package_source_location    = undef
+      $package_ce_release         = undef
+      $package_ce_key_id          = undef
+      $package_ce_key_source      = undef
+      $package_ce_source_location = undef
+      $service_provider           = 'systemd'
+      $storage_config             = '/etc/default/docker-storage'
+      $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
+      $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+      $service_hasstatus          = true
+      $service_hasrestart         = true
+      $manage_repo                = false
+      include docker::systemd_reload
+    }
     default: {
       $docker_group = $docker_group_default
       $socket_group = $socket_group_default
@@ -240,6 +279,7 @@ class docker::params {
       $service_config_template = undef
       $pin_upstream_package_source = undef
       $apt_source_pin_level = undef
+      $manage_repo = false
     }
   }
 

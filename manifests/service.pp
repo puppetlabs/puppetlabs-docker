@@ -114,7 +114,7 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat)/ {
+  unless $::osfamily =~ /(Debian|RedHat|Archlinux)/ {
     fail translate(('The docker::service class needs a Debian or Redhat based system.'))
   }
 
@@ -130,6 +130,8 @@ class docker::service (
   } else {
     if $::osfamily == 'Debian' {
       $_service_config = "/etc/default/${service_name}"
+    } else {
+      $_service_config = $service_config
     }
   }
 

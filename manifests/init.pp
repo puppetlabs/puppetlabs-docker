@@ -352,6 +352,9 @@
 #   Sets the prefered container registry mirror.
 #   Default: undef
 #
+# [*manage_repo*]
+#   allows you to control the repo management. Default depends on the platform
+#
 class docker(
   Optional[String] $version                                 = $docker::params::version,
   String $ensure                                            = $docker::params::ensure,
@@ -460,11 +463,12 @@ class docker(
   Optional[Boolean] $service_hasstatus                      = $docker::params::service_hasstatus,
   Optional[Boolean] $service_hasrestart                     = $docker::params::service_hasrestart,
   Optional[String] $registry_mirror                         = $docker::params::registry_mirror,
+  Boolean $manage_repo                                      = $docker::params::manage_repo,
 ) inherits docker::params {
 
 
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat)$/], $::osfamily) |$a, $b| {
+    assert_type(Pattern[/^(Debian|RedHat|Archlinux)$/], $::osfamily) |$a, $b| {
       fail translate(('This module only works on Debian or Red Hat based systems.'))
     }
   }
@@ -576,12 +580,16 @@ class docker(
     $docker_package_name = $docker_engine_package_name
   }
 
-  contain 'docker::repos'
+  if $manage_repo {
+    contain 'docker::repos'
+    Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] ~> Class['docker::service']
+  } else {
+    Class['docker::install'] -> Class['docker::config'] ~> Class['docker::service']
+  }
   contain 'docker::install'
   contain 'docker::config'
   contain 'docker::service'
 
-  Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] ~> Class['docker::service']
   Class['docker'] -> Docker::Registry <||> -> Docker::Image <||> -> Docker::Run <||>
   Class['docker'] -> Docker::Image <||> -> Docker::Run <||>
   Class['docker'] -> Docker::Run <||>

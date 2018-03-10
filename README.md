@@ -29,6 +29,7 @@ This module installs, configures, and manages [Docker](https://github.com/docker
 * Ubuntu 14.04
 * Ubuntu 16.04
 * Centos 7.0
+* Archlinux
 
 ## Usage
 
