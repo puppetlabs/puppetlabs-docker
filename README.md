@@ -102,7 +102,7 @@ To use the CE packages
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',  
+  repo_opt => '',
 }
 ```
 
@@ -450,7 +450,6 @@ To install Docker Compose, add the following code to the manifest file:
 class {'docker::compose':
   ensure => present,
   version => '1.9.0',
-  
 }
 ```
 The param `version` can be set to any version that you need to install.
