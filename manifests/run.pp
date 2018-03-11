@@ -215,30 +215,17 @@ define docker::run(
     }
   } else {
 
-    case $::osfamily {
-      'Debian': {
-        $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
-        $hasstatus  = true
-        if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
-          ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
-          $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-          $init_template = 'docker/etc/systemd/system/docker-run.erb'
-          $uses_systemd = true
-          $mode = '0640'
-        } else {
-          $uses_systemd = false
-          $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
-          $init_template = 'docker/etc/init.d/docker-run.erb'
-          $mode = '0750'
-        }
+    case $docker::params::service_provider {
+      'systemd': {
+        $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+        $init_template = 'docker/etc/systemd/system/docker-run.erb'
+        $mode = '0640'
       }
-      'RedHat': {
-        $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-        $init_template  = 'docker/etc/systemd/system/docker-run.erb'
-        $hasstatus      = true
-        $mode           = '0640'
-        $uses_systemd   = true
-    }
+      'upstart': {
+        $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
+        $init_template = 'docker/etc/init.d/docker-run.erb'
+        $mode = '0750'
+      }
       default: {
         fail translate(('Docker needs a Debian or RedHat based system.'))
       }
@@ -255,7 +242,7 @@ define docker::run(
         service { "${service_prefix}${sanitised_title}":
           ensure    => false,
           enable    => false,
-          hasstatus => $hasstatus,
+          hasstatus => $docker::params::service_hasstatus,
         }
 
         exec {
@@ -287,7 +274,7 @@ define docker::run(
           service { "${service_prefix}${sanitised_title}":
             ensure    => $running,
             enable    => false,
-            hasstatus => $hasstatus,
+            hasstatus => $docker::params::service_hasstatus,
             require   => File[$initscript],
           }
         }
@@ -313,17 +300,11 @@ define docker::run(
             -> File[$initscript]
           }
 
-          if $uses_systemd {
-            $provider = 'systemd'
-          } else {
-            $provider = undef
-          }
-
           service { "${service_prefix}${sanitised_title}":
             ensure    => $running,
             enable    => true,
-            provider  => $provider,
-            hasstatus => $hasstatus,
+            provider  => $docker::params::service_provider,
+            hasstatus => $docker::params::service_hasstatus,
             require   => File[$initscript],
           }
         }
@@ -342,7 +323,7 @@ define docker::run(
           }
         }
       }
-      if $uses_systemd {
+      if $docker::params::service_provider == 'systemd' {
         exec { "docker-${sanitised_title}-systemd-reload":
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',

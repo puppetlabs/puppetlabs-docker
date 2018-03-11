@@ -85,8 +85,9 @@ class { 'docker':
 }
 ```
 
+For CentOS distributions, the docker module requires packages from the extras repo. This repo is enabled by default on CentOS. For more information see the official CentOS documentation [here](https://wiki.centos.org/AdditionalResources/Repositories) and the official Docker documentation [here](https://docs.docker.com/install/linux/docker-ce/centos/)
 
-For Red Hat Enterprise Linux (RHEL) based distributions, including Fedora, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS Extras repo, add the following code to the manifest file:
+For Red Hat Enterprise Linux (RHEL) based distributions, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS Extras repo, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -101,7 +102,7 @@ To use the CE packages
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  docker_package_ce_name      => 'docker-ce',
+  repo_opt => '',  
 }
 ```
 
