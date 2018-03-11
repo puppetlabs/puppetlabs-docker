@@ -689,6 +689,32 @@ docker::exec { 'cron_allow_root':
   unless       => 'grep root /usr/lib/cron/cron.allow 2>/dev/null',
 }
 ```
+
+### Plugin
+
+The module supports the installation of docker plugins:
+
+```puppet
+docker::plugin {'foo/fooplugin:latest':
+  settings => ['VAR1=test','VAR2=value']
+}
+```
+
+To disable an active plugin:
+```puppet
+docker::plugin {'foo/fooplugin:latest':
+  enaled => false,
+}
+```
+
+To remove an active plugin:
+```puppet
+docker::plugin {'foo/fooplugin:latest'
+  ensure => 'absent',
+  force_remove => true,
+}
+```
+
 ## Reference
 
 ### Parameters
