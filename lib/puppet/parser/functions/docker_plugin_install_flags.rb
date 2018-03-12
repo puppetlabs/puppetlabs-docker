@@ -11,10 +11,10 @@ module Puppet::Parser::Functions
     flags << '--disable' if opts['disable_on_install'] == true
     flags << '--disable-content-trust' if opts['disable_content_trust'] == true
     flags << '--grant-all-permissions' if opts['grant_all_permissions'] == true
-    flags << "#{opts['plugin_name']}" if opts['plugin_name'].to_s != 'undef'
+    flags << "'#{opts['plugin_name']}'" if opts['plugin_name'].to_s != 'undef'
     if opts['settings'].is_a? Array
       opts['settings'].each do |setting|
-        flags << "#{setting}"
+        flags << setting.to_s
       end
     end
     flags.flatten.join(' ')
