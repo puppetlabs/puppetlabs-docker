@@ -77,6 +77,7 @@ define docker::registry(
 
     # server may be an URI, which can contain /
     $server_strip = regsubst($server, '/', '_', 'G')
+    $_auth_command = "${auth_cmd} || rm -f \"/root/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
 
     file { "/root/registry-auth-puppet_receipt_${server_strip}_${local_user}":
       ensure  => $ensure,
@@ -84,10 +85,13 @@ define docker::registry(
       notify  => Exec["${title} auth"],
     }
   }
+  else {
+    $_auth_command = $auth_cmd
+  }
 
   exec { "${title} auth":
     environment => $auth_environment,
-    command     => $auth_cmd,
+    command     => $_auth_command,
     user        => $local_user,
     cwd         => '/root',
     path        => ['/bin', '/usr/bin'],

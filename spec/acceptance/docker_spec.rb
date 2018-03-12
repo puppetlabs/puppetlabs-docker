@@ -110,6 +110,7 @@ describe 'docker' do
       registry_host = 'localhost'
       registry_port = 5000
       @registry_address = "#{registry_host}:#{registry_port}"
+      @registry_bad_address = "#{registry_host}:5001"
       # @registry_email = 'user@example.com'
       @config_file = '/root/.docker/config.json'
       @manifest = <<-EOS
@@ -137,6 +138,7 @@ describe 'docker' do
       EOS
       apply_manifest(manifest, :catch_failures=>true)
       shell("grep #{@registry_address} #{@config_file}", :acceptable_exit_codes => [0])
+      shell("test -e \"/root/registry-auth-puppet_receipt_#{@registry_address}_root\"", :acceptable_exit_codes => [0])
     end
 
     it 'should be able to logout from the registry' do
@@ -149,6 +151,19 @@ describe 'docker' do
       shell("grep #{@registry_address} #{@config_file}", :acceptable_exit_codes => [1,2])
       # shell("grep #{@registry_email} #{@config_file}", :acceptable_exit_codes => [1,2])
     end
+
+    it 'should not create receipt if registry login fails' do
+      manifest = <<-EOS
+        docker::registry { '#{@registry_bad_address}':
+          username => 'username',
+          password => 'password',
+        }
+      EOS
+      apply_manifest(manifest, :catch_failures=>true)
+      shell("grep #{@registry_bad_address} #{@config_file}", :acceptable_exit_codes => [1,2])
+      shell("test -e \"/root/registry-auth-puppet_receipt_#{@registry_bad_address}_root\"", :acceptable_exit_codes => [1])
+    end
+
   end
 
 end
