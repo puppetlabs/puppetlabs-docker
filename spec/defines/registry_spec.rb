@@ -10,7 +10,7 @@ describe 'docker::registry', :type => :define do
 		:kernelrelease             => '3.2.0-4-amd64',
 		:operatingsystemmajrelease => '8',
 	} }
-  let(:params) { { 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => 'false' } }
+  let(:params) { { 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
   it { should contain_exec('localhost:5000 auth') }
 
   context 'with ensure => present' do
