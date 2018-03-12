@@ -82,6 +82,17 @@
 #   (which is defined by bridge)
 #   Defaults to undefined
 #
+# [*ipv6*]
+#  Enables ipv6 support for the docker daemon
+#  Defaults to false
+#
+# [*ipv6_cidr*]
+#  IPv6 subnet for fixed IPs
+#
+# [*default_gateway_ipv6*]
+#  IPv6 address of the container default gateway:
+#  Defaults to undefined
+#
 # [*socket_bind*]
 #   The unix socket to bind to. Defaults to
 #   unix:///var/run/docker.sock.
@@ -385,6 +396,9 @@ class docker(
   Optional[String] $tls_key                                 = $docker::params::tls_key,
   Boolean $ip_forward                                       = $docker::params::ip_forward,
   Boolean $ip_masq                                          = $docker::params::ip_masq,
+  Optional[Boolean]$ipv6                                    = $docker::params::ipv6,
+  Optional[String]$ipv6_cidr                                = $docker::params::ipv6_cidr,
+  Optional[String]$default_gateway_ipv6                     = $docker::params::default_gateway_ipv6,
   Optional[String] $bip                                     = $docker::params::bip,
   Optional[String] $mtu                                     = $docker::params::mtu,
   Boolean $iptables                                         = $docker::params::iptables,

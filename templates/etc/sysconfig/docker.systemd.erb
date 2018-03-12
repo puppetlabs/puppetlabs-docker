@@ -12,6 +12,9 @@ OPTIONS="<% if @root_dir %> -g <%= @root_dir %><% end -%>
 <% if @registry_mirror %> --registry-mirror=<%= @registry_mirror %><% end -%>
 <% if @fixed_cidr %> --fixed-cidr <%= @fixed_cidr %><% end -%>
 <% if @default_gateway %> --default-gateway <%= @default_gateway %><% end -%>
+<% if @ipv6 %> --ipv6<% end -%>
+<% if @ipv6_cidr %> --fixed-cidr-v6 <%= @ipv6_cidr %><% end -%>
+<% if @default_gateway_ipv6 %> --default-gateway-v6 <%= @default_gateway_ipv6 %><% end -%>
 <% if @bridge %> --bridge <%= @bridge %><% end -%>
 <% if @log_level %> -l <%= @log_level %><% end -%>
 <% if @log_driver %> --log-driver <%= @log_driver %><% end -%>

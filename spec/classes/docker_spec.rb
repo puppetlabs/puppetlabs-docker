@@ -184,6 +184,17 @@ describe 'docker', :type => :class do
           it { should contain_file('/etc/default/docker').with_content(/fixed-cidr 10.0.0.0\/24/) }
         end
 
+        context 'with ipv6 params' do
+          let(:params) {{
+            'ipv6' => true,
+            'ipv6_cidr' => '2001:db8:1::/64',
+            'default_gateway_ipv6' => 'fe80::2d4:12ff:fef6:67a2/16'
+            }}
+          it { should contain_file('/etc/default/docker').with_content(/--ipv6/) }
+          it { should contain_file('/etc/default/docker').with_content(/--fixed-cidr-v6 2001:db8:1::\/64/) }
+          it { should contain_file('/etc/default/docker').with_content(/--default-gateway-v6 fe80::2d4:12ff:fef6:67a2\/16/) }
+        end
+
         context 'with default_gateway and bridge params' do
           let(:params) {{
             'default_gateway' => '10.0.0.1',

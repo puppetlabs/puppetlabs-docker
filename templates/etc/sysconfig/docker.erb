@@ -15,6 +15,9 @@ other_args="<% -%>
 <% if @fixed_cidr %> --fixed-cidr <%= @fixed_cidr %><% end -%>
 <% if @bridge %> --bridge <%= @bridge %><% end -%>
 <% if @default_gateway %> --default-gateway <%= @default_gateway %><% end -%>
+<% if @ipv6 %> --ipv6<% end -%>
+<% if @ipv6_cidr %> --fixed-cidr-v6 <%= @ipv6_cidr %><% end -%>
+<% if @default_gateway_ipv6 %> --default-gateway-v6 <%= @default_gateway_ipv6 %><% end -%>
 <% if @log_level %> -l <%= @log_level %><% end -%>
 <% if @log_driver %> --log-driver <%= @log_driver %><% end -%>
 <% if @log_driver %><% if @log_opt %><% @log_opt.each do |param| %> --log-opt <%= param %><% end %><% end -%><% end -%>
