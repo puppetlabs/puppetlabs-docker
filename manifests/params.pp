@@ -25,6 +25,9 @@ class docker::params {
   $tls_key                           = '/etc/docker/tls/key.pem'
   $ip_forward                        = true
   $iptables                          = true
+  $ipv6                              = false
+  $ipv6_cidr                         = undef
+  $default_gateway_ipv6              = undef
   $icc                               = undef
   $ip_masq                           = true
   $bip                               = undef
