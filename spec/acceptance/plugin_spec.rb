@@ -30,7 +30,7 @@ describe 'docker plugin' do
     end
 
     after(:all) do
-      shell("#{command} plugin rm #{@name}")
+      shell("#{command} plugin rm -f #{@name}")
     end
   end
 end
