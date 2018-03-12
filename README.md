@@ -812,6 +812,23 @@ IPv4 address for the container default gateway. This address must be part of the
 
 Defaults to `undefined`.
 
+#### `ipv6`
+Enables ipv6 support for the docker daemon
+
+Defaults to false
+
+####  `ipv6_cidr`
+
+IPv6 subnet for fixed IPs
+
+Defaults to `undefined`
+
+#### `default_gateway_ipv6`
+
+IPv6 address of the container default gateway:
+
+Defaults to `undefined`
+
 #### `socket_bind`
 
 The unix socket to bind to.
