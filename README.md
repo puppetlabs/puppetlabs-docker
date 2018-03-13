@@ -450,7 +450,6 @@ To install Docker Compose, add the following code to the manifest file:
 class {'docker::compose':
   ensure => present,
   version => '1.9.0',
-  
 }
 ```
 The param `version` can be set to any version that you need to install.
@@ -548,7 +547,7 @@ join           => true,
 advertise_addr => '192.168.1.2',
 listen_addr    => '192.168.1.2,
 manager_ip     => '192.168.1.1',
-token          => 'SWMTKN-1-2lw8bnr57qsu74d6iq2q1wr2wq2i334g7425dfr3zucimvh4bl-2vwn6gysbdj605l37c61iixie'
+token          => 'your_join_token'
 }
 ```
 
@@ -718,7 +717,94 @@ docker::plugin {'foo/fooplugin:latest'
 
 ## Reference
 
+### Types
+
+* docker_compose: A type that represents a docker compose file.
+* docker_network: A type that represents a docker network.
+* docker_volume: A type that represents a docker volume.
+
 ### Parameters
+
+**Type: docker_compose**
+
+#### `name`
+
+The Docker compose file path.
+
+#### `scale`
+
+A hash of the name of compose services and number of containers.
+Values- Compose services: 'string' , containers: 'an integrer'.
+
+#### `options`
+
+Additional options to be passed directly to docker-compose.
+
+#### `up_args`
+
+Arguments to be passed directly to docker-compose up.
+
+**Type: docker_network**
+
+### `name`
+
+The name of the network'
+
+### `driver`
+
+The network driver the network uses.
+
+### `subnet`
+
+The subnet in CIDR format that represents a network segment.
+
+### `gateway`
+
+An ipv6 or ipv4 gateway for the master subnet.
+
+### `ip_range`
+
+The range of ip addresses used by the network.
+
+### `ipam_driver`
+
+The  IP address management driver.
+
+### `aux_address`
+
+Auxiliary ipv4 or ipv6 addresses used by the network driver
+
+### `options`
+
+Additional options for the network driver.
+
+### `additional_flags`
+
+Additional flags for the docker network create.
+
+### `id`
+
+The ID of the network provided by Docker.
+
+**Type: docker_volume**
+
+### `name`
+
+The name of the volume.
+
+### `driver`
+
+The volume driver used by the volume.
+
+### `options`
+
+Additional options for the volume driver.
+
+### `mountpoint`
+
+The location that the volume is mounted to.
+
+### Docker class parameters
 
 #### `version`
 
