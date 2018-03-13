@@ -54,16 +54,16 @@ module Puppet::Parser::Functions
       end
     end
 
-    if opts['image'].to_s != 'undef'
-      flags << "'#{opts['image']}'"
-    end
-
     if opts['host_socket'].to_s != 'undef'
       flags << "-H '#{opts['host_socket']}'"
     end
 
     if opts['registry_mirror'].to_s != 'undef'
       flags << "--registry-mirror='#{opts['registry_mirror']}'"
+    end
+
+    if opts['image'].to_s != 'undef'
+      flags << "'#{opts['image']}'"
     end
 
     flags.flatten.join(' ')
