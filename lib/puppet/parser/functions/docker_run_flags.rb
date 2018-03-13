@@ -31,7 +31,7 @@ module Puppet::Parser::Functions
     cpusets = [opts['cpuset']].flatten.compact
     unless cpusets.empty?
       value = cpusets.join(',')
-      flags << "--cpuset=#{value}"
+      flags << "--cpuset-cpus=#{value}"
     end
 
     if opts['disable_network']
