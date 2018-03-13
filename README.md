@@ -746,11 +746,11 @@ Arguments to be passed directly to docker-compose up.
 
 **Type: docker_network**
 
-### `name`
+#### `name`
 
 The name of the network'
 
-### `driver`
+#### `driver`
 
 The network driver the network uses.
 
@@ -758,53 +758,53 @@ The network driver the network uses.
 
 The subnet in CIDR format that represents a network segment.
 
-### `gateway`
+#### `gateway`
 
 An ipv6 or ipv4 gateway for the master subnet.
 
-### `ip_range`
+#### `ip_range`
 
 The range of ip addresses used by the network.
 
-### `ipam_driver`
+#### `ipam_driver`
 
 The  IP address management driver.
 
-### `aux_address`
+#### `aux_address`
 
 Auxiliary ipv4 or ipv6 addresses used by the network driver
 
-### `options`
+#### `options`
 
 Additional options for the network driver.
 
-### `additional_flags`
+#### `additional_flags`
 
 Additional flags for the docker network create.
 
-### `id`
+#### `id`
 
 The ID of the network provided by Docker.
 
 **Type: docker_volume**
 
-### `name`
+#### `name`
 
 The name of the volume.
 
-### `driver`
+#### `driver`
 
 The volume driver used by the volume.
 
-### `options`
+#### `options`
 
 Additional options for the volume driver.
 
-### `mountpoint`
+#### `mountpoint`
 
 The location that the volume is mounted to.
 
-### Docker class parameters
+#### Docker class parameters
 
 #### `version`
 
