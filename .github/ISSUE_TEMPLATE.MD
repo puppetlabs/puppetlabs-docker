@@ -6,8 +6,7 @@ Before hitting the button...
 If so, please search existing feature requests, and if you find a similar one, up-vote it and/or add your comments to it instead.
 If you did not find a similar one, please describe in details:
 - why: your use-case, specific constraints you may have, etc.
-- what: the feature/behaviour/change you would like to see in Weave Net
-Do not hesitate, when appropriate, to share the exact commands or API you would like, and/or to share a diagram (e.g.: asciiflow.com): "a picture is worth a thousand words".
+- what: the feature/behaviour/change you would like to see in the module
 
 ** Is this a BUG REPORT? **
 Please fill in as much of the template below as you can.

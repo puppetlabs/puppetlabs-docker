@@ -1,8 +1,7 @@
 # == Class: docker
 #
 # Module to install an up-to-date version of Docker from a package repository.
-# This module currently works only on Debian, Red Hat
-# and Archlinux based distributions.
+# This module currently works only on Debian and Red Hat
 #
 class docker::install {
   $docker_start_command = $docker::docker_start_command
