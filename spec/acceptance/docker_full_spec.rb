@@ -442,6 +442,33 @@ describe 'the Puppet Docker module' do
         end
       end
 
+      it 'should start a container with cpuset paramater set' do
+        pp=<<-EOS
+          class { 'docker':}
+
+          docker::image { 'ubuntu':
+            require => Class['docker'],
+          }
+
+          docker::run { 'container_3_5_5':
+            image  => 'ubuntu',
+            command => 'init',
+            cpuset  => ['0'],
+            require => Docker::Image['ubuntu'],
+          }
+        EOS
+
+        apply_manifest(pp, :catch_failures => true)
+        apply_manifest(pp, :catch_changes => true) unless fact('selinux') == 'true'
+
+        # A sleep to give docker time to execute properly
+        sleep 4
+
+        shell('ps -aux | grep docker') do |r|
+          expect(r.stdout).to match(/--cpuset-cpus=0/)
+        end
+      end
+
       it 'should start multiple linked containers' do
         pp=<<-EOS
           class { 'docker':}
