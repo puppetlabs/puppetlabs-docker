@@ -1,3 +1,21 @@
+# Version 1.1.0
+
+Various fixes for Github issues
+- 183
+- 173
+- 173
+- 167
+- 163
+- 161
+
+Adding in the following features/functionality
+
+- IPv6 support
+- Define type for docker plugins
+
+A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/milestone/1?closed=1)
+
+
 # Version 1.0.5
 
 Various fixes for Github issues
