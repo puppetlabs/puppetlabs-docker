@@ -9,28 +9,38 @@
 #### Table of Contents
 
 1. [Description](#description)
-2. [Usage - Configuration options and additional functionality](#usage)
-3. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-4. [Limitations - OS compatibility, etc.](#limitations)
-5. [Development - Guide for contributing to the module](#development)
+2. [Setup](#setup)
+3. [Usage - Configuration options and additional functionality](#usage)
+   * [Images](#images)
+   * [Containers](#containers)
+   * [Networks](#networks)
+   * [Volumes](#volumes)
+   * [Compose](#compose)
+   * [Swarm mode](#swarmmode)
+   * [Tasks](#tasks)
+   * [Docker services](#dockerservices)
+   * [Private registries](#privateregistries)
+   * [Exec](#exec)
+   * [Plugins](#plugins)
+4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+   * [Classes](#classes)
+   * [Defined types](#definedtypes)
+   * [Types](#types)
+   * [Parameters](#parameters)
+5. [Limitations - OS compatibility, etc.](#limitations)
+6. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
-The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) as well legacy releases.
-
-With new naming convention of the Docker packages, this module now differentiates between by prefacing any params referring to the release with `_ce` or `_engine`. There are examples of this through the README.
+The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) as well as legacy releases.
 
 ## Description
 
 This module installs, configures, and manages [Docker](https://github.com/docker/docker).
 
-* Debian 8.0
-* Debian 9.0
-* Ubuntu 14.04
-* Ubuntu 16.04
-* Centos 7.0
+Due to the new naming convention for Docker packages, this module prefaces any params that refer to the release with `_ce` or `_engine`. Examples of these are documented in this README.
 
-## Usage
+## Setup
 
 To create the Docker hosted repository and install the Docker package, add a single class to the manifest file:
 
@@ -46,9 +56,9 @@ class { 'docker':
 }
 ```
 
-The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using a version prior to this, the old repositories will still be configured based on the version number passed into the module.
+The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using a version prior to this, the old repositories are still configured based on the version number passed into the module.
 
-The following example will ensure the modules configures the latest repositories
+To ensure the module configures the latest repositories, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -56,7 +66,7 @@ class { 'docker':
 }
 ```
 
-Using a version prior to 17.06 will configure and install from the old repositories
+Using a version prior to 17.06, configures and installs from the old repositories:
 
 ```puppet
 class { 'docker':
@@ -85,9 +95,9 @@ class { 'docker':
 }
 ```
 
-For CentOS distributions, the docker module requires packages from the extras repo. This repo is enabled by default on CentOS. For more information see the official CentOS documentation [here](https://wiki.centos.org/AdditionalResources/Repositories) and the official Docker documentation [here](https://docs.docker.com/install/linux/docker-ce/centos/)
+For CentOS distributions, the docker module requires packages from the extras repository which is enabled by default on CentOS. For more information, see the official [CentOS documentation](https://wiki.centos.org/AdditionalResources/Repositories) and the official [Docker documentation](https://docs.docker.com/install/linux/docker-ce/centos/).
 
-For Red Hat Enterprise Linux (RHEL) based distributions, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS Extras repo, add the following code to the manifest file:
+For Red Hat Enterprise Linux (RHEL) based distributions, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS extras repository, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -97,7 +107,7 @@ class { 'docker':
 }
 ```
 
-To use the CE packages
+To use the CE packages, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -106,7 +116,7 @@ class { 'docker':
 }
 ```
 
-By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. To change this parameter and to update the binding parameter to a tcp socket, add the following code to the manifest file:
+By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. To change this parameter and update the binding parameter to a tcp socket, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -121,7 +131,7 @@ class { 'docker':
 }
 ```
 
-If setting up TLS, upload the related files (such as CA certificate, server certificate, and key) and include their paths in the manifest file:
+When setting up TLS, upload the related files (CA certificate, server certificate, and key) and include their paths in the manifest file:
 
 ```puppet
 class { 'docker':
@@ -185,9 +195,11 @@ class { 'docker':
 }
 ```
 
+## Usage
+
 ### Images
 
-Each image name must be unique, otherwise the installation fails when a duplicate name is detected.
+Each image requires a unique name, otherwise the installation fails when a duplicate name is detected.
 
 To install a Docker image, add the `docker::image` defined type to the manifest file:
 
@@ -309,7 +321,7 @@ docker::run { 'helloworld':
 }
 ```
 
-You can specify the ports, expose, env, dns, and volumes values with a single string or an array.
+You can specify the `ports`, `expose`, `env`, `dns`, and `volumes` values with a single string or an array.
 
 To pull the image before it starts, specify the `pull_on_start` parameter.
 
@@ -332,7 +344,7 @@ docker::run { 'helloworld':
 }
 ```
 
-By default, when the service is stopped or started the generated init scripts remove the container, but not the associated volumes. To change this behaviour, add the following code to the manifest file:
+By default, when the service stops or starts, the generated init scripts remove the container, but not the associated volumes. To change this behaviour, add the following code to the manifest file:
 
 ```puppet
 docker::run { 'helloworld':
@@ -366,7 +378,7 @@ docker::run { 'helloworld':
 
 ### Networks
 
-Docker 1.9.x officially supports networks. To expose the `docker_network` type, which is used to manage networks, add the following code to the manifest file:
+Docker 1.9.x supports networks. To expose the `docker_network` type that is used to manage networks, add the following code to the manifest file:
 
 ```puppet
 docker_network { 'my-net':
@@ -378,7 +390,7 @@ docker_network { 'my-net':
 }
 ```
 
-The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks and an example would be configuring the cluster store for the overlay network.
+The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks and configuring the cluster store for the overlay network would be an example.
 
 To configure the cluster store, update the `docker` class in the manifest file:
 
@@ -404,7 +416,7 @@ A defined network can be used on a `docker::run` resource with the `net` paramet
 
 ### Volumes
 
-Docker 1.9.x added support for Volumes. These are *NOT* to be confused with the legacy volumes, now known as `bind mounts`. To expose the `docker_volume` type, which is used to manage volumes, add the following code to the manifest file:
+Docker 1.9.x added support for volumes. These are *NOT* to be confused with the legacy volumes, now known as `bind mounts`. To expose the `docker_volume` type, which is used to manage volumes, add the following code to the manifest file:
 
 ```puppet
 docker_volume { 'my-volume':
@@ -415,11 +427,11 @@ docker_volume { 'my-volume':
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
 
 Some of the key advantages for using `volumes` over `bind mounts` are:
-* Easier to back up or migrate than `bind mounts` (legacy volumes).
+* Easier to back up or migrate rather than `bind mounts` (legacy volumes).
 * Managed with Docker CLI or API (Puppet type uses the CLI commands).
-* Work on both Windows and Linux.
-* More easily shared between containers.
-* Allows for the store volumes on remote hosts or cloud providers.
+* Works on Windows and Linux.
+* Easily shared between containers.
+* Allows for store volumes on remote hosts or cloud providers.
 * Encrypt contents of volumes.
 * Add other functionality
 * New volume's contents can be pre-populated by a container.
@@ -436,13 +448,13 @@ docker::run { 'helloworld':
 }
 ```
 
-For more information on volumes see the [Docker Volumes](https://docs.docker.com/engine/admin/volumes/volumes) documentation
+For more information on volumes see the [Docker Volumes](https://docs.docker.com/engine/admin/volumes/volumes) documentation.
 
 ### Compose
 
 Docker Compose describes a set of containers in YAML format and runs a command to build and run those containers. Included in the docker module is the `docker_compose` type. This enables Puppet to run Compose and remediate any issues to ensure reality matches the model in your Compose file.
 
-You must install the Docker Compose utility, before you use the `docker_compose` type.
+Before you use the `docker_compose` type, you must install the Docker Compose utility.
 
 To install Docker Compose, add the following code to the manifest file:
 
@@ -452,8 +464,7 @@ class {'docker::compose':
   version => '1.9.0',
 }
 ```
-The param `version` can be set to any version that you need to install.
-
+Set the `version` parameter to any version you need to install.
 
 This is a example of a Compose file:
 
@@ -471,7 +482,7 @@ docker_compose { '/tmp/docker-compose.yml':
 }
 ```
 
-Puppet automatically runs Compose, because the relevant Compose services aren't running. You can include additional options, such as enabling experimental features, as well as including scaling rules.
+Puppet automatically runs Compose, because the relevant Compose services aren't running. If required, include additional options such as enabling experimental features and scaling rules.
 
 In the example below, Puppet runs Compose when the number of containers specified for a service don't match the scale values.
 
@@ -485,9 +496,9 @@ docker_compose { '/tmp/docker-compose.yml':
 }
 ```
 
-You can also give options to the ```docker-compose up``` command, such as ```--remove-orphans``, by using the ```up_args``` option.
+Give options to the ```docker-compose up``` command, such as ```--remove-orphans``, by using the ```up_args``` option.
 
-If you are using a v3.2 compose file or above on a Docker Swarm cluster, you must use the `docker::stack` class. Include the file resource before you run the stack command.
+If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
 To deploy the stack, add the following code to the manifest file:
 
@@ -500,9 +511,11 @@ To deploy the stack, add the following code to the manifest file:
 }
 ```
 
-To remove the stack set `ensure  => absent`.
+To remove the stack, set `ensure  => absent`.
 
-If you are using a compose file v3.2 or above on a Docker Swarm cluster, include the `docker::stack` class. Like with older versions of Docker, compose the file resource needs before you run the stack command. To deploy the stack, add the following code to the manifest file.
+If you are using a v3.2compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command. 
+
+To deploy the stack, add the following code to the manifest file.
 
 ```puppet
 docker::stack { 'yourapp':
@@ -551,7 +564,7 @@ token          => 'your_join_token'
 }
 ```
 
-To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating another swarm manager and a worker node, separate tokens are required.
+To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating an additional swarm manager and a worker node, separate tokens are required.
 
 To remove a node from a cluster, add the following code to the manifest file:
 
@@ -560,6 +573,54 @@ docker::swarm {'cluster_worker':
 ensure => absent
 }
 ```
+
+### Tasks
+
+The docker module has an example task that allows a user to initialize, join and leave a swarm.
+
+```puppet
+bolt task run docker::swarm_init listen_addr=172.17.10.101 adverstise_addr=172.17.10.101 ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
+
+docker swarm init --advertise-addr=172.17.10.101 --listen-addr=172.17.10.101
+Swarm initialized: current node (w8syk0g286vd7d9kwzt7jl44z) is now a manager.
+```
+
+To add a worker to this swarm, run the following command:
+
+```puppet
+    docker swarm join --token SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t 172.17.10.101:2377
+```
+
+To add a manager to this swarm, run `docker swarm join-token manager` and follow the instructions.
+
+```puppet
+Ran on 1 node in 4.04 seconds
+```
+
+```puppet
+bolt task run docker::swarm_token node_role=worker ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
+
+SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t
+
+Ran on 1 node in 4.02 seconds
+```
+
+```puppet
+bolt task run docker::swarm_join listen_addr=172.17.10.102 adverstise_addr=172.17.10.102 token=<swarm_token> manager_ip=172.17.10.101:2377 --nodes swarm-02 --user root --password puppet --modulepath /tmp/modules
+
+This node joined a swarm as a worker.
+
+Ran on 1 node in 4.68 seconds
+```
+
+```puppet
+bolt task run docker::swarm_leave --nodes swarm-02 --user root --password puppet --modulepath --modulepath <module_path>
+
+Node left the swarm.
+
+Ran on 1 node in 6.16 seconds
+```
+
 ### Docker services
 
 Docker services create distributed applications across multiple swarm nodes. Each Docker service contains a set of containers which are replicated across the swarm.
@@ -619,9 +680,9 @@ To remove the service from a swarm, include the `ensure => absent` parameter and
 
 ### Private registries
 
-If a server is not specified, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, create a private repository without authentication.
+When a server is not specified, images are pushed and pulled from [index.docker.io](https://index.docker.io). To qualify your image name, create a private repository without authentication.
 
-To configure authentication for a private registry, add the following code to the manifest file , depending on what version of Docker you are running. If you are using Docker V1.10 or earlier add the following code to the manifest file ensuring that you specify the docker version:
+To configure authentication for a private registry, add the following code to the manifest file, depending on what version of Docker you are running. If you are using Docker V1.10 or earlier, specify the docker version in the manifest file:
 
 ```puppet
 docker::registry { 'example.docker.io:5000':
@@ -643,7 +704,9 @@ docker::registry_auth::registries:
     version: '<docker_version>'
 ```
 
-If using Docker V1.11 or later the docker login e-mail flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). Add the following code to the manifest file:
+If using Docker V1.11 or later, the docker login email flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). 
+
+Add the following code to the manifest file:
 
 ```puppet
 docker::registry { 'example.docker.io:5000'}
@@ -670,6 +733,7 @@ docker::registry { 'example.docker.io:5000':
 ```
 
 To set a preferred registry mirror, add the following code to the manifest file:
+
 ```puppet
 class { 'docker':
   registry_mirror => 'http://testmirror.io'
@@ -701,6 +765,7 @@ docker::plugin {'foo/fooplugin:latest':
 ```
 
 To disable an active plugin:
+
 ```puppet
 docker::plugin {'foo/fooplugin:latest':
   enaled => false,
@@ -708,6 +773,7 @@ docker::plugin {'foo/fooplugin:latest':
 ```
 
 To remove an active plugin:
+
 ```puppet
 docker::plugin {'foo/fooplugin:latest'
   ensure => 'absent',
@@ -717,6 +783,41 @@ docker::plugin {'foo/fooplugin:latest'
 
 ## Reference
 
+### Classes
+
+#### Public classes
+
+* docker
+* docker::compose
+* docker::images
+* docker::networks
+* docker::params
+* docker::plugins
+* docker::registry_auth
+* docker::run_instance
+* docker::services
+* docker::systemd_reload
+* docker::volumes
+
+#### Private classes
+
+* docker::repos
+* docker::install
+* docker::config
+* docker::service
+
+### Defined types
+
+* docker::exec
+* docker::image
+* docker::plugin
+* docker::registry
+* docker:run
+* docker::secrets
+* docker::stack
+* docker::swarm
+* docker::system_user
+
 ### Types
 
 * docker_compose: A type that represents a docker compose file.
@@ -725,7 +826,7 @@ docker::plugin {'foo/fooplugin:latest'
 
 ### Parameters
 
-**Type: docker_compose**
+The following parameters are available in the `docker_compose` type:
 
 #### `name`
 
@@ -744,7 +845,7 @@ Additional options to be passed directly to docker-compose.
 
 Arguments to be passed directly to docker-compose up.
 
-**Type: docker_network**
+The following parameters are available in the `docker_network` type:
 
 #### `name`
 
@@ -754,7 +855,7 @@ The name of the network'
 
 The network driver the network uses.
 
-### `subnet`
+#### `subnet`
 
 The subnet in CIDR format that represents a network segment.
 
@@ -786,7 +887,7 @@ Additional flags for the docker network create.
 
 The ID of the network provided by Docker.
 
-**Type: docker_volume**
+The following parameters are available in the `docker_volume` type:
 
 #### `name`
 
@@ -1273,56 +1374,6 @@ Auto pool extension threshold (in % of pool size).
 #### `storage_pool_autoextend_percent`
 
 Extends the pool by the specified percentage when the threshold is passed.
-
-### Tasks
-
-The docker module has an example task that allows a user to initialize, join and leave a swarm.
-
-```puppet
-bolt task run docker::swarm_init listen_addr=172.17.10.101 adverstise_addr=172.17.10.101 ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
-
-docker swarm init --advertise-addr=172.17.10.101 --listen-addr=172.17.10.101
-Swarm initialized: current node (w8syk0g286vd7d9kwzt7jl44z) is now a manager.
-
-To add a worker to this swarm, run the following command:
-
-    docker swarm join --token SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t 172.17.10.101:2377
-
-To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
-
-
-Ran on 1 node in 4.04 seconds
-```
-
-```puppet
-bolt task run docker::swarm_token node_role=worker ---nodes swarm-master --user <user> --password <password> --modulepath <module_path>
-
-SWMTKN-1-317gw63odq6w1foaw0xkibzqy34lga55aa5nbjlqekcrhg8utl-08vrg0913zken8h9vfo4t6k0t
-
-
-Ran on 1 node in 4.02 seconds
-
-```
-```puppet
-bolt task run docker::swarm_join listen_addr=172.17.10.102 adverstise_addr=172.17.10.102 token=<swarm_token> manager_ip=172.17.10.101:2377 --nodes swarm-02 --user root --password puppet --modulepath /tmp/modules
-
-
-This node joined a swarm as a worker.
-
-
-Ran on 1 node in 4.68 seconds
-```
-```puppet
-bolt task run docker::swarm_leave --nodes swarm-02 --user root --password puppet --modulepath --modulepath <module_path>
-
-Node left the swarm.
-
-
-Ran on 1 node in 6.16 seconds
-```
-
-
-
 
 For further explanation please refer to the[PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
 
