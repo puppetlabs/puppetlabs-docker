@@ -39,6 +39,9 @@
         "8.0",
         "9.0"
       ]
+    },
+    {
+      "operatingsystem": "Archlinux"
     }
   ],
   "requirements": [

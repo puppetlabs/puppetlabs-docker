@@ -29,6 +29,7 @@ This module installs, configures, and manages [Docker](https://github.com/docker
 * Ubuntu 14.04
 * Ubuntu 16.04
 * Centos 7.0
+* Archlinux
 
 ## Usage
 
@@ -102,7 +103,7 @@ To use the CE packages
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',  
+  repo_opt => '',
 }
 ```
 
