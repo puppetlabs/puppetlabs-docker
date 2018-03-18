@@ -124,4 +124,5 @@ define docker::image(
     }
   }
 
+  Docker::Image <| title == $title |> -> Docker::Run <| image == $image_arg |>
 }

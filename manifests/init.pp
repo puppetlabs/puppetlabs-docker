@@ -596,8 +596,8 @@ class docker(
   contain 'docker::service'
 
   Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] ~> Class['docker::service']
-  Class['docker'] -> Docker::Registry <||> -> Docker::Image <||> -> Docker::Run <||>
-  Class['docker'] -> Docker::Image <||> -> Docker::Run <||>
+  Class['docker'] -> Docker::Registry <||> -> Docker::Image <||>
+  Class['docker'] -> Docker::Image <||>
   Class['docker'] -> Docker::Run <||>
 
 }
