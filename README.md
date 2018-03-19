@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-docker.svg?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-docker)
+[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-dockevor.svg?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-docker)
 [![Puppet Forge](https://img.shields.io/puppetforge/v/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Downloads](http://img.shields.io/puppetforge/dt/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Endorsement](https://img.shields.io/puppetforge/e/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
@@ -425,6 +425,23 @@ docker_volume { 'my-volume':
 ```
 
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
+
+If using Hiera, configure the `docker::volumes` class in the manifest file:
+
+```yaml
+---
+  classes:
+    - docker::volumes::volumes
+
+docker::volumes::volumes:
+  blueocean:
+    ensure: present
+    driver: local
+    options:
+      - ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
+```
+
+Any extra options should be passed in as an array
 
 Some of the key advantages for using `volumes` over `bind mounts` are:
 * Easier to back up or migrate rather than `bind mounts` (legacy volumes).
