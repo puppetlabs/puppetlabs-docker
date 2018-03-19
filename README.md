@@ -426,6 +426,23 @@ docker_volume { 'my-volume':
 
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
 
+If using Hiera, configure the `docker::volumes` class in the manifest file:
+
+```yaml
+---
+  classes:
+    - docker::volumes::volumes
+
+docker::volumes::volumes:
+  blueocean:
+    ensure: present
+    driver: local
+    options:
+      - ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
+```
+
+Any extra options should be passed in as an array
+
 Some of the key advantages for using `volumes` over `bind mounts` are:
 * Easier to back up or migrate rather than `bind mounts` (legacy volumes).
 * Managed with Docker CLI or API (Puppet type uses the CLI commands).
