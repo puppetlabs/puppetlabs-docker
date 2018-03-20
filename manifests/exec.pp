@@ -11,6 +11,7 @@ define docker::exec(
   Optional[String] $unless         = undef,
   Optional[Boolean] $sanitise_name = true,
   Optional[Boolean] $refreshonly   = false,
+  Optional[String] $onlyif         = undef,
 ) {
   include docker::params
 
@@ -34,9 +35,16 @@ define docker::exec(
       ''                 => undef,
       default            => "${docker_command} exec ${docker_exec_flags} ${sanitised_container} ${$unless}",
   }
+  $onlyif_command = $onlyif ? {
+    undef     => undef,
+    ''        => undef,
+    'running' => "${docker_command} ps --no-trunc --format='table {{.Names}}' | grep '^${sanitised_container}$'",
+    default   => $onlyif
+  }
 
   exec { $exec:
     environment => 'HOME=/root',
+    onlyif      => $onlyif_command,
     path        => ['/bin', '/usr/bin'],
     refreshonly => $refreshonly,
     timeout     => 0,
