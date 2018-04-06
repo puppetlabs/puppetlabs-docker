@@ -410,7 +410,7 @@ class docker(
   Optional[String] $log_level                               = $docker::params::log_level,
   Optional[String] $log_driver                              = $docker::params::log_driver,
   Array $log_opt                                            = $docker::params::log_opt,
-  Optional[Boolean] $selinux_enabled                        = $docker::params::selinux_enabled,
+  Variant[String,Boolean,Undef] $selinux_enabled            = $docker::params::selinux_enabled, # Workaround for the bug HI-599 
   Optional[Boolean] $use_upstream_package_source            = $docker::params::use_upstream_package_source,
   Optional[Boolean] $pin_upstream_package_source            = $docker::params::pin_upstream_package_source,
   Optional[Integer] $apt_source_pin_level                   = $docker::params::apt_source_pin_level,
@@ -497,6 +497,10 @@ class docker(
     assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/], $log_driver) |$a, $b| {
       fail translate(('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'))
     }
+  }
+
+  if $selinux_enabled {
+    validate_legacy(Boolean, 'validate_bool', $selinux_enabled)
   }
 
   if $storage_driver {
