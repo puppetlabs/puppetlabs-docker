@@ -513,7 +513,7 @@ docker_compose { '/tmp/docker-compose.yml':
 }
 ```
 
-Give options to the ```docker-compose up``` command, such as ```--remove-orphans``, by using the ```up_args``` option.
+Give options to the ```docker-compose up``` command, such as ```--remove-orphans```, by using the ```up_args``` option.
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
