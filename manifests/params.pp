@@ -89,6 +89,8 @@ class docker::params {
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
   $os_lc                             = downcase($::operatingsystem)
+  $docker_msft_provider_version      = undef
+  $nuget_package_provider_version    = undef
 
   case $::osfamily {
     'Debian' : {
@@ -206,6 +208,14 @@ class docker::params {
       } else {
         $repo_opt = undef
       }
+    }
+    'windows' : {
+      $msft_nuget_package_provider_version = $nuget_package_provider_version
+      $msft_provider_version = $docker_msft_provider_version
+      $msft_package_version = $version
+      $service_config_template = 'docker/windows/config/daemon.json.erb'
+      $service_config = 'C:/ProgramData/docker/config/daemon.json'
+      $docker_group = 'docker'
     }
     default: {
       $docker_group = $docker_group_default

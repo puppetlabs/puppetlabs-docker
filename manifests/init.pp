@@ -363,6 +363,14 @@
 #   Sets the prefered container registry mirror.
 #   Default: undef
 #
+# [*nuget_package_provider_version*]
+#   The version of the NuGet Package provider
+#   Default: undef
+#
+# [*docker_msft_provider_version*]
+#   The version of the Microsoft Docker Provider Module
+#   Default: undef
+
 class docker(
   Optional[String] $version                                 = $docker::params::version,
   String $ensure                                            = $docker::params::ensure,
@@ -474,12 +482,15 @@ class docker(
   Optional[Boolean] $service_hasstatus                      = $docker::params::service_hasstatus,
   Optional[Boolean] $service_hasrestart                     = $docker::params::service_hasrestart,
   Optional[String] $registry_mirror                         = $docker::params::registry_mirror,
+  # Windows specific parameters
+  Optional[String] $docker_msft_provider_version            = $docker::params::docker_msft_provider_version,
+  Optional[String] $nuget_package_provider_version          = $docker::params::nuget_package_provider_version,
 ) inherits docker::params {
 
 
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian or Red Hat based systems.'))
+    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian, Red Hat or Windows based systems.'))
     }
   }
 
@@ -563,6 +574,9 @@ class docker(
             $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
             $package_key_source = $docker_ce_key_source
             $package_key_check_source = true
+            }
+          'windows': {
+            fail translate(('This module only work for Docker Enterprise Edition on Windows'))
           }
           default: {}
         }

@@ -1,0 +1,31 @@
+{
+    <%# TODO: get "authorization-plugins": [],%>
+    <% if @dns %> "dns": <%= @dns_array.to_json %>,<% end -%>
+    <%# TODO: "dns-opts": [],%>
+    <% if @dns_search %> "dns-search": <%= @dns_search_array.to_json %>,<% end -%>
+    <%# TODO: "exec-opts": [],%>
+    <%# TODO: "storage-driver": "", %>
+    <%# TODO: "storage-opts": [], %>
+    <% if @log_driver %> "log-driver": "<%= @log_driver %>", <% end -%>
+    <% if @mtu %> "mtu": <%= @mtu %>, <% end -%>
+    <%# TODO: "pidfile": "", %>
+    <%# TODO: "data-root": "", %>
+    <%# TODO: "cluster-store": "", %>
+    <%# TODO: "cluster-advertise": "", %>
+    <%# TODO: "debug": true, %>
+    <%# TODO: "hosts": [], %>
+    <% if @log_level %> "log-level": "<%= @log_level %>", <% end -%>
+    <% if @tls_enable %> "tlsverify": true, 
+    "tlscacert": "<%= @tls_cacert %>",
+    "tlscert": "<%= @tls_cert %>",
+    "tlskey": "<%= @tls_key %>",
+    <% end -%>
+    <% if @socket_group %>"group": <%= @socket_group %>,<% end -%>
+    <%# "default-ulimit": {}, %>
+    <% if @bridge %>"bridge": "<%= @bridge %>",<% end -%>
+    <% if @fixed_cidr %>"fixed-cidr": "<%= @fixed_cidr %>",<% end -%>
+    <%# "raw-logs": false, %>
+    <% if @registry_mirror %>"registry-mirrors": ["<%= @registry_mirror%>"], <% end -%>
+    <%# "insecure-registries": []%>
+    "labels": <%= @labels.to_json %>
+}
