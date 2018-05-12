@@ -30,7 +30,7 @@ class docker::install {
           $pk_provider = 'dpkg'
         }
         'RedHat' : {
-          $pk_provider = 'rpm'
+          $pk_provider = 'yum'
         }
         default : {
           $pk_provider = undef
