@@ -59,7 +59,7 @@ define docker::stack(
       })
 
       $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
-      $unless_stack = "${docker_command} deploy ls | grep ${stack_name}"
+      $unless_stack = "${docker_command} ls | grep ${stack_name}"
 
       exec { "docker stack create ${stack_name}":
       command => $exec_stack,
@@ -72,7 +72,7 @@ define docker::stack(
 
   exec { "docker stack ${stack_name}":
     command => "${docker_command} rm ${stack_name}",
-    onlyif  => "${docker_command} deploy ls | grep ${stack_name}",
+    onlyif  => "${docker_command} ls | grep ${stack_name}",
     path    => ['/bin', '/usr/bin'],
     }
   }
