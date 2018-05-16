@@ -38,7 +38,7 @@ define docker::image(
 
   if $::osfamily == 'windows' {
     $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
-    $update_docker_image_path = 'c:/Windows/Temp/update_docker_image.ps1'
+    $update_docker_image_path = 'C:/Windows/Temp/update_docker_image.ps1'
     $exec_environment = undef
     $exec_timeout = 3000
     $update_docker_image_owner = undef

@@ -23,6 +23,8 @@ describe 'docker', :type => :class do
           'ensure' => 'present'
       })}
       it { should contain_file('C:/ProgramData/docker/config/')}
+      it { should contain_exec('service-restart-on-failure') }
+      it { should contain_exec('install-docker-package').with_command('& C:/Windows/Temp/install_powershell_provider.ps1') }
       it { should contain_class('docker::repos').that_comes_before('Class[docker::install]') }
       it { should contain_class('docker::install').that_comes_before('Class[docker::config]') }
       it { should contain_class('docker::service').that_subscribes_to('Class[docker::config]') }
