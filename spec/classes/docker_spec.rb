@@ -638,7 +638,7 @@ describe 'docker', :type => :class do
       end
 
       context 'with an invalid log_driver' do
-        let(:params) { { 'log_driver' => 'verbose'} }
+        let(:params) { { 'log_driver' => 'etwlogs'} }
         it do
           expect {
             should contain_package('docker')

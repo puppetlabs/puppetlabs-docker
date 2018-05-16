@@ -47,6 +47,9 @@ class docker::install (
         'RedHat' : {
           $pk_provider = 'rpm'
         }
+        'windows' : {
+          fail translate('Custom package source is currently not implemented on windows.')
+        }
         default : {
           $pk_provider = undef
         }
@@ -80,7 +83,7 @@ class docker::install (
           name   => $docker::docker_package_name,
         }))
       } else {
-        $install_script_path = 'c:/Windows/Temp/install_powershell_provider.ps1'
+        $install_script_path = 'C:/Windows/Temp/install_powershell_provider.ps1'
         file{ $install_script_path:
           ensure  => present,
           force   => true,

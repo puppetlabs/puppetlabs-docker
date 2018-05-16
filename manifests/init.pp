@@ -31,15 +31,15 @@
 #
 # [*tls_cacert*]
 #   Path to TLS CA certificate
-#   Defaults to '/etc/docker/ca.pem'
+#   Defaults to '/etc/docker/tls/ca.pem on linux and C:/ProgramData/docker/certs.d/ca.pem on Windows'
 #
 # [*tls_cert*]
 #   Path to TLS certificate file
-#   Defaults to '/etc/docker/cert.pem'
+#   Defaults to '/etc/docker/tls/cert.pem on linux and C:/ProgramData/docker/certs.d/server-cert.pem on Windows'
 #
 # [*tls_key*]
 #   Path to TLS key file
-#   Defaults to '/etc/docker/cert.key'
+#   Defaults to '/etc/docker/tls/key.pem' on linux and C:/ProgramData/docker/certs.d/server-key.pem on Windows
 #
 # [*ip_forward*]
 #   Enables IP forwarding on the Docker host.
@@ -505,14 +505,26 @@ class docker(
   }
 
   if $log_driver {
-    assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/], $log_driver) |$a, $b| {
-      fail translate(('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'))
+    if $::osfamily == 'windows' {
+      assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|etwlogs)$/], $log_driver) |$a, $b| {
+        fail translate(('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk or etwlogs'))
+      }
+    } else {
+      assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/], $log_driver) |$a, $b| {
+        fail translate(('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'))
+      }
     }
   }
 
   if $storage_driver {
     assert_type(Pattern[/^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$/], $storage_driver) |$a, $b| {
       fail translate(('Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.'))
+    }
+  }
+
+  if ($bridge) and ($::osfamily == 'windows') {
+      assert_type(Pattern[/^(none|nat|transparent|overlay|l2bridge|l2tunnel)$/], $bridge) |$a, $b| {
+        fail translate(('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.'))
     }
   }
 
@@ -576,7 +588,7 @@ class docker(
             $package_key_check_source = true
             }
           'windows': {
-            fail translate(('This module only work for Docker Enterprise Edition on Windows'))
+            fail translate(('This module only work for Docker Enterprise Edition on Windows.'))
           }
           default: {}
         }

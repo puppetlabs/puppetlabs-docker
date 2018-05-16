@@ -13,19 +13,19 @@
     <%# TODO: "cluster-store": "", %>
     <%# TODO: "cluster-advertise": "", %>
     <%# TODO: "debug": true, %>
-    <%# TODO: "hosts": [], %>
+    <% if @tcp_bind %> "hosts": <%= @tcp_bind_array.to_json %>, <% end -%>
     <% if @log_level %> "log-level": "<%= @log_level %>", <% end -%>
     <% if @tls_enable %> "tlsverify": true, 
     "tlscacert": "<%= @tls_cacert %>",
     "tlscert": "<%= @tls_cert %>",
     "tlskey": "<%= @tls_key %>",
     <% end -%>
-    <% if @socket_group %>"group": <%= @socket_group %>,<% end -%>
+    <% if @socket_group %>"group": "<%= @socket_group %>",<% end -%>
     <%# "default-ulimit": {}, %>
     <% if @bridge %>"bridge": "<%= @bridge %>",<% end -%>
     <% if @fixed_cidr %>"fixed-cidr": "<%= @fixed_cidr %>",<% end -%>
     <%# "raw-logs": false, %>
     <% if @registry_mirror %>"registry-mirrors": ["<%= @registry_mirror%>"], <% end -%>
     <%# "insecure-registries": []%>
-    "labels": <%= @labels.to_json %>
+    "labels": <%= @labels_array.to_json %>
 }
