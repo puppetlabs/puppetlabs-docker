@@ -13,18 +13,19 @@ describe 'docker', :type => :class do
           :os                        => { :family => 'windows', :name => 'windows', :release => { :major => '2016', :full => '2016' } }
         } }
       service_config_file = 'C:/ProgramData/docker/config/daemon.json'
+      service_install_file = 'C:/Windows/Temp/install_powershell_provider.ps1'
       let(:params) {{ 'docker_ee' => true }}
 
       it { should compile.with_all_deps }
       it { should contain_file('C:/ProgramData/docker/').with({
           'ensure' => 'directory'
       } ) }
-      it { should contain_file('C:/Windows/Temp/install_powershell_provider.ps1').with({
+      it { should contain_file(service_install_file).with({
           'ensure' => 'present'
       })}
       it { should contain_file('C:/ProgramData/docker/config/')}
       it { should contain_exec('service-restart-on-failure') }
-      it { should contain_exec('install-docker-package').with_command('& C:/Windows/Temp/install_powershell_provider.ps1') }
+      it { should contain_exec('install-docker-package').with_command("& #{service_install_file}") }
       it { should contain_class('docker::repos').that_comes_before('Class[docker::install]') }
       it { should contain_class('docker::install').that_comes_before('Class[docker::config]') }
       it { should contain_class('docker::service').that_subscribes_to('Class[docker::config]') }
@@ -241,6 +242,21 @@ describe 'docker', :type => :class do
             'docker_ee' => true
         } }
         it { should contain_file(service_config_file).with_content(/"labels": \["mylabel"\]/)}
+      end
+
+      context 'with default package name' do
+        let(:params) { { 
+            'docker_ee' => true
+        } }
+        it { should contain_file(service_install_file).with_content(/ Docker /)}
+      end
+
+      context 'with custom package name' do
+        let(:params) { { 
+            'docker_ee_package_name'=> "mydockerpackage",
+            'docker_ee' => true
+        } }
+        it { should contain_file(service_install_file).with_content(/ mydockerpackage /)}
       end
 
       context 'without docker_ee' do

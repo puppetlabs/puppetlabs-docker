@@ -14,11 +14,17 @@
 # [*docker_msft_provider_version*]
 #   The version of the Microsoft Docker Provider Module
 #   Default: undef
+#
+# [*docker_ee_package_name*]
+#   The name of the Docker Enterprise Edition package
+#   Default: Docker
+
 
 class docker::install (
   $version                        = $docker::version,
   $nuget_package_provider_version = $docker::nuget_package_provider_version,
-  $docker_msft_provider_version   = $docker::docker_msft_provider_version
+  $docker_msft_provider_version   = $docker::docker_msft_provider_version,
+  $docker_ee_package_name         = $docker::docker_ee_package_name
 ) {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
@@ -71,7 +77,6 @@ class docker::install (
             name     => $docker::docker_ce_package_name,
           }))
         }
-        #TODO: Windows with download URL
         default : {}
       }
 

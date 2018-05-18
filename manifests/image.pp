@@ -108,7 +108,7 @@ define docker::image(
   if $::osfamily == 'windows' {
     $_image_find = "\$image_id=${image_find}; If (!\$image_id) { Exit 1 }"
   } else {
-    $_image_find = $image_find
+    $_image_find = "${image_find} | grep ."
   }
 
   if ($docker_dir) and ($docker_file) {

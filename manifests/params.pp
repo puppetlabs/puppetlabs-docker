@@ -237,7 +237,7 @@ class docker::params {
       $package_key_source = undef
       $package_key_check_source = undef
       $package_ee_source_location = undef
-      $package_ee_package_name = $docker_ee_package_name #TODO: add in install.ps1
+      $package_ee_package_name = $docker_ee_package_name
       $package_ee_key_source = undef
       $package_ee_key_id = undef
       $package_ee_repos = undef
@@ -246,7 +246,7 @@ class docker::params {
       $pin_upstream_package_source = undef
       $apt_source_pin_level= undef
       $socket_group = undef
-      $service_name = $service_name_default #TODO: use this
+      $service_name = $service_name_default
       $repo_opt = undef
       $storage_config = undef
       $storage_setup_file = undef

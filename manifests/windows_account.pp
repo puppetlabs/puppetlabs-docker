@@ -5,5 +5,5 @@
 
 
 define docker::windows_account () {
-    notice('TODO:Not implemented')
+    notice('Not implemented')
 }
