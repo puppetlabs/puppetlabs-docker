@@ -82,6 +82,11 @@ module Puppet::Parser::Functions
       flags << param
     end
 
+    # Multi line commands don't work on windows
+    if Facter.value(:osfamily).casecmp('windows')
+      return flags.flatten.join(' ')
+    end
+
     # Some software (inc systemd) will truncate very long lines using glibc's
     # max line length. Wrap options across multiple lines with '\' to avoid
     flags.flatten.join(" \\\n        ")

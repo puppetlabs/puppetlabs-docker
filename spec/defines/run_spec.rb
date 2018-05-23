@@ -565,8 +565,8 @@ require 'spec_helper'
       context 'with restart policy set to no' do
         let(:params) { {'restart' => 'no', 'command' => 'command', 'image' => 'base', 'extra_parameters' => '-c 4'} }
         it { should contain_exec('run sample with docker') }
-        it { should contain_exec('run sample with docker').with_unless(/\/var\/run\/docker-sample.cid/) }
-        it { should contain_exec('run sample with docker').with_unless(/-a/) }
+        it { should contain_exec('run sample with docker').with_unless(/sample/) }
+        it { should contain_exec('run sample with docker').with_unless(/inspect/) }
         it { should contain_exec('run sample with docker').with_command(/--cidfile=\/var\/run\/docker-sample.cid/) }
         it { should contain_exec('run sample with docker').with_command(/-c 4/) }
         it { should contain_exec('run sample with docker').with_command(/--restart="no"/) }
@@ -577,8 +577,8 @@ require 'spec_helper'
       context 'with restart policy set to always' do
         let(:params) { {'restart' => 'always', 'command' => 'command', 'image' => 'base', 'extra_parameters' => '-c 4'} }
         it { should contain_exec('run sample with docker') }
-        it { should contain_exec('run sample with docker').with_unless(/\/var\/run\/docker-sample.cid/) }
-        it { should contain_exec('run sample with docker').with_unless(/-a/) }
+        it { should contain_exec('run sample with docker').with_unless(/sample/) }
+        it { should contain_exec('run sample with docker').with_unless(/inspect/) }
         it { should contain_exec('run sample with docker').with_command(/--cidfile=\/var\/run\/docker-sample.cid/) }
         it { should contain_exec('run sample with docker').with_command(/-c 4/) }
         it { should contain_exec('run sample with docker').with_command(/--restart="always"/) }
@@ -589,8 +589,8 @@ require 'spec_helper'
       context 'with restart policy set to on-failure' do
         let(:params) { {'restart' => 'on-failure', 'command' => 'command', 'image' => 'base', 'extra_parameters' => '-c 4'} }
         it { should contain_exec('run sample with docker') }
-        it { should contain_exec('run sample with docker').with_unless(/\/var\/run\/docker-sample.cid/) }
-        it { should contain_exec('run sample with docker').with_unless(/-a/) }
+        it { should contain_exec('run sample with docker').with_unless(/sample/) }
+        it { should contain_exec('run sample with docker').with_unless(/inspect/) }
         it { should contain_exec('run sample with docker').with_command(/--cidfile=\/var\/run\/docker-sample.cid/) }
         it { should contain_exec('run sample with docker').with_command(/-c 4/) }
         it { should contain_exec('run sample with docker').with_command(/--restart="on-failure"/) }
@@ -601,8 +601,8 @@ require 'spec_helper'
       context 'with restart policy set to on-failure:3' do
         let(:params) { {'restart' => 'on-failure:3', 'command' => 'command', 'image' => 'base', 'extra_parameters' => '-c 4'} }
         it { should contain_exec('run sample with docker') }
-        it { should contain_exec('run sample with docker').with_unless(/\/var\/run\/docker-sample.cid/) }
-        it { should contain_exec('run sample with docker').with_unless(/-a/) }
+        it { should contain_exec('run sample with docker').with_unless(/sample/) }
+        it { should contain_exec('run sample with docker').with_unless(/inspect/) }
         it { should contain_exec('run sample with docker').with_command(/--cidfile=\/var\/run\/docker-sample.cid/) }
         it { should contain_exec('run sample with docker').with_command(/-c 4/) }
         it { should contain_exec('run sample with docker').with_command(/--restart="on-failure:3"/) }
