@@ -464,8 +464,8 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell('ps -aux | grep docker') do |r|
-          expect(r.stdout).to match(/--cpuset-cpus=0/)
+        shell('docker inspect container_3_5_5') do |r|
+          expect(r.stdout).to match(/"CpusetCpus"\: "0"/)
         end
       end
 
