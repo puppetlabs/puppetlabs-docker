@@ -49,28 +49,28 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
         pp2=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
             ensure  => 'absent',
-            image   => 'ubuntu',
-            require => Docker::Image['ubuntu'],
+            image   => 'alpine',
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -145,7 +145,7 @@ describe 'the Puppet Docker module' do
       it 'should successfully download an image from the Docker Hub' do
         pp=<<-EOS
           class { 'docker':}
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             ensure  => present,
             require => Class['docker'],
           }
@@ -157,16 +157,16 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         shell('docker images') do |r|
-          expect(r.stdout).to match(/ubuntu/)
+          expect(r.stdout).to match(/alpine/)
         end
       end
 
       it 'should successfully download an image based on a tag from the Docker Hub' do
         pp=<<-EOS
           class { 'docker':}
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             ensure    => present,
-            image_tag => 'precise',
+            image_tag => '3.7',
             require   => Class['docker'],
           }
         EOS
@@ -177,7 +177,7 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         shell('docker images') do |r|
-          expect(r.stdout).to match(/ubuntu\s+precise/)
+          expect(r.stdout).to match(/alpine\s+3.7/)
         end
       end
 
@@ -205,15 +205,15 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu_with_file':
+          docker::image { 'alpine_with_file':
             docker_file => "/root/Dockerfile",
             require     => Class['docker'],
           }
 
           file { '/root/Dockerfile':
             ensure  => present,
-            content => "FROM ubuntu\nRUN touch /root/test_file_from_dockerfile.txt",
-            before  => Docker::Image['ubuntu_with_file'],
+            content => "FROM alpine\nRUN touch /root/test_file_from_dockerfile.txt",
+            before  => Docker::Image['alpine_with_file'],
           }
         EOS
 
@@ -223,7 +223,7 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("docker run ubuntu_with_file ls /root") do |r|
+        shell("docker run alpine_with_file ls /root") do |r|
           expect(r.stdout).to match(/test_file_from_dockerfile.txt/)
         end
       end
@@ -231,21 +231,21 @@ describe 'the Puppet Docker module' do
       it 'should create a new image based on a tar' do
         pp=<<-EOS
           class { 'docker': }
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
             ensure  => present,
           }
 
           docker::run { 'container_2_4':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => '/bin/sh -c "touch /root/test_file_for_tar_test.txt; while true; do echo hello world; sleep 1; done"',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
         pp2=<<-EOS
           class { 'docker': }
-          docker::image { 'ubuntu_from_commit':
+          docker::image { 'alpine_from_commit':
             docker_tar => "/root/rootfs.tar"
           }
         EOS
@@ -258,7 +258,7 @@ describe 'the Puppet Docker module' do
 
         # Commit currently running container as an image
         container_id = shell("docker ps | awk 'FNR == 2 {print $1}'")
-        shell("docker commit #{container_id.stdout.strip} ubuntu_from_commit")
+        shell("docker commit #{container_id.stdout.strip} alpine_from_commit")
 
         # Stop all container using systemd
         shell('ls -D -1 /etc/systemd/system/docker-container* | sed \'s/\/etc\/systemd\/system\///g\' | sed \'s/\.service//g\' | while read container; do service $container stop; done')
@@ -272,7 +272,7 @@ describe 'the Puppet Docker module' do
         end
 
         # Export new to a tar file
-        shell("docker save ubuntu_from_commit > /root/rootfs.tar")
+        shell("docker save alpine_from_commit > /root/rootfs.tar")
 
         # Remove all images
         shell('docker rmi $(docker images -q) || true')
@@ -288,7 +288,7 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("docker run ubuntu_from_commit ls /root") do |r|
+        shell("docker run alpine_from_commit ls /root") do |r|
           expect(r.stdout).to match(/test_file_for_tar_test.txt/)
         end
       end
@@ -326,14 +326,14 @@ describe 'the Puppet Docker module' do
           class { 'docker':
           }
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_1':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -356,16 +356,16 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_2':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
             ports   => ['4444'],
             expose  => ['5555'],
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -384,15 +384,15 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_3':
-            image    => 'ubuntu',
+            image    => 'alpine',
             command  => 'init',
             hostname => 'testdomain.com',
-            require  => Docker::Image['ubuntu'],
+            require  => Docker::Image['alpine'],
           }
         EOS
 
@@ -413,15 +413,15 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_4':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
             volumes => ["/root:/root/mnt:rw"],
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
 
           file { '/root/test_mount.txt':
@@ -446,15 +446,15 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_5_5':
-            image  => 'ubuntu',
+            image  => 'alpine',
             command => 'init',
             cpuset  => ['0'],
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -473,14 +473,14 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_5_1':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -495,16 +495,16 @@ describe 'the Puppet Docker module' do
         pp2=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_5_2':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
             depends => ['#{container_1.stdout.strip}'],
             links   => "#{container_1.stdout.strip}:the_link",
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -526,28 +526,28 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
         pp2=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
-            image   => 'ubuntu',
+            image   => 'alpine',
             running => false,
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -576,28 +576,28 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
         pp2=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
             ensure  => 'absent',
-            image   => 'ubuntu',
-            require => Docker::Image['ubuntu'],
+            image   => 'alpine',
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -622,10 +622,10 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu': }
+          docker::image { 'alpine': }
 
           docker::run { 'container_3_7_1':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
           }
 
@@ -650,14 +650,14 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker':}
 
-          docker::image { 'ubuntu':
+          docker::image { 'alpine':
             require => Class['docker'],
           }
 
           docker::run { 'container_4_1':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
-            require => Docker::Image['ubuntu'],
+            require => Docker::Image['alpine'],
           }
         EOS
 
@@ -694,10 +694,10 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': }
 
-          docker::image { 'ubuntu': }
+          docker::image { 'alpine': }
 
           docker::run { '#{container_name}':
-            image   => 'ubuntu',
+            image   => 'alpine',
             command => 'init',
           }
 
