@@ -117,8 +117,8 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat)/ {
-    fail translate(('The docker::service class needs a Debian or Redhat based system.'))
+  unless $::osfamily =~ /(Debian|RedHat|windows)/ {
+    fail translate(('The docker::service class needs a Debian, Redhat or Windows based system.'))
   }
 
   $dns_array = any2array($dns)
@@ -148,6 +148,11 @@ class docker::service (
       content => template('docker/etc/sysconfig/docker-storage-setup.erb'),
       before  => $_manage_service,
       notify  => $_manage_service,
+    }
+  }
+  if $::osfamily == 'windows' {
+    file { ['C:/ProgramData/docker/', 'C:/ProgramData/docker/config/']:
+      ensure  => directory,
     }
   }
 
@@ -202,6 +207,14 @@ class docker::service (
   }
 
   if $manage_service {
+    if $::osfamily == 'windows' {
+      reboot { 'pending_reboot':
+        when    => 'pending',
+        onlyif  => 'component_based_servicing',
+        timeout => 10,
+      }
+    }
+
     if ! defined(Service['docker']) {
       service { 'docker':
         ensure     => $service_state,

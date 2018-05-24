@@ -12,7 +12,11 @@ class docker::params {
   $docker_ce_channel                 = stable
   $docker_ee                         = false
   $docker_ee_start_command           = 'dockerd'
-  $docker_ee_package_name            = 'docker-ee'
+  if ($::osfamily == 'windows') {
+    $docker_ee_package_name          = 'Docker'
+  } else {
+    $docker_ee_package_name          = 'docker-ee'
+  }
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
   $docker_ee_key_id                  = undef
@@ -20,9 +24,15 @@ class docker::params {
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
-  $tls_cacert                        = '/etc/docker/tls/ca.pem'
-  $tls_cert                          = '/etc/docker/tls/cert.pem'
-  $tls_key                           = '/etc/docker/tls/key.pem'
+  if ($::osfamily == 'windows') {
+    $tls_cacert                        = 'C:/ProgramData/docker/certs.d/ca.pem'
+    $tls_cert                          = 'C:/ProgramData/docker/certs.d/server-cert.pem'
+    $tls_key                           = 'C:/ProgramData/docker/certs.d/server-key.pem'
+  } else {
+    $tls_cacert                        = '/etc/docker/tls/ca.pem'
+    $tls_cert                          = '/etc/docker/tls/cert.pem'
+    $tls_key                           = '/etc/docker/tls/key.pem'
+  }
   $ip_forward                        = true
   $iptables                          = true
   $ipv6                              = false
@@ -89,6 +99,8 @@ class docker::params {
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
   $os_lc                             = downcase($::operatingsystem)
+  $docker_msft_provider_version      = undef
+  $nuget_package_provider_version    = undef
 
   case $::osfamily {
     'Debian' : {
@@ -206,6 +218,42 @@ class docker::params {
       } else {
         $repo_opt = undef
       }
+    }
+    'windows' : {
+      $msft_nuget_package_provider_version = $nuget_package_provider_version
+      $msft_provider_version = $docker_msft_provider_version
+      $msft_package_version = $version
+      $service_config_template = 'docker/windows/config/daemon.json.erb'
+      $service_config = 'C:/ProgramData/docker/config/daemon.json'
+      $docker_group = 'docker'
+      $package_ce_source_location = undef
+      $package_ce_key_source = undef
+      $package_ce_key_id = undef
+      $package_ce_repos = undef
+      $package_ce_release = undef
+      $package_key_id = undef
+      $package_release = undef
+      $package_source_location = undef
+      $package_key_source = undef
+      $package_key_check_source = undef
+      $package_ee_source_location = undef
+      $package_ee_package_name = $docker_ee_package_name
+      $package_ee_key_source = undef
+      $package_ee_key_id = undef
+      $package_ee_repos = undef
+      $package_ee_release = undef
+      $use_upstream_package_source = undef
+      $pin_upstream_package_source = undef
+      $apt_source_pin_level= undef
+      $socket_group = undef
+      $service_name = $service_name_default
+      $repo_opt = undef
+      $storage_config = undef
+      $storage_setup_file = undef
+      $service_provider = undef
+      $service_overrides_template = undef
+      $service_hasstatus = undef
+      $service_hasrestart = undef
     }
     default: {
       $docker_group = $docker_group_default

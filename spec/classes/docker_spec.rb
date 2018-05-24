@@ -638,7 +638,7 @@ describe 'docker', :type => :class do
       end
 
       context 'with an invalid log_driver' do
-        let(:params) { { 'log_driver' => 'verbose'} }
+        let(:params) { { 'log_driver' => 'etwlogs'} }
         it do
           expect {
             should contain_package('docker')
@@ -867,7 +867,7 @@ describe 'docker', :type => :class do
     it do
       expect {
         should contain_package('docker')
-      }.to raise_error(Puppet::Error, /This module only works on Debian or Red Hat based systems./)
+      }.to raise_error(Puppet::Error, /This module only works on Debian, Red Hat or Windows based systems./)
     end
   end
 

@@ -1,5 +1,9 @@
 # == Class: docker::config
 #
 class docker::config {
-  docker::system_user { $docker::docker_users: }
+  if $::osfamily != 'windows' {
+    docker::system_user { $docker::docker_users: }
+  } else {
+    docker::windows_account { $docker::docker_users: }
+  }
 }
