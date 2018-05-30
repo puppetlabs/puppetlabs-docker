@@ -1,6 +1,13 @@
 require 'spec_helper_acceptance'
 
-describe 'docker compose' do
+broken = false
+
+if fact('osfamily') == 'windows'
+  puts "Not implemented on Windows"
+  broken = true
+end
+
+describe 'docker compose', :win_broken => broken do 
   before(:all) do
     install_code = <<-code
       class { 'docker': }

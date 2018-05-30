@@ -32,7 +32,7 @@ end
 group :system_tests do
   gem "beaker-puppet_install_helper", :require => false
   gem "beaker-rspec"
-  gem "beaker", "~> 2.0"
+  gem "beaker", "~> 3.13"
 end
 
 group :development do

@@ -5,17 +5,21 @@
 #
 
 $docker_image=$args[0]
+$docker_cmd = "C:\Program Files\Docker\docker.exe"
 
-$before=$(docker inspect --type image --format='{{.Id}}' ${docker_image} 2>$null)
-<%= @docker_command -%> pull ${DOCKER_IMAGE}
-$after=$(docker inspect --type image --format='{{.Id}}' ${DOCKER_IMAGE} 2>$null)
+Write-Host "Before - Looking for image"
+$before=$(& $docker_cmd inspect --type image --format='{{.Id}}' ${docker_image} 2>$null)
+Write-Host "Pulling image"
+& $docker_cmd pull ${docker_image}
+Write-Host "Inspecting image"
+$after=$(& $docker_cmd inspect --type image --format='{{.Id}}' ${docker_image} 2>$null)
 If (!$after) {
     Write-Host "Docker image ${docker_image} failed to pull!"
-    Write-Host "Exit 3"
+    Exit 3
 } ElseIf ($after -eq $before) {
     Write-Host "No updates to ${docker_image} available. Currently on ${after}."
-    Write-Host "Exit 2"
+    Exit 2
 } Else {
     Write-Host "${docker_image} updated. Changed from ${before} to ${after}."
-    Write-Host "Exit 0"
+    Exit 0
 }
