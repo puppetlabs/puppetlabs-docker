@@ -93,15 +93,19 @@ class docker::install (
           ensure  => present,
           force   => true,
           content => template('docker/windows/install_powershell_provider.ps1.erb'),
+          notify  => Exec['install-docker-package']
         }
         exec { 'install-docker-package':
-          command   => "& ${install_script_path}",
-          provider  => powershell,
-          logoutput => true,
+          command     => "& ${install_script_path}",
+          provider    => powershell,
+          refreshonly => true,
+          logoutput   => true,
+          notify      => Exec['service-restart-on-failure'],
         }
         exec { 'service-restart-on-failure':
-          command => 'cmd /c "SC failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000"',
-          path    => 'c:/Windows/System32/'
+          command     => 'cmd /c "SC failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000"',
+          refreshonly => true,
+          path        => 'c:/Windows/System32/'
         }
       }
     }
