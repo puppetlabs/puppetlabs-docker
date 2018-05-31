@@ -3,4 +3,4 @@ EnvironmentFile=-/etc/sysconfig/docker
 <% if @daemon_environment_files %><% @daemon_environment_files.each do |param| %>EnvironmentFile=-<%= param %>
 <% end %><% end -%>
 ExecStart=
-ExecStart=/usr/bin/<%= @docker_start_command %> $OPTIONS $DOCKER_OPTS
+ExecStart=/usr/bin/<%= @docker_start_command %> --containerd /run/containerd/containerd.sock --add-runtime oci=/usr/sbin/docker-runc $OPTIONS $DOCKER_OPTS
