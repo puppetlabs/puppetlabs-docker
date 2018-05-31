@@ -36,7 +36,7 @@ class docker::install (
   if $::operatingsystem == 'SLES' and (versioncmp($::operatingsystemmajrelease, '12') < 0) {
     fail translate(('This module only works on SLES 12+'))
   }
-  if $::operatingsystem == 'openSUSE' and
+  if $::operatingsystem == 'OpenSuSE' and
       ((versioncmp($::operatingsystemmajrelease, '42') < 0) and
       (versioncmp($::operatingsystemmajrelease, '15') < 0)) {
     fail translate(('This module only works on openSUSE 42/15+'))
