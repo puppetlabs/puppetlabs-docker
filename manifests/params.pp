@@ -6,7 +6,12 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
-  $docker_ce_package_name            = 'docker-ce'
+  if ($::osfamily == 'Suse') {
+    $docker_ce_package_name          = 'docker'
+  }
+  else {
+    $docker_ce_package_name          = 'docker-ce'
+  }
   $docker_engine_start_command       = 'docker daemon'
   $docker_engine_package_name        = 'docker-engine'
   $docker_ce_channel                 = stable
