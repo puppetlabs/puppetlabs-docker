@@ -28,8 +28,8 @@ class docker::install (
 ) {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian, RedHat or Windows.'))
+    assert_type(Pattern[/^(Debian|RedHat|Suse|windows)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian, RedHat, SUSE or Windows.'))
     }
   }
   if $docker::version and $docker::ensure != 'absent' {
