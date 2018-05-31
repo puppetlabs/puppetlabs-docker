@@ -1,10 +1,10 @@
 HOSTS:
-  centos-70-x64:
+  opensuse-4203-x64:
     roles:
       - default
-    platform: el-7-x86_64
-    box: puppetlabs/centos-7.0-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+    platform: opensuse-42.3-x86_64
+    box: opensuse/openSUSE-42.3-x86_64
+    box_url: https://app.vagrantup.com/opensuse/boxes/openSUSE-42.3-x86_64
     hypervisor : vagrant
 CONFIG:
   log_level: verbose
