@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'docker', :type => :class do
 
-  ['Debian', 'Ubuntu', 'RedHat'].each do |osfamily|
+  ['Debian', 'Ubuntu', 'RedHat', 'Suse'].each do |osfamily|
     context "on #{osfamily}" do
 
       if osfamily == 'Debian'
@@ -46,6 +46,23 @@ describe 'docker', :type => :class do
           it { should contain_package('cgroup-lite').with_ensure('present') }
           it { should contain_package('apparmor').with_ensure('present') }
         end
+      end
+
+      if osfamily == 'Suse'
+        let(:facts) { {
+          :architecture              => 'x86_64',
+          :osfamily                  => 'Suse',
+          :operatingsystem           => 'SLES',
+          :lsbdistid                 => 'SUSE',
+          :lsbdistcodename           => 'n/a',
+          :kernelrelease             => '4.4.131-94.29-default',
+          :operatingsystemrelease    => '12.3',
+          :operatingsystemmajrelease => '12',
+          :os                        => { :architecture => "x86_64", :distro => { :codename => "n/a", :description => "SUSE Linux Enterprise Server 12 SP3", :id => "SUSE", :release => { :full => "12.3", :major => "12", :minor => "3" }, :specification => "n/a" }, :family => "Suse", :hardware => "x86_64", :name => "SLES", :release => { :full => "12.3", :major => "12", :minor => "3" }, :selinux => { :enabled => false  } }
+        } }
+        service_config_file = '/etc/default/docker'
+
+        it { should contain_service('docker').with_hasrestart('true') }
       end
 
       if osfamily == 'Ubuntu'

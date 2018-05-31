@@ -489,8 +489,8 @@ class docker(
 
 
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian, Red Hat or Windows based systems.'))
+    assert_type(Pattern[/^(Debian|RedHat|Suse|windows)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian, Red Hat, SUSE or Windows based systems.'))
     }
   }
 
