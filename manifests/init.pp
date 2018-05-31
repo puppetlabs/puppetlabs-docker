@@ -494,6 +494,15 @@ class docker(
     }
   }
 
+  if $::operatingsystem == 'SLES' and (versioncmp($::operatingsystemmajrelease, '12') < 0) {
+    fail translate(('This module only works on SLES 12+'))
+  }
+  if $::operatingsystem == 'openSUSE' and
+      ((versioncmp($::operatingsystemmajrelease, '42') < 0) and
+      (versioncmp($::operatingsystemmajrelease, '15') < 0)) {
+    fail translate(('This module only works on openSUSE 42/15+'))
+  }
+
   if ($default_gateway) and (!$bridge) {
     fail translate(('You must provide the $bridge parameter.'))
   }

@@ -225,9 +225,6 @@ class docker::params {
       }
     }
     'Suse' : {
-      if $::operatingsystem == 'SLES' and (versioncmp($::operatingsystemmajrelease, '12') < 0) {
-        fail("${module_name} is only supported on SLES 12+/openSUSE 42+")
-      }
       $service_config = '/etc/sysconfig/docker'
       $storage_config = undef
       $storage_setup_file = undef
