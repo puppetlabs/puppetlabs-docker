@@ -43,6 +43,20 @@
       ]
     },
     {
+      "operatingsystem": "OpenSuSE",
+      "operatingsystemrelease": [
+        "42",
+        "15"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "12",
+        "15"
+      ]
+    },
+    {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
         "Server 2016"
