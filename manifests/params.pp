@@ -254,6 +254,7 @@ class docker::params {
       $service_overrides_template = undef
       $service_hasstatus = undef
       $service_hasrestart = undef
+      $detach_service_in_init = true
     }
     default: {
       $docker_group = $docker_group_default

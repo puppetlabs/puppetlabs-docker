@@ -111,15 +111,15 @@ define docker::run(
   Optional[String] $syslog_identifier                   = undef,
   Optional[Boolean] $read_only                          = false,
 ) {
-  include docker
+  include docker::params
   if ($socket_connect != []) {
     $sockopts = join(any2array($socket_connect), ',')
-    $docker_command = "${docker::docker_command} -H ${sockopts}"
+    $docker_command = "${docker::params::docker_command} -H ${sockopts}"
   }else {
-    $docker_command = $docker::docker_command
+    $docker_command = $docker::params::docker_command
   }
-  $service_name = $docker::service_name
-  $docker_group = $docker::docker_group
+  $service_name = $docker::params::service_name
+  $docker_group = $docker::params::docker_group
 
   if $restart {
     assert_type(Pattern[/^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$/], $restart)
@@ -197,21 +197,58 @@ define docker::run(
     $sanitised_after_array = regsubst($after_array, '[^0-9A-Za-z.\-_]', '-', 'G')
   }
 
-  if $restart {
-
+  if $::osfamily == 'windows' {
+    $exec_environment = undef
+    $exec_timeout = 3000
+    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_provider = 'powershell'
+    $cidfile = "c:/Windows/Temp/${service_prefix}${sanitised_title}.cid"
+  } else {
+    $exec_environment = 'HOME=/root'
+    $exec_path = ['/bin', '/usr/bin']
+    $exec_timeout = 0
+    $exec_provider = undef
     $cidfile = "/var/run/${service_prefix}${sanitised_title}.cid"
+  }
 
-    $run_with_docker_command = [
-      "${docker_command} run -d ${docker_run_flags}",
-      "--name ${sanitised_title} --cidfile=${cidfile}",
-      "--restart=\"${restart}\" ${image} ${command}",
-    ]
-    exec { "run ${title} with docker":
-      command     => join($run_with_docker_command, ' '),
-      unless      => "${docker_command} ps --no-trunc -a | grep `cat ${cidfile}`",
-      environment => 'HOME=/root',
-      path        => ['/bin', '/usr/bin'],
-      timeout     => 0
+  if $restart {
+    if $ensure == 'absent' {
+      exec { "stop ${title} with docker":
+        command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
+        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        environment => $exec_environment,
+        path        => $exec_path,
+        provider    => $exec_provider,
+        timeout     => $exec_timeout
+      }
+
+      exec { "remove ${title} with docker":
+        command     => "${docker_command} rm -v ${sanitised_title}",
+        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        environment => $exec_environment,
+        path        => $exec_path,
+        provider    => $exec_provider,
+        timeout     => $exec_timeout
+      }
+
+      file { $cidfile:
+              ensure => absent,
+      }
+    }
+    else {
+      $run_with_docker_command = [
+        "${docker_command} run -d ${docker_run_flags}",
+        "--name ${sanitised_title} --cidfile=${cidfile}",
+        "--restart=\"${restart}\" ${image} ${command}",
+      ]
+      exec { "run ${title} with docker":
+        command     => join($run_with_docker_command, ' '),
+        unless      => "${docker_command} inspect ${sanitised_title}",
+        environment => $exec_environment,
+        path        => $exec_path,
+        provider    => $exec_provider,
+        timeout     => $exec_timeout
+      }
     }
   } else {
 
@@ -227,7 +264,12 @@ define docker::run(
         $mode = '0750'
       }
       default: {
-        fail translate(('Docker needs a Debian or RedHat based system.'))
+        if $::osfamily != 'windows' {
+          fail translate(('Docker needs a Debian or RedHat based system.'))
+        }
+        elsif $ensure == 'present' {
+          fail translate(('Restart parameter is required for Windows'))
+        }
       }
     }
 
@@ -237,28 +279,46 @@ define docker::run(
       $_syslog_identifier = "${service_prefix}${sanitised_title}"
     }
 
-
     if $ensure == 'absent' {
+      if $::osfamily == 'windows'{
+        exec {
+          "stop container ${service_prefix}${sanitised_title}":
+          command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
+          onlyif      => "${docker_command} inspect ${sanitised_title}",
+          environment => $exec_environment,
+          path        => $exec_path,
+          provider    => $exec_provider,
+          timeout     => $exec_timeout
+        }
+      }
+      else {
         service { "${service_prefix}${sanitised_title}":
           ensure    => false,
           enable    => false,
           hasstatus => $docker::params::service_hasstatus,
         }
-
-        exec {
-          "remove container ${service_prefix}${sanitised_title}":
-            command     => "${docker_command} rm -v ${sanitised_title}",
-            refreshonly => true,
-            onlyif      => "${docker_command} ps --no-trunc -a --format='table {{.Names}}' | grep '^${sanitised_title}$'",
-            path        => ['/bin', '/usr/bin'],
-            environment => 'HOME=/root',
-            timeout     => 0
-        }
-
+      }
+      exec {
+        "remove container ${service_prefix}${sanitised_title}":
+        command     => "${docker_command} rm -v ${sanitised_title}",
+        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        environment => $exec_environment,
+        path        => $exec_path,
+        refreshonly => true,
+        provider    => $exec_provider,
+        timeout     => $exec_timeout
+      }
+      if $::osfamily != 'windows' {
         file { "/etc/systemd/system/${service_prefix}${sanitised_title}.service":
           ensure => absent,
           path   => "/etc/systemd/system/${service_prefix}${sanitised_title}.service",
         }
+      }
+      else {
+        file { $cidfile:
+              ensure => absent,
+        }
+      }
     }
     else {
       file { $initscript:
