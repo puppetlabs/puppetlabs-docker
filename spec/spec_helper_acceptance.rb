@@ -84,11 +84,36 @@ services:
     image: ubuntu:14.04
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
       EOS
+        docker_compose_content_v3 = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: ubuntu:14.04
+    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+      EOS
+        docker_compose_content_v3_windows = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: hello-world:nanoserver
+    command: cmd.exe /C "ping /t 8.8.8.8"
+networks:
+  default:
+    external:
+      name: nat
+      EOS
         create_remote_file(host, "/tmp/docker-compose.yml", docker_compose_content)
         create_remote_file(host, "/tmp/docker-compose-v2.yml", docker_compose_content_v2)
-        
+        if fact_on(host, 'osfamily') == 'windows'
+          create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3_windows)
+        else
+          create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3)
+        end
+
         if fact_on(host, 'osfamily') == 'windows'
           apply_manifest_on(host, "class { 'docker': docker_ee => true }")
+          docker_path = "/cygdrive/c/Program Files/Docker"
+          host.add_env_var('PATH', docker_path)
           puts "Waiting for box to come online"
           sleep 300
         end

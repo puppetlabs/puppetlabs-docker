@@ -53,7 +53,7 @@ module Puppet::Parser::Functions
     if opts['read_only']
       flags << '--read-only=true'
     end
-    params_join_char = Facter.value(:osfamily).casecmp('windows') ? ' ' : " \\\n"
+    params_join_char = Facter.value(:osfamily).casecmp('windows').zero? ? ' ' : " \\\n"
 
     multi_flags = lambda { |values, format|
       filtered = [values].flatten.compact
@@ -81,11 +81,6 @@ module Puppet::Parser::Functions
 
     opts['extra_params'].each do |param|
       flags << param
-    end
-
-    # Multi line commands don't work on windows
-    if Facter.value(:osfamily).casecmp('windows')
-      return flags.flatten.join(' ')
     end
 
     # Some software (inc systemd) will truncate very long lines using glibc's
