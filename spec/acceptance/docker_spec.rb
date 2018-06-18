@@ -5,6 +5,20 @@ describe 'docker' do
   service_name = 'docker'
   command = 'docker'
 
+  context 'When adding system user' do
+    let(:pp) {"
+            class { 'docker':
+              docker_users => ['user1']
+            }
+    "}
+
+     it 'the docker daemon' do
+       apply_manifest(pp, :catch_failures=>true) do |r|
+         expect(r.stdout).to_not match(/docker-systemd-reload-before-service/)
+       end
+     end
+   end
+
   context 'with default parameters' do
     let(:pp) {"
 			class { 'docker':
