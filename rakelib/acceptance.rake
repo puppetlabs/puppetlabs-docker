@@ -25,6 +25,7 @@ namespace :acceptance do
       'ubuntu-1404',
       'ubuntu-1604',
       'ubuntu-1610',
+      'win-2016',
     ]
   }.each do |ns, configs|
     namespace ns.to_sym do

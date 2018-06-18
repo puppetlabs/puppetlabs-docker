@@ -211,7 +211,7 @@ class docker::service (
       reboot { 'pending_reboot':
         when    => 'pending',
         onlyif  => 'component_based_servicing',
-        timeout => 10,
+        timeout => 1,
       }
     }
 

@@ -39,7 +39,7 @@ define docker::image(
   if $::osfamily == 'windows' {
     $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
     $update_docker_image_path = 'C:/Windows/Temp/update_docker_image.ps1'
-    $exec_environment = undef
+    $exec_environment = 'PATH=C:/Program Files/Docker/'
     $exec_timeout = 3000
     $update_docker_image_owner = undef
     $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
@@ -106,7 +106,7 @@ define docker::image(
     $image_find    = "${docker_command} images -q ${image}"
   }
   if $::osfamily == 'windows' {
-    $_image_find = "\$image_id=${image_find}; If (!\$image_id) { Exit 1 }"
+    $_image_find = "If (-not (${image_find}) ) { Exit 1 }"
   } else {
     $_image_find = "${image_find} | grep ."
   }
@@ -133,11 +133,12 @@ define docker::image(
 
   if $ensure == 'absent' {
     exec { $image_remove:
-      path      => $exec_path,
-      onlyif    => $_image_find,
-      provider  => $exec_provider,
-      timeout   => $exec_timeout,
-      logoutput => true,
+      path        => $exec_path,
+      environment => $exec_environment,
+      onlyif      => $_image_find,
+      provider    => $exec_provider,
+      timeout     => $exec_timeout,
+      logoutput   => true,
     }
   } elsif $ensure == 'latest' or $image_tag == 'latest' {
     exec { "echo 'Update of ${image_arg} complete'":
