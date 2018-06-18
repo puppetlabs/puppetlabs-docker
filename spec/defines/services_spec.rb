@@ -71,4 +71,12 @@ describe 'docker::services', :type => :define do
     it { is_expected.to compile.with_all_deps }
     it { should contain_exec('test_service docker service remove').with_command(/docker service rm/) }
   end
+
+  context 'when adding a system user' do
+    let(:params) { {
+        'user' => ['user1'],
+    } }
+    it { is_expected.to compile.with_all_deps }
+    it { should_not contain_exec('docker-systemd-reload-before-service') }
+  end
 end
