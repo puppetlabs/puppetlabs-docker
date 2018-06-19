@@ -27,6 +27,7 @@ class docker::repos (
             id     => $package_key,
             source => $key_source,
           },
+          architecture => $facts['os']['architecture'],
           include      => {
             src => false,
             },
