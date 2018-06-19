@@ -4,18 +4,29 @@ if fact('osfamily') == 'windows'
   docker_ee_arg = 'docker_ee => true'
   default_image = 'microsoft/nanoserver'
   default_image_tag = '10.0.14393.2189'
-  default_start_cmd = 'cmd'
+  second_image = 'hello-world'
   default_digest = 'sha256:204c41542c0927ac0296802e44c56b886b47e99cf8220fb49d46951bd5fc1742'
   default_dockerfile = 'c:/windows/temp/Dockerfile'
+  #The default args are set because: 
+  #restart => 'always' - there is no service created to manage containers 
+  #net => 'nat' - docker uses bridged by default when running a container. When installing docker on windows the default network is NAT.
+  default_docker_run_arg = "restart => 'always', net => 'nat',"
+  default_run_command = "ping 127.0.0.1 -t"
   docker_command = "\"/cygdrive/c/Program Files/Docker/docker\""
+  default_docker_exec_command = 'cmd /c "ping 127.0.0.1 -t > c:\windows\temp\test_file.txt"'
+  docker_mount_path = "c:/windows/temp"
 else
   docker_ee_arg = ''
   default_image = 'alpine'
+  second_image = 'busybox'
   default_image_tag = '3.7'
-  default_start_cmd = 'init'
   default_digest = 'sha256:3dcdb92d7432d56604d4545cbd324b14e647b313626d99b889d0626de158f73a'
   default_dockerfile = '/root/Dockerfile'
   docker_command = "docker"
+  default_docker_run_arg = ''
+  default_run_command = "init"
+  default_docker_exec_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
+  docker_mount_path = "/root"
 end
 
 describe 'the Puppet Docker module' do
@@ -70,7 +81,7 @@ describe 'the Puppet Docker module' do
           shell("#{docker_command} ps", :acceptable_exit_codes => [0] )
         end
 
-      it 'should stop a running container and remove container', :win_broken => true do
+      it 'should stop a running container and remove container' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
@@ -80,8 +91,9 @@ describe 'the Puppet Docker module' do
 
           docker::run { 'container_3_6':
             image   => '#{default_image}',
-            command => 'init',
+            command => '#{default_run_command}',
             require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -114,7 +126,11 @@ describe 'the Puppet Docker module' do
         sleep 15
 
         shell("#{docker_command} inspect container-3-6", :acceptable_exit_codes => [1])
-        shell('test -f /etc/systemd/system/container-3-6.service', :acceptable_exit_codes => [1])
+        if fact('osfamily') == 'windows'
+          shell('test -f /cygdrive/c/Windows/Temp/container-3-6.service', :acceptable_exit_codes => [1])
+        else
+          shell('test -f /etc/systemd/system/container-3-6.service', :acceptable_exit_codes => [1])
+        end
       end
     end
 
@@ -272,13 +288,13 @@ describe 'the Puppet Docker module' do
       it 'should create a new image based on a tar', :win_broken => true do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
             ensure  => present,
           }
 
           docker::run { 'container_2_4':
-            image   => 'alpine',
+            image   => '#{default_image}',
             command => '/bin/sh -c "touch /root/test_file_for_tar_test.txt; while true; do echo hello world; sleep 1; done"',
             require => Docker::Image['alpine'],
           }
@@ -361,20 +377,21 @@ describe 'the Puppet Docker module' do
       end
     end
 
-    describe "docker::run", :win_broken => true  do
+    describe "docker::run"  do
       it 'should start a container with a configurable command' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg}
           }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_1':
-            image   => 'alpine',
-            command => '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"',
-            require => Docker::Image['alpine'],
+            image   => '#{default_image}',
+            command => '#{default_docker_exec_command}',
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -385,8 +402,14 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
-          expect(r.stdout).to match(/test_file.txt/)
+        if fact('osfamily') == 'windows'
+          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Windows\\\\Temp") do |r|
+            expect(r.stdout).to match(/test_file.txt/)
+          end
+        else
+          shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
+            expect(r.stdout).to match(/test_file.txt/)
+          end
         end
 
         container_name = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
@@ -397,16 +420,17 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg}}
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_2':
-            image   => 'alpine',
-            command => 'init',
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
             ports   => ['4444'],
             expose  => ['5555'],
-            require => Docker::Image['alpine'],
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -416,8 +440,8 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell('#{docker_command} ps') do |r|
-          expect(r.stdout).to match(/"init".+5555\/tcp\, 0\.0\.0.0\:\d+\-\>4444\/tcp/)
+        shell("#{docker_command} ps") do |r|
+          expect(r.stdout).to match(/"#{default_run_command}".+5555\/tcp\, 0\.0\.0.0\:\d+\-\>4444\/tcp/)
         end
       end
 
@@ -425,15 +449,16 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_3':
-            image    => 'alpine',
-            command  => 'init',
+            image    => '#{default_image}',
+            command  => '#{default_run_command}',
             hostname => 'testdomain.com',
-            require  => Docker::Image['alpine'],
+            require  => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -454,18 +479,19 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_4':
-            image   => 'alpine',
-            command => 'init',
-            volumes => ["/root:/root/mnt:rw"],
-            require => Docker::Image['alpine'],
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            volumes => ["#{docker_mount_path}:#{docker_mount_path}/mnt:rw"],
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
 
-          file { '/root/test_mount.txt':
+          file { '#{docker_mount_path}/test_mount.txt':
             ensure => present,
             before => Docker::Run['container_3_4'],
           }
@@ -476,26 +502,34 @@ describe 'the Puppet Docker module' do
 
         # A sleep to give docker time to execute properly
         sleep 4
-
         container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        shell("#{docker_command} exec #{container_id.stdout.strip} ls /root/mnt") do |r|
-          expect(r.stdout).to match(/test_mount.txt/)
+        if fact('osfamily') == 'windows'
+          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Windows\\\\Temp\\\\mnt") do |r|
+            expect(r.stdout).to match(/test_mount.txt/)
+          end
+        else
+          shell("#{docker_command} exec #{container_id.stdout.strip} ls /root/mnt") do |r|
+            expect(r.stdout).to match(/test_mount.txt/)
+          end
         end
       end
 
-      it 'should start a container with cpuset paramater set' do
+      #cpuset is not supported on Docker Windows
+      #STDERR: C:/Program Files/Docker/docker.exe: Error response from daemon: invalid option: Windows does not support CpusetCpus.
+      it 'should start a container with cpuset paramater set', :win_broken => true do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_5_5':
-            image  => 'alpine',
-            command => 'init',
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
             cpuset  => ['0'],
-            require => Docker::Image['alpine'],
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -510,18 +544,20 @@ describe 'the Puppet Docker module' do
         end
       end
 
-      it 'should start multiple linked containers' do
+      #leagacy container linking was not implemented on Windows. --link is a legacy Docker feature: https://docs.docker.com/network/links/
+      it 'should start multiple linked containers', :win_broken => true do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_5_1':
-            image   => 'alpine',
-            command => 'init',
-            require => Docker::Image['alpine'],
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -536,16 +572,17 @@ describe 'the Puppet Docker module' do
         pp2=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_5_2':
-            image   => 'alpine',
-            command => 'init',
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
             depends => ['#{container_1.stdout.strip}'],
             links   => "#{container_1.stdout.strip}:the_link",
-            require => Docker::Image['alpine'],
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -567,28 +604,30 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
-            image   => 'alpine',
-            command => 'init',
-            require => Docker::Image['alpine'],
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
         pp2=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_3_6':
-            image   => 'alpine',
+            image   => '#{default_image}',
             running => false,
-            require => Docker::Image['alpine'],
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -617,28 +656,29 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
-          docker::run { 'container_3_6':
-            image   => 'alpine',
-            command => 'init',
-            require => Docker::Image['alpine'],
+          docker::run { 'container_3_6_1':
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
         pp2=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
-          docker::run { 'container_3_6':
+          docker::run { 'container_3_6_1':
             ensure  => 'absent',
-            image   => 'alpine',
-            require => Docker::Image['alpine'],
+            image   => '#{default_image}',
+            require => Docker::Image['#{default_image}'],
           }
         EOS
 
@@ -648,7 +688,7 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 15
 
-        shell("#{docker_command} inspect container_3_6", :acceptable_exit_codes => [0])
+        shell("#{docker_command} inspect container_3_6_1", :acceptable_exit_codes => [0])
 
         apply_manifest(pp2, :catch_failures => true)
         apply_manifest(pp2, :catch_changes => true) unless fact('selinux') == 'true'
@@ -656,27 +696,29 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 15
 
-        shell("#{docker_command} inspect container_3_6", :acceptable_exit_codes => [1])
+        shell("#{docker_command} inspect container_3_6_1", :acceptable_exit_codes => [1])
       end
 
       it 'should allow dependency for ordering of independent run and image' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine': }
+          docker::image { '#{default_image}': }
 
           docker::run { 'container_3_7_1':
-            image   => 'alpine',
-            command => 'init',
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            #{default_docker_run_arg}
           }
 
-          docker::image { 'busybox':
+          docker::image { '#{second_image}':
             require => Docker::Run['container_3_7_1'],
           }
 
           docker::run { 'container_3_7_2':
-            image   => 'busybox',
-            command => 'init',
+            image   => '#{second_image}',
+            command => '#{default_run_command}',
+            #{default_docker_run_arg}
           }
         EOS
 

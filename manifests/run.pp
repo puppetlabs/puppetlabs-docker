@@ -198,7 +198,7 @@ define docker::run(
   }
 
   if $::osfamily == 'windows' {
-    $exec_environment = undef
+    $exec_environment = 'PATH=C:/Program Files/Docker/'
     $exec_timeout = 3000
     $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
     $exec_provider = 'powershell'
@@ -249,6 +249,26 @@ define docker::run(
         provider    => $exec_provider,
         timeout     => $exec_timeout
       }
+
+      if $running == false {
+        exec { "stop ${title} with docker":
+          command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
+          unless      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
+          environment => $exec_environment,
+          path        => $exec_path,
+          provider    => $exec_provider,
+          timeout     => $exec_timeout
+          }
+      } else {
+          exec { "start ${title} with docker":
+          command     => "${docker_command} start ${sanitised_title}",
+          onlyif      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
+          environment => $exec_environment,
+          path        => $exec_path,
+          provider    => $exec_provider,
+          timeout     => $exec_timeout
+          }
+      }
     }
   } else {
 
@@ -288,7 +308,8 @@ define docker::run(
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
-          timeout     => $exec_timeout
+          timeout     => $exec_timeout,
+          notify      => Exec["remove container ${service_prefix}${sanitised_title}"]
         }
       }
       else {
