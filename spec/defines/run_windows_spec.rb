@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'docker::run', :type => :define do
   let(:title) { 'sample' }
+  let(:pre_condition) { 'class { \'docker\': docker_ee => true }' }
   let(:facts) { {
     :architecture              => 'amd64',
     :osfamily                  => 'windows',

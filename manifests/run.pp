@@ -134,8 +134,14 @@ define docker::run(
   }else {
     $docker_command = $docker::params::docker_command
   }
-  $service_name = $docker::params::service_name
-  $docker_group = $docker::params::docker_group
+
+  if defined('docker') {
+    $service_name = $docker::service_name
+    $docker_group = $docker::docker_group
+  } else {
+    $service_name = $docker::params::service_name
+    $docker_group = $docker::params::docker_group
+  }
 
   if $restart {
     assert_type(Pattern[/^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$/], $restart)

@@ -3,6 +3,7 @@ require 'spec_helper'
 ['Debian', 'RedHat'].each do |osfamily|
   describe 'docker::run', :type => :define do
     let(:title) { 'sample' }
+    let(:pre_condition) { "class { 'docker': docker_group => 'docker', service_name => 'docker' }" }
     context "on #{osfamily}" do
 
       initscript = '/etc/systemd/system/docker-sample.service'
@@ -616,7 +617,9 @@ require 'spec_helper'
 
       context 'when `docker_service` is true' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'docker_service' => true} }
-        let(:pre_condition) { "service { 'docker': }" }
+        let(:pre_condition) {
+          [ "service { 'docker': }",
+            "class { 'docker': docker_group => 'docker', service_name => 'docker' }" ] }
         it { should compile.with_all_deps }
         it { should contain_service('docker').that_comes_before('Service[docker-sample]') }
         it { should contain_service('docker').that_notifies('Service[docker-sample]') }
@@ -624,14 +627,18 @@ require 'spec_helper'
 
       context 'when `docker_service` is true and `restart_service_on_docker_refresh` is false' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'docker_service' => true, 'restart_service_on_docker_refresh' => false} }
-        let(:pre_condition) { "service { 'docker': }" }
+        let(:pre_condition) {
+          [ "service { 'docker': }",
+            "class { 'docker': docker_group => 'docker', service_name => 'docker' }" ] }
         it { should compile.with_all_deps }
         it { should contain_service('docker').that_comes_before('Service[docker-sample]') }
       end
 
       context 'when `docker_service` is `my-docker`' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'docker_service' => 'my-docker'} }
-        let(:pre_condition) { "service{ 'my-docker': }" }
+        let(:pre_condition) {
+          [ "service { 'my-docker': }",
+            "class { 'docker': docker_group => 'docker', service_name => 'docker' }" ] }
         it { should compile.with_all_deps }
         it { should contain_service('my-docker').that_comes_before('Service[docker-sample]') }
         it { should contain_service('my-docker').that_notifies('Service[docker-sample]') }
@@ -639,7 +646,9 @@ require 'spec_helper'
 
       context 'when `docker_service` is `my-docker` and `restart_service_on_docker_refresh` is false' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'docker_service' => 'my-docker', 'restart_service_on_docker_refresh' => false} }
-        let(:pre_condition) { "service{ 'my-docker': }" }
+        let(:pre_condition) {
+          [ "service { 'my-docker': }",
+            "class { 'docker': docker_group => 'docker', service_name => 'docker' }" ] }
         it { should compile.with_all_deps }
         it { should contain_service('my-docker').that_comes_before('Service[docker-sample]') }
       end
