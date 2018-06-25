@@ -90,6 +90,27 @@ define docker::swarm(
 
   include docker::params
 
+  if $::osfamily == 'windows' {
+    $exec_environment = 'PATH=C:/Program Files/Docker/'
+    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_timeout = 3000
+    $exec_provider = 'powershell'
+    $unless_init = '$info = docker info | select-string -pattern "Swarm: active"
+                    if ($info -eq $null) { Exit 1 } else { Exit 0 }'
+    $unless_join = '$info = docker info | select-string -pattern "Swarm: active"
+                    if ($info -eq $null) { Exit 1 } else { Exit 0 }'
+    $onlyif_leave = '$info = docker info | select-string -pattern "Swarm: active"
+                     if ($info -eq $null) { Exit 1 } else { Exit 0 }'
+  } else {
+    $exec_environment = 'HOME=/root'
+    $exec_path = ['/bin', '/usr/bin']
+    $exec_timeout = 0
+    $exec_provider = undef
+    $unless_init = 'docker info | grep -w "Swarm: active"'
+    $unless_join = 'docker info | grep -w "Swarm: active"'
+    $onlyif_leave = 'docker info | grep -w "Swarm: active"'
+  }
+
   $docker_command = "${docker::params::docker_command} swarm"
 
   if $init {
@@ -107,13 +128,13 @@ define docker::swarm(
     })
 
   $exec_init = "${docker_command} ${docker_swarm_init_flags}"
-  $unless_init = 'docker info | grep -w "Swarm: active"'
 
   exec { 'Swarm init':
     command     => $exec_init,
-    environment => 'HOME=/root',
-    path        => ['/bin', '/usr/bin'],
-    timeout     => 0,
+    environment => $exec_environment,
+    path        => $exec_path,
+    provider    => $exec_provider,
+    timeout     => $exec_timeout,
     unless      => $unless_init,
     }
   }
@@ -127,22 +148,23 @@ define docker::swarm(
     })
 
   $exec_join = "${docker_command} ${docker_swarm_join_flags} ${manager_ip}"
-  $unless_join = 'docker info | grep -w "Swarm: active"'
 
   exec { 'Swarm join':
     command     => $exec_join,
-    environment => 'HOME=/root',
-    path        => ['/bin', '/usr/bin'],
-    timeout     => 0,
+    environment => $exec_environment,
+    path        => $exec_path,
+    provider    => $exec_provider,
+    timeout     => $exec_timeout,
     unless      => $unless_join,
     }
   }
 
   if $ensure == 'absent' {
     exec { 'Leave swarm':
-      command => 'docker swarm leave --force',
-      onlyif  => 'docker info | grep -w "Swarm: active"',
-      path    => ['/bin', '/usr/bin'],
+      command  => 'docker swarm leave --force',
+      onlyif   => $onlyif_leave,
+      path     => $exec_path,
+      provider => $exec_provider,
     }
   }
 }
