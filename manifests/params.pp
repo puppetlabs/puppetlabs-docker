@@ -28,10 +28,14 @@ class docker::params {
     $tls_cacert                        = 'C:/ProgramData/docker/certs.d/ca.pem'
     $tls_cert                          = 'C:/ProgramData/docker/certs.d/server-cert.pem'
     $tls_key                           = 'C:/ProgramData/docker/certs.d/server-key.pem'
+    $compose_version                   = '1.21.2'
+    $compose_install_path              = 'C:/Program Files/Docker'
   } else {
     $tls_cacert                        = '/etc/docker/tls/ca.pem'
     $tls_cert                          = '/etc/docker/tls/cert.pem'
     $tls_key                           = '/etc/docker/tls/key.pem'
+    $compose_version                   = '1.9.0'
+    $compose_install_path              = '/usr/local/bin'
   }
   $ip_forward                        = true
   $iptables                          = true
@@ -96,8 +100,6 @@ class docker::params {
   $storage_pool_autoextend_percent   = undef
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
   $registry_mirror                   = undef
-  $compose_version                   = '1.9.0'
-  $compose_install_path              = '/usr/local/bin'
   $os_lc                             = downcase($::operatingsystem)
   $docker_msft_provider_version      = undef
   $nuget_package_provider_version    = undef
