@@ -136,6 +136,20 @@ require 'spec_helper'
           end
         end
 
+        context 'When restarting an unhealthy container' do
+          let(:params) {{
+            'command' => 'command',
+            'image'   => 'base',
+            'health_check_cmd' => 'pwd',
+            'restart_on_unhealthy' => true
+          }}
+          if (systemd)
+            it { should contain_file(initscript).with_content(/ExecStop=-\/usr\/bin\/docker stop --time=0 /) } 
+            it { should contain_file(initscript).with_content(/ExecStop=-\/usr\/bin\/docker rm/) }
+            it { should contain_file(initscript).with_content(/--health-cmd/) }
+            end
+        end
+
         context 'when not removing containers on container start and stop' do
           let(:params) {{
             'command' => 'command',

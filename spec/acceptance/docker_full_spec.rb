@@ -643,6 +643,21 @@ describe 'the Puppet Docker module' do
         apply_manifest(pp, :catch_changes => true) unless fact('selinux') == 'true'
 
       end
+      
+      it 'should restart a unhealthy container' do
+      pp5=<<-EOS
+        docker::run { 'container_3_7_3':
+          image   => 'base',
+          command => '#{default_run_command}',
+          health_check_cmd => 'pwd',
+          restart_on_unhealthy => true,
+          }
+          EOS
+
+         apply_manifest(pp5, :catch_failures => true) do |r|
+           expect(r.stdout).to match(/docker-container_3_7_3-systemd-reload/)
+        end 
+      end
     end
 
     describe "docker::exec" do
