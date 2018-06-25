@@ -17,6 +17,18 @@ define docker::exec(
 
   $docker_command = $docker::params::docker_command
 
+  if $::osfamily == 'windows' {
+    $exec_environment = 'PATH=C:/Program Files/Docker/'
+    $exec_timeout = 3000
+    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_provider = 'powershell'
+  } else {
+    $exec_environment = 'HOME=/root'
+    $exec_path = ['/bin', '/usr/bin']
+    $exec_timeout = 0
+    $exec_provider = undef
+  }
+
   $docker_exec_flags = docker_exec_flags({
     detach => $detach,
     interactive => $interactive,
@@ -43,11 +55,12 @@ define docker::exec(
   }
 
   exec { $exec:
-    environment => 'HOME=/root',
+    environment => $exec_environment,
     onlyif      => $onlyif_command,
-    path        => ['/bin', '/usr/bin'],
+    path        => $exec_path,
     refreshonly => $refreshonly,
-    timeout     => 0,
+    timeout     => $exec_timeout,
+    provider    => $exec_provider,
     unless      => $unless_command,
   }
 }

@@ -13,7 +13,8 @@ if fact('osfamily') == 'windows'
   default_docker_run_arg = "restart => 'always', net => 'nat',"
   default_run_command = "ping 127.0.0.1 -t"
   docker_command = "\"/cygdrive/c/Program Files/Docker/docker\""
-  default_docker_exec_command = 'cmd /c "ping 127.0.0.1 -t > c:\windows\temp\test_file.txt"'
+  default_docker_exec_lr_command = 'cmd /c "ping 127.0.0.1 -t > c:\windows\temp\test_file.txt"'
+  default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = "c:/windows/temp"
 else
   docker_ee_arg = ''
@@ -25,7 +26,8 @@ else
   docker_command = "docker"
   default_docker_run_arg = ''
   default_run_command = "init"
-  default_docker_exec_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
+  default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
+  default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
 end
 
@@ -389,7 +391,7 @@ describe 'the Puppet Docker module' do
 
           docker::run { 'container_3_1':
             image   => '#{default_image}',
-            command => '#{default_docker_exec_command}',
+            command => '#{default_docker_exec_lr_command}',
             require => Docker::Image['#{default_image}'],
             #{default_docker_run_arg}
           }
@@ -728,19 +730,20 @@ describe 'the Puppet Docker module' do
       end
     end
 
-    describe "docker::exec", :win_broken => true  do
+    describe "docker::exec"  do
       it 'should run a command inside an already running container' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine':
+          docker::image { '#{default_image}':
             require => Class['docker'],
           }
 
           docker::run { 'container_4_1':
-            image   => 'alpine',
-            command => 'init',
-            require => Docker::Image['alpine'],
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            require => Docker::Image['#{default_image}'],
+            #{default_docker_run_arg}
           }
         EOS
 
@@ -756,7 +759,7 @@ describe 'the Puppet Docker module' do
           class { 'docker': #{docker_ee_arg} }
           docker::exec { 'test_command':
             container => '#{container_1.stdout.strip}',
-            command   => 'touch /root/test_command_file.txt',
+            command   => '#{default_docker_exec_command}',
             tty       => true,
           }
         EOS
@@ -767,8 +770,14 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
-          expect(r.stdout).to match(/test_command_file.txt/)
+        if fact('osfamily') == 'windows'
+          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Windows\\\\Temp") do |r|
+            expect(r.stdout).to match(/test_file.txt/)
+          end
+        else
+          shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
+            expect(r.stdout).to match(/test_file.txt/)
+          end
         end
       end
 
@@ -777,16 +786,17 @@ describe 'the Puppet Docker module' do
         pp=<<-EOS
           class { 'docker': #{docker_ee_arg} }
 
-          docker::image { 'alpine': }
+          docker::image { '#{default_image}': }
 
           docker::run { '#{container_name}':
-            image   => 'alpine',
-            command => 'init',
+            image   => '#{default_image}',
+            command => '#{default_run_command}',
+            #{default_docker_run_arg}
           }
 
           docker::exec { 'test_command':
             container   => '#{container_name}',
-            command     => 'touch /root/test_command_file.txt',
+            command     => '#{default_docker_exec_command}',
             refreshonly => true,
           }
         EOS
@@ -797,12 +807,18 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} exec #{container_name} ls /root") do |r|
-          expect(r.stdout).to_not match(/test_command_file.txt/)
+        if fact('osfamily') == 'windows'
+          shell("#{docker_command} exec #{container_name} cmd /c dir Windows\\\\Temp") do |r|
+            expect(r.stdout).to_not match(/test_file.txt/)
+          end
+        else
+          shell("#{docker_command} exec #{container_name} ls /root") do |r|
+            expect(r.stdout).to_not match(/test_file.txt/)
+          end
         end
 
         pp_extra=<<-EOS
-          file { '/tmp/dummy_file':
+          file { '#{default_dockerfile}_dummy_file':
             ensure => 'present',
             notify => Docker::Exec['test_command'],
           }
@@ -816,8 +832,14 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} exec #{container_name} ls /root") do |r|
-          expect(r.stdout).to match(/test_command_file.txt/)
+        if fact('osfamily') == 'windows'
+          shell("#{docker_command} exec #{container_name} cmd /c dir Windows\\\\Temp") do |r|
+            expect(r.stdout).to match(/test_file.txt/)
+          end
+        else
+          shell("#{docker_command} exec #{container_name} ls /root") do |r|
+            expect(r.stdout).to match(/test_file.txt/)
+          end
         end
       end
     end
