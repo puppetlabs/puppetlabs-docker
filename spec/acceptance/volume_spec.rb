@@ -3,20 +3,23 @@ require 'spec_helper_acceptance'
 broken = false
 
 if fact('osfamily') == 'windows'
-  puts "Not implemented on Windows"
-  broken = true
+  docker_ee_arg = 'docker_ee => true'
+  command = "\"/cygdrive/c/Program Files/Docker/docker\""
+else
+  docker_ee_arg = ''
+  command = 'docker'
 end
 
-describe 'docker network', :win_broken => broken do
-  command = 'docker'
-
+describe 'docker volume' do
   before(:all) do
-    install_code = "class { 'docker': }"
-    apply_manifest(install_code, :catch_failures => true)
+    retry_on_error_matching(60, 5, /connection failure running/) do
+      install_code = "class { 'docker': #{docker_ee_arg} }"
+      apply_manifest(install_code, :catch_failures => true)
+    end
   end
 
-  describe command("#{command} volume --help") do
-    its(:exit_status) { should eq 0 }
+  it 'should expose volume subcommand' do
+    shell("#{command} volume --help", :acceptable_exit_codes => [0])
   end
 
   context 'with a local volume described in Puppet' do
