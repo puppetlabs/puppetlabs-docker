@@ -46,6 +46,10 @@ module Puppet::Parser::Functions
       flags << '--detach=true'
     end
 
+    if opts['health_check_cmd']
+      flags << "--health-cmd '#{opts['health_check_command']} || exit 1'"
+    end
+
     if opts['tty']
       flags << '-t'
     end

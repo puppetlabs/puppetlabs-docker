@@ -370,11 +370,21 @@ If using Hiera, you can configure the `docker::run_instance` class:
 
 To remove a running container, add the following code to the manifest file. This will also remove the systemd service file associated with the container.
 
-'''puppet
+```puppet
 docker::run { 'helloworld':
   ensure => absent,
 }
-'''
+```
+
+To enable the restart of an unhealthy container add the following code to the manifest file.
+
+```puppet
+docker::run { 'helloworld':
+  image => 'base',
+  command => 'command',
+  health_check_command => '<command_to_execute_to_check_your_containers_health>',
+  restart_on_unhealthy => true,
+```
 
 ### Networks
 
