@@ -23,6 +23,7 @@ RSpec/BeforeAfterAll:
     A necessary evil in acceptance testing.
   Exclude:
   - spec/acceptance/**/*.rb
+  - spec/acceptance_swarm/**/*.rb
 RSpec/HookArgument:
   Description: Prefer explicit :each argument, matching existing module's style
   EnforcedStyle: each

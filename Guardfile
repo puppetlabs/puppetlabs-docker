@@ -15,3 +15,9 @@ group :acceptance do
     watch(%r{^spec\/acceptance\/.+\.rb$})
   end
 end
+
+group :acceptance_swarm do
+  guard :rake, :task => 'acceptance_swarm' do
+    watch(%r{^spec\/acceptance_swarm\/.+\.rb$})
+  end
+end
