@@ -53,12 +53,14 @@ define docker::registry(
     $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
     $exec_provider = 'powershell'
     $password_env = '$env:password'
+    $exec_user = undef
   } else {
     $exec_environment = ['HOME=/root']
     $exec_path = ['/bin', '/usr/bin']
     $exec_timeout = 0
     $exec_provider = undef
     $password_env = "\${password}"
+    $exec_user = $local_user
   }
 
   if $ensure == 'present' {
@@ -67,7 +69,7 @@ define docker::registry(
       $auth_environment = "password=${password}"
     }
     elsif $username != undef and $password != undef {
-      $auth_cmd = "${docker_command} login -u '${username}' -p ${password_env} ${server}"
+      $auth_cmd = "${docker_command} login -u '${username}' -p '${password_env}' ${server}"
       $auth_environment = "password=${password}"
     }
     else {
@@ -80,6 +82,7 @@ define docker::registry(
     $auth_environment = ''
   }
 
+  $docker_auth = "${title}${auth_environment}${auth_cmd}${local_user}"
   if $receipt {
 
     # server may be an URI, which can contain /
@@ -90,7 +93,7 @@ define docker::registry(
       $local_user_strip = regsubst($local_user, '-', '', 'G')
 
       $_pass_hash = $pass_hash ? {
-        Undef   => pw_hash("${title}${auth_environment}${auth_cmd}${local_user}", 'SHA-512', $local_user_strip),
+        Undef   => pw_hash($docker_auth, 'SHA-512', $local_user_strip),
         default => $pass_hash
       }
       $_auth_command = "${auth_cmd} || rm -f \"/root/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
@@ -101,7 +104,6 @@ define docker::registry(
         notify  => Exec["${title} auth"],
       }
     } else {
-      $pass = "${title}${auth_environment}${auth_cmd}${local_user}"
       $_auth_command = $auth_cmd
       $pw_hash_path = 'C:/Windows/Temp/compute_hash.ps1'
       $passfile = "C:/Windows/Temp/registry-auth-puppet_receipt_${server_strip}_${local_user}"
@@ -124,10 +126,16 @@ define docker::registry(
     $_auth_command = $auth_cmd
   }
 
+  if $auth_environment != '' {
+    $exec_env = concat($exec_environment, $auth_environment, "docker_auth=${docker_auth}")
+  } else {
+    $exec_env = concat($exec_environment, "docker_auth=${docker_auth}")
+  }
+
   exec { "${title} auth":
-    environment =>  concat($exec_environment, $auth_environment),
+    environment => $exec_env,
     command     => $_auth_command,
-    #user        => $local_user,
+    user        => $exec_user,
     path        => $exec_path,
     timeout     => $exec_timeout,
     provider    => $exec_provider,

@@ -40,22 +40,22 @@ describe 'docker::registry', :type => :define do
 
   context 'with ensure => present and username => user1, and password => secret and email => user1@example.io' do
     let(:params) { { 'ensure' => 'present', 'username' => 'user1', 'password' => 'secret', 'email' => 'user1@example.io', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" localhost:5000").with_environment('password=secret') }
+    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p '${password}' localhost:5000").with_environment(/password=secret/) }
   end
 
  context 'with ensure => present and username => user1, and password => secret and email => user1@example.io and version < 1.11.0' do
     let(:params) { { 'ensure' => 'present', 'username' => 'user1', 'password' => 'secret', 'email' => 'user1@example.io', 'version' => '1.9.0', 'pass_hash' => 'test1234', 'receipt' => false } }
-    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" -e 'user1@example.io' localhost:5000").with_environment('password=secret') }
+    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p '${password}' -e 'user1@example.io' localhost:5000").with_environment(/password=secret/) }
   end
 
   context 'with username => user1, and password => secret' do
     let(:params) { { 'username' => 'user1', 'password' => 'secret', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" localhost:5000").with_environment('password=secret') }
+    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p '${password}' localhost:5000").with_environment(/password=secret/) }
   end
 
   context 'with username => user1, and password => secret and local_user => testuser' do
     let(:params) { { 'username' => 'user1', 'password' => 'secret', 'local_user' => 'testuser', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" localhost:5000").with_user('testuser').with_environment('password=secret') }
+    it { should contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p '${password}' localhost:5000").with_user('testuser').with_environment(/password=secret/) }
   end
 
   context 'with an invalid ensure value' do
