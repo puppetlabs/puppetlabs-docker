@@ -720,6 +720,15 @@ docker::registry { 'example.docker.io:5000':
 }
 ```
 
+To pull images from the docker store, use the following as the registry definition with your own docker hub credentials
+
+```puppet
+  docker::registry {'https://index.docker.io/v1/':
+    username => 'username',
+    password => 'password',
+  }
+```
+
 If using hiera, configure the `docker::registry_auth` class:
 
 ```yaml
