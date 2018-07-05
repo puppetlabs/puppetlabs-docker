@@ -42,6 +42,7 @@ define docker::stack(
   Optional[String] $compose_file                              = undef,
   Optional[String] $prune                                     = undef,
   Optional[String] $with_registry_auth                        = undef,
+  Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image = undef,
 
   ){
 
@@ -56,6 +57,7 @@ define docker::stack(
       compose_file => $compose_file,
       prune => $prune,
       with_registry_auth => $with_registry_auth,
+      resolve_image => $resolve_image,
       })
 
       $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
