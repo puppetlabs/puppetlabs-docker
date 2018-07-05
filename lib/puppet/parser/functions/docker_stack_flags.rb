@@ -16,6 +16,10 @@ module Puppet::Parser::Functions
       flags << "--compose-file '#{opts['compose_file']}'"
     end
 
+    if opts['resolve_image'].to_s != 'undef'
+      flags << "--resolve-image '#{opts['resolve_image']}'"
+    end
+
     if opts['prune'].to_s != 'undef'
       flags << "--prune '#{opts['prune']}'"
     end
