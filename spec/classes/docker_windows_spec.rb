@@ -123,7 +123,27 @@ describe 'docker', :type => :class do
             }.to raise_error(Puppet::Error, /log_level must be one of debug, info, warn, error or fatal/)
         end
       end
+
+      context 'with storage_driver' do
+        let(:params) { {
+            'storage_driver' => 'windowsfilter',
+            'docker_ee' => true 
+        } }
+        it { should compile.with_all_deps }
+      end
       
+      context 'with an invalid storage_driver' do
+        let(:params) { {
+            'storage_driver' => 'invalid',
+            'docker_ee' => true 
+        } }
+        it do
+            expect {
+              should contain_package('docker')
+            }.to raise_error(Puppet::Error, /Valid values for storage_driver on windows are windowsfilter/)
+        end
+      end
+
       context 'with tcp_bind' do
         let(:params) { { 
             'tcp_bind'   => "tcp://0.0.0.0:2376",
