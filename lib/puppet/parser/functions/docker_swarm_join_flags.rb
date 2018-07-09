@@ -17,7 +17,7 @@ module Puppet::Parser::Functions
     end
 
     if opts['listen_addr'].to_s != 'undef'
-      flags << "--listen-addr '#{opts['listen_addr']}'"
+      flags << "--listen-addr \"#{opts['listen_addr']}\""
     end
 
     if opts['token'].to_s != 'undef'

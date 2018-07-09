@@ -11,3 +11,4 @@ doc
 log
 Gemfile.lock
 coverage/*
+/vendor/
