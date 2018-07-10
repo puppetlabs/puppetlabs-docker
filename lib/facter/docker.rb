@@ -1,11 +1,11 @@
 require 'facter'
 require 'json'
 
-if Facter.value(:kernel) == "windows"
-  docker_command = "powershell -c docker"
-else
-  docker_command = "docker"
-end
+docker_command = if Facter.value(:kernel) == 'windows'
+                   'powershell -c docker'
+                 else
+                   'docker'
+                 end
 
 def interfaces
   Facter.value(:interfaces).split(',')
@@ -35,7 +35,7 @@ Facter.add(:docker_version) do
     end
     val
   end
-end  
+end
 
 Facter.add(:docker) do
   setcode do
