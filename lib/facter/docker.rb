@@ -1,6 +1,12 @@
 require 'facter'
 require 'json'
 
+docker_command = if Facter.value(:kernel) == 'windows'
+                   'powershell -c docker'
+                 else
+                   'docker'
+                 end
+
 def interfaces
   Facter.value(:interfaces).split(',')
 end
@@ -23,7 +29,7 @@ Facter.add(:docker_version) do
   setcode do
     if Facter::Util::Resolution.which('docker')
       value = Facter::Core::Execution.execute(
-        "docker version --format '{{json .}}'",
+        "#{docker_command} version --format '{{json .}}'",
       )
       val = JSON.parse(value)
     end
@@ -37,7 +43,7 @@ Facter.add(:docker) do
     if docker_version !~ %r{1[.][0-9][0-2]?[.]\w+}
       if Facter::Util::Resolution.which('docker')
         docker_json_str = Facter::Util::Resolution.exec(
-          "docker info --format '{{json .}}'",
+          "#{docker_command} info --format '{{json .}}'",
         )
         docker = JSON.parse(docker_json_str)
         docker['network'] = {}
