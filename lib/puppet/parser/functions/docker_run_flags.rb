@@ -57,10 +57,11 @@ module Puppet::Parser::Functions
     if opts['read_only']
       flags << '--read-only=true'
     end
+    params_join_char = Facter.value(:osfamily).casecmp('windows').zero? ? ' ' : " \\\n"
 
     multi_flags = lambda { |values, format|
       filtered = [values].flatten.compact
-      filtered.map { |val| sprintf(format + " \\\n", val) }
+      filtered.map { |val| sprintf(format + params_join_char, val) }
     }
 
     [
@@ -88,6 +89,6 @@ module Puppet::Parser::Functions
 
     # Some software (inc systemd) will truncate very long lines using glibc's
     # max line length. Wrap options across multiple lines with '\' to avoid
-    flags.flatten.join(" \\\n        ")
+    flags.flatten.join(params_join_char)
   end
 end

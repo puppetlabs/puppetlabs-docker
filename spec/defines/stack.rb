@@ -15,6 +15,7 @@ describe 'docker::stack', :type => :define do
     let(:params) { {
        'stack_name' => 'foo', 	
        'compose_file' => '/tmpdocker-compose.yaml',
+       'resolve_image' => 'always',
     } }
     it { should contain_exec('docker stack deploy').with_command(/docker stack deploy/) }
   end

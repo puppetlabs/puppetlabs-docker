@@ -1,6 +1,13 @@
 require 'spec_helper_acceptance'
 
-describe 'docker plugin' do
+broken = false
+
+if fact('osfamily') == 'windows'
+  puts "Not implemented on Windows"
+  broken = true
+end
+
+describe 'docker plugin', :win_broken => broken do
   command = 'docker'
 
   before(:all) do

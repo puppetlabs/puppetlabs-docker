@@ -36,14 +36,32 @@ define docker::image(
   include docker::params
   $docker_command = $docker::params::docker_command
 
+  if $::osfamily == 'windows' {
+    $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
+    $update_docker_image_path = 'C:/Windows/Temp/update_docker_image.ps1'
+    $exec_environment = 'PATH=C:/Program Files/Docker/'
+    $exec_timeout = 3000
+    $update_docker_image_owner = undef
+    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_provider = 'powershell'
+  } else {
+    $update_docker_image_template = 'docker/update_docker_image.sh.erb'
+    $update_docker_image_path = '/usr/local/bin/update_docker_image.sh'
+    $update_docker_image_owner = 'root'
+    $exec_environment = 'HOME=/root'
+    $exec_path = ['/bin', '/usr/bin']
+    $exec_timeout = 0
+    $exec_provider = undef
+  }
+
   # Wrapper used to ensure images are up to date
-  ensure_resource('file', '/usr/local/bin/update_docker_image.sh',
+  ensure_resource('file', $update_docker_image_path,
     {
       ensure  => $docker::params::ensure,
-      owner   => 'root',
-      group   => 'root',
+      owner   => $update_docker_image_owner,
+      group   => $update_docker_image_owner,
       mode    => '0555',
-      content => template('docker/update_docker_image.sh.erb'),
+      content => template($update_docker_image_template),
     }
   )
 
@@ -76,15 +94,21 @@ define docker::image(
   if $image_tag {
     $image_arg     = "${image}:${image_tag}"
     $image_remove  = "${docker_command} rmi ${image_force}${image}:${image_tag}"
-    $image_find    = "${docker_command} images | egrep '^(docker.io/)?${image} ' | awk '{ print \$2 }' | grep ^${image_tag}$"
+    $image_find    = "${docker_command} images -q ${image}:${image_tag}"
   } elsif $image_digest {
     $image_arg     = "${image}@${image_digest}"
     $image_remove  = "${docker_command} rmi ${image_force}${image}:${image_digest}"
-    $image_find    = "${docker_command} images --digests | egrep '^(docker.io/)?${image} ' | awk '{ print \$3 }' | grep ^${image_digest}$"
+    $image_find    = "${docker_command} images -q ${image}@${image_digest}"
+
   } else {
     $image_arg     = $image
     $image_remove  = "${docker_command} rmi ${image_force}${image}"
-    $image_find    = "${docker_command} images | cut -d ' ' -f 1 | egrep '^(docker\\.io/)?${image}$'"
+    $image_find    = "${docker_command} images -q ${image}"
+  }
+  if $::osfamily == 'windows' {
+    $_image_find = "If (-not (${image_find}) ) { Exit 1 }"
+  } else {
+    $_image_find = "${image_find} | grep ."
   }
 
   if ($docker_dir) and ($docker_file) {
@@ -92,35 +116,50 @@ define docker::image(
   } elsif $docker_dir {
     $image_install = "${docker_command} build -t ${image_arg} ${docker_dir}"
   } elsif $docker_file {
-    $image_install = "${docker_command} build -t ${image_arg} - < ${docker_file}"
+    if $::osfamily == windows {
+      $image_install = "Get-Content ${docker_file} | ${docker_command} build -t ${image_arg} -"
+    } else {
+      $image_install = "${docker_command} build -t ${image_arg} - < ${docker_file}"
+    }
   } elsif $docker_tar {
     $image_install = "${docker_command} load -i ${docker_tar}"
   } else {
-    $image_install = "/usr/local/bin/update_docker_image.sh ${image_arg}"
+    if $::osfamily == 'windows' {
+      $image_install = "& ${update_docker_image_path} ${image_arg}"
+    } else {
+      $image_install = "${update_docker_image_path} ${image_arg}"
+    }
   }
 
   if $ensure == 'absent' {
     exec { $image_remove:
-      path    => ['/bin', '/usr/bin'],
-      onlyif  => $image_find,
-      timeout => 0,
+      path        => $exec_path,
+      environment => $exec_environment,
+      onlyif      => $_image_find,
+      provider    => $exec_provider,
+      timeout     => $exec_timeout,
+      logoutput   => true,
     }
   } elsif $ensure == 'latest' or $image_tag == 'latest' {
     exec { "echo 'Update of ${image_arg} complete'":
-      environment => 'HOME=/root',
-      path        => ['/bin', '/usr/bin'],
-      timeout     => 0,
+      environment => $exec_environment,
+      path        => $exec_path,
+      timeout     => $exec_timeout,
       onlyif      => $image_install,
-      require     => File['/usr/local/bin/update_docker_image.sh'],
+      require     => File[$update_docker_image_path],
+      provider    => $exec_provider,
+      logoutput   => true,
     }
   } elsif $ensure == 'present' {
     exec { $image_install:
-      unless      => $image_find,
-      environment => 'HOME=/root',
-      path        => ['/bin', '/usr/bin'],
-      timeout     => 0,
+      unless      => $_image_find,
+      environment => $exec_environment,
+      path        => $exec_path,
+      timeout     => $exec_timeout,
       returns     => ['0', '2'],
-      require     => File['/usr/local/bin/update_docker_image.sh'],
+      require     => File[$update_docker_image_path],
+      provider    => $exec_provider,
+      logoutput   => true,
     }
   }
 

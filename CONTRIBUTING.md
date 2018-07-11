@@ -81,6 +81,7 @@ run the integration tests against RHEL, CentOS and Debian.
     bundle exec rake acceptance:pooler:ubuntu-1404
     bundle exec rake acceptance:pooler:ubuntu-1604
     bundle exec rake acceptance:pooler:ubuntu-1610
+    bundle exec rake acceptance:pooler:win-2016
     bundle exec rake acceptance:vagrant:centos-70-x64
     bundle exec rake acceptance:vagrant:debian-81-x64
     bundle exec rake acceptance:vagrant:ubuntu-1404-x64

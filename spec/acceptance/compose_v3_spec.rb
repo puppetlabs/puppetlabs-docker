@@ -1,29 +1,38 @@
 require 'spec_helper_acceptance'
 
-broken = false
-
 if fact('osfamily') == 'windows'
-  puts "Not implemented on Windows"
-  broken = true
+  install_dir = '/cygdrive/c/Program Files/Docker'
+  file_extension = '.exe'
+  docker_args = 'docker_ee => true'
+  tmp_path = 'C:/cygwin64/tmp'
+else
+  install_dir = '/usr/local/bin'
+  file_extension = ''
+  docker_args = ''
+  tmp_path = '/tmp'
 end
 
-describe 'docker compose', :win_broken => broken do 
+describe 'docker compose' do 
   before(:all) do
-    install_code = <<-code
-      class { 'docker': }
-      class { 'docker::compose': }
-    code
-    apply_manifest(install_code, :catch_failures=>true)
+    retry_on_error_matching(60, 5, /connection failure running/) do
+      install_code = <<-code
+        class { 'docker': #{docker_args} }
+        class { 'docker::compose': 
+          version => '1.21.0',
+        }
+      code
+      apply_manifest(install_code, :catch_failures=>true)
+    end
   end
 
-  describe command("docker-compose --help") do
-    its(:exit_status) { should eq 0 }
-  end
+  context 'Creating compose v3 projects' do
+    it 'should have docker compose installed' do
+      shell('docker-compose --help', :acceptable_exit_codes => [0])
+    end
 
-  context 'Creating compose v2 projects' do
     before(:all) do
       @install = <<-code
-docker_compose { '/tmp/docker-compose-v2.yml':
+docker_compose { '#{tmp_path}/docker-compose-v3.yml':
   ensure => present,
 }
       code
@@ -34,21 +43,21 @@ docker_compose { '/tmp/docker-compose-v2.yml':
       apply_manifest(@install, :catch_changes=>true)
     end
 
-    describe command("docker inspect tmp_compose_test_1"), :sudo => true do
-      its(:exit_status) { should eq 0 }
+    it 'should find a docker container' do
+      shell('docker inspect tmp_compose_test_1', :acceptable_exit_codes => [0])
     end
   end
 
-  context 'Destroying compose v2 projects' do
+  context 'Destroying compose v3 projects' do
     before(:all) do
       install = <<-code
-docker_compose { '/tmp/docker-compose-v2.yml':
+docker_compose { '#{tmp_path}/docker-compose-v3.yml':
   ensure => present,
 }
       code
       apply_manifest(install, :catch_failures=>true)
       @uninstall = <<-code
-docker_compose { '/tmp/docker-compose-v2.yml':
+docker_compose { '#{tmp_path}/docker-compose-v3.yml':
   ensure => absent,
 }
       code
@@ -59,14 +68,14 @@ docker_compose { '/tmp/docker-compose-v2.yml':
       apply_manifest(@uninstall, :catch_changes=>true)
     end
 
-    describe command("docker inspect tmp_compose_test_1"), :sudo => true do
-      its(:exit_status) { should eq 1 }
+    it 'should not find a docker container' do
+      shell('docker inspect tmp_compose_test_1', :acceptable_exit_codes => [1])
     end
   end
 
   context 'Requesting a specific version of compose' do
     before(:all) do
-      @version = '1.6.2'
+      @version = '1.21.2'
       @pp = <<-code
         class { 'docker::compose':
           version => '#{@version}',
@@ -88,7 +97,7 @@ docker_compose { '/tmp/docker-compose-v2.yml':
 
   context 'Removing docker compose' do
     before(:all) do
-      @version = '1.7.0'
+      @version = '1.21.2'
       @pp = <<-code
         class { 'docker::compose':
           ensure  => absent,
@@ -103,13 +112,13 @@ docker_compose { '/tmp/docker-compose-v2.yml':
     end
 
     it 'should have removed the relevant files' do
-      shell('test -e /usr/local/bin/docker-compose', :acceptable_exit_codes => [1])
-      shell("test -e /usr/local/bin/docker-compose-#{@version}", :acceptable_exit_codes => [1])
+      shell("test -e \"#{install_dir}/docker-compose#{file_extension}\"", :acceptable_exit_codes => [1])
+      shell("test -e \"#{install_dir}/docker-compose-#{@version}#{file_extension}\"", :acceptable_exit_codes => [1])
     end
 
     after(:all) do
       install_code = <<-code
-        class { 'docker': }
+        class { 'docker': #{docker_args}}
         class { 'docker::compose': }
       code
       apply_manifest(install_code, :catch_failures=>true)

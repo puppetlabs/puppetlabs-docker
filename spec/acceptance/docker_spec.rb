@@ -1,6 +1,13 @@
 require 'spec_helper_acceptance'
 
-describe 'docker' do
+broken = false
+
+if fact('osfamily') == 'windows'
+  puts "Not implemented on Windows"
+  broken = true
+end
+
+describe 'docker', :win_broken => broken do
   package_name = 'docker-ce'
   service_name = 'docker'
   command = 'docker'
