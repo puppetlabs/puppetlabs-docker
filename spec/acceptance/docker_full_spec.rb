@@ -16,6 +16,7 @@ if fact('osfamily') == 'windows'
   default_docker_exec_lr_command = 'cmd /c "ping 127.0.0.1 -t > c:\windows\temp\test_file.txt"'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = "c:/windows/temp"
+  storage_driver = "windowsfilter"
 else
   docker_ee_arg = ''
   default_image = 'alpine'
@@ -29,6 +30,7 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
+  storage_driver = "overlay2"
 end
 
 describe 'the Puppet Docker module' do
@@ -135,6 +137,26 @@ describe 'the Puppet Docker module' do
         end
       end
     end
+
+      context 'passing a storage driver' do
+        before(:all) do
+          @pp=<<-EOS
+            class {'docker':
+            #{docker_ee_arg},
+            storage_driver => "#{storage_driver}",
+            }
+          EOS
+        
+          apply_manifest(@pp, :catch_failures => true)
+          sleep 15
+          end
+
+          it 'should result in the docker daemon being configured with the specified storage driver' do
+            shell("#{docker_command} info -f \"{{ .Driver}}\"") do |r|
+              expect(r.stdout).to match (/#{storage_driver}/)
+            end
+          end  
+      end          
 
       context 'passing a TCP address to bind to' do
         before(:all) do
