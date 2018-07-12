@@ -754,16 +754,21 @@ describe 'the Puppet Docker module' do
       it 'should restart a unhealthy container' do
       pp5=<<-EOS
         docker::run { 'container_3_7_3':
-          image   => 'base',
+          image   => '#{default_image}',
           command => '#{default_run_command}',
-          health_check_cmd => 'pwd',
+          health_check_cmd => 'echo',
           restart_on_unhealthy => true,
+          #{default_docker_run_arg}
           }
           EOS
 
-         apply_manifest(pp5, :catch_failures => true) do |r|
-           expect(r.stdout).to match(/docker-container_3_7_3-systemd-reload/)
-        end 
+        if fact('osfamily') == 'windows'
+          apply_manifest(pp5, :catch_failures => true)
+        else
+          apply_manifest(pp5, :catch_failures => true) do |r|
+            expect(r.stdout).to match(/docker-container_3_7_3-systemd-reload/)
+          end
+        end
       end
     end
 
