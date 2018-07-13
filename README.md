@@ -32,7 +32,8 @@
 
 ## Overview
 
-The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) as well as legacy releases.
+The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) for Linux based distributions and [Docker EE(Enterprise Edition)](https://www.docker.com/enterprise-edition) for Windows and Linux as well as legacy releases.
+
 
 ## Description
 
@@ -192,6 +193,13 @@ To add daemon labels, add the following array to the manifest file:
 ```puppet
 class { 'docker':
   labels => ['storage=ssd','stage=production'],
+}
+```
+
+Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified: 
+```puppet
+class { 'docker':
+  docker_ee => true
 }
 ```
 
@@ -384,6 +392,14 @@ docker::run { 'helloworld':
   command => 'command',
   health_check_command => '<command_to_execute_to_check_your_containers_health>',
   restart_on_unhealthy => true,
+```
+
+To run command on Windows 2016 requires the `restart` parameter to be set:
+```puppet
+docker::run { 'helloworld':
+  image => 'microsoft/nanoserver',
+  command => 'ping 127.0.0.1 -t',
+  restart => 'always'
 ```
 
 ### Networks
