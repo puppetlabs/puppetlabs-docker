@@ -67,6 +67,9 @@
 #  This will allow the service to set a registry mirror.
 #  defaults to undef
 #
+# [*command*]
+#  Command to run on the container
+#
 
 define docker::services(
   Optional[Pattern[/^present$|^absent$/]] $ensure        = 'present',
@@ -86,6 +89,7 @@ define docker::services(
   Variant[String,Array,Undef] $workdir                   = undef,
   Variant[String,Array,Undef] $host_socket               = undef,
   Variant[String,Array,Undef] $registry_mirror           = undef,
+  Variant[String,Array,Undef] $command                   = undef,
 ){
 
   include docker::params
@@ -100,6 +104,19 @@ define docker::services(
       fail translate(('When removing a service you can not update it.'))
     }
   }
+
+  if $::osfamily == 'windows' {
+    $exec_environment = 'PATH=C:/Program Files/Docker/'
+    $exec_timeout = 3000
+    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_provider = 'powershell'
+  } else {
+    $exec_environment = 'HOME=/root'
+    $exec_path = ['/bin', '/usr/bin']
+    $exec_timeout = 0
+    $exec_provider = undef
+  }
+
 
   if $create {
     $docker_service_create_flags = docker_service_flags({
@@ -116,16 +133,18 @@ define docker::services(
       image           => $image,
       host_socket     => $host_socket,
       registry_mirror => $registry_mirror,
+      command         => $command,
     })
 
     $exec_create = "${docker_command} create --name ${docker_service_create_flags}"
-    $unless_create = "docker service ls | grep -w ${service_name}"
+    $unless_create = "docker service ps ${service_name}"
 
     exec { "${title} docker service create":
       command     => $exec_create,
-      environment => 'HOME=/root',
-      path        => ['/bin', '/usr/bin'],
-      timeout     => 0,
+      environment => $exec_environment,
+      path        => $exec_path,
+      timeout     => $exec_timeout,
+      provider    => $exec_provider,
       unless      => $unless_create,
     }
   }
@@ -151,9 +170,10 @@ define docker::services(
 
     exec { "${title} docker service update":
       command     => $exec_update,
-      environment => 'HOME=/root',
-      path        => ['/bin', '/usr/bin'],
-      timeout     => 0,
+      environment => $exec_environment,
+      path        => $exec_path,
+      provider    => $exec_provider,
+      timeout     => $exec_timeout,
     }
   }
 
@@ -168,17 +188,20 @@ define docker::services(
 
     exec { "${title} docker service scale":
       command     => $exec_scale,
-      environment => 'HOME=/root',
-      path        => ['/bin', '/usr/bin'],
-      timeout     => 0,
+      environment => $exec_environment,
+      path        => $exec_path,
+      timeout     => $exec_timeout,
+      provider    => $exec_provider,
     }
   }
 
   if $ensure == 'absent' {
     exec { "${title} docker service remove":
-      command => "docker service rm ${service_name}",
-      onlyif  => "docker service ls | grep -w ${service_name}",
-      path    => ['/bin', '/usr/bin'],
+      command  => "docker service rm ${service_name}",
+      onlyif   => "docker service ps ${service_name}",
+      path     => $exec_path,
+      provider => $exec_provider,
+      timeout  => $exec_timeout,
     }
   }
 }
