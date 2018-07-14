@@ -99,12 +99,23 @@ describe 'docker swarm', :skip => skip_tests do
         on swarm_worker, 'netsh advfirewall firewall add rule name="Swarm comm udp" dir=in action=allow protocol=UDP localport=7946', :acceptable_exit_codes => [0]
         on swarm_worker, 'netsh advfirewall firewall add rule name="Swarm network" dir=in action=allow protocol=UDP localport=4789', :acceptable_exit_codes => [0]
       end
-
-      on swarm_manager, 'docker network create --driver=overlay swarmnet', :acceptable_exit_codes => [0]
     end
 
     it 'should start a container' do
-      on swarm_manager, "docker service create --name=helloworld --endpoint-mode dnsrr --network=swarmnet #{test_docker_image} #{test_docker_command}", :acceptable_exit_codes => [0]
+      @start_service = <<-code
+      docker::services {'helloworld':
+        create         => true,
+        service_name   => 'helloworld',
+        image          => '#{test_docker_image}',
+        extra_params   => ['--endpoint-mode dnsrr'],
+        command        => '#{test_docker_command}',
+        replicas       => '2',
+        }
+      code
+
+      apply_manifest_on(swarm_manager, @start_service, :catch_failures=>true)
+      
+      #on swarm_manager, "docker service create --name=helloworld --endpoint-mode dnsrr --network=swarmnet #{test_docker_image} #{test_docker_command}", :acceptable_exit_codes => [0]
       on swarm_manager, 'docker service ps helloworld', :acceptable_exit_codes => [0] do |result|
         expect(result.stdout).to match(/Running/)
       end

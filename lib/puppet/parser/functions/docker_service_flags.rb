@@ -66,6 +66,10 @@ module Puppet::Parser::Functions
       flags << "'#{opts['image']}'"
     end
 
+    if opts['command'].to_s != 'undef'
+      flags << opts['command'].to_s
+    end
+
     flags.flatten.join(' ')
   end
 end
