@@ -5,6 +5,8 @@ broken = false
 if fact('osfamily') == 'windows'
   puts "Not implemented on Windows"
   broken = true
+elsif fact('osfamily') == 'RedHat'
+  docker_args = "repo_opt => '--enablerepo=localmirror-extras'" 
 end
 
 describe 'docker', :win_broken => broken do
@@ -29,7 +31,8 @@ describe 'docker', :win_broken => broken do
   context 'with default parameters' do
     let(:pp) {"
 			class { 'docker':
-				docker_users => [ 'testuser' ],
+        docker_users => [ 'testuser' ],
+        #{docker_args}
 			}
 			docker::image { 'nginx': }
 			docker::run { 'nginx':

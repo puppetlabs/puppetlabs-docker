@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 
 if fact('osfamily') == 'windows'
-  docker_ee_arg = 'docker_ee => true'
+  docker_args = 'docker_ee => true'
   default_image = 'microsoft/nanoserver'
   default_image_tag = '10.0.14393.2189'
   second_image = 'hello-world'
@@ -17,8 +17,8 @@ if fact('osfamily') == 'windows'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = "c:/windows/temp"
   storage_driver = "windowsfilter"
-else
-  docker_ee_arg = ''
+elsif fact('osfamily') == 'Redhat'
+  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   default_image = 'alpine'
   second_image = 'busybox'
   default_image_tag = '3.7'
@@ -30,7 +30,21 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
-  storage_driver = "overlay2"
+  storage_driver = "devicemapper"
+else 
+  docker_args = ''
+  default_image = 'alpine'
+  second_image = 'busybox'
+  default_image_tag = '3.7'
+  default_digest = 'sha256:3dcdb92d7432d56604d4545cbd324b14e647b313626d99b889d0626de158f73a'
+  default_dockerfile = '/root/Dockerfile'
+  docker_command = "docker"
+  default_docker_run_arg = ''
+  default_run_command = "init"
+  default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
+  default_docker_exec_command = 'touch /root/test_file.txt'
+  docker_mount_path = "/root"
+  storage_driver = "devicemapper"   
 end
 
 describe 'the Puppet Docker module' do
@@ -58,7 +72,7 @@ describe 'the Puppet Docker module' do
     describe 'docker class' do
       context 'without any parameters' do
         let(:pp) {"
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
         "}
 
         it 'should run successfully' do
@@ -87,7 +101,7 @@ describe 'the Puppet Docker module' do
 
       it 'should stop a running container and remove container' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -102,7 +116,7 @@ describe 'the Puppet Docker module' do
         EOS
 
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -142,7 +156,7 @@ describe 'the Puppet Docker module' do
         before(:all) do
           @pp=<<-EOS
             class {'docker':
-            #{docker_ee_arg},
+            #{docker_args},
             storage_driver => "#{storage_driver}",
             }
           EOS
@@ -163,7 +177,7 @@ describe 'the Puppet Docker module' do
           @pp =<<-EOS
             class { 'docker':
               tcp_bind => 'tcp://127.0.0.1:4444',
-              #{docker_ee_arg}
+              #{docker_args}
             }
           EOS
           apply_manifest(@pp, :catch_failures => true)
@@ -193,7 +207,7 @@ describe 'the Puppet Docker module' do
           @pp =<<-EOS
             class { 'docker':
               socket_bind => 'unix:///var/run/docker.sock',
-              #{docker_ee_arg}
+              #{docker_args}
             }
           EOS
           apply_manifest(@pp, :catch_failures => true)
@@ -219,7 +233,7 @@ describe 'the Puppet Docker module' do
 
       it 'should successfully download an image from the Docker Hub' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
             ensure  => present,
             require => Class['docker'],
@@ -238,7 +252,7 @@ describe 'the Puppet Docker module' do
 
       it 'should successfully download an image based on a tag from the Docker Hub' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
             ensure    => present,
             image_tag => '#{default_image_tag}',
@@ -259,7 +273,7 @@ describe 'the Puppet Docker module' do
 
       it 'should successfully download an image based on a digest from the Docker Hub' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
             ensure       => present,
             image_digest => '#{default_digest}',
@@ -279,7 +293,7 @@ describe 'the Puppet Docker module' do
 
       it 'should create a new image based on a Dockerfile' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { 'alpine_with_file':
             docker_file => "#{default_dockerfile}",
@@ -311,7 +325,7 @@ describe 'the Puppet Docker module' do
 
       it 'should create a new image based on a tar', :win_broken => true do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
             require => Class['docker'],
             ensure  => present,
@@ -325,7 +339,7 @@ describe 'the Puppet Docker module' do
         EOS
 
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { 'alpine_from_commit':
             docker_tar => "/root/rootfs.tar"
           }
@@ -376,7 +390,7 @@ describe 'the Puppet Docker module' do
 
       it 'should successfully delete the image' do
         pp1=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
             ensure  => present,
             require => Class['docker'],
@@ -384,7 +398,7 @@ describe 'the Puppet Docker module' do
         EOS
         apply_manifest(pp1, :catch_failures => true)
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
             ensure => absent,
           }
@@ -404,7 +418,7 @@ describe 'the Puppet Docker module' do
     describe "docker::run"  do
       it 'should start a container with a configurable command' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg}
+          class { 'docker': #{docker_args}
           }
 
           docker::image { '#{default_image}':
@@ -442,7 +456,7 @@ describe 'the Puppet Docker module' do
 
       it 'should start a container with port configuration' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg}}
+          class { 'docker': #{docker_args}}
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -471,7 +485,7 @@ describe 'the Puppet Docker module' do
 
       it 'should start a container with the hostname set' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -501,7 +515,7 @@ describe 'the Puppet Docker module' do
 
       it 'should start a container while mounting local volumes' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -542,7 +556,7 @@ describe 'the Puppet Docker module' do
       #STDERR: C:/Program Files/Docker/docker.exe: Error response from daemon: invalid option: Windows does not support CpusetCpus.
       it 'should start a container with cpuset paramater set', :win_broken => true do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -571,7 +585,7 @@ describe 'the Puppet Docker module' do
       #leagacy container linking was not implemented on Windows. --link is a legacy Docker feature: https://docs.docker.com/network/links/
       it 'should start multiple linked containers', :win_broken => true do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -594,7 +608,7 @@ describe 'the Puppet Docker module' do
         container_1 = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
 
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -626,7 +640,7 @@ describe 'the Puppet Docker module' do
 
       it 'should stop a running container' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -641,7 +655,7 @@ describe 'the Puppet Docker module' do
         EOS
 
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -678,7 +692,7 @@ describe 'the Puppet Docker module' do
 
       it 'should stop a running container and remove container' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -693,7 +707,7 @@ describe 'the Puppet Docker module' do
         EOS
 
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -725,7 +739,7 @@ describe 'the Puppet Docker module' do
 
       it 'should allow dependency for ordering of independent run and image' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}': }
 
@@ -775,7 +789,7 @@ describe 'the Puppet Docker module' do
     describe "docker::exec"  do
       it 'should run a command inside an already running container' do
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}':
             require => Class['docker'],
@@ -798,7 +812,7 @@ describe 'the Puppet Docker module' do
         container_1 = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
 
         pp2=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
           docker::exec { 'test_command':
             container => '#{container_1.stdout.strip}',
             command   => '#{default_docker_exec_command}',
@@ -826,7 +840,7 @@ describe 'the Puppet Docker module' do
       it 'should only run if notified when refreshonly is true' do
         container_name = 'container_4_2'
         pp=<<-EOS
-          class { 'docker': #{docker_ee_arg} }
+          class { 'docker': #{docker_args} }
 
           docker::image { '#{default_image}': }
 
