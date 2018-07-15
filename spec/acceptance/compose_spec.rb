@@ -6,13 +6,13 @@ if fact('osfamily') == 'windows'
   puts "Not implemented on Windows"
   broken = true
 elsif fact('osfamily') == 'RedHat'
-  repo_arg = "repo_opt => '--enablerepo=localmirror-extras'"
+  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
 end  
 
 describe 'docker compose', :win_broken => broken do 
   before(:all) do
     install_code = <<-code
-      class { 'docker': #{repo_arg}}
+      class { 'docker': #{docker_args}}
       class { 'docker::compose': }
     code
     apply_manifest(install_code, :catch_failures=>true)
