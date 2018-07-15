@@ -44,7 +44,7 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
-  storage_driver = "devicemapper"   
+  storage_driver = "overlay2"   
 end
 
 describe 'the Puppet Docker module' do
