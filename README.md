@@ -440,6 +440,12 @@ docker::networks::networks:
 
 A defined network can be used on a `docker::run` resource with the `net` parameter.
 
+#### Windows
+
+On windows, only one NAT network is supported. To support multiple networks Windows Server 2016 with KB4015217 is required. See [Windows Container Network Drivers](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/network-drivers-topologies) and [Windows Container Networking](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/architecture).
+
+The Docker daemon will create a default NAT network on the first start unless specified otherwise. To disable the network creation, use the parameter `bridge => 'none'` when installing docker.
+
 ### Volumes
 
 Docker 1.9.x added support for volumes. These are *NOT* to be confused with the legacy volumes, now known as `bind mounts`. To expose the `docker_volume` type, which is used to manage volumes, add the following code to the manifest file:
@@ -578,6 +584,14 @@ To cluster your Docker engines, use one of the following Puppet resources:
 
 * [Swarm manager](#Swarm-manager)
 * [Swarm worker](#Swarm-worker)
+
+#### Windows
+
+To configure swarm, Windows Server 2016 requires KB4015217 and the following firewall ports to be open on all nodes:
+
+* TCP port 2377 for cluster management communications
+* TCP and UDP port 7946 for communication among nodes
+* UDP port 4789 for overlay network traffic
 
 #### Swarm manager
 
