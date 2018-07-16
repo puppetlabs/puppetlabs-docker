@@ -17,7 +17,7 @@ if fact('osfamily') == 'windows'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = "c:/windows/temp"
   storage_driver = "windowsfilter"
-elsif fact('osfamily') == 'Redhat'
+elsif fact('osfamily') == 'RedHat'
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   default_image = 'alpine'
   second_image = 'busybox'
