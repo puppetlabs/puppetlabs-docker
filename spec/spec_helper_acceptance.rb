@@ -58,6 +58,7 @@ RSpec.configure do |c|
         # other software. Thus this workaround.
         if fact_on(host, 'operatingsystem') == 'RedHat'
           on(host, 'mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/internal-mirror.repo')
+          on(host, 'rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm')
         end
         on(host, 'yum update -y -q') if fact_on(host, 'osfamily') == 'RedHat'
 

@@ -3,17 +3,19 @@ require 'spec_helper_acceptance'
 broken = false
 
 if fact('osfamily') == 'windows'
-  docker_ee_arg = 'docker_ee => true'
+  docker_args = 'docker_ee => true'
   command = "\"/cygdrive/c/Program Files/Docker/docker\""
+elsif ('osfamily') == 'RedHat'
+  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+  command = 'docker'
 else
-  docker_ee_arg = ''
   command = 'docker'
 end
 
 describe 'docker volume' do
   before(:all) do
     retry_on_error_matching(60, 5, /connection failure running/) do
-      install_code = "class { 'docker': #{docker_ee_arg} }"
+      install_code = "class { 'docker': #{docker_args} }"
       apply_manifest(install_code, :catch_failures => true)
     end
   end
