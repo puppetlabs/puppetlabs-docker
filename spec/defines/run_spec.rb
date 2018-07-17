@@ -5,6 +5,9 @@ require 'spec_helper'
     let(:title) { 'sample' }
     context "on #{osfamily}" do
 
+      initscript = '/etc/systemd/system/docker-sample.service'
+      runscript = "/usr/local/bin/docker-run-sample.sh"
+
       if osfamily == 'Debian'
         let(:facts) { {
           :architecture              => 'amd64',
@@ -17,8 +20,6 @@ require 'spec_helper'
           :operatingsystemmajrelease => '16.04',
           :os                        => { :distro => { :codename => 'wheezy' }, :family => 'Debian', :name => 'Debian', :release => { :major => '7', :full => '7.0' } } 
         } }
-        initscript = '/etc/systemd/system/docker-sample.service'
-        command = 'docker'
         systemd = true
       elsif osfamily == 'RedHat'
         let(:facts) { {
@@ -31,8 +32,6 @@ require 'spec_helper'
           :kernelversion              => '3.10.0',
           :os                         => { :distro => { :codename => 'wheezy' }, :family => osfamily, :name => osfamily, :release => { :major => '7', :full => '7.0' } }
         } }
-        initscript = '/etc/systemd/system/docker-sample.service'
-        command = 'docker'
         systemd = true
       end
 
@@ -40,21 +39,13 @@ require 'spec_helper'
         let(:params) { {'command' => 'command', 'image' => 'base'} }
         it { should compile.with_all_deps }
         it { should contain_service('docker-sample') }
-        if (osfamily == 'Debian')
-          it { should contain_file(initscript).with_content(/docker run/) }
-          it { should contain_file(initscript).with_content(/#{command}/) }
-        else
-          it { should contain_file(initscript).with_content(/#{command} run/).with_content(/base/) }
-          it { should contain_file(initscript).with_content(/#{command} run/).with_content(/command/) }
-        end
+        it { should contain_file(initscript).with_content(/#{Regexp.escape(runscript)}/) }
+        it { should contain_file(runscript).with_content(/docker run/).with_content(/command/).with_content(/base/)}
 
         if systemd
           it { should contain_file(initscript).with_content(/^SyslogIdentifier=docker-sample$/) }
         end
 
-        ['p', 'dns', 'H', 'dns-search', 'u', 'v', 'e', 'n', 't', 'volumes-from', 'name'].each do |search|
-          it { should_not contain_file(initscript).with_content(/-${search}/) }
-        end
       end
 
       context 'when passing `after` containers' do
@@ -146,7 +137,7 @@ require 'spec_helper'
           if (systemd)
             it { should contain_file(initscript).with_content(/ExecStop=-\/usr\/bin\/docker stop --time=0 /) } 
             it { should contain_file(initscript).with_content(/ExecStop=-\/usr\/bin\/docker rm/) }
-            it { should contain_file(initscript).with_content(/--health-cmd/) }
+            it { should contain_file(runscript).with_content(/--health-cmd/) }
             end
         end
 
@@ -228,12 +219,12 @@ require 'spec_helper'
 
       context 'when lxc_conf disables swap' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'lxc_conf' => 'lxc.cgroup.memory.memsw.limit_in_bytes=536870912'} }
-        it { should contain_file(initscript).with_content(/-lxc-conf=\"lxc.cgroup.memory.memsw.limit_in_bytes=536870912\"/) }
+        it { should contain_file(runscript).with_content(/-lxc-conf=\"lxc.cgroup.memory.memsw.limit_in_bytes=536870912\"/) }
       end
 
       context 'when `use_name` is true' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'use_name' => true } }
-        it { should contain_file(initscript).with_content(/ --name sample /) }
+        it { should contain_file(runscript).with_content(/ --name sample /) }
       end
 
       context 'when stopping the service' do
@@ -243,203 +234,203 @@ require 'spec_helper'
 
       context 'when passing a memory limit in bytes' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'memory_limit' => '1000b'} }
-        it { should contain_file(initscript).with_content(/-m 1000b/) }
+        it { should contain_file(runscript).with_content(/-m 1000b/) }
       end
 
       context 'when passing a cpuset' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'cpuset' => '3'} }
-        it { should contain_file(initscript).with_content(/--cpuset-cpus=3/) }
+        it { should contain_file(runscript).with_content(/--cpuset-cpus=3/) }
       end
 
       context 'when passing a multiple cpu cpuset' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'cpuset' => ['0', '3']} }
-        it { should contain_file(initscript).with_content(/--cpuset-cpus=0,3/) }
+        it { should contain_file(runscript).with_content(/--cpuset-cpus=0,3/) }
       end
 
       context 'when not passing a cpuset' do
         let(:params) { {'command' => 'command', 'image' => 'base'} }
-        it { should contain_file(initscript).without_content(/--cpuset-cpus=/) }
+        it { should contain_file(runscript).without_content(/--cpuset-cpus=/) }
       end
 
       context 'when passing a links option' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'links' => ['example:one', 'example:two']} }
-        it { should contain_file(initscript).with_content(/--link example:one/).with_content(/--link example:two/) }
+        it { should contain_file(runscript).with_content(/--link example:one/).with_content(/--link example:two/) }
       end
 
       context 'when passing a hostname' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'hostname' => 'example.com'} }
-        it { should contain_file(initscript).with_content(/-h 'example.com'/) }
+        it { should contain_file(runscript).with_content(/-h 'example.com'/) }
       end
 
       context 'when not passing a hostname' do
         let(:params) { {'command' => 'command', 'image' => 'base'} }
-        it { should contain_file(initscript).without_content(/-h ''/) }
+        it { should contain_file(runscript).without_content(/-h ''/) }
       end
 
       context 'when passing a username' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'username' => 'bob'} }
-        it { should contain_file(initscript).with_content(/-u 'bob'/) }
+        it { should contain_file(runscript).with_content(/-u 'bob'/) }
       end
 
       context 'when not passing a username' do
         let(:params) { {'command' => 'command', 'image' => 'base'} }
-        it { should contain_file(initscript).without_content(/-u ''/) }
+        it { should contain_file(runscript).without_content(/-u ''/) }
       end
 
       context 'when passing a port number' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'ports' => '4444'} }
-        it { should contain_file(initscript).with_content(/-p 4444/) }
+        it { should contain_file(runscript).with_content(/-p 4444/) }
       end
 
       context 'when passing a port to expose' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'expose' => '4666'} }
-        it { should contain_file(initscript).with_content(/--expose=4666/) }
+        it { should contain_file(runscript).with_content(/--expose=4666/) }
       end
 
       context 'when passing a label' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'labels' => 'key=value'} }
-        it { should contain_file(initscript).with_content(/-l key=value/) }
+        it { should contain_file(runscript).with_content(/-l key=value/) }
       end
 
       context 'when passing a hostentry' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'hostentries' => 'dummyhost:127.0.0.2'} }
-        it { should contain_file(initscript).with_content(/--add-host dummyhost:127.0.0.2/) }
+        it { should contain_file(runscript).with_content(/--add-host dummyhost:127.0.0.2/) }
       end
 
       context 'when connecting to shared data volumes' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'volumes_from' => '6446ea52fbc9'} }
-        it { should contain_file(initscript).with_content(/--volumes-from 6446ea52fbc9/) }
+        it { should contain_file(runscript).with_content(/--volumes-from 6446ea52fbc9/) }
       end
 
       context 'when connecting to several shared data volumes' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'volumes_from' => ['sample-linked-container-1', 'sample-linked-container-2']} }
-        it { should contain_file(initscript).with_content(/--volumes-from sample-linked-container-1/) }
-        it { should contain_file(initscript).with_content(/--volumes-from sample-linked-container-2/) }
+        it { should contain_file(runscript).with_content(/--volumes-from sample-linked-container-1/) }
+        it { should contain_file(runscript).with_content(/--volumes-from sample-linked-container-2/) }
       end
 
       context 'when passing several port numbers' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'ports' => ['4444', '4555']} }
-        it { should contain_file(initscript).with_content(/-p 4444/).with_content(/-p 4555/) }
+        it { should contain_file(runscript).with_content(/-p 4444/).with_content(/-p 4555/) }
       end
 
       context 'when passing several labels' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'labels' => ['key1=value1', 'key2=value2']} }
-        it { should contain_file(initscript).with_content(/-l key1=value1/).with_content(/-l key2=value2/) }
+        it { should contain_file(runscript).with_content(/-l key1=value1/).with_content(/-l key2=value2/) }
       end
 
       context 'when passing several ports to expose' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'expose' => ['4666', '4777']} }
-        it { should contain_file(initscript).with_content(/--expose=4666/).with_content(/--expose=4777/) }
+        it { should contain_file(runscript).with_content(/--expose=4666/).with_content(/--expose=4777/) }
       end
 
       context 'when passing serveral environment variables' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'env' => ['FOO=BAR', 'FOO2=BAR2']} }
-        it { should contain_file(initscript).with_content(/-e "FOO=BAR"/).with_content(/-e "FOO2=BAR2"/) }
+        it { should contain_file(runscript).with_content(/-e "FOO=BAR"/).with_content(/-e "FOO2=BAR2"/) }
       end
 
       context 'when passing an environment variable' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'env' => 'FOO=BAR'} }
-        it { should contain_file(initscript).with_content(/-e "FOO=BAR"/) }
+        it { should contain_file(runscript).with_content(/-e "FOO=BAR"/) }
       end
 
       context 'when passing serveral environment files' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'env_file' => ['/etc/foo.env', '/etc/bar.env']} }
-        it { should contain_file(initscript).with_content(/--env-file \/etc\/foo.env/).with_content(/--env-file \/etc\/bar.env/) }
+        it { should contain_file(runscript).with_content(/--env-file \/etc\/foo.env/).with_content(/--env-file \/etc\/bar.env/) }
       end
 
       context 'when passing an environment file' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'env_file' => '/etc/foo.env'} }
-        it { should contain_file(initscript).with_content(/--env-file \/etc\/foo.env/) }
+        it { should contain_file(runscript).with_content(/--env-file \/etc\/foo.env/) }
       end
 
       context 'when passing serveral dns addresses' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'dns' => ['8.8.8.8', '8.8.4.4']} }
-        it { should contain_file(initscript).with_content(/--dns 8.8.8.8/).with_content(/--dns 8.8.4.4/) }
+        it { should contain_file(runscript).with_content(/--dns 8.8.8.8/).with_content(/--dns 8.8.4.4/) }
       end
 
       context 'when passing a dns address' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'dns' => '8.8.8.8'} }
-        it { should contain_file(initscript).with_content(/--dns 8.8.8.8/) }
+        it { should contain_file(runscript).with_content(/--dns 8.8.8.8/) }
       end
 
       context 'when passing serveral sockets to connect to' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'socket_connect' => ['tcp://127.0.0.1:4567', 'tcp://127.0.0.2:4567']} }
-        it { should contain_file(initscript).with_content(/-H tcp:\/\/127.0.0.1:4567/) }
+        it { should contain_file(runscript).with_content(/-H tcp:\/\/127.0.0.1:4567/) }
       end
 
       context 'when passing a socket to connect to' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'socket_connect' => 'tcp://127.0.0.1:4567'} }
-        it { should contain_file(initscript).with_content(/-H tcp:\/\/127.0.0.1:4567/) }
+        it { should contain_file(runscript).with_content(/-H tcp:\/\/127.0.0.1:4567/) }
       end
 
       context 'when passing serveral dns search domains' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'dns_search' => ['my.domain.local', 'other-domain.de']} }
-        it { should contain_file(initscript).with_content(/--dns-search my.domain.local/).with_content(/--dns-search other-domain.de/) }
+        it { should contain_file(runscript).with_content(/--dns-search my.domain.local/).with_content(/--dns-search other-domain.de/) }
       end
 
       context 'when passing a dns search domain' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'dns_search' => 'my.domain.local'} }
-        it { should contain_file(initscript).with_content(/--dns-search my.domain.local/) }
+        it { should contain_file(runscript).with_content(/--dns-search my.domain.local/) }
       end
 
       context 'when disabling network' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'disable_network' => true} }
-        it { should contain_file(initscript).with_content(/-n false/) }
+        it { should contain_file(runscript).with_content(/-n false/) }
       end
 
       context 'when running privileged' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'privileged' => true} }
-        it { should contain_file(initscript).with_content(/--privileged/) }
+        it { should contain_file(runscript).with_content(/--privileged/) }
       end
 
       context 'should run with correct detached value' do
         let(:params) { {'command' => 'command', 'image' => 'base'} }
         if (systemd)
-          it { should_not contain_file(initscript).with_content(/--detach=true/) }
+          it { should_not contain_file(runscript).with_content(/--detach=true/) }
         else
-          it { should contain_file(initscript).with_content(/--detach=true/) }
+          it { should contain_file(runscript).with_content(/--detach=true/) }
         end
       end
 
       context 'should be able to override detached' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'detach' => false} }
-        it { should contain_file(initscript).without_content(/--detach=true/) }
+        it { should contain_file(runscript).without_content(/--detach=true/) }
       end
 
       context 'when running with a tty' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'tty' => true} }
-        it { should contain_file(initscript).with_content(/-t/) }
+        it { should contain_file(runscript).with_content(/-t/) }
       end
 
       context 'when running with read-only image' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'read_only' => true} }
-        it { should contain_file(initscript).with_content(/--read-only=true/) }
+        it { should contain_file(runscript).with_content(/--read-only=true/) }
       end
 
       context 'when passing serveral extra parameters' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'extra_parameters' => ['--rm', '-w /tmp']} }
-        it { should contain_file(initscript).with_content(/--rm/).with_content(/-w \/tmp/) }
+        it { should contain_file(runscript).with_content(/--rm/).with_content(/-w \/tmp/) }
       end
 
       context 'when passing an extra parameter' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'extra_parameters' => '-c 4'} }
-        it { should contain_file(initscript).with_content(/-c 4/) }
+        it { should contain_file(runscript).with_content(/-c 4/) }
       end
 
       context 'when passing a data volume' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'volumes' => '/var/log'} }
-        it { should contain_file(initscript).with_content(/-v \/var\/log/) }
+        it { should contain_file(runscript).with_content(/-v \/var\/log/) }
       end
 
       context 'when passing serveral data volume' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'volumes' => ['/var/lib/couchdb', '/var/log']} }
-        it { should contain_file(initscript).with_content(/-v \/var\/lib\/couchdb/) }
-        it { should contain_file(initscript).with_content(/-v \/var\/log/) }
+        it { should contain_file(runscript).with_content(/-v \/var\/lib\/couchdb/) }
+        it { should contain_file(runscript).with_content(/-v \/var\/log/) }
       end
 
       context 'when using network mode' do
         let(:params) { {'command' => 'command', 'image' => 'nginx', 'net' => 'host'} }
-        it { should contain_file(initscript).with_content(/--net host/) }
+        it { should contain_file(runscript).with_content(/--net host/) }
       end
 
       context 'when `pull_on_start` is true' do
@@ -476,42 +467,36 @@ require 'spec_helper'
         let(:title) { 'this/that' }
         let(:params) { {'image' => 'base'} }
 
-        if osfamily == 'Debian'
-          new_initscript = '/etc/systemd/system/docker-this-that.service'
-        else
-          new_initscript = '/etc/systemd/system/docker-this-that.service'
-        end
+        new_initscript = '/etc/systemd/system/docker-this-that.service'
+        new_runscript = '/usr/local/bin/docker-run-this-that.sh'
 
         it { should contain_service('docker-this-that') }
         it { should contain_file(new_initscript) }
+        it { should contain_file(new_runscript) }
       end
 
       context 'with manage_service turned off' do
         let(:title) { 'this/that' }
         let(:params) { {'image' => 'base', 'manage_service' => false} }
 
-        if osfamily == 'Debian'
-          new_initscript = '/etc/systemd/system/docker-this-that.service'
-        else
-          new_initscript = '/etc/systemd/system/docker-this-that.service'
-        end
+        new_initscript = '/etc/systemd/system/docker-this-that.service'
+        new_runscript = '/usr/local/bin/docker-run-this-that.sh'
 
         it { should_not contain_service('docker-this-that') }
         it { should contain_file(new_initscript) }
+        it { should contain_file(new_runscript) }
       end
 
       context 'with service_prefix set to empty string' do
         let(:title) { 'this/that' }
         let(:params) { {'image' => 'base', 'service_prefix' => ''} }
 
-        if osfamily == 'Debian'
-          new_initscript = '/etc/systemd/system/this-that.service'
-        else
-          new_initscript = '/etc/systemd/system/this-that.service'
-        end
+        new_initscript = '/etc/systemd/system/this-that.service'
+        new_runscript = '/usr/local/bin/docker-run-this-that.sh'
 
         it { should contain_service('this-that') }
         it { should contain_file(new_initscript) }
+        it { should contain_file(new_runscript) }
       end
 
       context 'with an invalid title' do
@@ -527,14 +512,12 @@ require 'spec_helper'
         let(:title) { 'this/that_other' }
         let(:params) { {'image' => 'base' } }
 
-        if osfamily == 'Debian'
-          new_initscript = '/etc/systemd/system/docker-this-that_other.service'
-        else
-          new_initscript = '/etc/systemd/system/docker-this-that_other.service'
-        end
+        new_initscript = '/etc/systemd/system/docker-this-that_other.service'
+        new_runscript = '/usr/local/bin/docker-run-this-that_other.sh'
 
         it { should contain_service('docker-this-that_other') }
         it { should contain_file(new_initscript) }
+        it { should contain_file(new_runscript) }
       end
 
       context 'with an invalid image name' do
