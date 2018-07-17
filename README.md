@@ -343,6 +343,8 @@ The `extra_parameters` parameter contains an array of command line arguments to 
 
 By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems.
 
+It is highly recommended that an image tag be used at all times with the `docker::run` define type. If not, the latest image will be used, whether it be in a remote registry or installed on the server already by the `docker::image` define type. 
+
 To use an image tag, add the following code to the manifest file:
 
 ```puppet
