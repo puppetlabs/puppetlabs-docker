@@ -301,6 +301,8 @@ define docker::run(
     case $docker::params::service_provider {
       'systemd': {
         $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+        $runscript = "/usr/local/bin/docker-run-${sanitised_title}.sh"
+        $run_template = 'docker/usr/local/bin/docker-run.sh.erb'
         $init_template = 'docker/etc/systemd/system/docker-run.erb'
         $mode = '0640'
       }
@@ -308,6 +310,8 @@ define docker::run(
         $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
         $init_template = 'docker/etc/init.d/docker-run.erb'
         $mode = '0750'
+        $runscript = undef
+        $run_template = undef
       }
       default: {
         if $::osfamily != 'windows' {
@@ -368,6 +372,16 @@ define docker::run(
       }
     }
     else {
+      if ($runscript) {
+        file { $runscript:
+          ensure  => present,
+          content => template($run_template),
+          owner   => 'root',
+          group   => $docker_group,
+          mode    => '0770'
+        }
+      }
+
       file { $initscript:
         ensure  => present,
         content => template($init_template),
