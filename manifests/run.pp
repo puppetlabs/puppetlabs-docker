@@ -459,7 +459,7 @@ define docker::run(
         [File[$initscript],File[$runscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
       else {
-       [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
     }
   }
