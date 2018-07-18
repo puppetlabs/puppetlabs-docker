@@ -386,14 +386,15 @@ docker::run { 'helloworld':
 }
 ```
 
-To enable the restart of an unhealthy container add the following code to the manifest file.
+To enable the restart of an unhealthy container add the following code to the manifest file.In order to set the health check interval time set the optional health_check_interval parameter, the default health check interval is 30 seconds.
 
 ```puppet
 docker::run { 'helloworld':
   image => 'base',
   command => 'command',
-  health_check_command => '<command_to_execute_to_check_your_containers_health>',
+  health_check_cmd => '<command_to_execute_to_check_your_containers_health>',
   restart_on_unhealthy => true,
+  health_check_interval => '<time between running docker healthcheck>',
 ```
 
 To run command on Windows 2016 requires the `restart` parameter to be set:

@@ -50,6 +50,10 @@ module Puppet::Parser::Functions
       flags << "--health-cmd='#{opts['health_check_cmd']}'"
     end
 
+    if opts['health_check_interval'].to_s != 'undef'
+      flags << "--health-interval=#{opts['health_check_interval']}s"
+    end
+
     if opts['tty']
       flags << '-t'
     end
