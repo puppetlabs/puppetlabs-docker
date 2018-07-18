@@ -47,7 +47,7 @@ module Puppet::Parser::Functions
     end
 
     if opts['health_check_cmd'].to_s != 'undef'
-      flags << "--health-cmd #{opts['health_check_cmd']}"
+      flags << "--health-cmd '#{opts['health_check_cmd']}'"
     end
 
     if opts['tty']
