@@ -52,6 +52,10 @@
 # (optional) Specifies the command to execute to check that the container is healthy using the docker health check functionality. 
 # Default: undef
 #
+# [*health_check_interval*]
+# (optional) Specifies the interval that the health check command will execute in seconds.
+# Default: undef 
+#
 # [*restart_on_unhealthy*]
 # (optional) Checks the health status of Docker container and if it is unhealthy the service will be restarted.
 # The health_check_cmd parameter must be set to true to use this functionality.
@@ -121,6 +125,7 @@ define docker::run(
   Optional[Boolean] $read_only                          = false,
   Optional[String]  $health_check_cmd                   = undef,
   Optional[Boolean] $restart_on_unhealthy               = false,
+  Optional[Integer] $health_check_interval              = undef,
 ) {
   include docker::params
   if ($socket_connect != []) {
@@ -193,6 +198,7 @@ define docker::run(
     read_only             => $read_only,
     health_check_cmd      => $health_check_cmd,
     restart_on_unhealthy  => $restart_on_unhealthy,
+    health_check_interval => $health_check_interval,
   })
 
   $sanitised_title = regsubst($title, '[^0-9A-Za-z.\-_]', '-', 'G')
@@ -449,17 +455,17 @@ define docker::run(
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',
           refreshonly => true,
-          require     => File[$initscript],
-          subscribe   => File[$initscript],
+          require     => [File[$initscript],File[$runscript]],
+          subscribe   => [File[$initscript],File[$runscript]]
         }
         Exec["docker-${sanitised_title}-systemd-reload"] -> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
 
       if $restart_service {
-        File[$initscript] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+        [File[$initscript],File[$runscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
       else {
-        File[$initscript] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
     }
   }

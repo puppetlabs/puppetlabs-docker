@@ -132,7 +132,8 @@ require 'spec_helper'
             'command' => 'command',
             'image'   => 'base',
             'health_check_cmd' => 'pwd',
-            'restart_on_unhealthy' => true
+            'restart_on_unhealthy' => true,
+            'health_check_interval' => 60,
           }}
           if (systemd)
             it { should contain_file(initscript).with_content(/ExecStop=-\/usr\/bin\/docker stop --time=0 /) } 
