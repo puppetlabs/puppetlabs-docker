@@ -449,17 +449,17 @@ define docker::run(
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',
           refreshonly => true,
-          require     => File[$initscript],
-          subscribe   => File[$initscript],
+          require     => [File[$initscript],File[$runscript]],
+          subscribe   => [File[$initscript],File[$runscript]]
         }
         Exec["docker-${sanitised_title}-systemd-reload"] -> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
 
       if $restart_service {
-        File[$initscript] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+        [File[$initscript],File[$runscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
       else {
-        File[$initscript] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
     }
   }
