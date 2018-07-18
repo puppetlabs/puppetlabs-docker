@@ -1,3 +1,53 @@
+# Version 2.0.0
+
+Various fixes for github issues
+- 193
+- 197
+- 198
+- 203
+- 207
+- 208
+- 209
+- 211
+- 212
+- 213
+- 215
+- 216
+- 217
+- 218
+- 223
+- 224
+- 225
+- 228
+- 229
+- 230
+- 232
+- 234
+- 237
+- 243
+- 245
+- 255
+- 256
+- 259
+
+Adding in the following features/functionality
+
+- Ability to define swarm clusters in Hiera.
+- Support docker compose file V2.3.
+- Support refresh only flag.
+- Support for Docker healthcheck and unhealthy container restart.
+- Support for Docker on Windows:
+    - Add docker ee support for windows server 2016.
+    - Docker image on Windows.
+    - Docker run on Windows.
+    - Docker compose on Windows.
+    - Docker swarm on Windows.
+    - Add docker exec functionality for docker on windows.
+    - Add storage driver for Windows.  
+
+A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/milestone/2?closed=1)
+
+
 # Version 1.1.0
 
 Various fixes for Github issues
