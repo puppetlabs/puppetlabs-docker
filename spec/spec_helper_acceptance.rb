@@ -77,11 +77,29 @@ RSpec.configure do |c|
 compose_test:
   image: ubuntu:14.04
   command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+extends_service:
+  extends: compose_test
+  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+extends_extends_service:
+  extends: extends_service
+  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+second_test:
+  image: ubuntu:14.04
+  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
       EOS
         docker_compose_content_v2 = <<-EOS
 version: "2"
 services:
   compose_test:
+    image: ubuntu:14.04
+    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+  extends_service:
+    extends: compose_test
+    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+  extends_extends_service:
+    extends: extends_service
+    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+  second_test:
     image: ubuntu:14.04
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
       EOS

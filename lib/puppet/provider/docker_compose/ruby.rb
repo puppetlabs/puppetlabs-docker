@@ -8,6 +8,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   def exists?
     Puppet.info("Checking for compose project #{project}")
     compose_file = YAML.safe_load(File.read(name))
+    compose_services = {}
     containers = docker([
                           'ps',
                           '--format',
@@ -15,26 +16,26 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
                           '--filter',
                           "label=com.docker.compose.project=#{project}",
                         ]).split("\n")
-    counts = case compose_file['version']
-             when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
-               if containers.count != compose_file['services'].count
-                 return false
-               end
-               Hash[*compose_file['services'].each.map { |key, array|
-                 Puppet.info("Checking for compose service #{key} #{array['image']}")
-                 ["#{key}-#{array['image']}", containers.count("#{key}-#{array['image']}")]
-               }.flatten]
-             when nil
-               if containers.count != compose_file.count
-                 return false
-               end
-               Hash[*compose_file.each.map { |key, array|
-                 Puppet.info("Checking for compose service #{key} #{array['image']}")
-                 ["#{key}-#{array['image']}", containers.count("#{key}-#{array['image']}")]
-               }.flatten]
-             else
-               raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-             end
+    case compose_file['version']
+    when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
+      compose_services = compose_file['services']
+    # in compose v1 "version" parameter is not specified
+    when nil
+      compose_services = compose_file
+    else
+      raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
+    end
+
+    if compose_services.count != containers.count
+      return false
+    end
+
+    counts = Hash[*compose_services.each.map { |key, array|
+                    image = (array['image']) ? array['image'] : get_image(array['extends'], compose_services)
+                    Puppet.info("Checking for compose service #{key} #{image}")
+                    ["#{key}-#{image}", containers.count("#{key}-#{image}")]
+                  }.flatten]
+
     # No containers found for the project
     if counts.empty? ||
        # Containers described in the compose file are not running
@@ -45,6 +46,14 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     else
       true
     end
+  end
+
+  def get_image(service_name, compose_services)
+    image = compose_services[service_name]['image']
+    unless image
+      image = get_image(compose_services[service_name]['extends'], compose_services)
+    end
+    image
   end
 
   def create
