@@ -340,7 +340,7 @@ describe 'docker', :type => :class do
             'storage_driver' => 'devicemapper',
             'dm_basesize'  => '3G'
           }}
-          it { should contain_file('/etc/sysconfig/docker-storage').with_content(/^(DOCKER_STORAGE_OPTIONS=" --storage-driver=devicemapper --storage-opt dm.basesize=3G)/) }
+          it { should contain_file('/etc/sysconfig/docker-storage').with_content(/^(DOCKER_STORAGE_OPTIONS=" --storage-driver devicemapper --storage-opt dm.basesize=3G)/) }
         end
 
         context 'It should include default prerequired_packages' do
@@ -485,7 +485,7 @@ describe 'docker', :type => :class do
       ['aufs', 'devicemapper', 'btrfs', 'overlay', 'overlay2', 'vfs', 'zfs'].each do |driver|
         context "with #{driver} storage driver" do
           let(:params) { { 'storage_driver' => driver }}
-          it { should contain_file(storage_config_file).with_content(/ --storage-driver=#{driver}/) }
+          it { should contain_file(storage_config_file).with_content(/ --storage-driver #{driver}/) }
         end
       end
 
