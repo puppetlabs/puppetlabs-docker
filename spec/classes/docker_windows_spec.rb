@@ -13,19 +13,16 @@ describe 'docker', :type => :class do
           :os                        => { :family => 'windows', :name => 'windows', :release => { :major => '2016', :full => '2016' } }
         } }
       service_config_file = 'C:/ProgramData/docker/config/daemon.json'
-      service_install_file = 'C:/Windows/Temp/install_powershell_provider.ps1'
       let(:params) {{ 'docker_ee' => true }}
 
       it { should compile.with_all_deps }
       it { should contain_file('C:/ProgramData/docker/').with({
           'ensure' => 'directory'
       } ) }
-      it { should contain_file(service_install_file).with({
-          'ensure' => 'present'
-      })}
       it { should contain_file('C:/ProgramData/docker/config/')}
       it { should contain_exec('service-restart-on-failure') }
-      it { should contain_exec('install-docker-package').with_command("& #{service_install_file}") }
+      it { should contain_exec('install-docker-package').with_command(/Install-PackageProvider NuGet -Force/) }
+      it { should contain_exec('install-docker-package').with_command(/Install-Module \$dockerProviderName -Force/) }
       it { should contain_class('docker::repos').that_comes_before('Class[docker::install]') }
       it { should contain_class('docker::install').that_comes_before('Class[docker::config]') }
       it { should contain_class('docker::config').that_comes_before('Class[docker::service]') }
@@ -267,7 +264,7 @@ describe 'docker', :type => :class do
         let(:params) { { 
             'docker_ee' => true
         } }
-        it { should contain_file(service_install_file).with_content(/ Docker /)}
+        it { should contain_exec('install-docker-package').with_command(/ Docker /) }
       end
 
       context 'with custom package name' do
@@ -275,7 +272,7 @@ describe 'docker', :type => :class do
             'docker_ee_package_name'=> "mydockerpackage",
             'docker_ee' => true
         } }
-        it { should contain_file(service_install_file).with_content(/ mydockerpackage /)}
+        it { should contain_exec('install-docker-package').with_command(/ mydockerpackage /) }
       end
 
       context 'without docker_ee' do
