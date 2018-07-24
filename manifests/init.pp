@@ -489,9 +489,18 @@ class docker(
 
 
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian, Red Hat or Windows based systems.'))
+    assert_type(Pattern[/^(Debian|RedHat|Suse|windows)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian, Red Hat, SUSE or Windows based systems.'))
     }
+  }
+
+  if $::operatingsystem == 'SLES' and (versioncmp($::operatingsystemmajrelease, '12') < 0) {
+    fail translate(('This module only works on SLES 12+'))
+  }
+  if $::operatingsystem == 'OpenSuSE' and
+      ((versioncmp($::operatingsystemmajrelease, '42') < 0) and
+      (versioncmp($::operatingsystemmajrelease, '15') < 0)) {
+    fail translate(('This module only works on openSUSE 42/15+'))
   }
 
   if ($default_gateway) and (!$bridge) {

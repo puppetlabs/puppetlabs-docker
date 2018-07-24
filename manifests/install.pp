@@ -28,10 +28,20 @@ class docker::install (
 ) {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
-      fail translate(('This module only works on Debian, RedHat or Windows.'))
+    assert_type(Pattern[/^(Debian|RedHat|Suse|windows)$/], $::osfamily) |$a, $b| {
+      fail translate(('This module only works on Debian, RedHat, SUSE or Windows.'))
     }
   }
+
+  if $::operatingsystem == 'SLES' and (versioncmp($::operatingsystemmajrelease, '12') < 0) {
+    fail translate(('This module only works on SLES 12+'))
+  }
+  if $::operatingsystem == 'OpenSuSE' and
+      ((versioncmp($::operatingsystemmajrelease, '42') < 0) and
+      (versioncmp($::operatingsystemmajrelease, '15') < 0)) {
+    fail translate(('This module only works on openSUSE 42/15+'))
+  }
+
   if $docker::version and $docker::ensure != 'absent' {
     $ensure = $docker::version
   } else {

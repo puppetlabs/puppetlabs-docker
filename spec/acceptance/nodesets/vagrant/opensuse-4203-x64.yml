@@ -1,0 +1,11 @@
+HOSTS:
+  opensuse-4203-x64:
+    roles:
+      - default
+    platform: opensuse-42.3-x86_64
+    box: opensuse/openSUSE-42.3-x86_64
+    box_url: https://app.vagrantup.com/opensuse/boxes/openSUSE-42.3-x86_64
+    hypervisor : vagrant
+CONFIG:
+  log_level: verbose
+  type: foss

@@ -6,7 +6,12 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
-  $docker_ce_package_name            = 'docker-ce'
+  if ($::osfamily == 'Suse') {
+    $docker_ce_package_name          = 'docker'
+  }
+  else {
+    $docker_ce_package_name          = 'docker-ce'
+  }
   $docker_engine_start_command       = 'docker daemon'
   $docker_engine_package_name        = 'docker-engine'
   $docker_ce_channel                 = stable
@@ -220,6 +225,40 @@ class docker::params {
       } else {
         $repo_opt = undef
       }
+    }
+    'Suse' : {
+      $service_config = '/etc/sysconfig/docker'
+      $storage_config = undef
+      $storage_setup_file = undef
+      $service_hasstatus  = true
+      $service_hasrestart = true
+
+      $service_provider           = 'systemd'
+      $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
+      $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-suse.conf.erb'
+      $use_upstream_package_source = false
+
+      $package_ce_source_location = undef
+      $package_ce_key_source = undef
+      $package_ce_key_id = undef
+      $package_ce_release = undef
+      $package_key_id = undef
+      $package_release = undef
+      $package_source_location = undef
+      $package_key_source = undef
+      $package_key_check_source = true
+      $package_ee_source_location = $docker_ee_source_location
+      $package_ee_key_source = $docker_ee_key_source
+      $package_ee_key_id = $docker_ee_key_id
+      $package_ee_release = undef
+      $package_ee_repos = $docker_ee_repos
+      $package_ee_package_name = $docker_ee_package_name
+      $pin_upstream_package_source = undef
+      $apt_source_pin_level = undef
+      $service_name = $service_name_default
+      $detach_service_in_init = false
+      $docker_group = $docker_group_default
+      $socket_group = $socket_group_default
     }
     'windows' : {
       $msft_nuget_package_provider_version = $nuget_package_provider_version

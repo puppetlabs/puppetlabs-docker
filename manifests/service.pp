@@ -117,8 +117,8 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat|windows)/ {
-    fail translate(('The docker::service class needs a Debian, Redhat or Windows based system.'))
+  unless $::osfamily =~ /(Debian|RedHat|Suse|windows)/ {
+    fail translate(('The docker::service class needs a Debian, Redhat, SUSE or Windows based system.'))
   }
 
   $dns_array = any2array($dns)
