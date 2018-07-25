@@ -44,7 +44,7 @@ describe 'docker::image', :type => :define do
     
     context 'with ensure => latest' do
         let(:params) { { 'ensure' => 'latest' } }
-        it { should contain_exec("echo 'Update of base complete'").with_onlyif('& C:/Windows/Temp/update_docker_image.ps1 base') }
+        it { should contain_exec("& C:/Windows/Temp/update_docker_image.ps1 base") }
     end
 
 end
