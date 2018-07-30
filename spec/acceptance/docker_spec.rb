@@ -2,21 +2,43 @@ require 'spec_helper_acceptance'
 
 broken = false
 
+registry_port = 5000
+
 if fact('osfamily') == 'windows'
-  puts "Not implemented on Windows"
+  win_host = only_host_with_role(hosts, 'default')
+  @windows_ip = win_host.ip
+  docker_arg = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  docker_registry_image = 'stefanscherer/registry-windows'
+  docker_network = 'nat'
+  registry_host = @windows_ip
+  config_file = '/cygdrive/c/Users/Administrator/.docker/config.json'
+  root_dir = "C:/Windows/Temp"
+  server_strip = "#{registry_host}_#{registry_port}"
+  bad_server_strip = "#{registry_host}_5001"
   broken = true
-elsif fact('osfamily') == 'RedHat'
-  docker_args = "repo_opt => '--enablerepo=localmirror-extras'" 
+else
+  if fact('osfamily') == 'RedHat'
+    docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+  else
+    docker_arg = ''
+  end
+  docker_registry_image = 'registry'
+  docker_network = 'bridge'
+  registry_host = '127.0.0.1'
+  server_strip = "#{registry_host}:#{registry_port}"
+  bad_server_strip = "#{registry_host}:5001"
+  config_file = '/root/.docker/config.json'
+  root_dir = "/root"
 end
 
-describe 'docker', :win_broken => broken do
+describe 'docker' do
   package_name = 'docker-ce'
   service_name = 'docker'
   command = 'docker'
 
-  context 'When adding system user' do
+  context 'When adding system user', :win_broken => broken do
     let(:pp) {"
-            class { 'docker':
+            class { 'docker': #{docker_arg}
               docker_users => ['user1']
             }
     "}
@@ -28,7 +50,7 @@ describe 'docker', :win_broken => broken do
      end
    end
 
-  context 'with default parameters' do
+  context 'with default parameters', :win_broken => broken do
     let(:pp) {"
 			class { 'docker':
         docker_users => [ 'testuser' ],
@@ -97,7 +119,7 @@ describe 'docker', :win_broken => broken do
     end
   end
 
-  context "When asked to have the latest image of something" do
+  context "When asked to have the latest image of something", :win_broken => broken do
     let(:pp) {"
         class { 'docker':
           docker_users => [ 'testuser' ]
@@ -112,7 +134,7 @@ describe 'docker', :win_broken => broken do
     end
   end
 
-  context "When registry_mirror is set" do
+  context "When registry_mirror is set", :win_broken => broken do
     let(:pp) {"
       class { 'docker':
         registry_mirror => 'http://testmirror.io'
@@ -131,23 +153,22 @@ describe 'docker', :win_broken => broken do
 
   context 'registry' do
     before(:all) do
-      registry_host = 'localhost'
-      registry_port = 5000
       @registry_address = "#{registry_host}:#{registry_port}"
       @registry_bad_address = "#{registry_host}:5001"
       # @registry_email = 'user@example.com'
-      @config_file = '/root/.docker/config.json'
       @manifest = <<-EOS
-        class { 'docker': }
+        class { 'docker': #{docker_arg}}
         docker::run { 'registry':
-          image         => 'registry',
+          image         => '#{docker_registry_image}',
           pull_on_start => true,
+          restart       => 'always',
+          net           => '#{docker_network}',
           ports         => '#{registry_port}:#{registry_port}',
-          volumes       => '/tmp/registry-dev',
         }
       EOS
-
-      apply_manifest(@manifest, :catch_failures=>true)
+      retry_on_error_matching(60, 5, /connection failure running/) do
+        apply_manifest(@manifest, :catch_failures=>true)
+      end
       # avoid a race condition with the registry taking time to start
       # on some operating systems
       sleep 10
@@ -161,8 +182,8 @@ describe 'docker', :win_broken => broken do
         }
       EOS
       apply_manifest(manifest, :catch_failures=>true)
-      shell("grep #{@registry_address} #{@config_file}", :acceptable_exit_codes => [0])
-      shell("test -e \"/root/registry-auth-puppet_receipt_#{@registry_address}_root\"", :acceptable_exit_codes => [0])
+      shell("grep #{@registry_address} #{config_file}", :acceptable_exit_codes => [0])
+      shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{server_strip}_root\"", :acceptable_exit_codes => [0])
     end
 
     it 'should be able to logout from the registry' do
@@ -172,7 +193,7 @@ describe 'docker', :win_broken => broken do
         }
       EOS
       apply_manifest(manifest, :catch_failures=>true)
-      shell("grep #{@registry_address} #{@config_file}", :acceptable_exit_codes => [1,2])
+      shell("grep #{@registry_address} #{config_file}", :acceptable_exit_codes => [1,2])
       # shell("grep #{@registry_email} #{@config_file}", :acceptable_exit_codes => [1,2])
     end
 
@@ -184,8 +205,8 @@ describe 'docker', :win_broken => broken do
         }
       EOS
       apply_manifest(manifest, :catch_failures=>true)
-      shell("grep #{@registry_bad_address} #{@config_file}", :acceptable_exit_codes => [1,2])
-      shell("test -e \"/root/registry-auth-puppet_receipt_#{@registry_bad_address}_root\"", :acceptable_exit_codes => [1])
+      shell("grep #{@registry_bad_address} #{config_file}", :acceptable_exit_codes => [1,2])
+      shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{bad_server_strip}_root\"", :acceptable_exit_codes => [1])
     end
 
   end

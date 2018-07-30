@@ -14,5 +14,8 @@
     <% if @bridge %>"bridge": "<%= @bridge %>",<% end -%>
     <% if @fixed_cidr %>"fixed-cidr": "<%= @fixed_cidr %>",<% end -%>
     <% if @registry_mirror %>"registry-mirrors": ["<%= @registry_mirror%>"], <% end -%>
+    <% if @extra_parameters %><% @extra_parameters_array.each do |param| %>
+    <%= param %> ,<% end %>
+    <% end -%>
     "labels": <%= @labels_array.to_json %>
 }

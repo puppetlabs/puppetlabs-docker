@@ -83,12 +83,19 @@ define docker::registry(
   }
 
   $docker_auth = "${title}${auth_environment}${auth_cmd}${local_user}"
+
+  if $auth_environment != '' {
+    $exec_env = concat($exec_environment, $auth_environment, "docker_auth=${docker_auth}")
+  } else {
+    $exec_env = concat($exec_environment, "docker_auth=${docker_auth}")
+  }
+
   if $receipt {
 
-    # server may be an URI, which can contain /
-    $server_strip = regsubst($server, '/', '_', 'G')
-
     if $::osfamily != 'windows' {
+      # server may be an URI, which can contain /
+      $server_strip = regsubst($server, '/', '_', 'G')
+
       # no - with pw_hash
       $local_user_strip = regsubst($local_user, '-', '', 'G')
 
@@ -104,32 +111,30 @@ define docker::registry(
         notify  => Exec["${title} auth"],
       }
     } else {
-      $_auth_command = $auth_cmd
-      $pw_hash_path = 'C:/Windows/Temp/compute_hash.ps1'
+      # server may be an URI, which can contain /
+      $server_strip = regsubst($server, '[/:]', '_', 'G')
       $passfile = "C:/Windows/Temp/registry-auth-puppet_receipt_${server_strip}_${local_user}"
-      file{ $pw_hash_path:
-          ensure  => present,
-          force   => true,
-          content => template('docker/windows/compute_hash.ps1.erb'),
-          notify  => Exec['compute-hash']
-      }
-      exec { 'compute-hash':
-          command     => "& ${pw_hash_path}",
-          provider    => $exec_provider,
-          refreshonly => true,
-          logoutput   => true,
-          notify      => Exec["${title} auth"],
+      $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
+
+      if $ensure == 'absent' {
+        file { $passfile:
+          ensure => $ensure,
+          notify => Exec["${title} auth"],
         }
+      } elsif $ensure == 'present' {
+        exec { 'compute-hash':
+            command     => template('docker/windows/compute_hash.ps1.erb'),
+            environment => $exec_env,
+            provider    => $exec_provider,
+            logoutput   => true,
+            unless      => template('docker/windows/check_hash.ps1.erb'),
+            notify      => Exec["${title} auth"],
+        }
+      }
     }
   }
   else {
     $_auth_command = $auth_cmd
-  }
-
-  if $auth_environment != '' {
-    $exec_env = concat($exec_environment, $auth_environment, "docker_auth=${docker_auth}")
-  } else {
-    $exec_env = concat($exec_environment, "docker_auth=${docker_auth}")
   }
 
   exec { "${title} auth":
