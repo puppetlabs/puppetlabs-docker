@@ -65,11 +65,11 @@ define docker::registry(
 
   if $ensure == 'present' {
     if $username != undef and $password != undef and $email != undef and $version != undef and $version =~ /1[.][1-9]0?/ {
-      $auth_cmd = "${docker_command} login -u '${username}' -p '${password_env}' -e '${email}' ${server}"
+      $auth_cmd = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
       $auth_environment = "password=${password}"
     }
     elsif $username != undef and $password != undef {
-      $auth_cmd = "${docker_command} login -u '${username}' -p '${password_env}' ${server}"
+      $auth_cmd = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
       $auth_environment = "password=${password}"
     }
     else {
