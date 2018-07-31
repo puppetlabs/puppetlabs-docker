@@ -870,4 +870,21 @@ describe 'docker', :type => :class do
     end
   end
 
+  context 'CentOS < 7' do
+    let(:facts) { {
+      :architecture              => 'x86_64',
+      :osfamily                  => 'RedHat',
+      :operatingsystem           => 'CentOS',
+      :kernelversion             => '3.10.0',
+      :operatingsystemmajrelease => '6',
+      :os                        => { :family => 'RedHat', :name => 'CentOS', :release => { :major => '6', :full => '6.0' } }
+    } }
+
+    it do
+      expect {
+        should contain_package('docker')
+      }.to raise_error(Puppet::Error, /This module only works on CentOS version 7 and higher based systems./)
+    end
+  end
+
 end

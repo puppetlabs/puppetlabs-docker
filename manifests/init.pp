@@ -494,6 +494,10 @@ class docker(
     }
   }
 
+  if ($::operatingsystem == 'CentOS') and (Integer($::operatingsystemmajrelease) < 7){
+    fail translate(('This module only works on CentOS version 7 and higher based systems.'))
+  }
+
   if ($default_gateway) and (!$bridge) {
     fail translate(('You must provide the $bridge parameter.'))
   }
