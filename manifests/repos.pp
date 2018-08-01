@@ -16,7 +16,6 @@ class docker::repos (
       $package_key = $docker::package_key
       $package_repos = $docker::package_repos
       if ($docker::use_upstream_package_source) {
-        ensure_packages(['debian-keyring', 'debian-archive-keyring'])
 
         apt::source { 'docker':
           location     => $location,
