@@ -55,4 +55,9 @@ describe 'docker::exec', :type => :define do
 		let(:params) { {'command' => 'command', 'container' => 'container_sample/1', 'detach' => true, 'sanitise_name' => true} }
 		it { should contain_exec('docker exec --detach=true container_sample-1 command') }
   end
+
+  context 'with environment variables passed to exec' do
+		let(:params) { {'command' => 'command', 'container' => 'container', 'env' => ['FOO=BAR','FOO2=BAR2']} }
+		it { should contain_exec('docker exec --env FOO=BAR --env FOO2=BAR2 container command') }
+  end
 end
