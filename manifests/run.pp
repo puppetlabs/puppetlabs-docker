@@ -462,10 +462,20 @@ define docker::run(
       }
 
       if $restart_service {
-        [File[$initscript],File[$runscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+        if $runscript {
+          [File[$initscript],File[$runscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+        }
+        else {
+          [File[$initscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+        }
       }
       else {
-        [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        if $runscript {
+          [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        }
+        else {
+          [File[$initscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        }
       }
     }
   }
