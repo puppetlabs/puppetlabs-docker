@@ -146,7 +146,7 @@ class docker::firewall::docker_new {
     firewall { '00100 DOCKER-ISOLATION-STAGE-2 traffic heading back to docker0 bridge is DROPed':
       chain    => 'DOCKER-ISOLATION-STAGE-2',
       outiface => 'docker0',
-      jump     => 'DROP',
+      action   => 'DROP',
     }
 
     # -A DOCKER-ISOLATION-STAGE-2 -j RETURN
