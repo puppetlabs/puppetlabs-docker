@@ -115,6 +115,7 @@ class docker::service (
   $tls_cert                          = $docker::tls_cert,
   $tls_key                           = $docker::tls_key,
   $registry_mirror                   = $docker::registry_mirror,
+  $root_dir_flag                     = $docker::root_dir_flag,
 ) {
 
   unless $::osfamily =~ /(Debian|RedHat|windows)/ {
