@@ -66,12 +66,14 @@ class docker::firewall::docker_new {
     # -A FORWARD -j DOCKER-USER
     firewall { '00101 forward to DOCKER-USER':
       chain   => 'FORWARD',
+      proto   => 'all',
       jump    => 'DOCKER-USER',
     }
 
     # -A FORWARD -j DOCKER-ISOLATION-STAGE-1
     firewall { '00102 forward to DOCKER-ISOLATION-STAGE-1':
       chain   => 'FORWARD',
+      proto   => 'all',
       jump    => 'DOCKER-ISOLATION-STAGE-1',
     }
 
