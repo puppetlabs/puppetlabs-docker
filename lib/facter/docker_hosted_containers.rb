@@ -1,4 +1,3 @@
-
 require 'json'
 
 Facter.add(:docker_hosted_containers) do
@@ -33,4 +32,3 @@ Facter.add(:docker_hosted_containers) do
     containers_hash
   end
 end
-
