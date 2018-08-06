@@ -123,8 +123,16 @@ class docker::firewall::docker_new {
              jump => 'DOCKER',
     }
 
+    # -A FORWARD -o docker0 -j DOCKER
+    firewall { '00108 forward to DOCKER':
+      chain    => 'FORWARD',
+      proto    => 'all',
+      outiface => 'docker0',
+      jump     => 'DOCKER',
+    }
+
     # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
-    firewall { '00108 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
+    firewall { '00109 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
          table => 'nat',
          chain => 'POSTROUTING',
          proto => 'all',
@@ -134,20 +142,12 @@ class docker::firewall::docker_new {
     }
 
     # -A DOCKER -i docker0 -j RETURN
-    firewall { '00109 DOCKER chain, RETURN and remaining docker bridge packets':
+    firewall { '00110 DOCKER chain, RETURN and remaining docker bridge packets':
          table => 'nat',
          chain => 'DOCKER',
          proto => 'all',
        iniface => 'docker0',
           jump => 'RETURN',
-    }
-
-    # -A FORWARD -o docker0 -j DOCKER
-    firewall { '00110 forward to DOCKER':
-      chain    => 'FORWARD',
-      proto    => 'all',
-      outiface => 'docker0',
-      jump     => 'DOCKER',
     }
 
     # -A DOCKER-ISOLATION-STAGE-1 -i docker0 ! -o docker0 -j DOCKER-ISOLATION-STAGE-2
