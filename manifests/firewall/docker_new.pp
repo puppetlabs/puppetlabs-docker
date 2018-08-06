@@ -109,6 +109,19 @@ class docker::firewall::docker_new {
           jump => 'RETURN',
     }
 
+    # The namevar here is in the format chain_name:table:protocol
+    firewallchain { 'DOCKER-USER:filter:IPv4':
+      ensure  => present,
+    }
+
+    firewallchain { 'DOCKER-ISOLATION-STAGE-1:filter:IPv4':
+      ensure  => present,
+    }
+
+    firewallchain { 'DOCKER-ISOLATION-STAGE-2:filter:IPv4':
+      ensure  => present,
+    }
+
     # -A FORWARD -j DOCKER-USER
     firewall { '00100 forward to DOCKER-USER':
       chain   => 'FORWARD',
