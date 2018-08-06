@@ -28,7 +28,7 @@ class docker::firewall::weave {
     firewall { '06783 accept and forward weave routing udp packets to weave router, when not from docker interface':
       chain       => 'FORWARD',
       action      => 'accept',
-      destination => "$weave_router_ip/32",
+      destination => "${weave_router_ip}/32",
       iniface     => '! docker0',
       outiface    => 'docker0',
       proto       => 'udp',
@@ -39,7 +39,7 @@ class docker::firewall::weave {
     firewall { '06783 accept and forward weave routing tcp packets to weave router, when not from docker interface':
       chain       => 'FORWARD',
       action      => 'accept',
-      destination => "$weave_router_ip/32",
+      destination => "${weave_router_ip}/32",
       iniface     => '! docker0',
       outiface    => 'docker0',
       proto       => 'tcp',
@@ -54,7 +54,7 @@ class docker::firewall::weave {
       iniface => '! docker0',
       dport   => '6783',
       jump    => 'DNAT',
-      todest  => "$weave_router_ip:6783",
+      todest  => "${weave_router_ip}:6783",
     }
 
     ### > -A DOCKER ! -i docker0 -p udp -m udp --dport 6783 -j DNAT --to-destination 172.17.0.2:6783
@@ -65,7 +65,7 @@ class docker::firewall::weave {
       iniface => '! docker0',
       dport   => '6783',
       jump    => 'DNAT',
-      todest  => "$weave_router_ip:6783",
+      todest  => "${weave_router_ip}:6783",
     }
 
   }
@@ -77,7 +77,7 @@ class docker::firewall::weave {
     firewall { '00101 nat table, WEAVE chain, MASQUERADE non-weave bridge packets to weave bridge':
       table    => 'nat',
       chain    => 'WEAVE',
-      source   => "! $network_weave/24",
+      source   => "! ${network_weave}/24",
       outiface => 'weave',
       proto    => 'all',
       jump     => 'MASQUERADE',
@@ -87,7 +87,7 @@ class docker::firewall::weave {
     firewall { '00101 nat table, WEAVE chain, MASQUERADE weave bridge packets bound beyond weave bridge':
       table    => 'nat',
       chain    => 'WEAVE',
-      source   => "$network_weave/24",
+      source   => "${network_weave}/24",
       outiface => '! weave',
       proto    => 'all',
       jump     => 'MASQUERADE',

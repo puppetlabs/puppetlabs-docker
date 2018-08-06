@@ -12,9 +12,9 @@ define docker::firewall::dnat_published_port (
   $public_ip = undef,
 ) {
 
-  $rule_id = sprintf("%05d",$published_port)
+  $rule_id = sprintf('%05d',$published_port)
 
-  firewall { "$rule_id FORWARD $published_port for $container_ip":
+  firewall { "${rule_id} FORWARD ${published_port} for ${container_ip}":
     chain       => 'FORWARD',
     dport       => [ $published_port ],
     proto       => [ $protocol ],
@@ -25,7 +25,7 @@ define docker::firewall::dnat_published_port (
   }
 
   if $public_ip {
-    firewall { "$rule_id dnat $published_port for $container_ip":
+    firewall { "${rule_id} dnat ${published_port} for ${container_ip}":
       table       => 'nat',
       chain       => 'DOCKER',
       destination => $public_ip,
@@ -36,7 +36,7 @@ define docker::firewall::dnat_published_port (
       jump        => 'DNAT',
     }
   } else {
-    firewall { "$rule_id dnat $published_port for $container_ip":
+    firewall { "${rule_id} dnat ${published_port} for ${container_ip}":
       table   => 'nat',
       chain   => 'DOCKER',
       iniface => '! docker0',
