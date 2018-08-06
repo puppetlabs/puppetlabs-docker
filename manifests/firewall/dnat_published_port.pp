@@ -32,7 +32,7 @@ define docker::firewall::dnat_published_port (
       iniface     => '! docker0',
       proto       => [ $protocol ],
       dport       => [ $published_port ],
-      todest      => "$container_ip:$published_port",
+      todest      => "${container_ip}:${published_port}",
       jump        => 'DNAT',
     }
   } else {
@@ -42,7 +42,7 @@ define docker::firewall::dnat_published_port (
       iniface => '! docker0',
       proto   => [ $protocol ],
       dport   => [ $published_port ],
-      todest  => "$container_ip:$published_port",
+      todest  => "${container_ip}:${published_port}",
       jump    => 'DNAT',
     }
   }
