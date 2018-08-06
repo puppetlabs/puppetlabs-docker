@@ -47,6 +47,10 @@ class docker::firewall::docker_new {
     # include docker::firewall::docker
 
     # The namevar here is in the format chain_name:table:protocol
+    firewallchain { 'DOCKER:filter:IPv4':
+      ensure  => present,
+    }
+
     firewallchain { 'DOCKER-USER:filter:IPv4':
       ensure  => present,
     }
