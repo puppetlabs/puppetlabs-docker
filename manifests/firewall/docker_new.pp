@@ -63,6 +63,18 @@ class docker::firewall::docker_new {
       ensure  => present,
     }
 
+    # -A FORWARD -j DOCKER-ISOLATION-STAGE-1
+    firewall { '00100 forward to DOCKER-ISOLATION-STAGE-1':
+      chain   => 'FORWARD',
+      jump    => 'DOCKER-ISOLATION-STAGE-1',
+    }
+
+    # -A FORWARD -j DOCKER-USER
+    firewall { '00100 forward to DOCKER-USER':
+      chain   => 'FORWARD',
+      jump    => 'DOCKER-USER',
+    }
+
     # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
     firewall { '00100 accept related, established traffic returning to docker0 bridge in FORWARD chain':
        action  => 'accept',
@@ -128,18 +140,6 @@ class docker::firewall::docker_new {
           jump => 'RETURN',
     }
 
-    # -A FORWARD -j DOCKER-USER
-    firewall { '00100 forward to DOCKER-USER':
-      chain   => 'FORWARD',
-      jump    => 'DOCKER-USER',
-    }
-
-    # -A FORWARD -j DOCKER-ISOLATION-STAGE-1
-    firewall { '00100 forward to DOCKER-ISOLATION-STAGE-1':
-      chain   => 'FORWARD',
-      jump    => 'DOCKER-ISOLATION-STAGE-1',
-    }
-
     # -A FORWARD -o docker0 -j DOCKER
     firewall { '00100 forward to DOCKER':
       chain    => 'FORWARD',
@@ -152,12 +152,14 @@ class docker::firewall::docker_new {
       chain    => 'DOCKER-ISOLATION-STAGE-1',
       iniface  => 'docker0',
       outiface => '! docker0',
+      proto    => 'all',
       jump     => 'DOCKER-ISOLATION-STAGE-2',
     }
 
     # -A DOCKER-ISOLATION-STAGE-1 -j RETURN
     firewall { '00100 DOCKER-ISOLATION-STAGE-1 traffic RETURNs':
       chain    => 'DOCKER-ISOLATION-STAGE-1',
+      proto    => 'all',
       jump     => 'RETURN',
     }
 
@@ -165,18 +167,21 @@ class docker::firewall::docker_new {
     firewall { '00100 DOCKER-ISOLATION-STAGE-2 traffic heading back to docker0 bridge is DROPed':
       chain    => 'DOCKER-ISOLATION-STAGE-2',
       outiface => 'docker0',
+      proto    => 'all',
       action   => 'drop',
     }
 
     # -A DOCKER-ISOLATION-STAGE-2 -j RETURN
     firewall { '00100 DOCKER-ISOLATION-STAGE-2 traffic now RETURNed':
       chain    => 'DOCKER-ISOLATION-STAGE-2',
+      proto    => 'all',
       jump     => 'RETURN',
     }
 
     # -A DOCKER-USER -j RETURN
     firewall { '00100 DOCKER-USER traffic now RETURNed':
       chain    => 'DOCKER-USER',
+      proto    => 'all',
       jump     => 'RETURN',
     }
 
