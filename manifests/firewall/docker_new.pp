@@ -39,10 +39,28 @@
 
 class docker::firewall::docker_new {
 
+  Firewallchain <||> -> Firewall <||>
+
   if "${::network_docker0}/16" == '/16' {
     notify { 'docker::firewall::docker--check-for--network_docker0': message => "${::network_docker0}/16" }
   } else {
     # include docker::firewall::docker
+
+    # The namevar here is in the format chain_name:table:protocol
+    firewallchain { 'DOCKER-USER:filter:IPv4':
+      ensure  => present,
+      policy  => 'accept',
+    }
+
+    firewallchain { 'DOCKER-ISOLATION-STAGE-1:filter:IPv4':
+      ensure  => present,
+      policy  => 'accept',
+    }
+
+    firewallchain { 'DOCKER-ISOLATION-STAGE-2:filter:IPv4':
+      ensure  => present,
+      policy  => 'accept',
+    }
 
     # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
     firewall { '00100 accept related, established traffic returning to docker0 bridge in FORWARD chain':
@@ -107,19 +125,6 @@ class docker::firewall::docker_new {
          proto => 'all',
        iniface => 'docker0',
           jump => 'RETURN',
-    }
-
-    # The namevar here is in the format chain_name:table:protocol
-    firewallchain { 'DOCKER-USER:filter:IPv4':
-      ensure  => present,
-    }
-
-    firewallchain { 'DOCKER-ISOLATION-STAGE-1:filter:IPv4':
-      ensure  => present,
-    }
-
-    firewallchain { 'DOCKER-ISOLATION-STAGE-2:filter:IPv4':
-      ensure  => present,
     }
 
     # -A FORWARD -j DOCKER-USER
