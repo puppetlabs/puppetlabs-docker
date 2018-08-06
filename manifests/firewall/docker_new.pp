@@ -49,17 +49,14 @@ class docker::firewall::docker_new {
     # The namevar here is in the format chain_name:table:protocol
     firewallchain { 'DOCKER-USER:filter:IPv4':
       ensure  => present,
-      policy  => 'accept',
     }
 
     firewallchain { 'DOCKER-ISOLATION-STAGE-1:filter:IPv4':
       ensure  => present,
-      policy  => 'accept',
     }
 
     firewallchain { 'DOCKER-ISOLATION-STAGE-2:filter:IPv4':
       ensure  => present,
-      policy  => 'accept',
     }
 
     # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
