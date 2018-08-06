@@ -86,8 +86,16 @@ class docker::firewall::docker_new {
        ctstate => ['RELATED','ESTABLISHED'],
     }
 
+    # -A FORWARD -o docker0 -j DOCKER
+    firewall { '00104 forward to DOCKER':
+      chain    => 'FORWARD',
+      proto    => 'all',
+      outiface => 'docker0',
+      jump     => 'DOCKER',
+    }
+
     # -A FORWARD -i docker0 ! -o docker0 -j ACCEPT
-    firewall { '00104 accept docker0 traffic to other interfaces on FORWARD chain':
+    firewall { '00105 accept docker0 traffic to other interfaces on FORWARD chain':
        action  => 'accept',
          proto => 'all',
          chain => 'FORWARD',
@@ -96,7 +104,7 @@ class docker::firewall::docker_new {
     }
 
     # -A FORWARD -i docker0 -o docker0 -j ACCEPT
-    firewall { '00105 accept docker0 to docker0 FORWARD traffic':
+    firewall { '00106 accept docker0 to docker0 FORWARD traffic':
        action  => 'accept',
          proto => 'all',
          chain => 'FORWARD',
@@ -105,7 +113,7 @@ class docker::firewall::docker_new {
     }
 
     # -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER 
-    firewall { '00106 DOCKER table PREROUTING LOCAL traffic':
+    firewall { '00107 DOCKER table PREROUTING LOCAL traffic':
       dst_type => 'LOCAL',
          table => 'nat',
          proto => 'all',
@@ -114,21 +122,13 @@ class docker::firewall::docker_new {
     }
 
     # -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER 
-    firewall { '00107 DOCKER chain, route LOCAL non-loopback traffic to DOCKER':
+    firewall { '00108 DOCKER chain, route LOCAL non-loopback traffic to DOCKER':
             table => 'nat',
          dst_type => 'LOCAL',
             chain => 'OUTPUT',
             proto => 'all',
       destination => '! 127.0.0.1/8',
              jump => 'DOCKER',
-    }
-
-    # -A FORWARD -o docker0 -j DOCKER
-    firewall { '00108 forward to DOCKER':
-      chain    => 'FORWARD',
-      proto    => 'all',
-      outiface => 'docker0',
-      jump     => 'DOCKER',
     }
 
     # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
