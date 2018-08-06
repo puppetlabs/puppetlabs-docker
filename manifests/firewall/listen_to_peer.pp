@@ -10,35 +10,35 @@ define docker::firewall::listen_to_peer ( $peer ) {
     # notify { 'no firewall rules required for self': message => "peer: $peer, eth0: $::ipaddress_eth0" }
   } else {
     firewall { "${rule_id} docker swarm ingress from $peer for tcp":
-       chain => 'INPUT',
-       dport => "${swarm_port}",
-       proto => 'tcp', 
+      chain  => 'INPUT',
+      dport  => "${swarm_port}",
+      proto  => 'tcp', 
       source => $peer,
       action => accept,
     }
   
     firewall { "${rule_id} docker swarm ingress from $peer for udp":
-       chain => 'INPUT',
-       dport => "${swarm_port}",
-       proto => 'udp', 
+      chain  => 'INPUT',
+      dport  => "${swarm_port}",
+      proto  => 'udp', 
       source => $peer,
       action => accept,
     }
   
     firewall { "${rule_id} docker swarm egress to $peer for tcp":
-            chain => 'OUTPUT',
-            dport => "${swarm_port}",
-            proto => 'tcp',
+      chain       => 'OUTPUT',
+      dport       => "${swarm_port}",
+      proto       => 'tcp',
       destination => $peer,
-           action => accept,
+      action      => accept,
     }
   
     firewall { "${rule_id} docker swarm egress to $peer for udp":
-            chain => 'OUTPUT',
-            dport => "${swarm_port}",
-            proto => 'udp',
+      chain       => 'OUTPUT',
+      dport       => "${swarm_port}",
+      proto       => 'udp',
       destination => $peer,
-           action => accept,
+      action      => accept,
     }
   }
 

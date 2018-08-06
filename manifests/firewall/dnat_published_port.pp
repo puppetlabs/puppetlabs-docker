@@ -15,35 +15,35 @@ define docker::firewall::dnat_published_port (
   $rule_id = sprintf("%05d",$published_port)
 
   firewall { "$rule_id FORWARD $published_port for $container_ip":
-          chain => 'FORWARD',
-          dport => [ $published_port ],
-          proto => [ $protocol ],
+    chain       => 'FORWARD',
+    dport       => [ $published_port ],
+    proto       => [ $protocol ],
     destination => $container_ip,
-        iniface => '! docker0',
-       outiface => 'docker0',
-         action => accept,
+    iniface     => '! docker0',
+    outiface    => 'docker0',
+    action      => accept,
   }
 
   if $public_ip {
     firewall { "$rule_id dnat $published_port for $container_ip":
-          table => 'nat',
-          chain => 'DOCKER',
-    destination => $public_ip,
-        iniface => '! docker0',
-          proto => [ $protocol ],
-          dport => [ $published_port ],
-         todest => "$container_ip:$published_port",
-           jump => 'DNAT',
+      table       => 'nat',
+      chain       => 'DOCKER',
+      destination => $public_ip,
+      iniface     => '! docker0',
+      proto       => [ $protocol ],
+      dport       => [ $published_port ],
+      todest      => "$container_ip:$published_port",
+      jump        => 'DNAT',
     }
   } else {
     firewall { "$rule_id dnat $published_port for $container_ip":
-        table => 'nat',
-        chain => 'DOCKER',
+      table   => 'nat',
+      chain   => 'DOCKER',
       iniface => '! docker0',
-        proto => [ $protocol ],
-        dport => [ $published_port ],
-       todest => "$container_ip:$published_port",
-         jump => 'DNAT',
+      proto   => [ $protocol ],
+      dport   => [ $published_port ],
+      todest  => "$container_ip:$published_port",
+      jump    => 'DNAT',
     }
   }
 

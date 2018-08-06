@@ -65,25 +65,25 @@ class docker::firewall::docker_new {
 
     # -A FORWARD -j DOCKER-USER
     firewall { '00101 forward to DOCKER-USER':
-      chain   => 'FORWARD',
-      proto   => 'all',
-      jump    => 'DOCKER-USER',
+      chain => 'FORWARD',
+      proto => 'all',
+      jump  => 'DOCKER-USER',
     }
 
     # -A FORWARD -j DOCKER-ISOLATION-STAGE-1
     firewall { '00102 forward to DOCKER-ISOLATION-STAGE-1':
-      chain   => 'FORWARD',
-      proto   => 'all',
-      jump    => 'DOCKER-ISOLATION-STAGE-1',
+      chain => 'FORWARD',
+      proto => 'all',
+      jump  => 'DOCKER-ISOLATION-STAGE-1',
     }
 
     # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
     firewall { '00103 accept related, established traffic returning to docker0 bridge in FORWARD chain':
-       action  => 'accept',
-         proto => 'all',
-         chain => 'FORWARD',
+      action   => 'accept',
+      proto    => 'all',
+      chain    => 'FORWARD',
       outiface => 'docker0',
-       ctstate => ['RELATED','ESTABLISHED'],
+      ctstate  => ['RELATED','ESTABLISHED'],
     }
 
     # -A FORWARD -o docker0 -j DOCKER
@@ -96,58 +96,58 @@ class docker::firewall::docker_new {
 
     # -A FORWARD -i docker0 ! -o docker0 -j ACCEPT
     firewall { '00105 accept docker0 traffic to other interfaces on FORWARD chain':
-       action  => 'accept',
-         proto => 'all',
-         chain => 'FORWARD',
-       iniface => 'docker0',
+      action   => 'accept',
+      proto    => 'all',
+      chain    => 'FORWARD',
+      iniface  => 'docker0',
       outiface => '! docker0',
     }
 
     # -A FORWARD -i docker0 -o docker0 -j ACCEPT
     firewall { '00106 accept docker0 to docker0 FORWARD traffic':
-       action  => 'accept',
-         proto => 'all',
-         chain => 'FORWARD',
-       iniface => 'docker0',
+      action   => 'accept',
+      proto    => 'all',
+      chain    => 'FORWARD',
+      iniface  => 'docker0',
       outiface => 'docker0',
     }
 
     # -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER 
     firewall { '00107 DOCKER table PREROUTING LOCAL traffic':
       dst_type => 'LOCAL',
-         table => 'nat',
-         proto => 'all',
-         chain => 'PREROUTING',
-          jump => 'DOCKER',
+      table    => 'nat',
+      proto    => 'all',
+      chain    => 'PREROUTING',
+      jump     => 'DOCKER',
     }
 
     # -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER 
     firewall { '00108 DOCKER chain, route LOCAL non-loopback traffic to DOCKER':
-            table => 'nat',
-         dst_type => 'LOCAL',
-            chain => 'OUTPUT',
-            proto => 'all',
+      table       => 'nat',
+      dst_type    => 'LOCAL',
+      chain       => 'OUTPUT',
+      proto       => 'all',
       destination => '! 127.0.0.1/8',
-             jump => 'DOCKER',
+      jump        => 'DOCKER',
     }
 
     # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
     firewall { '00109 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
-         table => 'nat',
-         chain => 'POSTROUTING',
-         proto => 'all',
-        source => "${::network_docker0}/16",
+      table    => 'nat',
+      chain    => 'POSTROUTING',
+      proto    => 'all',
+      source   => "${::network_docker0}/16",
       outiface => '! docker0',
-          jump => 'MASQUERADE',
+      jump     => 'MASQUERADE',
     }
 
     # -A DOCKER -i docker0 -j RETURN
     firewall { '00110 DOCKER chain, RETURN and remaining docker bridge packets':
-         table => 'nat',
-         chain => 'DOCKER',
-         proto => 'all',
-       iniface => 'docker0',
-          jump => 'RETURN',
+      table   => 'nat',
+      chain   => 'DOCKER',
+      proto   => 'all',
+      iniface => 'docker0',
+      jump    => 'RETURN',
     }
 
     # -A DOCKER-ISOLATION-STAGE-1 -i docker0 ! -o docker0 -j DOCKER-ISOLATION-STAGE-2
@@ -161,9 +161,9 @@ class docker::firewall::docker_new {
 
     # -A DOCKER-ISOLATION-STAGE-1 -j RETURN
     firewall { '00112 DOCKER-ISOLATION-STAGE-1 traffic RETURNs':
-      chain    => 'DOCKER-ISOLATION-STAGE-1',
-      proto    => 'all',
-      jump     => 'RETURN',
+      chain => 'DOCKER-ISOLATION-STAGE-1',
+      proto => 'all',
+      jump  => 'RETURN',
     }
 
     # -A DOCKER-ISOLATION-STAGE-2 -o docker0 -j DROP
@@ -176,16 +176,16 @@ class docker::firewall::docker_new {
 
     # -A DOCKER-ISOLATION-STAGE-2 -j RETURN
     firewall { '00114 DOCKER-ISOLATION-STAGE-2 traffic now RETURNed':
-      chain    => 'DOCKER-ISOLATION-STAGE-2',
-      proto    => 'all',
-      jump     => 'RETURN',
+      chain => 'DOCKER-ISOLATION-STAGE-2',
+      proto => 'all',
+      jump  => 'RETURN',
     }
 
     # -A DOCKER-USER -j RETURN
     firewall { '00115 DOCKER-USER traffic now RETURNed':
-      chain    => 'DOCKER-USER',
-      proto    => 'all',
-      jump     => 'RETURN',
+      chain => 'DOCKER-USER',
+      proto => 'all',
+      jump  => 'RETURN',
     }
 
   }

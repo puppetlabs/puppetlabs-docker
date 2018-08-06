@@ -6,58 +6,58 @@ class docker::firewall::docker {
   } else {
     # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
     firewall { '00100 accept related, established traffic returning to docker0 bridge in FORWARD chain':
-       action  => 'accept',
-         proto => 'all',
-         chain => 'FORWARD',
+      action   => 'accept',
+      proto    => 'all',
+      chain    => 'FORWARD',
       outiface => 'docker0',
-       ctstate => ['RELATED','ESTABLISHED'],
+      ctstate  => ['RELATED','ESTABLISHED'],
     }
 
     # -A FORWARD -i docker0 ! -o docker0 -j ACCEPT
     firewall { '00100 accept docker0 traffic to other interfaces on FORWARD chain':
-       action  => 'accept',
-         proto => 'all',
-         chain => 'FORWARD',
-       iniface => 'docker0',
+      action   => 'accept',
+      proto    => 'all',
+      chain    => 'FORWARD',
+      iniface  => 'docker0',
       outiface => '! docker0',
     }
 
     # -A FORWARD -i docker0 -o docker0 -j ACCEPT
     firewall { '00100 accept docker0 to docker0 FORWARD traffic':
-       action  => 'accept',
-         proto => 'all',
-         chain => 'FORWARD',
-       iniface => 'docker0',
+      action   => 'accept',
+      proto    => 'all',
+      chain    => 'FORWARD',
+      iniface  => 'docker0',
       outiface => 'docker0',
     }
 
     # -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER 
     firewall { '00100 DOCKER table PREROUTING LOCAL traffic':
       dst_type => 'LOCAL',
-         table => 'nat',
-         proto => 'all',
-         chain => 'PREROUTING',
-          jump => 'DOCKER',
+      table    => 'nat',
+      proto    => 'all',
+      chain    => 'PREROUTING',
+      jump     => 'DOCKER',
     }
 
     # -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER 
     firewall { '00100 DOCKER chain, route LOCAL non-loopback traffic to DOCKER':
-            table => 'nat',
-         dst_type => 'LOCAL',
-            chain => 'OUTPUT',
-            proto => 'all',
+      table       => 'nat',
+      dst_type    => 'LOCAL',
+      chain       => 'OUTPUT',
+      proto       => 'all',
       destination => '! 127.0.0.1/8',
-             jump => 'DOCKER',
+      jump        => 'DOCKER',
     }
 
     # -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
     firewall { '00100 DOCKER chain, MASQUERADE docker bridge traffic not bound to docker bridge':
-         table => 'nat',
-         chain => 'POSTROUTING',
-         proto => 'all',
-        source => "${::network_docker0}/16",
+      table    => 'nat',
+      chain    => 'POSTROUTING',
+      proto    => 'all',
+      source   => "${::network_docker0}/16",
       outiface => '! docker0',
-          jump => 'MASQUERADE',
+      jump     => 'MASQUERADE',
     }
   }
 
