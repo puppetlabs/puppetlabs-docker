@@ -63,16 +63,16 @@ class docker::firewall::docker_new {
       ensure  => present,
     }
 
-    # -A FORWARD -j DOCKER-ISOLATION-STAGE-1
-    firewall { '00100 forward to DOCKER-ISOLATION-STAGE-1':
-      chain   => 'FORWARD',
-      jump    => 'DOCKER-ISOLATION-STAGE-1',
-    }
-
     # -A FORWARD -j DOCKER-USER
     firewall { '00100 forward to DOCKER-USER':
       chain   => 'FORWARD',
       jump    => 'DOCKER-USER',
+    }
+
+    # -A FORWARD -j DOCKER-ISOLATION-STAGE-1
+    firewall { '00100 forward to DOCKER-ISOLATION-STAGE-1':
+      chain   => 'FORWARD',
+      jump    => 'DOCKER-ISOLATION-STAGE-1',
     }
 
     # -A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -143,6 +143,7 @@ class docker::firewall::docker_new {
     # -A FORWARD -o docker0 -j DOCKER
     firewall { '00100 forward to DOCKER':
       chain    => 'FORWARD',
+      proto    => 'all',
       outiface => 'docker0',
       jump     => 'DOCKER',
     }
