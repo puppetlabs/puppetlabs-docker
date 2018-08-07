@@ -215,8 +215,6 @@ class docker::params {
       # repo_opt to specify install_options for docker package
       if $::operatingsystem == 'RedHat' {
         $repo_opt = '--enablerepo=rhel-7-server-extras-rpms'
-      } elsif $::operatingsystem == 'CentOS' {
-        $repo_opt = '--enablerepo=extras'
       } else {
         $repo_opt = undef
       }
