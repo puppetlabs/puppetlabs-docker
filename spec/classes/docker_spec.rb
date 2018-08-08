@@ -224,7 +224,7 @@ describe 'docker', :type => :class do
           :kernelversion              => '3.10.0',
         } }
         service_config_file = '/etc/sysconfig/docker'
-        storage_config_file = '/etc/sysconfig/docker-storage'
+        storage_config_file = nil
 
         it { should contain_file('/etc/sysconfig/docker').without_content(/icc=/) }
 
@@ -340,7 +340,7 @@ describe 'docker', :type => :class do
             'storage_driver' => 'devicemapper',
             'dm_basesize'  => '3G'
           }}
-          it { should contain_file('/etc/sysconfig/docker-storage').with_content(/^(DOCKER_STORAGE_OPTIONS=" --storage-driver devicemapper --storage-opt dm.basesize=3G)/) }
+          it { should_not contain_file('/etc/sysconfig/docker-storage') }
         end
 
         context 'It should include default prerequired_packages' do
@@ -482,56 +482,59 @@ describe 'docker', :type => :class do
         it { should contain_file(service_config_file).with_content(/-e native/) }
       end
 
-      ['aufs', 'devicemapper', 'btrfs', 'overlay', 'overlay2', 'vfs', 'zfs'].each do |driver|
-        context "with #{driver} storage driver" do
-          let(:params) { { 'storage_driver' => driver }}
-          it { should contain_file(storage_config_file).with_content(/ --storage-driver #{driver}/) }
+      # not all systems have it
+      if storage_config_file
+        ['aufs', 'devicemapper', 'btrfs', 'overlay', 'overlay2', 'vfs', 'zfs'].each do |driver|
+          context "with #{driver} storage driver" do
+            let(:params) { { 'storage_driver' => driver }}
+            it { should contain_file(storage_config_file).with_content(/ --storage-driver #{driver}/) }
+          end
         end
-      end
 
-      context 'with thinpool device param' do
-        let(:params) {
-          { 'storage_driver' => 'devicemapper',
-            'dm_thinpooldev' => '/dev/mapper/vg_test-docker--pool'
+        context 'with thinpool device param' do
+          let(:params) {
+            { 'storage_driver' => 'devicemapper',
+              'dm_thinpooldev' => '/dev/mapper/vg_test-docker--pool'
+            }
           }
-        }
-        it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.thinpooldev=\/dev\/mapper\/vg_test-docker--pool/) }
-      end
+          it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.thinpooldev=\/dev\/mapper\/vg_test-docker--pool/) }
+        end
 
-      context 'with use deferred removal param' do
-        let(:params) {
-          { 'storage_driver' => 'devicemapper',
-            'dm_use_deferred_removal' => true
+        context 'with use deferred removal param' do
+          let(:params) {
+            { 'storage_driver' => 'devicemapper',
+              'dm_use_deferred_removal' => true
+            }
           }
-        }
-        it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.use_deferred_removal=true/) }
-      end
+          it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.use_deferred_removal=true/) }
+        end
 
-      context 'with use deferred deletion param' do
-        let(:params) {
-          { 'storage_driver' => 'devicemapper',
-            'dm_use_deferred_deletion' => true
+        context 'with use deferred deletion param' do
+          let(:params) {
+            { 'storage_driver' => 'devicemapper',
+              'dm_use_deferred_deletion' => true
+            }
           }
-        }
-        it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.use_deferred_deletion=true/) }
-      end
+          it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.use_deferred_deletion=true/) }
+        end
 
-      context 'with block discard param' do
-        let(:params) {
-          { 'storage_driver' => 'devicemapper',
-            'dm_blkdiscard' => true
+        context 'with block discard param' do
+          let(:params) {
+            { 'storage_driver' => 'devicemapper',
+              'dm_blkdiscard' => true
+            }
           }
-        }
-        it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.blkdiscard=true/) }
-      end
+          it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.blkdiscard=true/) }
+        end
 
-      context 'with override udev sync check param' do
-        let(:params) {
-          { 'storage_driver' => 'devicemapper',
-            'dm_override_udev_sync_check' => true
+        context 'with override udev sync check param' do
+          let(:params) {
+            { 'storage_driver' => 'devicemapper',
+              'dm_override_udev_sync_check' => true
+            }
           }
-        }
-        it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.override_udev_sync_check=true/) }
+          it { should contain_file(storage_config_file).with_content(/--storage-opt dm\.override_udev_sync_check=true/) }
+        end
       end
 
       context 'without execdriver param' do
@@ -661,23 +664,26 @@ describe 'docker', :type => :class do
         it { should_not contain_file(service_config_file).with_content(/--log-opt max-size=1m/) }
       end
 
-      context 'with storage_driver set to devicemapper and dm_* options set' do
-        let(:params) { {'storage_driver' => 'devicemapper',
-                        'dm_datadev'     => '/dev/sda',
-                        'dm_metadatadev' => '/dev/sdb', } }
-        it { should contain_file(storage_config_file).with_content(/dm.datadev=\/dev\/sda/) }
-      end
-
       context 'with storage_driver unset and dm_ options set' do
         let(:params) { {'dm_datadev'     => '/dev/sda',
                         'dm_metadatadev' => '/dev/sdb', } }
         it { should raise_error(Puppet::Error, /Values for dm_ variables will be ignored unless storage_driver is set to devicemapper./) }
       end
 
-      context 'with storage_driver and dm_basesize set' do
-        let(:params) { {'storage_driver' => 'devicemapper',
-                        'dm_basesize'    => '20G', }}
-        it { should contain_file(storage_config_file).with_content(/dm.basesize=20G/) }
+      # not all have it
+      if storage_config_file
+        context 'with storage_driver set to devicemapper and dm_* options set' do
+          let(:params) { {'storage_driver' => 'devicemapper',
+                          'dm_datadev'     => '/dev/sda',
+                          'dm_metadatadev' => '/dev/sdb', } }
+          it { should contain_file(storage_config_file).with_content(/dm.datadev=\/dev\/sda/) }
+        end
+
+        context 'with storage_driver and dm_basesize set' do
+          let(:params) { {'storage_driver' => 'devicemapper',
+                          'dm_basesize'    => '20G', }}
+          it { should contain_file(storage_config_file).with_content(/dm.basesize=20G/) }
+        end
       end
 
       context 'with storage_driver unset and dm_basesize set' do
