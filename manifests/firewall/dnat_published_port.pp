@@ -28,7 +28,7 @@ define docker::firewall::dnat_published_port (
       chain       => 'POSTROUTING',
       source      => "${container_ip}/32",
       destination => "${container_ip}/32",
-      proto       => [ $protocal ],
+      proto       => [ $protocol ],
       dport       => [ $published_port ],
       jump        => 'MASQUERADE',
     }
