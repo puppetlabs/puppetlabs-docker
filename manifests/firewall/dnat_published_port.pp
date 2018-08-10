@@ -23,7 +23,7 @@ define docker::firewall::dnat_published_port (
   # code smell: need version comparison to supported ranges
   if $facts['docker']['ServerVersion'] == '18.06.0-ce' {
     # -A POSTROUTING -s 172.17.0.2/32 -d 172.17.0.2/32 -p tcp -m tcp --dport 900 -j MASQUERADE
-    firewall { "":
+    firewall { "${rule_id} allows ${container_ip} to MASQUERADE port ${published_port}":
       table       => 'nat',
       chain       => 'POSTROUTING',
       source      => "${container_ip}/32",
