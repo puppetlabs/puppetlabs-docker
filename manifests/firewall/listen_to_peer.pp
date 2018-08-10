@@ -13,7 +13,7 @@ define docker::firewall::listen_to_peer ( $peer ) {
   } else {
     firewall { "${rule_id} docker swarm ingress from ${peer} for tcp":
       chain  => 'INPUT',
-      dport  => swarm_port,
+      dport  => $swarm_port,
       proto  => 'tcp',
       source => $peer,
       action => accept,
@@ -21,7 +21,7 @@ define docker::firewall::listen_to_peer ( $peer ) {
 
     firewall { "${rule_id} docker swarm ingress from ${peer} for udp":
       chain  => 'INPUT',
-      dport  => swarm_port,
+      dport  => $swarm_port,
       proto  => 'udp',
       source => $peer,
       action => accept,
@@ -29,7 +29,7 @@ define docker::firewall::listen_to_peer ( $peer ) {
 
     firewall { "${rule_id} docker swarm egress to ${peer} for tcp":
       chain       => 'OUTPUT',
-      dport       => swarm_port,
+      dport       => $swarm_port,
       proto       => 'tcp',
       destination => $peer,
       action      => accept,
@@ -37,7 +37,7 @@ define docker::firewall::listen_to_peer ( $peer ) {
 
     firewall { "${rule_id} docker swarm egress to ${peer} for udp":
       chain       => 'OUTPUT',
-      dport       => swarm_port,
+      dport       => $swarm_port,
       proto       => 'udp',
       destination => $peer,
       action      => accept,
