@@ -58,6 +58,7 @@ class docker::firewall::swarm_init {
 
   # -A POSTROUTING -s 172.18.0.0/16 ! -o docker_gwbridge -j MASQUERADE
   firewall { '00137: MASQUEARDE docker_gwbridge sourced packets':
+    table    => 'nat',
     chain    => 'POSTROUTING',
     source   => '172.18.0.0/16',
     outiface => '! docker_gwbridge',
