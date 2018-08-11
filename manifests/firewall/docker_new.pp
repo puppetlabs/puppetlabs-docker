@@ -160,14 +160,14 @@ class docker::firewall::docker_new {
     }
 
     # -A DOCKER-ISOLATION-STAGE-1 -j RETURN
-    firewall { '00112 DOCKER-ISOLATION-STAGE-1 traffic RETURNs':
+    firewall { '60112 DOCKER-ISOLATION-STAGE-1 traffic RETURNs':
       chain => 'DOCKER-ISOLATION-STAGE-1',
       proto => 'all',
       jump  => 'RETURN',
     }
 
     # -A DOCKER-ISOLATION-STAGE-2 -o docker0 -j DROP
-    firewall { '00113 DOCKER-ISOLATION-STAGE-2 traffic heading back to docker0 bridge is DROPed':
+    firewall { '60113 DOCKER-ISOLATION-STAGE-2 traffic heading back to docker0 bridge is DROPed':
       chain    => 'DOCKER-ISOLATION-STAGE-2',
       outiface => 'docker0',
       proto    => 'all',
@@ -175,14 +175,14 @@ class docker::firewall::docker_new {
     }
 
     # -A DOCKER-ISOLATION-STAGE-2 -j RETURN
-    firewall { '00114 DOCKER-ISOLATION-STAGE-2 traffic now RETURNed':
+    firewall { '60114 DOCKER-ISOLATION-STAGE-2 traffic now RETURNed':
       chain => 'DOCKER-ISOLATION-STAGE-2',
       proto => 'all',
       jump  => 'RETURN',
     }
 
     # -A DOCKER-USER -j RETURN
-    firewall { '00115 DOCKER-USER traffic now RETURNed':
+    firewall { '60115 DOCKER-USER traffic now RETURNed':
       chain => 'DOCKER-USER',
       proto => 'all',
       jump  => 'RETURN',
