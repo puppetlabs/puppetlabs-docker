@@ -22,6 +22,7 @@ class docker::firewall::swarm_init {
   # -A FORWARD -o docker_gwbridge -j DOCKER
   firewall { '00132: outbound to docker_gwbridge jumps to DOCKER chain':
     chain    => 'FORWARD',
+    proto    => 'all',
     outiface => 'docker_gwbridge',
     jump     => 'DOCKER',
   }
@@ -29,6 +30,7 @@ class docker::firewall::swarm_init {
   # -A FORWARD -i docker_gwbridge ! -o docker_gwbridge -j ACCEPT
   firewall { '00133: ACCEPT traffic inbound on docker_gwbridge':
     chain    => 'FORWARD',
+    proto    => 'all',
     iniface  => 'docker_gwbridge',
     outiface => '! docker_gwbridge',
     action   => accept,
@@ -37,6 +39,7 @@ class docker::firewall::swarm_init {
   # -A FORWARD -i docker_gwbridge -o docker_gwbridge -j DROP
   firewall { '00134: DROP traffic inbound and outbound on docker_gwbridge':
     chain    => 'FORWARD',
+    proto    => 'all',
     iniface  => 'docker_gwbridge',
     outiface => 'docker_gwbridge',
     action   => drop,
@@ -45,6 +48,7 @@ class docker::firewall::swarm_init {
   # -A DOCKER-ISOLATION-STAGE-1 -i docker_gwbridge ! -o docker_gwbridge -j DOCKER-ISOLATION-STAGE-2
   firewall { '00135: pass packets through DOCKER-ISOLATION from STAGE-1 to STAGE-2':
     chain    => 'DOCKER-ISOLATION-STAGE-1',
+    proto    => 'all',
     iniface  => 'docker_gwbridge',
     outiface => '! docker_gwbridge',
     jump     => 'DOCKER-ISOLATION-STAGE-2',
@@ -53,6 +57,7 @@ class docker::firewall::swarm_init {
   # -A DOCKER-ISOLATION-STAGE-2 -o docker_gwbridge -j DROP
   firewall { '00136: DROP STAGE-2 packets outbound on docker_gwbridge':
     chain    => 'DOCKER-ISOLATION-STAGE-2',
+    proto    => 'all',
     outiface => 'docker_gwbridge',
     action   => drop,
   }
@@ -60,6 +65,7 @@ class docker::firewall::swarm_init {
   # -A POSTROUTING -s 172.18.0.0/16 ! -o docker_gwbridge -j MASQUERADE
   firewall { '00137: MASQUEARDE docker_gwbridge sourced packets':
     table    => 'nat',
+    proto    => 'all',
     chain    => 'POSTROUTING',
     source   => '172.18.0.0/16',
     outiface => '! docker_gwbridge',
