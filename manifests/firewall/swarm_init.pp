@@ -13,6 +13,7 @@ class docker::firewall::swarm_init {
   # -A FORWARD -o docker_gwbridge -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
   firewall { '00131: ACCEPT RELATED, ESTABLISHED bound for docker_gwbridge':
     chain    => 'FORWARD',
+    proto    => 'all,'
     outiface => 'docker_gwbridge',
     ctstate  => [ 'RELATED', 'ESTABLISHED'],
     action   => accept,
@@ -68,6 +69,7 @@ class docker::firewall::swarm_init {
   # -A DOCKER -i docker_gwbridge -j RETURN
   firewall { '60138: RETURN packets from docker_gwbridge':
     chain    => 'DOCKER',
+    proto    => 'all',
     iniface  => 'docker_gwbridge',
     jump     => 'RETURN',
   }
