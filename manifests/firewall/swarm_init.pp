@@ -74,6 +74,7 @@ class docker::firewall::swarm_init {
 
   # -A DOCKER -i docker_gwbridge -j RETURN
   firewall { '60138: RETURN packets from docker_gwbridge':
+    table    => 'nat',
     chain    => 'DOCKER',
     proto    => 'all',
     iniface  => 'docker_gwbridge',
