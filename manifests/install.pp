@@ -24,7 +24,8 @@ class docker::install (
   $version                        = $docker::version,
   $nuget_package_provider_version = $docker::nuget_package_provider_version,
   $docker_msft_provider_version   = $docker::docker_msft_provider_version,
-  $docker_ee_package_name         = $docker::docker_ee_package_name
+  $docker_ee_package_name         = $docker::docker_ee_package_name,
+  $docker_download_url            = $docker::package_location
 ) {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
@@ -88,12 +89,22 @@ class docker::install (
           name   => $docker::docker_package_name,
         }))
       } else {
-        exec { 'install-docker-package':
-          command   => template('docker/windows/install_powershell_provider.ps1.erb'),
-          provider  => powershell,
-          unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
-          logoutput => true,
-          notify    => Exec['service-restart-on-failure'],
+        if $docker::package_location {
+          exec { 'install-docker-package':
+            command   => template('docker/windows/download_docker.ps1.erb'),
+            provider  => powershell,
+            unless    => template('docker/windows/check_docker_url.ps1.erb'),
+            logoutput => true,
+            notify    => Exec['service-restart-on-failure'],
+          }
+        } else {
+          exec { 'install-docker-package':
+            command   => template('docker/windows/install_powershell_provider.ps1.erb'),
+            provider  => powershell,
+            unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
+            logoutput => true,
+            notify    => Exec['service-restart-on-failure'],
+          }
         }
         exec { 'service-restart-on-failure':
           command     => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
