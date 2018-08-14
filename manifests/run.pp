@@ -127,6 +127,7 @@ define docker::run(
   Optional[Boolean] $restart_on_unhealthy               = false,
   Optional[Integer] $health_check_interval              = undef,
 ) {
+  include docker
   include docker::params
   if ($socket_connect != []) {
     $sockopts = join(any2array($socket_connect), ',')
@@ -135,7 +136,7 @@ define docker::run(
     $docker_command = $docker::params::docker_command
   }
   $service_name = $docker::params::service_name
-  $docker_group = $docker::params::docker_group
+  $docker_group = $docker::docker_group
 
   if $restart {
     assert_type(Pattern[/^(no|always|unless-stopped|on-failure)|^on-failure:[\d]+$/], $restart)

@@ -666,6 +666,13 @@ require 'spec_helper'
         it { should_not contain_file('docker-sample.service')}
       end
 
+      context 'when `docker` uses a custom `docker_group`' do
+        let(:params) { {'command' => 'command', 'image' => 'base'} }
+        let(:pre_condition) { "class { docker:  docker_group => 'custom_docker_group' }" }
+        it { should compile.with_all_deps }
+        it { should contain_file(initscript).with_group('custom_docker_group') }
+      end
+
     end
   end
 
