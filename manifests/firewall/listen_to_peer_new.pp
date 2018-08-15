@@ -19,18 +19,34 @@ define docker::firewall::listen_to_peer_new ( $peer ) {
   if $::ipaddress_eth0 == $peer {
     # notify { 'no firewall rules required for self': message => "peer: $peer, eth0: $::ipaddress_eth0" }
   } else {
-    firewall { "${rule_id} docker swarm ingress from ${peer}":
+    firewall { "${rule_id} docker swarm ingress tcp from ${peer}":
       chain  => 'INPUT',
       dport  => $swarm_port,
-      proto  => ['tcp','udp'],
+      proto  => tcp,
       source => $peer,
       action => accept,
     }
 
-    firewall { "${rule_id} docker swarm egress to ${peer}":
+    firewall { "${rule_id} docker swarm ingress udp from ${peer}":
+      chain  => 'INPUT',
+      dport  => $swarm_port,
+      proto  => udp,
+      source => $peer,
+      action => accept,
+    }
+
+    firewall { "${rule_id} docker swarm egress tcp to ${peer}":
       chain       => 'OUTPUT',
       dport       => $swarm_port,
-      proto       => ['tcp','udp'],
+      proto       => tcp,
+      destination => $peer,
+      action      => accept,
+    }
+
+    firewall { "${rule_id} docker swarm egress udp to ${peer}":
+      chain       => 'OUTPUT',
+      dport       => $swarm_port,
+      proto       => udp,
       destination => $peer,
       action      => accept,
     }
@@ -51,18 +67,34 @@ define docker::firewall::listen_to_peer_new ( $peer ) {
       action      => accept,
     }
 
-    firewall { "${rule_id_ncp} docker swarm ingress from ${peer}":
+    firewall { "${rule_id_ncp} docker swarm ingress tcp from ${peer}":
       chain  => 'INPUT',
       dport  => $docker_swarm_node_communication_port,
-      proto  => ['tcp','udp'],
+      proto  => tcp,
       source => $peer,
       action => accept,
     }
 
-    firewall { "${rule_id_ncp} docker swarm egress to ${peer}":
+    firewall { "${rule_id_ncp} docker swarm ingress udp from ${peer}":
+      chain  => 'INPUT',
+      dport  => $docker_swarm_node_communication_port,
+      proto  => udp,
+      source => $peer,
+      action => accept,
+    }
+
+    firewall { "${rule_id_ncp} docker swarm egress tcp to ${peer}":
       chain       => 'OUTPUT',
       dport       => $docker_swarm_node_communication_port,
-      proto       => ['tcp','udp'],
+      proto       => tcp,
+      destination => $peer,
+      action      => accept,
+    }
+
+    firewall { "${rule_id_ncp} docker swarm egress udp to ${peer}":
+      chain       => 'OUTPUT',
+      dport       => $docker_swarm_node_communication_port,
+      proto       => udp,
       destination => $peer,
       action      => accept,
     }
