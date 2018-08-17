@@ -20,14 +20,7 @@ Facter.add(:docker_swarm) do
           service_count += 1
           service_inspect_json = Facter::Core::Execution.exec("#{docker_binary} inspect #{service_id}")
           service_meta_data = JSON.parse(service_inspect_json)
-          # hostname = Facter::Core::Execution.exec("#{docker_binary} inspect -f \"{{ .Name }}\" #{service_id}").sub(%r{^/}, '')
-          # ip = Facter::Core::Execution.exec("#{docker_binary} inspect -f \"{{ .NetworkSettings.IPAddress }}\" #{service_id}")
-          # if hostname
-          #   services_hash[hostname] = service_meta_data[0]
-          # elsif ip
-          #   services_hash[ip] = service_meta_data
-          # end
-          services_hash['services'][service_id] = service_meta_data
+          services_hash['services'][service_id] = service_meta_data[0]
           services_hash['service_ids'].push(service_id)
         end
       end
