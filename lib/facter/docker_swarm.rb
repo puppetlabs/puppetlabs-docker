@@ -4,14 +4,15 @@ Facter.add(:docker_swarm) do
   setcode do
     services_hash = {}
     services_hash['service_ids'] = []
+    docker_hostname = Facter::Core::Execution.exec('hostname -f')
     docker_binary = Facter::Core::Execution.exec('/usr/bin/which docker')
     swarm_status = Facter::Core::Execution.exec("#{docker_binary} info -f '{{json .Swarm.ControlAvailable }}'")
     if docker_binary !~ %r{docker}
       services_hash['docker_host'] = 'not a docker host'
     elsif swarm_status == false
-      services_hash['docker_host'] = 'docker host not running swarm'
+      services_hash['docker_host'] = docker_hostname
+      services_hash['swarm'] = 'docker host not running swarm'
     else
-      docker_hostname = Facter::Core::Execution.exec('hostname -f')
       swarm_metadata = Facter::Core::Execution.exec("#{docker_binary} info -f '{{json .Swarm }}'")
       services_hash['services'] = {} 
       services_hash['swarm'] = JSON.parse(swarm_metadata)
