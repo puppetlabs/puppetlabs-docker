@@ -18,7 +18,7 @@ Facter.add(:docker_swarm) do
       if service_array
         service_array.each do |service_id|
           service_count += 1
-          service_inspect_json = Facter::Core::Execution.exec("#{docker_binary} inspect #{service_id}")
+          service_inspect_json = Facter::Core::Execution.exec("#{docker_binary} service inspect #{service_id}")
           service_meta_data = JSON.parse(service_inspect_json)
           services_hash['services'][service_id] = service_meta_data[0]
           services_hash['service_ids'].push(service_id)
