@@ -14,7 +14,7 @@ Facter.add(:docker_swarm) do
       docker_hostname = Facter::Core::Execution.exec('hostname -f')
       services_hash['docker_host'] = docker_hostname
       service_count = 0
-      service_array = Facter::Core::Execution.exec("#{docker_binary} service ls | /usr/bin/awk '{ print $2 }'")
+      service_array = Facter::Core::Execution.exec("#{docker_binary} service ls | /usr/bin/awk '{ print $2 }'").split(%{\n})
       if service_array
         service_array.each do |service_id|
           service_count += 1
