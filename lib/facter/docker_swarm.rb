@@ -14,7 +14,7 @@ Facter.add(:docker_swarm) do
       docker_hostname = Facter::Core::Execution.exec('hostname -f')
       swarm_metadata = Facter::Core::Execution.exec("#{docker_binary} info -f '{{json .Swarm }}'")
       services_hash['services'] = {} 
-      services_hash['swarm'] = swarm_metadata
+      services_hash['swarm'] = JSON.parse(swarm_metadata)
       services_hash['docker_host'] = docker_hostname
       service_count = 0
       service_array = Facter::Core::Execution.exec("#{docker_binary} service ls | /usr/bin/awk '{ print $2 }' | /bin/grep -v NAME").split(%{\n})
