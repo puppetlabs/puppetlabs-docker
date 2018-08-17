@@ -12,7 +12,7 @@ Facter.add(:docker_swarm) do
       services_hash['docker_host'] = 'docker host not running swarm'
     else
       docker_hostname = Facter::Core::Execution.exec('hostname -f')
-      swarm['docker_host'] = docker_hostname
+      services_hash['docker_host'] = docker_hostname
       service_count = 0
       if service_array
         service_array.each do |service_id|
