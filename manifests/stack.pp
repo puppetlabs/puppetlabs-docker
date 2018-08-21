@@ -50,31 +50,36 @@ define docker::stack(
   $docker_command = "${docker::params::docker_command} stack"
 
   if $ensure == 'present'{
-      $docker_stack_flags = docker_stack_flags ({
+    $docker_stack_flags = docker_stack_flags ({
       stack_name => $stack_name,
       bundle_file => $bundle_file,
       compose_file => $compose_file,
       prune => $prune,
       with_registry_auth => $with_registry_auth,
       resolve_image => $resolve_image,
-      })
+    })
 
-      $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
-      $unless_stack = "${docker_command} ls | grep ${stack_name}"
+    $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
+    $unless_stack = "${docker_command} ls | grep ${stack_name}"
 
-      exec { "docker stack create ${stack_name}":
+    exec { "docker stack create ${stack_name}":
       command => $exec_stack,
       unless  => $unless_stack,
+      path    => ['/bin', '/usr/bin'],
+    }
+    exec { "docker stack update ${stack_name}":
+      refresh => $exec_stack,
+      onlyif  => $unless_stack,
+      refreshonly => true,
       path    => ['/bin', '/usr/bin'],
     }
   }
 
   if $ensure == 'absent'{
-
-  exec { "docker stack ${stack_name}":
-    command => "${docker_command} rm ${stack_name}",
-    onlyif  => "${docker_command} ls | grep ${stack_name}",
-    path    => ['/bin', '/usr/bin'],
+    exec { "docker stack ${stack_name}":
+      command => "${docker_command} rm ${stack_name}",
+      onlyif  => "${docker_command} ls | grep ${stack_name}",
+      path    => ['/bin', '/usr/bin'],
     }
   }
 }
