@@ -61,7 +61,12 @@ module Puppet::Parser::Functions
     if opts['read_only']
       flags << '--read-only=true'
     end
-    params_join_char = Facter.value(:osfamily).casecmp('windows').zero? ? ' ' : " \\\n"
+
+    params_join_char = if opts['osfamily'].to_s != 'undef'
+                         opts['osfamily'].casecmp('windows').zero? ? " `\n" : " \\\n"
+                       else
+                         " \\\n"
+                       end
 
     multi_flags = lambda { |values, format|
       filtered = [values].flatten.compact

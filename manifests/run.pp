@@ -199,6 +199,7 @@ define docker::run(
     health_check_cmd      => $health_check_cmd,
     restart_on_unhealthy  => $restart_on_unhealthy,
     health_check_interval => $health_check_interval,
+    osfamily              => $::osfamily,
   })
 
   $sanitised_title = regsubst($title, '[^0-9A-Za-z.\-_]', '-', 'G')
