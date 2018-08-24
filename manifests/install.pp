@@ -89,28 +89,37 @@ class docker::install (
           name   => $docker::docker_package_name,
         }))
       } else {
-        if $docker::package_location {
-          exec { 'install-docker-package':
-            command   => template('docker/windows/download_docker.ps1.erb'),
-            provider  => powershell,
-            unless    => template('docker/windows/check_docker_url.ps1.erb'),
-            logoutput => true,
-            notify    => Exec['service-restart-on-failure'],
-          }
+        if $ensure == 'absent' {
+          exec { 'remove-docker-package':
+              command   => template('docker/windows/remove_docker.ps1.erb'),
+              provider  => powershell,
+              unless    => template('docker/windows/check_docker.ps1.erb'),
+              logoutput => true,
+            }
         } else {
-          exec { 'install-docker-package':
-            command   => template('docker/windows/install_powershell_provider.ps1.erb'),
-            provider  => powershell,
-            unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
-            logoutput => true,
-            notify    => Exec['service-restart-on-failure'],
+          if $docker::package_location {
+            exec { 'install-docker-package':
+              command   => template('docker/windows/download_docker.ps1.erb'),
+              provider  => powershell,
+              unless    => template('docker/windows/check_docker_url.ps1.erb'),
+              logoutput => true,
+              notify    => Exec['service-restart-on-failure'],
+            }
+          } else {
+            exec { 'install-docker-package':
+              command   => template('docker/windows/install_powershell_provider.ps1.erb'),
+              provider  => powershell,
+              unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
+              logoutput => true,
+              notify    => Exec['service-restart-on-failure'],
+            }
           }
-        }
-        exec { 'service-restart-on-failure':
-          command     => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
-          refreshonly => true,
-          logoutput   => true,
-          provider    => powershell,
+          exec { 'service-restart-on-failure':
+            command     => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
+            refreshonly => true,
+            logoutput   => true,
+            provider    => powershell,
+          }
         }
       }
     }
