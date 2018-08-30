@@ -31,7 +31,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     end
 
     counts = Hash[*compose_services.each.map { |key, array|
-                    image = (array['image']) ? array['image'] : get_image(array['extends'], compose_services)
+                    image = (array['image']) ? array['image'] : get_image(key, compose_services)
                     Puppet.info("Checking for compose service #{key} #{image}")
                     ["#{key}-#{image}", containers.count("#{key}-#{image}")]
                   }.flatten]
@@ -51,7 +51,11 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   def get_image(service_name, compose_services)
     image = compose_services[service_name]['image']
     unless image
-      image = get_image(compose_services[service_name]['extends'], compose_services)
+      if compose_services[service_name]['extends']
+        image = get_image(compose_services[service_name]['extends'], compose_services)
+      elsif compose_services[service_name]['build']
+        image = "#{project}_#{service_name}"
+      end
     end
     image
   end
