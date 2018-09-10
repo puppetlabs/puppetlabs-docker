@@ -25,11 +25,11 @@ class docker::params {
   $tls_enable                        = false
   $tls_verify                        = true
   if ($::osfamily == 'windows') {
-    $tls_cacert                        = 'C:/ProgramData/docker/certs.d/ca.pem'
-    $tls_cert                          = 'C:/ProgramData/docker/certs.d/server-cert.pem'
-    $tls_key                           = 'C:/ProgramData/docker/certs.d/server-key.pem'
+    $tls_cacert                        = "${::docker_program_data_path}/docker/certs.d/ca.pem"
+    $tls_cert                          = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
+    $tls_key                           = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
     $compose_version                   = '1.21.2'
-    $compose_install_path              = 'C:/Program Files/Docker'
+    $compose_install_path              = "${::docker_program_files_path}/Docker"
   } else {
     $tls_cacert                        = '/etc/docker/tls/ca.pem'
     $tls_cert                          = '/etc/docker/tls/cert.pem'
@@ -85,7 +85,11 @@ class docker::params {
   $overlay2_override_kernel_check    = false
   $manage_package                    = true
   $package_source                    = undef
-  $docker_command                    = 'docker'
+  if ($::osfamily == 'windows') {
+    $docker_command                  = 'docker'
+  } else {
+    $docker_command                  = 'docker'
+  }
   $service_name_default              = 'docker'
   $docker_group_default              = 'docker'
   $storage_devs                      = undef
@@ -222,7 +226,7 @@ class docker::params {
       $msft_provider_version               = $docker_msft_provider_version
       $msft_package_version                = $version
       $service_config_template             = 'docker/windows/config/daemon.json.erb'
-      $service_config                      = 'C:/ProgramData/docker/config/daemon.json'
+      $service_config                      = "${::docker_program_data_path}/docker/config/daemon.json"
       $docker_group                        = 'docker'
       $package_ce_source_location          = undef
       $package_ce_key_source               = undef

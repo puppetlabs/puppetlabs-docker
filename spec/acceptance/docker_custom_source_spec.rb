@@ -93,7 +93,7 @@ describe 'the Puppet Docker module' do
 
     shell("#{docker_command} inspect container-3-6", :acceptable_exit_codes => [1])
     if fact('osfamily') == 'windows'
-        shell('test -f /cygdrive/c/Windows/Temp/container-3-6.service', :acceptable_exit_codes => [1])
+        shell('test -f /cygdrive/c/Users/Administrator/AppData/Local/Temp/container-3-6.service', :acceptable_exit_codes => [1])
     else
         shell('test -f /etc/systemd/system/container-3-6.service', :acceptable_exit_codes => [1])
     end

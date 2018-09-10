@@ -19,9 +19,9 @@ define docker::exec(
   $docker_command = $docker::params::docker_command
 
   if $::osfamily == 'windows' {
-    $exec_environment = 'PATH=C:/Program Files/Docker/'
+    $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
     $exec_timeout = 3000
-    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_path = ["${::docker_program_files_path}/Docker/"]
     $exec_provider = 'powershell'
   } else {
     $exec_environment = 'HOME=/root'

@@ -223,11 +223,11 @@ define docker::run(
   }
 
   if $::osfamily == 'windows' {
-    $exec_environment = 'PATH=C:/Program Files/Docker/;C:/Windows/System32/'
+    $exec_environment = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
     $exec_timeout = 3000
-    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_path = ["${::docker_program_files_path}/Docker/"]
     $exec_provider = 'powershell'
-    $cidfile = "c:/Windows/Temp/${service_prefix}${sanitised_title}.cid"
+    $cidfile = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
 # lint:endignore

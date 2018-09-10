@@ -38,11 +38,11 @@ define docker::image(
 
   if $::osfamily == 'windows' {
     $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
-    $update_docker_image_path = 'C:/Windows/Temp/update_docker_image.ps1'
-    $exec_environment = 'PATH=C:/Program Files/Docker/'
+    $update_docker_image_path = "${::docker_user_temp_path}/update_docker_image.ps1"
+    $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
     $exec_timeout = 3000
     $update_docker_image_owner = undef
-    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_path = ["${::docker_program_files_path}/Docker/"]
     $exec_provider = 'powershell'
   } else {
     $update_docker_image_template = 'docker/update_docker_image.sh.erb'
@@ -117,7 +117,7 @@ define docker::image(
     $image_install = "${docker_command} build -t ${image_arg} ${docker_dir}"
   } elsif $docker_file {
     if $::osfamily == windows {
-      $image_install = "Get-Content ${docker_file} | ${docker_command} build -t ${image_arg} -"
+      $image_install = "Get-Content ${docker_file} -Raw | ${docker_command} build -t ${image_arg} -"
     } else {
       $image_install = "${docker_command} build -t ${image_arg} - < ${docker_file}"
     }
@@ -125,7 +125,7 @@ define docker::image(
     $image_install = "${docker_command} load -i ${docker_tar}"
   } else {
     if $::osfamily == 'windows' {
-      $image_install = "& ${update_docker_image_path} ${image_arg}"
+      $image_install = "& ${update_docker_image_path} -DockerImage ${image_arg}"
     } else {
       $image_install = "${update_docker_image_path} ${image_arg}"
     }

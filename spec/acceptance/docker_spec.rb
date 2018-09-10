@@ -12,7 +12,7 @@ if fact('osfamily') == 'windows'
   docker_network = 'nat'
   registry_host = @windows_ip
   config_file = '/cygdrive/c/Users/Administrator/.docker/config.json'
-  root_dir = "C:/Windows/Temp"
+  root_dir = "C:/Users/Administrator/AppData/Local/Temp"
   server_strip = "#{registry_host}_#{registry_port}"
   bad_server_strip = "#{registry_host}_5001"
   broken = true

@@ -14,6 +14,7 @@ else {
   $WebClient.Proxy.Credentials = New-Object System.Net.NetworkCredential($user, $password)
 }
 <% end %>
+  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   $WebClient.DownloadFile("<%= @docker_compose_url %>","<%= @docker_compose_location_versioned %>")
 }
 catch {
