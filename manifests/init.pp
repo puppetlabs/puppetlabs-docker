@@ -632,14 +632,20 @@ if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.][0-1](~|-|\.)ce|1.\d+
     $root_dir_flag = '--data-root'
   }
 
-  contain 'docker::repos'
-  contain 'docker::install'
-  contain 'docker::config'
-  contain 'docker::service'
+  if $ensure != 'absent' {
+    contain 'docker::repos'
+    contain 'docker::install'
+    contain 'docker::config'
+    contain 'docker::service'
 
-  Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] -> Class['docker::service']
-  Class['docker'] -> Docker::Registry <||> -> Docker::Image <||>
-  Class['docker'] -> Docker::Image <||>
-  Class['docker'] -> Docker::Run <||>
+    Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] -> Class['docker::service']
+    Class['docker'] -> Docker::Registry <||> -> Docker::Image <||>
+    Class['docker'] -> Docker::Image <||>
+    Class['docker'] -> Docker::Run <||>
+  } else {
+    contain 'docker::repos'
+    contain 'docker::install'
 
+    Class['docker::repos'] -> Class['docker::install']
+  }
 }

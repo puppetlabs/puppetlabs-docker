@@ -196,6 +196,14 @@ class { 'docker':
 }
 ```
 
+To uninstall docker, add the following to the manifest file:
+
+```puppet
+class { 'docker':
+  ensure => absent
+}
+```
+
 Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified: 
 ```puppet
 class { 'docker':

@@ -227,6 +227,23 @@ describe 'the Puppet Docker module' do
           end
         end
       end
+
+
+      context 'uninstall docker' do
+        before(:each) do
+          @pp =<<-EOS
+            class {'docker':
+              ensure => 'absent'
+            }
+          EOS
+          apply_manifest(@pp, :catch_failures => true)
+          sleep 4
+        end
+
+        it 'should uninstall successfully' do
+        shell('docker ps', :acceptable_exit_codes => [1, 127])
+        end
+      end
     end
 
     describe 'docker::image' do
