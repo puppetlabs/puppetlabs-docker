@@ -48,6 +48,27 @@ docker_compose { '#{tmp_path}/docker-compose-v3.yml':
     end
   end
 
+  context 'multi compose file override' do
+    before(:all) do
+      @install = <<-code
+docker_compose { 'override_test':
+  compose_files => ['#{tmp_path}/docker-compose-v3.yml', '#{tmp_path}/docker-compose-override-v3.yml'],
+  ensure => present,
+}
+      code
+      apply_manifest(@install, :catch_failures=>true)
+    end
+
+    it 'should be idempotent' do 
+      apply_manifest(@install, :catch_changes=>true)
+    end
+
+    it 'should find container with debian tag' do
+      shell('docker inspect tmp_compose_test', :acceptable_exit_codes => [0])
+    end
+   end
+      
+
   context 'Destroying compose v3 projects' do
     before(:all) do
       install = <<-code
