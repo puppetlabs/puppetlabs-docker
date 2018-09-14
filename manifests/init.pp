@@ -494,7 +494,7 @@ class docker(
     }
   }
 
-  if ($::operatingsystem == 'CentOS') and ($::operatingsystemmajrelease < 7){
+  if ($::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0) {
     fail(translate('This module only works on CentOS version 7 and higher based systems.'))
   }
 
