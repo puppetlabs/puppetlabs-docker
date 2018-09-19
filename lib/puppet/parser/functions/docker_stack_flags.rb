@@ -8,25 +8,25 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['bundle_file'].to_s != 'undef'
+    if opts['bundle_file'] && opts['bundle_file'].to_s != 'undef'
       flags << "--bundle-file '#{opts['bundle_file']}'"
     end
 
-    if opts['compose_files'].to_s != 'undef'
+    if opts['compose_file'] && opts['compose_files'].to_s != 'undef'
       opts['compose_files'].each do |file|
         flags << "--compose-file '#{file}'"
       end
     end
 
-    if opts['resolve_image'].to_s != 'undef'
+    if opts['resolve_image'] && opts['resolve_image'].to_s != 'undef'
       flags << "--resolve-image '#{opts['resolve_image']}'"
     end
 
-    if opts['prune'].to_s != 'undef'
+    if opts['prune'] && opts['prune'].to_s != 'undef'
       flags << "--prune '#{opts['prune']}'"
     end
 
-    if opts['with_registry_auth']
+    if opts['with_registry_auth'] && opts['with_registry_auth'].to_s != 'undef'
       flags << '--with-registry-auth'
     end
 
