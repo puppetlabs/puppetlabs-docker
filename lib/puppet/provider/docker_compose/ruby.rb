@@ -7,44 +7,47 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def exists?
     Puppet.info("Checking for compose project #{project}")
-    compose_file = YAML.safe_load(File.read(name))
     compose_services = {}
-    containers = docker([
-                          'ps',
-                          '--format',
-                          "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
-                          '--filter',
-                          "label=com.docker.compose.project=#{project}",
-                        ]).split("\n")
-    case compose_file['version']
-    when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
-      compose_services = compose_file['services']
-    # in compose v1 "version" parameter is not specified
-    when nil
-      compose_services = compose_file
-    else
-      raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-    end
+      resource[:compose_files].each do |file|
+        compose_file = YAML.safe_load(File.read(file))
+        containers = docker([
+                              'ps',
+                              '--format',
+                              "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
+                              '--filter',
+                              "label=com.docker.compose.project=#{project}",
+                            ]).split("\n")
+        case compose_file['version']
+        when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
+          compose_services = compose_services.merge(compose_file['services'])
+        # in compose v1 "version" parameter is not specified
+        when nil
+          compose_services = compose_services.merge(compose_file)
+        else
+          raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
+        end
+      
 
-    if compose_services.count != containers.count
-      return false
-    end
+      if compose_services.count != containers.count
+        return false
+      end
 
-    counts = Hash[*compose_services.each.map { |key, array|
-                    image = (array['image']) ? array['image'] : get_image(key, compose_services)
-                    Puppet.info("Checking for compose service #{key} #{image}")
-                    ["#{key}-#{image}", containers.count("#{key}-#{image}")]
-                  }.flatten]
+      counts = Hash[*compose_services.each.map { |key, array|
+                      image = (array['image']) ? array['image'] : get_image(key, compose_services)
+                      Puppet.info("Checking for compose service #{key} #{image}")
+                      ["#{key}-#{image}", containers.count("#{key}-#{image}")]
+                    }.flatten]
 
-    # No containers found for the project
-    if counts.empty? ||
-       # Containers described in the compose file are not running
-       counts.any? { |_k, v| v.zero? } ||
-       # The scaling factors in the resource do not match the number of running containers
-       resource[:scale] && counts.merge(resource[:scale]) != counts
-      false
-    else
-      true
+      # No containers found for the project
+      if counts.empty? ||
+        # Containers described in the compose file are not running
+        counts.any? { |_k, v| v.zero? } ||
+        # The scaling factors in the resource do not match the number of running containers
+        resource[:scale] && counts.merge(resource[:scale]) != counts
+        false
+      else
+        true
+      end
     end
   end
 
@@ -62,12 +65,13 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def create
     Puppet.info("Running compose project #{project}")
-    args = ['-f', name, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5, resource[:up_args]).compact
+    compose_files_cmd = resource[:compose_files].collect {|x| ['-f', x ] }.flatten    
+    args = [compose_files_cmd, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5, resource[:up_args]).compact
     dockercompose(args)
     return unless resource[:scale]
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
     Puppet.info("Scaling compose project #{project}: #{instructions.join(' ')}")
-    args = ['-f', name, 'scale'].insert(2, resource[:options]).compact + instructions
+    args = [compose_files_cmd, 'scale'].insert(2, resource[:options]).compact + instructions
     dockercompose(args)
   end
 
@@ -92,6 +96,6 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   private
 
   def project
-    File.basename(File.dirname(name)).downcase.gsub(%r{[^0-9a-z ]}i, '')
+    project = name
   end
 end

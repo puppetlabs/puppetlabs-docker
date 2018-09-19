@@ -7,10 +7,6 @@ Puppet::Type.newtype(:docker_compose) do
     provider.restart
   end
 
-  newparam(:name) do
-    desc 'Docker compose file path.'
-  end
-
   newparam(:scale) do
     desc 'A hash of compose services and number of containers.'
     validate do |value|
@@ -38,7 +34,16 @@ Puppet::Type.newtype(:docker_compose) do
     end
   end
 
-  autorequire(:file) do
-    self[:name]
+  newparam(:compose_files, :array_matching => :all) do
+    desc 'An array of Docker Compose Files paths.'
+    validate do |value|
+      raise _('compose files should be an array') unless value.is_a? Array
+    end
   end
+
+  newparam(:name) do
+    isnamevar
+    desc 'The name of the project'
+  end  
+  
 end
