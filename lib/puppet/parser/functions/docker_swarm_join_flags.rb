@@ -12,15 +12,15 @@ module Puppet::Parser::Functions
       flags << 'join'
     end
 
-    if opts['advertise_addr'].to_s != 'undef'
+    if opts['advertise_addr'] && opts['advertise_addr'].to_s != 'undef'
       flags << "--advertise-addr '#{opts['advertise_addr']}'"
     end
 
-    if opts['listen_addr'].to_s != 'undef'
+    if opts['listen_addr'] && opts['listen_addr'].to_s != 'undef'
       flags << "--listen-addr \"#{opts['listen_addr']}\""
     end
 
-    if opts['token'].to_s != 'undef'
+    if opts['token'] && opts['token'].to_s != 'undef'
       flags << "--token '#{opts['token']}'"
     end
 
