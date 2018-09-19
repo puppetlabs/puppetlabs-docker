@@ -8,24 +8,24 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   def exists?
     Puppet.info("Checking for compose project #{project}")
     compose_services = {}
-      resource[:compose_files].each do |file|
-        compose_file = YAML.safe_load(File.read(file))
-        containers = docker([
-                              'ps',
-                              '--format',
-                              "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
-                              '--filter',
-                              "label=com.docker.compose.project=#{project}",
-                            ]).split("\n")
-        case compose_file['version']
-        when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
-          compose_services = compose_services.merge(compose_file['services'])
-        # in compose v1 "version" parameter is not specified
-        when nil
-          compose_services = compose_services.merge(compose_file)
-        else
-          raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-        end
+    resource[:compose_files].each do |file|
+      compose_file = YAML.safe_load(File.read(file))
+      containers = docker([
+                            'ps',
+                            '--format',
+                            "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
+                            '--filter',
+                            "label=com.docker.compose.project=#{project}",
+                          ]).split("\n")
+      case compose_file['version']
+      when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
+        compose_services = compose_services.merge(compose_file['services'])
+      # in compose v1 "version" parameter is not specified
+      when nil
+        compose_services = compose_services.merge(compose_file)
+      else
+        raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
+      end
       
 
       if compose_services.count != containers.count
