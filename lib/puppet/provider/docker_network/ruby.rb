@@ -41,7 +41,7 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
       ipam_driver = unless obj['IPAM']['Driver'].nil?
                       obj['IPAM']['Driver']
                     end
-      subnet = unless obj['IPAM']['Config'].nil?
+      subnet = unless obj['IPAM']['Config'].nil? || obj['IPAM']['Config'].empty?
                  if obj['IPAM']['Config'].first.key? 'Subnet'
                    obj['IPAM']['Config'].first['Subnet']
                  end
