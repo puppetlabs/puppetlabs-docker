@@ -211,6 +211,23 @@ class { 'docker':
 }
 ```
 
+### Proxy on Windows
+To use docker through a proxy on Windows, a System Environment Variable HTTP_PROXY/HTTPS_PROXY must be set. See [Docker Engine on Windows](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/configure-docker-daemon#proxy-configuration)
+This can be done using a different puppet module such as the puppet-windows_env module. After setting the variable, the docker service must be restarted.
+```puppet
+windows_env { 'HTTP_PROXY'
+  value  => 'http://1.2.3.4:80',
+  notify => Service['docker'],
+}
+windows_env { 'HTTPS_PROXY'
+  value  => 'http://1.2.3.4:80',
+  notify => Service['docker'],
+}
+service { 'docker'
+  ensure => 'running',
+}
+````
+
 ## Usage
 
 ### Images
