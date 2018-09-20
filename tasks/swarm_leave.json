@@ -5,7 +5,7 @@
   "parameters": {
     "force": {
       "description": "Force this node to leave the swarm, ignoring warnings",
-      "type": "Optional[Boolean[1]]"
+      "type": "Optional[Boolean]"
     }
   }
 }

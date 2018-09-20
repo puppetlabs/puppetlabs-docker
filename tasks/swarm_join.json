@@ -3,7 +3,7 @@
   "description": "Join a swarm",
   "input_method": "stdin",
   "parameters": {
-    "adveritse_addr": {
+    "advertise_addr": {
       "description": "Advertised address",
       "type": "Optional[String[1]]"
     },

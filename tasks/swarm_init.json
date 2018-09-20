@@ -3,13 +3,13 @@
   "description": "Initializes a swarm",
   "input_method": "stdin",
   "parameters": {
-    "adveritse_addr": {
+    "advertise_addr": {
       "description": "Advertised address",
       "type": "Optional[String[1]]"
     },
     "autolock": {
       "description": "Enable manager autolocking",
-      "type": "Optional[Boolean[1]]"
+      "type": "Optional[Boolean]"
     },
     "cert_expiry": {
       "description": "Validity period for node certificates",
@@ -25,7 +25,7 @@
     },
     "force_new_cluster": {
       "description": "Force create a new cluster from current state",
-      "type": "Optional[Boolean[1]]"
+      "type": "Optional[Boolean]"
     },
     "listen_addr": {
       "description": "Listen address",
