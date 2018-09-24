@@ -27,7 +27,6 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
         raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
       end
 
-
       if compose_services.count != containers.count
         return false
       end
@@ -40,10 +39,10 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
       # No containers found for the project
       if counts.empty? ||
-        # Containers described in the compose file are not running
-        counts.any? { |_k, v| v.zero? } ||
-        # The scaling factors in the resource do not match the number of running containers
-        resource[:scale] && counts.merge(resource[:scale]) != counts
+         # Containers described in the compose file are not running
+         counts.any? { |_k, v| v.zero? } ||
+         # The scaling factors in the resource do not match the number of running containers
+         resource[:scale] && counts.merge(resource[:scale]) != counts
         false
       else
         true
@@ -93,9 +92,8 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   end
 
   def compose_files
-    resource[:compose_files].collect {|x| ['-f', x ] }.flatten
+    resource[:compose_files].map { |x| ['-f', x] }.flatten
   end
 
   private
-
 end

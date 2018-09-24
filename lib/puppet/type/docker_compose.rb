@@ -44,6 +44,5 @@ Puppet::Type.newtype(:docker_compose) do
   newparam(:name) do
     isnamevar
     desc 'The name of the project'
-  end  
-  
+  end
 end
