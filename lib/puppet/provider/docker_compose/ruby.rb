@@ -65,32 +65,35 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def create
     Puppet.info("Running compose project #{name}")
-    compose_files_cmd = resource[:compose_files].collect {|x| ['-f', x ] }.flatten
-    args = [compose_files_cmd, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5, resource[:up_args]).compact
+    args = [compose_files, '-p', name, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5, resource[:up_args]).compact
     dockercompose(args)
     return unless resource[:scale]
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
     Puppet.info("Scaling compose project #{project}: #{instructions.join(' ')}")
-    args = [compose_files_cmd, 'scale'].insert(2, resource[:options]).compact + instructions
+    args = [compose_files, '-p', name, 'scale'].insert(2, resource[:options]).compact + instructions
     dockercompose(args)
   end
 
   def destroy
     Puppet.info("Removing all containers for compose project #{name}")
-    kill_args = ['-f', name, 'kill'].insert(2, resource[:options]).compact
+    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
     dockercompose(kill_args)
-    rm_args = ['-f', name, 'rm', '--force', '-v'].insert(2, resource[:options]).compact
+    rm_args = [compose_files, '-p', name, 'rm', '--force', '-v'].insert(2, resource[:options]).compact
     dockercompose(rm_args)
   end
 
   def restart
     return unless exists?
     Puppet.info("Rebuilding and Restarting all containers for compose project #{name}")
-    kill_args = ['-f', name, 'kill'].insert(2, resource[:options]).compact
+    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
     dockercompose(kill_args)
-    build_args = ['-f', name, 'build'].insert(2, resource[:options]).compact
+    build_args = [compose_files, '-p', name, 'build'].insert(2, resource[:options]).compact
     dockercompose(build_args)
     create
+  end
+
+  def compose_files
+    resource[:compose_files].collect {|x| ['-f', x ] }.flatten
   end
 
   private
