@@ -6,7 +6,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   commands docker: 'docker'
 
   def exists?
-    Puppet.info("Checking for compose project #{project}")
+    Puppet.info("Checking for compose project #{name}")
     compose_services = {}
     resource[:compose_files].each do |file|
       compose_file = YAML.safe_load(File.read(file))
@@ -15,7 +15,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
                             '--format',
                             "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
                             '--filter',
-                            "label=com.docker.compose.project=#{project}",
+                            "label=com.docker.compose.project=#{name}",
                           ]).split("\n")
       case compose_file['version']
       when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
@@ -63,40 +63,37 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   end
 
   def create
-    Puppet.info("Running compose project #{project}")
-    compose_files_cmd = resource[:compose_files].map { |x| ["-f", x] }.flatten
-    args = [compose_files_cmd, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5, resource[:up_args]).compact
+    Puppet.info("Running compose project #{name}")
+    args = [compose_files, '-p', name, 'up', '-d', '--remove-orphans'].insert(2, resource[:options]).insert(5, resource[:up_args]).compact
     dockercompose(args)
     return unless resource[:scale]
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
     Puppet.info("Scaling compose project #{project}: #{instructions.join(' ')}")
-    args = [compose_files_cmd, 'scale'].insert(2, resource[:options]).compact + instructions
+    args = [compose_files, '-p', name, 'scale'].insert(2, resource[:options]).compact + instructions
     dockercompose(args)
   end
 
   def destroy
-    Puppet.info("Removing all containers for compose project #{project}")
-    compose_files_cmd = resource[:compose_files].map { |x| ["-f", x] }.flatten
-    kill_args = [compose_files_cmd, 'kill'].insert(2, resource[:options]).compact
+    Puppet.info("Removing all containers for compose project #{name}")
+    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
     dockercompose(kill_args)
-    rm_args = [compose_files_cmd, 'rm', '--force', '-v'].insert(2, resource[:options]).compact
+    rm_args = [compose_files, '-p', name, 'rm', '--force', '-v'].insert(2, resource[:options]).compact
     dockercompose(rm_args)
   end
 
   def restart
     return unless exists?
-    Puppet.info("Rebuilding and Restarting all containers for compose project #{project}")
-    kill_args = ['-f', name, 'kill'].insert(2, resource[:options]).compact
+    Puppet.info("Rebuilding and Restarting all containers for compose project #{name}")
+    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
     dockercompose(kill_args)
-    build_args = ['-f', name, 'build'].insert(2, resource[:options]).compact
+    build_args = [compose_files, '-p', name, 'build'].insert(2, resource[:options]).compact
     dockercompose(build_args)
     create
   end
 
-  private
-
-  def project
-    project = name
-    project
+  def compose_files
+    resource[:compose_files].map { |x| ['-f', x] }.flatten
   end
+
+  private
 end
