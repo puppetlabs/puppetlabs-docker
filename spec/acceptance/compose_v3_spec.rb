@@ -1,4 +1,5 @@
 require 'spec_helper_acceptance'
+require 'pry'
 
 if fact('osfamily') == 'windows'
   install_dir = '/cygdrive/c/Program Files/Docker'
@@ -29,10 +30,10 @@ describe 'docker compose' do
     it 'should have docker compose installed' do
       shell('docker-compose --help', :acceptable_exit_codes => [0])
     end
-
     before(:all) do
       @install = <<-code
-docker_compose { '#{tmp_path}/docker-compose-v3.yml':
+docker_compose { 'web':
+  compose_files => ['#{tmp_path}/docker-compose-v3.yml'],
   ensure => present,
 }
       code
@@ -44,49 +45,48 @@ docker_compose { '#{tmp_path}/docker-compose-v3.yml':
     end
 
     it 'should find a docker container' do
-      shell('docker inspect tmp_compose_test_1', :acceptable_exit_codes => [0])
+      shell('docker inspect web_compose_test_1', :acceptable_exit_codes => [0])
     end
   end
 
-  context 'multi compose file override' do
+  context 'creating compose projects with multi compose files' do
     before(:all) do
-      @install = <<-code
-docker_compose { 'override_test':
+      @install = <<-pp1
+docker_compose { 'web1':
   compose_files => ['#{tmp_path}/docker-compose-v3.yml', '#{tmp_path}/docker-compose-override-v3.yml'],
   ensure => present,
 }
-      code
+      pp1
+
       apply_manifest(@install, :catch_failures=>true)
     end
 
-    it 'should be idempotent' do 
-      apply_manifest(@install, :catch_changes=>true)
-    end
-
     it 'should find container with debian tag' do
-      shell('docker inspect tmp_compose_test', :acceptable_exit_codes => [0])
+      shell('docker inspect web1_compose_test_1 | grep debian', :acceptable_exit_codes => [0])
     end
-   end
-      
+  end
 
-  context 'Destroying compose v3 projects' do
+  context 'Destroying project with multiple compose files' do
     before(:all) do
-      install = <<-code
-docker_compose { '#{tmp_path}/docker-compose-v3.yml':
+    @install = <<-pp1
+docker_compose { 'web1':
+  compose_files => ['#{tmp_path}/docker-compose-v3.yml', '#{tmp_path}/docker-compose-override-v3.yml'],
   ensure => present,
 }
-      code
-      apply_manifest(install, :catch_failures=>true)
-      @uninstall = <<-code
-docker_compose { '#{tmp_path}/docker-compose-v3.yml':
+    pp1
+
+    @destroy = <<-pp2
+docker_compose { 'web1':
+  compose_files => ['#{tmp_path}/docker-compose-v3.yml', '#{tmp_path}/docker-compose-override-v3.yml'],
   ensure => absent,
 }
-      code
-      apply_manifest(@uninstall, :catch_failures=>true)
+    pp2
+      apply_manifest(@install, :catch_failures=>true)
+      apply_manifest(@destroy, :catch_failures=>true)
     end
 
     it 'should be idempotent' do
-      apply_manifest(@uninstall, :catch_changes=>true)
+      apply_manifest(@destroy, :catch_changes=>true)
     end
 
     it 'should not find a docker container' do
@@ -98,9 +98,9 @@ docker_compose { '#{tmp_path}/docker-compose-v3.yml':
     before(:all) do
       @version = '1.21.2'
       @pp = <<-code
-        class { 'docker::compose':
-          version => '#{@version}',
-        }
+class { 'docker::compose':
+  version => '#{@version}',
+}
       code
       apply_manifest(@pp, :catch_failures=>true)
     end
@@ -120,10 +120,10 @@ docker_compose { '#{tmp_path}/docker-compose-v3.yml':
     before(:all) do
       @version = '1.21.2'
       @pp = <<-code
-        class { 'docker::compose':
-          ensure  => absent,
-          version => '#{@version}',
-        }
+class { 'docker::compose':
+  ensure  => absent,
+  version => '#{@version}',
+}
       code
       apply_manifest(@pp, :catch_failures=>true)
     end
@@ -145,4 +145,4 @@ docker_compose { '#{tmp_path}/docker-compose-v3.yml':
       apply_manifest(install_code, :catch_failures=>true)
     end
   end
-end
+ end

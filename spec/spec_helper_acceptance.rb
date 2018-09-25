@@ -104,19 +104,19 @@ services:
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
       EOS
         docker_compose_content_v3 = <<-EOS
-version: "3"
+version: "3.4"
 services:
   compose_test:
     image: ubuntu:14.04
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
       EOS
-        docker_compose_override_content_v3 = <<-EOS
-version: "3"
+        docker_compose_override_v3 = <<-EOS
+version: "3.4"
 services:
-   compose_test:
-     image: debian: jessie
-     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-       EOS
+  compose_test:
+    image: debian:jessie
+    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+        EOS
         docker_compose_content_v3_windows = <<-EOS
 version: "3"
 services:
@@ -134,7 +134,7 @@ networks:
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3_windows)
         else
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3)
-          create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_content_v3)
+          create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_v3)
         end
 
         if fact_on(host, 'osfamily') == 'windows'
