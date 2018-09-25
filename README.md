@@ -537,7 +537,8 @@ compose_test:
 Specify the `file` resource to add a Compose file to the machine you have Puppet running on. To define a `docker_compose` resource pointing to the Compose file, add the following code to the manifest file:
 
 ```puppet
-docker_compose { '/tmp/docker-compose.yml':
+docker_compose { 'test':
+  compose_files => ['/tmp/docker-compose.yml'],
   ensure  => present,
 }
 ```
@@ -547,7 +548,8 @@ Puppet automatically runs Compose, because the relevant Compose services aren't 
 In the example below, Puppet runs Compose when the number of containers specified for a service don't match the scale values.
 
 ```puppet
-docker_compose { '/tmp/docker-compose.yml':
+docker_compose { 'test':
+  compose_files => ['/tmp/docker-compose.yml'],
   ensure  => present,
   scale   => {
     'compose_test' => 2,
