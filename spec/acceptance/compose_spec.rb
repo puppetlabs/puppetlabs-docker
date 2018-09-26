@@ -25,7 +25,8 @@ describe 'docker compose', :win_broken => broken do
   context 'Creating compose projects' do
     before(:all) do
       @install = <<-code
-docker_compose { '/tmp/docker-compose.yml':
+docker_compose { 'test3':
+  compose_files => ['#{tmp_path}/docker-compose.yml'],
   ensure => present,
 }
       code
@@ -36,7 +37,7 @@ docker_compose { '/tmp/docker-compose.yml':
       apply_manifest(@install, :catch_changes=>true)
     end
 
-    describe command("docker inspect tmp_compose_test_1"), :sudo => true do
+    describe command("docker inspect test3_compose_test_1"), :sudo => true do
       its(:exit_status) { should eq 0 }
     end
   end
@@ -44,13 +45,15 @@ docker_compose { '/tmp/docker-compose.yml':
   context 'Destroying compose projects' do
     before(:all) do
       install = <<-code
-docker_compose { '/tmp/docker-compose.yml':
+docker_compose { 'test4':
+  compose_files => ['#{tmp_path}/docker-compose.yml'],
   ensure => present,
 }
       code
       apply_manifest(install, :catch_failures=>true)
       @uninstall = <<-code
-docker_compose { '/tmp/docker-compose.yml':
+docker_compose { 'test4':
+  compose_files => ['#{tmp_path}/docker-compose.yml'],
   ensure => absent,
 }
       code
@@ -61,7 +64,7 @@ docker_compose { '/tmp/docker-compose.yml':
       apply_manifest(@uninstall, :catch_changes=>true)
     end
 
-    describe command("docker inspect tmp_compose_test_1"), :sudo => true do
+    describe command("docker inspect test4_compose_test_1"), :sudo => true do
       its(:exit_status) { should eq 1 }
     end
   end
