@@ -73,36 +73,6 @@ RSpec.configure do |c|
           on(host, 'yum install -y net-tools device-mapper')
         end
 
-        docker_compose_content = <<-EOS
-compose_test:
-  image: ubuntu:14.04
-  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-extends_service:
-  extends: compose_test
-  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-extends_extends_service:
-  extends: extends_service
-  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-second_test:
-  image: ubuntu:14.04
-  command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-      EOS
-        docker_compose_content_v2 = <<-EOS
-version: "2"
-services:
-  compose_test:
-    image: ubuntu:14.04
-    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-  extends_service:
-    extends: compose_test
-    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-  extends_extends_service:
-    extends: extends_service
-    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-  second_test:
-    image: ubuntu:14.04
-    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-      EOS
         docker_compose_content_v3 = <<-EOS
 version: "3.4"
 services:
@@ -139,8 +109,6 @@ networks:
     external:
       name: nat
       EOS
-        create_remote_file(host, "/tmp/docker-compose.yml", docker_compose_content)
-        create_remote_file(host, "/tmp/docker-compose-v2.yml", docker_compose_content_v2)
         if fact_on(host, 'osfamily') == 'windows'
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3_windows)
           create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_v3_windows)
