@@ -1,5 +1,4 @@
 require 'spec_helper_acceptance'
-require 'pry'
 
 if fact('osfamily') == 'windows'
   install_dir = '/cygdrive/c/Program Files/Docker'

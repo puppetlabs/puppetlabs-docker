@@ -563,7 +563,7 @@ Give options to the ```docker-compose up``` command, such as ```--remove-orphans
 To supply multiple overide compose files add the following to the manifest file:
 
 ```puppet
-class {'docker::compose':
+docker_compose {'test':
   compose_files => ['master-docker-compose.yml', 'override-compose.yml],
 }
 ```
