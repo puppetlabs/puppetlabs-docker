@@ -1482,6 +1482,7 @@ This module supports:
 * Debian 9.0
 * Ubuntu 14.04
 * Ubuntu 16.04
+* Ubuntu 18.04
 * Centos 7.0
 
 ## Development
