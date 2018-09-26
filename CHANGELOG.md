@@ -1,3 +1,25 @@
+# Version 3.0.0
+
+Various fixes for github issues
+- 206
+- 226
+- 241
+- 280
+- 281
+- 287
+- 289
+- 294
+- 303
+- 312
+- 314
+
+Adding in the following features/functionality
+
+-Support for multiple compose files.
+
+A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/issues?q=is%3Aissue+milestone%3AV3.0.0+is%3Aclosed)
+
+
 # Version 2.0.0
 
 Various fixes for github issues
