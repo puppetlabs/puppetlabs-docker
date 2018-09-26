@@ -370,6 +370,8 @@ By default, automatic restarting of the service on failure is enabled by the ser
 
 It is highly recommended that an image tag be used at all times with the `docker::run` define type. If not, the latest image will be used, whether it be in a remote registry or installed on the server already by the `docker::image` define type. 
 
+NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again. 
+
 To use an image tag, add the following code to the manifest file:
 
 ```puppet
