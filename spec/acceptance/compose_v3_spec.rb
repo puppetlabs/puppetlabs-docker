@@ -5,11 +5,13 @@ if fact('osfamily') == 'windows'
   file_extension = '.exe'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
+  test_container = 'nanoserver-sac2016'
 else
   install_dir = '/usr/local/bin'
   file_extension = ''
   docker_args = ''
   tmp_path = '/tmp'
+  test_container = 'debian'
 end
 
 describe 'docker compose' do 
@@ -60,8 +62,8 @@ docker_compose { 'web1':
       apply_manifest(@install, :catch_failures=>true)
     end
 
-    it 'should find container with debian tag' do
-      shell('docker inspect web1_compose_test_1 | grep debian', :acceptable_exit_codes => [0])
+    it "should find container with #{test_container} tag" do
+      shell("docker inspect web1_compose_test_1 | grep #{test_container}", :acceptable_exit_codes => [0])
     end
   end
 
@@ -89,7 +91,7 @@ docker_compose { 'web1':
     end
 
     it 'should not find a docker container' do
-      shell('docker inspect tmp_compose_test_1', :acceptable_exit_codes => [1])
+      shell('docker inspect web1_compose_test_1', :acceptable_exit_codes => [1])
     end
   end
 

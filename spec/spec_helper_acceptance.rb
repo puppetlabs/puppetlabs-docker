@@ -128,10 +128,22 @@ networks:
     external:
       name: nat
       EOS
+        docker_compose_override_v3_windows = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: hello-world:nanoserver-sac2016
+    command: cmd.exe /C "ping /t 8.8.8.8"
+networks:
+  default:
+    external:
+      name: nat
+      EOS
         create_remote_file(host, "/tmp/docker-compose.yml", docker_compose_content)
         create_remote_file(host, "/tmp/docker-compose-v2.yml", docker_compose_content_v2)
         if fact_on(host, 'osfamily') == 'windows'
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3_windows)
+          create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_v3_windows)
         else
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3)
           create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_v3)
