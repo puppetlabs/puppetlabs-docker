@@ -937,9 +937,9 @@ docker::plugin {'foo/fooplugin:latest'
 
 The following parameters are available in the `docker_compose` type:
 
-#### `name`
+#### 'compose_files'
 
-The Docker compose file path.
+An array containing the docker compose file paths.
 
 #### `scale`
 
@@ -1500,3 +1500,4 @@ This module supports:
 ## Development
 
 If you would like to contribute to this module, see the guidelines in [CONTRIBUTING.MD](https://github.com/puppetlabs/puppetlabs-docker/blob/master/CONTRIBUTING.md).
+
