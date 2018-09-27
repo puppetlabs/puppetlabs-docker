@@ -37,7 +37,7 @@ The Puppet docker module installs, configures, and manages [Docker](https://gith
 
 ## Description
 
-This module installs, configures, and manages [Docker](https://github.com/docker/docker).
+This module install, configures, and manages [Docker](https://github.com/docker/docker).
 
 Due to the new naming convention for Docker packages, this module prefaces any params that refer to the release with `_ce` or `_engine`. Examples of these are documented in this README.
 
@@ -57,7 +57,7 @@ class { 'docker':
 }
 ```
 
-The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using a version prior to this, the old repositories are still configured based on the version number passed into the module.
+The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using an older version, the repositories are still configured based on the version number passed into the module.
 
 To ensure the module configures the latest repositories, add the following code to the manifest file:
 
@@ -232,7 +232,7 @@ service { 'docker'
 
 ### Images
 
-Each image requires a unique name, otherwise the installation fails when a duplicate name is detected.
+Each image requires a unique name; otherwise, the installation fails when a duplicate name is detected.
 
 To install a Docker image, add the `docker::image` defined type to the manifest file:
 
@@ -240,7 +240,7 @@ To install a Docker image, add the `docker::image` defined type to the manifest 
 docker::image { 'base': }
 ```
 
-The code above is equivalent to running the `docker pull base` command. However, it removes the default five minute execution timeout.
+The code above is equivalent to running the `docker pull base` command. However, it removes the default five-minute execution timeout.
 
 To include an optional parameter for installing image tags that is the equivalent to running `docker pull -t="precise" ubuntu`, add the following code to the manifest file:
 
@@ -360,15 +360,15 @@ To pull the image before it starts, specify the `pull_on_start` parameter.
 
 To execute a command before the container stops, specify the `before_stop` parameter.
 
-Add the container name to the `after` parameter to specify which containers start first. This affects the generation of the `init.d/systemd` script.
+Adding the container name to the `after` parameter to specify which containers start first, affects the generation of the `init.d/systemd` script.
 
-Add container dependencies to the `depends` parameter. The container starts before this container and stops before the depended container. This affects the generation of the `init.d/systemd` script. Use the `depend_services` parameter to specify dependencies for generic services, which are not Docker related, that start before this container.
+Add container dependencies to the `depends` parameter. The container starts before this container and stops before the depended container. This affects the generation of the `init.d/systemd` script. Use the `depend_services` parameter to specify dependencies for general services, which are not Docker related, that start before this container.
 
-The `extra_parameters` parameter contains an array of command line arguments to pass to the `docker run` command. This parameter is useful for adding additional or experimental options that the docker module currently does not support.
+The `extra_parameters` parameter, which contains an array of command line arguments to pass to the `docker run` command, is useful for adding additional or experimental options that the docker module currently does not support.
 
 By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems.
 
-It is highly recommended that an image tag be used at all times with the `docker::run` define type. If not, the latest image will be used, whether it be in a remote registry or installed on the server already by the `docker::image` define type. 
+It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image ise used, whether it be in a remote registry or installed on the server already by the `docker::image` define type. 
 
 NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again. 
 
@@ -405,7 +405,7 @@ If using Hiera, you can configure the `docker::run_instance` class:
       command: '/bin/sh -c "while true; do echo hello world; sleep 1; done"'
 ```
 
-To remove a running container, add the following code to the manifest file. This will also remove the systemd service file associated with the container.
+To remove a running container, add the following code to the manifest file. This also removes the systemd service file associated with the container.
 
 ```puppet
 docker::run { 'helloworld':
@@ -413,7 +413,7 @@ docker::run { 'helloworld':
 }
 ```
 
-To enable the restart of an unhealthy container add the following code to the manifest file.In order to set the health check interval time set the optional health_check_interval parameter, the default health check interval is 30 seconds.
+To enable the restart of an unhealthy container, add the following code to the manifest file. In order to set the health check interval time set the optional health_check_interval parameter, the default health check interval is 30 seconds.
 
 ```puppet
 docker::run { 'helloworld':
@@ -472,7 +472,7 @@ A defined network can be used on a `docker::run` resource with the `net` paramet
 
 #### Windows
 
-On windows, only one NAT network is supported. To support multiple networks Windows Server 2016 with KB4015217 is required. See [Windows Container Network Drivers](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/network-drivers-topologies) and [Windows Container Networking](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/architecture).
+On windows, only one NAT network is supported. To support multiple networks, Windows Server 2016 with KB4015217 is required. See [Windows Container Network Drivers](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/network-drivers-topologies) and [Windows Container Networking](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/architecture).
 
 The Docker daemon will create a default NAT network on the first start unless specified otherwise. To disable the network creation, use the parameter `bridge => 'none'` when installing docker.
 
@@ -545,7 +545,7 @@ class {'docker::compose':
 ```
 Set the `version` parameter to any version you need to install.
 
-This is a example of a Compose file:
+This is an example of a Compose file:
 
 ```yaml
 compose_test:
@@ -564,7 +564,7 @@ docker_compose { 'test':
 
 Puppet automatically runs Compose, because the relevant Compose services aren't running. If required, include additional options such as enabling experimental features and scaling rules.
 
-In the example below, Puppet runs Compose when the number of containers specified for a service don't match the scale values.
+In the example below, Puppet runs Compose when the number of containers specified for a service doesn't match the scale values.
 
 ```puppet
 docker_compose { 'test':
@@ -587,7 +587,7 @@ docker_compose {'test':
 }
 ```
 
-Please note you should  supply your master docker-compose file as the first element in the array. As per docker multi compose file support compose files will be merged in the order they are specified in the array.
+Please note you should supply your master docker-compose file as the first element in the array. As per docker, multi compose file support compose files are merged in the order they are specified in the array.
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
@@ -722,7 +722,7 @@ Ran on 1 node in 6.16 seconds
 
 ### Docker services
 
-Docker services create distributed applications across multiple swarm nodes. Each Docker service contains a set of containers which are replicated across the swarm.
+Docker services create distributed applications across multiple swarm nodes. Each Docker service replicates a set of containers across the swarm.
 
 To create a Docker service, add the following code to the manifest file:
 
@@ -890,6 +890,7 @@ docker::plugin {'foo/fooplugin:latest'
   ensure => 'absent',
   force_remove => true,
 }
+thub.com
 ```
 
 ## Reference
@@ -939,14 +940,15 @@ docker::plugin {'foo/fooplugin:latest'
 
 The following parameters are available in the `docker_compose` type:
 
-#### `name`
+#### 'compose_files'
 
-The Docker compose file path.
+An array containing the docker compose file paths.
 
 #### `scale`
 
 A hash of the name of compose services and number of containers.
-Values- Compose services: 'string' , containers: 'an integrer'.
+
+Values - Compose services: 'string' , containers: 'integer'.
 
 #### `options`
 
@@ -1502,3 +1504,4 @@ This module supports:
 ## Development
 
 If you would like to contribute to this module, see the guidelines in [CONTRIBUTING.MD](https://github.com/puppetlabs/puppetlabs-docker/blob/master/CONTRIBUTING.md).
+
