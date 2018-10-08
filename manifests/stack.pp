@@ -49,6 +49,14 @@ define docker::stack(
 
   $docker_command = "${docker::params::docker_command} stack"
 
+  if $::osfamily == 'windows' {
+    $exec_path = ['C:/Program Files/Docker/']
+    $check_stack = "${docker_command} ls | select-string -pattern ${stack_name}"
+  } else {
+    $exec_path = ['/bin', '/usr/bin']
+    $check_stack = "${docker_command} ls | grep ${stack_name}"
+  }
+
   if $ensure == 'present'{
       $docker_stack_flags = docker_stack_flags ({
       stack_name => $stack_name,
@@ -60,12 +68,11 @@ define docker::stack(
       })
 
       $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
-      $unless_stack = "${docker_command} ls | grep ${stack_name}"
 
       exec { "docker stack create ${stack_name}":
       command => $exec_stack,
-      unless  => $unless_stack,
-      path    => ['/bin', '/usr/bin'],
+      unless  => $check_stack,
+      path    => $exec_path,
     }
   }
 
@@ -73,8 +80,8 @@ define docker::stack(
 
   exec { "docker stack ${stack_name}":
     command => "${docker_command} rm ${stack_name}",
-    onlyif  => "${docker_command} ls | grep ${stack_name}",
-    path    => ['/bin', '/usr/bin'],
+    onlyif  => $check_stack,
+    path    => $exec_path,
     }
   }
 }
