@@ -24,17 +24,29 @@ require 'spec_helper'
     context 'Create stack with compose file' do
       let(:params) { {
         'stack_name' => 'foo', 	
-        'compose_file' => '/tmp/docker-compose.yaml',
+        'compose_files' => ['/tmp/docker-compose.yaml'],
         'resolve_image' => 'always',
       } }
-      it { should contain_exec('docker stack deploy').with_command(/docker stack deploy/) }
+      it { should contain_exec('docker stack create foo').with_command(/docker stack deploy/) }
+      it { should contain_exec('docker stack create foo').with_command(/--compose-file '\/tmp\/docker-compose.yaml'/) }
+    end
+
+    context 'Create stack with multiple compose files' do
+      let(:params) { {
+        'stack_name' => 'foo', 	
+        'compose_files' => ['/tmp/docker-compose.yaml', '/tmp/docker-compose-2.yaml'],
+        'resolve_image' => 'always',
+      } }
+      it { should contain_exec('docker stack create foo').with_command(/docker stack deploy/) }
+      it { should contain_exec('docker stack create foo').with_command(/--compose-file '\/tmp\/docker-compose.yaml'/) }
+      it { should contain_exec('docker stack create foo').with_command(/--compose-file '\/tmp\/docker-compose-2.yaml'/) }
     end
 
     context 'with ensure => absent'  do
       let(:params) { {
         'ensure' => 'absent',
         'stack_name' => 'foo'} }
-      it { should contain_exec('docker stack rm').with_command(/docker stack rm/) }
+      it { should contain_exec('docker stack destroy foo').with_command(/docker stack rm/) }
     end
   end
 end
