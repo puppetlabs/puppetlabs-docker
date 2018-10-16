@@ -22,6 +22,7 @@
    * [Private registries](#privateregistries)
    * [Exec](#exec)
    * [Plugins](#plugins)
+   * [Configs](#configs)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
    * [Classes](#classes)
    * [Defined types](#definedtypes)
@@ -113,7 +114,7 @@ To use the CE packages, add the following code to the manifest file:
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',  
+  repo_opt => '',
 }
 ```
 
@@ -204,7 +205,7 @@ class { 'docker':
 }
 ```
 
-Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified: 
+Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified:
 ```puppet
 class { 'docker':
   docker_ee => true
@@ -368,9 +369,9 @@ The `extra_parameters` parameter, which contains an array of command line argume
 
 By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems.
 
-It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image ise used, whether it be in a remote registry or installed on the server already by the `docker::image` define type. 
+It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image ise used, whether it be in a remote registry or installed on the server already by the `docker::image` define type.
 
-NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again. 
+NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again.
 
 To use an image tag, add the following code to the manifest file:
 
@@ -604,7 +605,7 @@ To deploy the stack, add the following code to the manifest file:
 
 To remove the stack, set `ensure  => absent`.
 
-If you are using a v3.2compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command. 
+If you are using a v3.2compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command.
 
 To deploy the stack, add the following code to the manifest file.
 
@@ -812,7 +813,7 @@ docker::registry_auth::registries:
     version: '<docker_version>'
 ```
 
-If using Docker V1.11 or later, the docker login email flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). 
+If using Docker V1.11 or later, the docker login email flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13).
 
 Add the following code to the manifest file:
 
@@ -893,6 +894,37 @@ docker::plugin {'foo/fooplugin:latest'
 thub.com
 ```
 
+### Configs
+
+Docker 17.06 introduces swarm service configs. To expose the `docker_config` type that is used to manage configs, add the following code to the manifest file:
+
+```puppet
+docker_config { 'my-conf':
+  ensure => present,
+  name   => 'my-conf',
+  file   => '/tmp/my-conf.yaml',
+}
+```
+
+The name and file values are required.
+
+If using Hiera, configure the `docker::configs` class in the manifest file:
+
+```yaml
+---
+  classes:
+    - docker::configs
+
+docker::configs::configs:
+  my-conf:
+    ensure: 'present'
+    name: 'my-conf'
+    file: '/tmp/my-conf.yaml'
+```
+
+A defined config can be used on a `docker::services` resource with the `volumes` parameter.
+
+
 ## Reference
 
 ### Classes
@@ -935,6 +967,7 @@ thub.com
 * docker_compose: A type that represents a docker compose file.
 * docker_network: A type that represents a docker network.
 * docker_volume: A type that represents a docker volume.
+* docker_config: A type that represents a docker config.
 
 ### Parameters
 
@@ -1487,6 +1520,20 @@ Auto pool extension threshold (in % of pool size).
 #### `storage_pool_autoextend_percent`
 
 Extends the pool by the specified percentage when the threshold is passed.
+
+The following parameters are available in the `docker_config` type:
+
+#### `name`
+
+The name of the config'
+
+#### `file`
+
+The file path used to create the config.
+
+#### `id`
+
+The ID of the config provided by Docker.
 
 For further explanation please refer to the[PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
 
