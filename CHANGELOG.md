@@ -1,3 +1,9 @@
+# Version 3.1.0
+
+Adding in the following faetures/functionality
+
+- Docker Stack support on Windows.
+
 # Version 3.0.0
 
 Various fixes for github issues
