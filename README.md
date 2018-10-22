@@ -597,7 +597,7 @@ To deploy the stack, add the following code to the manifest file:
  docker::stack { 'yourapp':
    ensure  => present,
    stack_name => 'yourapp',
-   compose_file => '/tmp/docker-compose.yaml',
+   compose_files => ['/tmp/docker-compose.yaml'],
    require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
@@ -612,7 +612,7 @@ To deploy the stack, add the following code to the manifest file.
 docker::stack { 'yourapp':
   ensure  => present,
   stack_name => 'yourapp',
-  compose_file => '/tmp/docker-compose.yaml',
+  compose_files => ['/tmp/docker-compose.yaml'],
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
