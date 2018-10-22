@@ -39,7 +39,7 @@ define docker::stack(
   Optional[Pattern[/^present$|^absent$/]] $ensure                = 'present',
   Optional[String] $stack_name                                   = undef,
   Optional[String] $bundle_file                                  = undef,
-  Optional[String] $compose_file                                 = undef,
+  Optional[Array] $compose_files                                 = undef,
   Optional[String] $prune                                        = undef,
   Optional[String] $with_registry_auth                           = undef,
   Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image = undef,
@@ -51,17 +51,20 @@ define docker::stack(
 
   if $::osfamily == 'windows' {
     $exec_path = ['C:/Program Files/Docker/']
-    $check_stack = "${docker_command} ls | select-string -pattern ${stack_name}"
+    $check_stack = '$info = docker stack ls | select-string -pattern web
+                    if ($info -eq $null) { Exit 1 } else { Exit 0 }'
+    $provider = 'powershell'
   } else {
     $exec_path = ['/bin', '/usr/bin']
     $check_stack = "${docker_command} ls | grep ${stack_name}"
+    $provider = undef
   }
 
   if $ensure == 'present'{
       $docker_stack_flags = docker_stack_flags ({
       stack_name => $stack_name,
       bundle_file => $bundle_file,
-      compose_file => $compose_file,
+      compose_files => $compose_files,
       prune => $prune,
       with_registry_auth => $with_registry_auth,
       resolve_image => $resolve_image,
@@ -70,18 +73,20 @@ define docker::stack(
       $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
 
       exec { "docker stack create ${stack_name}":
-      command => $exec_stack,
-      unless  => $check_stack,
-      path    => $exec_path,
+      command  => $exec_stack,
+      unless   => $check_stack,
+      path     => $exec_path,
+      provider => $provider,
     }
   }
 
   if $ensure == 'absent'{
 
-  exec { "docker stack ${stack_name}":
-    command => "${docker_command} rm ${stack_name}",
-    onlyif  => $check_stack,
-    path    => $exec_path,
+  exec { "docker stack destroy ${stack_name}":
+    command  => "${docker_command} rm ${stack_name}",
+    onlyif   => $check_stack,
+    path     => $exec_path,
+    provider => $provider,
     }
   }
 }

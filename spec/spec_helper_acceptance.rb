@@ -87,6 +87,13 @@ services:
     image: debian:jessie
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
         EOS
+        docker_stack_override_v3 = <<-EOS
+version: "3.4"
+services:
+  compose_test:
+    image: debian:jessie
+    command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
+        EOS
         docker_compose_content_v3_windows = <<-EOS
 version: "3"
 services:
@@ -109,12 +116,30 @@ networks:
     external:
       name: nat
       EOS
+        docker_stack_content_windows = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: hello-world:nanoserver
+    command: cmd.exe /C "ping /t 8.8.8.8"
+      EOS
+        docker_stack_override_windows = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: hello-world:nanoserver-sac2016
+    command: cmd.exe /C "ping /t 8.8.8.8"
+      EOS
         if fact_on(host, 'osfamily') == 'windows'
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3_windows)
+          create_remote_file(host, "/tmp/docker-stack.yml", docker_stack_content_windows)
           create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_v3_windows)
+          create_remote_file(host, "/tmp/docker-stack-override.yml", docker_stack_override_windows)
         else
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3)
+          create_remote_file(host, "/tmp/docker-stack.yml", docker_compose_content_v3)
           create_remote_file(host, "/tmp/docker-compose-override-v3.yml", docker_compose_override_v3)
+          create_remote_file(host, "/tmp/docker-stack-override.yml", docker_stack_override_v3)
         end
 
         if fact_on(host, 'osfamily') == 'windows'
