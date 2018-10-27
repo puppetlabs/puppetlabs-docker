@@ -56,7 +56,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       if compose_services[service_name]['extends']
         image = get_image(compose_services[service_name]['extends'], compose_services)
       elsif compose_services[service_name]['build']
-        image = "#{project}_#{service_name}"
+        image = "#{name}_#{service_name}"
       end
     end
     image
@@ -68,7 +68,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     dockercompose(args)
     return unless resource[:scale]
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
-    Puppet.info("Scaling compose project #{project}: #{instructions.join(' ')}")
+    Puppet.info("Scaling compose project #{name}: #{instructions.join(' ')}")
     args = [compose_files, '-p', name, 'scale'].insert(2, resource[:options]).compact + instructions
     dockercompose(args)
   end
