@@ -345,6 +345,9 @@ define docker::run(
       }
     }
 
+    $docker_run_inline_start = template('docker/docker-run-start.erb')
+    $docker_run_inline_stop = template('docker/docker-run-stop.erb')
+
     if $syslog_identifier {
       $_syslog_identifier = $syslog_identifier
     } else {
