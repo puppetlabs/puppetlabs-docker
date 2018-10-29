@@ -26,7 +26,7 @@ module Puppet::Parser::Functions
       flags << "--prune '#{opts['prune']}'"
     end
 
-    if opts['with_registry_auth'].to_s != 'undef'
+    if opts['with_registry_auth']
       flags << '--with-registry-auth'
     end
 
