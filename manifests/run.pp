@@ -320,11 +320,15 @@ define docker::run(
     }
   } else {
 
+    $docker_run_inline_start = template('docker/docker-run-start.erb')
+    $docker_run_inline_stop = template('docker/docker-run-stop.erb')
+
     case $docker::params::service_provider {
       'systemd': {
         $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-        $runscript = "/usr/local/bin/docker-run-${sanitised_title}.sh"
-        $run_template = 'docker/usr/local/bin/docker-run.sh.erb'
+        $startscript = "/usr/local/bin/docker-run-${sanitised_title}-start.sh"
+        $stopscript = "/usr/local/bin/docker-run-${sanitised_title}-stop.sh"
+        $startstop_template = 'docker/usr/local/bin/docker-run.sh.epp'
         $init_template = 'docker/etc/systemd/system/docker-run.erb'
         $mode = '0640'
       }
@@ -332,8 +336,9 @@ define docker::run(
         $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
         $init_template = 'docker/etc/init.d/docker-run.erb'
         $mode = '0750'
-        $runscript = undef
-        $run_template = undef
+        $startscript = undef
+        $stopscript = undef
+        $starstop_template = undef
       }
       default: {
         if $::osfamily != 'windows' {
@@ -344,9 +349,6 @@ define docker::run(
         }
       }
     }
-
-    $docker_run_inline_start = template('docker/docker-run-start.erb')
-    $docker_run_inline_stop = template('docker/docker-run-stop.erb')
 
     if $syslog_identifier {
       $_syslog_identifier = $syslog_identifier
@@ -397,10 +399,19 @@ define docker::run(
       }
     }
     else {
-      if ($runscript) {
-        file { $runscript:
+      if ($startscript) {
+        file { $startscript:
           ensure  => present,
-          content => template($run_template),
+          content => epp($startstop_template, {'script' => $docker_run_inline_start}),
+          owner   => 'root',
+          group   => $docker_group,
+          mode    => '0770'
+        }
+      }
+      if ($stopscript) {
+        file { $stopscript:
+          ensure  => present,
+          content => epp($startstop_template, {'script' => $docker_run_inline_stop}),
           owner   => 'root',
           group   => $docker_group,
           mode    => '0770'
@@ -474,23 +485,23 @@ define docker::run(
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',
           refreshonly => true,
-          require     => [File[$initscript],File[$runscript]],
-          subscribe   => [File[$initscript],File[$runscript]]
+          require     => [File[$initscript],File[$startscript],File[$stopscript]],
+          subscribe   => [File[$initscript],File[$startscript],File[$stopscript]]
         }
         Exec["docker-${sanitised_title}-systemd-reload"] -> Service<| title == "${service_prefix}${sanitised_title}" |>
       }
 
       if $restart_service {
-        if $runscript {
-          [File[$initscript],File[$runscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+        if $startscript or $stopscript {
+          [File[$initscript],File[$startscript],File[$stopscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
         }
         else {
           [File[$initscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
         }
       }
       else {
-        if $runscript {
-          [File[$initscript],File[$runscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+        if $startscript or $stopscript {
+          [File[$initscript],File[$startscript],File[$stopscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
         }
         else {
           [File[$initscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
