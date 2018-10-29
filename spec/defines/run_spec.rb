@@ -45,7 +45,7 @@ require 'spec_helper'
         it { should contain_service('docker-sample') }
         it { should contain_file(initscript).with_content(/#{Regexp.escape(startscript)}/) }
         it { should contain_file(initscript).with_content(/#{Regexp.escape(stopscript)}/) }
-        it { should contain_file(startscript_or_init).with_content(/docker run/).with_content(/command/).with_content(/base/)}
+        it { should contain_file(startscript_or_init).with_content(/docker start/).with_content(/command/).with_content(/base/)}
 
         if systemd
           it { should contain_file(initscript).with_content(/^SyslogIdentifier=docker-sample$/) }

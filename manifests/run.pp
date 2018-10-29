@@ -178,7 +178,6 @@ define docker::run(
 
   $docker_run_flags = docker_run_flags({
     cpuset                => any2array($cpuset),
-    detach                => $valid_detach,
     disable_network       => $disable_network,
     dns                   => any2array($dns),
     dns_search            => any2array($dns_search),
