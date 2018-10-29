@@ -15,4 +15,6 @@
 <%= @image %> \
 <% if @command %> <%= @command %><% end %>
 
+<% if @after_create %><%= @after_create %><% end %>
+
 /usr/bin/<%= @docker_command %> start <% if ! @valid_detach %>-a<% end %> <%= @sanitised_title %>

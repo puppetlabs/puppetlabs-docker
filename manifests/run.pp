@@ -76,6 +76,10 @@
 # (optional) Specify an additional unless for the Docker run command when using restart.
 # Default: undef
 #
+# [*after_create*]
+# (optional) Specifies the command to execute after container is created but before it is started.
+# Default: undef
+#
 define docker::run(
   Optional[Pattern[/^[\S]*$/]] $image,
   Optional[Pattern[/^present$|^absent$/]] $ensure       = 'present',
@@ -120,6 +124,7 @@ define docker::run(
   Optional[String] $restart                             = undef,
   Variant[String,Boolean] $before_start                 = false,
   Variant[String,Boolean] $before_stop                  = false,
+  Optional[String]  $after_create                       = undef,
   Optional[Boolean] $remove_container_on_start          = true,
   Optional[Boolean] $remove_container_on_stop           = true,
   Optional[Boolean] $remove_volume_on_start             = false,

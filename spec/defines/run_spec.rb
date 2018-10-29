@@ -440,6 +440,11 @@ require 'spec_helper'
         it { should_not contain_file(stopscript_or_init).with_content(/before_stop/) }
       end
 
+      context 'when `after_create` is set' do
+        let(:params) { {'command' => 'command', 'image' => 'base', 'after_create' => "echo after_create" } }
+        it { should contain_file(startscript_or_init).with_content(/after_create/) }
+      end
+
       context 'with an title that will not format into a path' do
         let(:title) { 'this/that' }
         let(:params) { {'image' => 'base'} }
