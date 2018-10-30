@@ -41,7 +41,7 @@ define docker::stack(
   Optional[String] $bundle_file                                  = undef,
   Optional[Array] $compose_files                                 = undef,
   Optional[String] $prune                                        = undef,
-  Optional[String] $with_registry_auth                           = undef,
+  Optional[Boolean] $with_registry_auth                          = false,
   Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image = undef,
   ){
 

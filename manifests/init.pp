@@ -122,6 +122,8 @@
 #                Writes log messages to fluentd (forward input).
 #     splunk   : Splunk logging driver for Docker.
 #                Writes log messages to Splunk (HTTP Event Collector).
+#     awslogs  : AWS Cloudwatch Logs logging driver for Docker.
+#                Write log messages to Cloudwatch API
 #
 # [*log_opt*]
 #   Set the log driver specific options
@@ -152,6 +154,15 @@
 #     splunk   :
 #                splunk-token=<splunk_http_event_collector_token>
 #                splunk-url=https://your_splunk_instance:8088
+#     awslogs  :
+#                awslogs-group=<Cloudwatch Log Group>
+#                awslogs-stream=<Cloudwatch Log Stream>
+#                awslogs-create-group=true|false
+#                awslogs-datetime-format=<Date format> - strftime expression
+#                awslogs-multiline-pattern=multiline start pattern using a regular expression
+#                tag={{.ID}} - short container id (12 characters)|
+#                    {{.FullID}} - full container id
+#                    {{.Name}} - container name
 #
 # [*selinux_enabled*]
 #   Enable selinux support. Default is false. SELinux does  not  presently
@@ -510,12 +521,12 @@ class docker(
 
   if $log_driver {
     if $::osfamily == 'windows' {
-      assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|etwlogs)$/], $log_driver) |$a, $b| {
-        fail(translate('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk or etwlogs'))
+      assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|awslogs|etwlogs)$/], $log_driver) |$a, $b| {
+        fail(translate('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs'))
       }
     } else {
-      assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/], $log_driver) |$a, $b| {
-        fail(translate('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'))
+      assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk|awslogs)$/], $log_driver) |$a, $b| {
+        fail(translate('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd, splunk or awslogs'))
       }
     }
   }

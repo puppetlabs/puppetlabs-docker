@@ -641,7 +641,7 @@ describe 'docker', :type => :class do
         it do
           expect {
             should contain_package('docker')
-          }.to raise_error(Puppet::Error, /log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk/)
+          }.to raise_error(Puppet::Error, /log_driver must be one of none, json-file, syslog, journald, gelf, fluentd, splunk or awslogs/)
         end
       end
 

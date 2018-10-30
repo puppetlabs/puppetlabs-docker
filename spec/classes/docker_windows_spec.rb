@@ -77,7 +77,7 @@ describe 'docker', :type => :class do
         it do
             expect {
               should contain_package('docker')
-            }.to raise_error(Puppet::Error, /log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk or etwlogs/)
+            }.to raise_error(Puppet::Error, /log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs/)
         end
       end
 
@@ -89,7 +89,7 @@ describe 'docker', :type => :class do
         it do
             expect {
               should contain_package('docker')
-            }.to raise_error(Puppet::Error, /log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk or etwlogs/)
+            }.to raise_error(Puppet::Error, /log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs/)
         end
       end
 
