@@ -228,14 +228,18 @@ define docker::run(
     $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
     $exec_provider = 'powershell'
     $cidfile = "c:/Windows/Temp/${service_prefix}${sanitised_title}.cid"
+# lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
+# lint:endignore
   } else {
     $exec_environment = 'HOME=/root'
     $exec_path = ['/bin', '/usr/bin']
     $exec_timeout = 0
     $exec_provider = undef
     $cidfile = "/var/run/${service_prefix}${sanitised_title}.cid"
+# lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}"
+# lint:endignore
   }
 
   if $restart_on_unhealthy {
@@ -270,7 +274,7 @@ define docker::run(
       }
 
       file { $cidfile:
-              ensure => absent,
+        ensure => absent,
       }
     }
     else {
@@ -304,14 +308,14 @@ define docker::run(
           timeout     => $exec_timeout
           }
       } else {
-          exec { "start ${title} with docker":
+        exec { "start ${title} with docker":
           command     => "${docker_command} start ${sanitised_title}",
           onlyif      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
           timeout     => $exec_timeout
-          }
+        }
       }
     }
   } else {
@@ -385,7 +389,7 @@ define docker::run(
       }
       else {
         file { $cidfile:
-              ensure => absent,
+          ensure => absent,
         }
       }
     }

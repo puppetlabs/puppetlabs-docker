@@ -91,11 +91,11 @@ class docker::install (
       } else {
         if $ensure == 'absent' {
           exec { 'remove-docker-package':
-              command   => template('docker/windows/remove_docker.ps1.erb'),
-              provider  => powershell,
-              unless    => template('docker/windows/check_docker.ps1.erb'),
-              logoutput => true,
-            }
+            command   => template('docker/windows/remove_docker.ps1.erb'),
+            provider  => powershell,
+            unless    => template('docker/windows/check_docker.ps1.erb'),
+            logoutput => true,
+          }
         } else {
           if $docker::package_location {
             exec { 'install-docker-package':

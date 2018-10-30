@@ -72,7 +72,7 @@ define docker::plugin(
       disable_content_trust => $disable_content_trust,
       grant_all_permissions => $grant_all_permissions,
       settings => $settings,
-      })
+    })
 
     $exec_install = "${docker_command} install ${docker_plugin_install_flags}"
     $unless_install = "${docker_command} ls | grep -w ${plugin_name}"
@@ -83,12 +83,12 @@ define docker::plugin(
       path        => ['/bin', '/usr/bin'],
       timeout     => 0,
       unless      => $unless_install,
-      }
+    }
   } elsif $ensure == 'absent' {
     $docker_plugin_remove_flags = docker_plugin_remove_flags({
       plugin_name => $plugin_name,
       force_remove => $force_remove,
-      })
+    })
 
     $exec_rm = "${docker_command} rm ${docker_plugin_remove_flags}"
     $onlyif_rm = "${docker_command} ls | grep -w ${plugin_name}"
@@ -99,14 +99,14 @@ define docker::plugin(
       path        => ['/bin', '/usr/bin'],
       timeout     => 0,
       onlyif      => $onlyif_rm,
-      }
+    }
   }
 
   if $enabled {
     $docker_plugin_enable_flags = docker_plugin_enable_flags({
       plugin_name => $plugin_name,
       timeout => $timeout,
-      })
+    })
 
     $exec_enable = "${docker_command} enable ${docker_plugin_enable_flags}"
     $onlyif_enable = "${docker_command} ls -f enabled=false | grep -w ${plugin_name}"
@@ -117,7 +117,7 @@ define docker::plugin(
       path        => ['/bin', '/usr/bin'],
       timeout     => 0,
       onlyif      => $onlyif_enable,
-      }
+    }
 
   } elsif $enabled == false {
     exec { "disable ${plugin_name}":
@@ -126,6 +126,6 @@ define docker::plugin(
       path        => ['/bin', '/usr/bin'],
       timeout     => 0,
       unless      => "${docker_command} ls -f enabled=false | grep -w ${plugin_name}",
-      }
+    }
   }
 }

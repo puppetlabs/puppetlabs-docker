@@ -28,13 +28,13 @@ class docker::repos (
           },
           include      => {
             src => false,
-            },
+          },
         }
         $url_split = split($location, '/')
         $repo_host = $url_split[2]
         $pin_ensure = $docker::pin_upstream_package_source ? {
-            true    => 'present',
-            default => 'absent',
+          true    => 'present',
+          default => 'absent',
         }
         apt::pin { 'docker':
           ensure   => $pin_ensure,
@@ -55,9 +55,9 @@ class docker::repos (
     'RedHat': {
 
       if ($docker::manage_package) {
-          $baseurl = $location
-          $gpgkey = $key_source
-          $gpgkey_check = $key_check_source
+        $baseurl = $location
+        $gpgkey = $key_source
+        $gpgkey_check = $key_check_source
         if ($docker::use_upstream_package_source) {
           yumrepo { 'docker':
             descr    => 'Docker',
