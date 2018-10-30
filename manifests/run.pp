@@ -395,6 +395,16 @@ define docker::run(
           ensure => absent,
           path   => "/etc/systemd/system/${service_prefix}${sanitised_title}.service",
         }
+        if ($startscript) {
+          file { $startscript:
+            ensure => absent
+          }
+        }
+        if ($stopscript) {
+          file { $stopscript:
+            ensure => absent
+          }
+        }
       }
       else {
         file { $cidfile:
