@@ -76,6 +76,7 @@ describe 'docker stack' do
 
         it 'should be idempotent' do
             apply_manifest(destroy, :catch_changes=>true)
+            sleep 5
         end
 
         it 'should not find a docker stack' do
@@ -131,6 +132,7 @@ describe 'docker stack' do
     
         it 'should be idempotent' do
           apply_manifest(@destroy_code, :catch_changes=>true)
+          sleep 5
         end
     
         it 'should not find a docker stack' do
