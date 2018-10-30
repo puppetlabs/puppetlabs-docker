@@ -28,7 +28,7 @@ class docker::compose(
 ) inherits docker::params {
 
   if $proxy != undef {
-      validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
+    validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
   if $::osfamily == 'windows' {
@@ -47,12 +47,14 @@ class docker::compose(
 
     if $proxy != undef {
       $proxy_opt = "--proxy ${proxy}"
-      } else {
+    } else {
       $proxy_opt = ''
     }
 
     if $::osfamily == 'windows' {
+# lint:ignore:140chars
       $docker_download_command = "if (Invoke-WebRequest ${docker_compose_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}"
+# lint:endignore
 
       exec { 'Enable TLS 1.2 in powershell':
         path     => ['c:/Windows/Temp/', 'C:/Program Files/Docker/'],
@@ -101,7 +103,7 @@ class docker::compose(
     file { [
       $docker_compose_location_versioned,
       $docker_compose_location
-    ]:
+      ]:
       ensure => absent,
     }
   }

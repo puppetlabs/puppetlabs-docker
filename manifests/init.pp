@@ -479,7 +479,7 @@ class docker(
   Optional[String] $storage_data_size                       = $docker::params::storage_data_size,
   Optional[String] $storage_min_data_size                   = $docker::params::storage_min_data_size,
   Optional[String] $storage_chunk_size                      = $docker::params::storage_chunk_size,
-  Optional[Boolean] $storage_growpart                      = $docker::params::storage_growpart,
+  Optional[Boolean] $storage_growpart                       = $docker::params::storage_growpart,
   Optional[String] $storage_auto_extend_pool                = $docker::params::storage_auto_extend_pool,
   Optional[String] $storage_pool_autoextend_threshold       = $docker::params::storage_pool_autoextend_threshold,
   Optional[String] $storage_pool_autoextend_percent         = $docker::params::storage_pool_autoextend_percent,
@@ -515,7 +515,7 @@ class docker(
 
   if $log_level {
     assert_type(Pattern[/^(debug|info|warn|error|fatal)$/], $log_level) |$a, $b| {
-        fail(translate('log_level must be one of debug, info, warn, error or fatal'))
+      fail(translate('log_level must be one of debug, info, warn, error or fatal'))
     }
   }
 
@@ -534,7 +534,7 @@ class docker(
   if $storage_driver {
     if $::osfamily == 'windows' {
       assert_type(Pattern[/^(windowsfilter)$/], $storage_driver) |$a, $b| {
-          fail(translate('Valid values for storage_driver on windows are windowsfilter'))
+        fail(translate('Valid values for storage_driver on windows are windowsfilter'))
       }
     } else {
       assert_type(Pattern[/^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$/], $storage_driver) |$a, $b| {
@@ -580,12 +580,12 @@ class docker(
 
   if($tls_enable) {
     if(!$tcp_bind) {
-        fail(translate('You need to provide tcp bind parameter for TLS.'))
+      fail(translate('You need to provide tcp bind parameter for TLS.'))
     }
   }
 
-if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.][0-1](~|-|\.)ce|1.\d+)/ ) {
-  if ( $docker_ee) {
+  if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.][0-1](~|-|\.)ce|1.\d+)/ ) {
+    if ( $docker_ee) {
       $package_location = $docker::docker_ee_source_location
       $package_key_source = $docker::docker_ee_key_source
       $package_key_check_source = true
@@ -595,26 +595,26 @@ if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.][0-1](~|-|\.)ce|1.\d+
       $docker_start_command = $docker::docker_ee_start_command
       $docker_package_name = $docker::docker_ee_package_name
     } else {
-        case $::osfamily {
-          'Debian' : {
-            $package_location = $docker_ce_source_location
-            $package_key_source = $docker_ce_key_source
-            $package_key = $docker_ce_key_id
-            $package_repos = $docker_ce_channel
-            $release = $docker_ce_release
-            }
-          'Redhat' : {
-            $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
-            $package_key_source = $docker_ce_key_source
-            $package_key_check_source = true
-            }
-          'windows': {
-            fail(translate('This module only work for Docker Enterprise Edition on Windows.'))
-          }
-          default: {}
+      case $::osfamily {
+        'Debian' : {
+          $package_location = $docker_ce_source_location
+          $package_key_source = $docker_ce_key_source
+          $package_key = $docker_ce_key_id
+          $package_repos = $docker_ce_channel
+          $release = $docker_ce_release
         }
-        $docker_start_command = $docker_ce_start_command
-        $docker_package_name = $docker_ce_package_name
+        'Redhat' : {
+          $package_location = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+          $package_key_source = $docker_ce_key_source
+          $package_key_check_source = true
+        }
+        'windows': {
+          fail(translate('This module only work for Docker Enterprise Edition on Windows.'))
+        }
+        default: {}
+      }
+      $docker_start_command = $docker_ce_start_command
+      $docker_package_name = $docker_ce_package_name
     }
   } else {
     case $::osfamily {
@@ -625,7 +625,7 @@ if ( $version == undef ) or ( $version !~ /^(17[.]0[0-5][.][0-1](~|-|\.)ce|1.\d+
         $package_key = $docker_package_key_id
         $package_repos = 'main'
         $release = $docker_package_release
-        }
+      }
       'Redhat' : {
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source

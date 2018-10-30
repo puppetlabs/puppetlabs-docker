@@ -114,48 +114,48 @@ define docker::swarm(
   $docker_command = "${docker::params::docker_command} swarm"
 
   if $init {
-  $docker_swarm_init_flags = docker_swarm_init_flags({
-    init => $init,
-    advertise_addr => $advertise_addr,
-    autolock => $autolock,
-    cert_expiry => $cert_expiry,
-    dispatcher_heartbeat => $dispatcher_heartbeat,
-    external_ca => $external_ca,
-    force_new_cluster => $force_new_cluster,
-    listen_addr => $listen_addr,
-    max_snapshots => $max_snapshots,
-    snapshot_interval => $snapshot_interval,
+    $docker_swarm_init_flags = docker_swarm_init_flags({
+      init                 => $init,
+      advertise_addr       => $advertise_addr,
+      autolock             => $autolock,
+      cert_expiry          => $cert_expiry,
+      dispatcher_heartbeat => $dispatcher_heartbeat,
+      external_ca          => $external_ca,
+      force_new_cluster    => $force_new_cluster,
+      listen_addr          => $listen_addr,
+      max_snapshots        => $max_snapshots,
+      snapshot_interval    => $snapshot_interval,
     })
 
-  $exec_init = "${docker_command} ${docker_swarm_init_flags}"
+    $exec_init = "${docker_command} ${docker_swarm_init_flags}"
 
-  exec { 'Swarm init':
-    command     => $exec_init,
-    environment => $exec_environment,
-    path        => $exec_path,
-    provider    => $exec_provider,
-    timeout     => $exec_timeout,
-    unless      => $unless_init,
+    exec { 'Swarm init':
+      command     => $exec_init,
+      environment => $exec_environment,
+      path        => $exec_path,
+      provider    => $exec_provider,
+      timeout     => $exec_timeout,
+      unless      => $unless_init,
     }
   }
 
   if $join {
-  $docker_swarm_join_flags = docker_swarm_join_flags({
-    join => $join,
-    advertise_addr => $advertise_addr,
-    listen_addr => $listen_addr,
-    token => $token,
+    $docker_swarm_join_flags = docker_swarm_join_flags({
+      join           => $join,
+      advertise_addr => $advertise_addr,
+      listen_addr    => $listen_addr,
+      token          => $token,
     })
 
-  $exec_join = "${docker_command} ${docker_swarm_join_flags} ${manager_ip}"
+    $exec_join = "${docker_command} ${docker_swarm_join_flags} ${manager_ip}"
 
-  exec { 'Swarm join':
-    command     => $exec_join,
-    environment => $exec_environment,
-    path        => $exec_path,
-    provider    => $exec_provider,
-    timeout     => $exec_timeout,
-    unless      => $unless_join,
+    exec { 'Swarm join':
+      command     => $exec_join,
+      environment => $exec_environment,
+      path        => $exec_path,
+      provider    => $exec_provider,
+      timeout     => $exec_timeout,
+      unless      => $unless_join,
     }
   }
 

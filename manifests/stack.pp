@@ -43,7 +43,7 @@ define docker::stack(
   Optional[String] $prune                                        = undef,
   Optional[String] $with_registry_auth                           = undef,
   Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image = undef,
-  ){
+){
 
   include docker::params
 
@@ -61,18 +61,18 @@ define docker::stack(
   }
 
   if $ensure == 'present'{
-      $docker_stack_flags = docker_stack_flags ({
-      stack_name => $stack_name,
-      bundle_file => $bundle_file,
-      compose_files => $compose_files,
-      prune => $prune,
+    $docker_stack_flags = docker_stack_flags ({
+      stack_name         => $stack_name,
+      bundle_file        => $bundle_file,
+      compose_files      => $compose_files,
+      prune              => $prune,
       with_registry_auth => $with_registry_auth,
-      resolve_image => $resolve_image,
-      })
+      resolve_image      => $resolve_image,
+    })
 
-      $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
+    $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
 
-      exec { "docker stack create ${stack_name}":
+    exec { "docker stack create ${stack_name}":
       command  => $exec_stack,
       unless   => $check_stack,
       path     => $exec_path,
@@ -82,11 +82,11 @@ define docker::stack(
 
   if $ensure == 'absent'{
 
-  exec { "docker stack destroy ${stack_name}":
-    command  => "${docker_command} rm ${stack_name}",
-    onlyif   => $check_stack,
-    path     => $exec_path,
-    provider => $provider,
+    exec { "docker stack destroy ${stack_name}":
+      command  => "${docker_command} rm ${stack_name}",
+      onlyif   => $check_stack,
+      path     => $exec_path,
+      provider => $provider,
     }
   }
 }
