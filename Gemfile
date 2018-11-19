@@ -7,7 +7,7 @@ group :test do
   elsif puppet_git_url = ENV['PUPPET_GIT_URL']
     gem "puppet", :git => puppet_git_url
   else
-    gem "puppet", "5.5.6"
+    gem "puppet", "6.0.3"
   end
   gem "puppet-lint", "2.3.3"
   gem "puppet-lint-unquoted_string-check", "0.3.0"

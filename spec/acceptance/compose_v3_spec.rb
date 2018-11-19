@@ -7,9 +7,13 @@ if fact('osfamily') == 'windows'
   tmp_path = 'C:/cygwin64/tmp'
   test_container = 'nanoserver-sac2016'
 else
+  if fact('osfamily') == 'RedHat'
+    docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+  else
+    docker_args = ''
+  end
   install_dir = '/usr/local/bin'
   file_extension = ''
-  docker_args = ''
   tmp_path = '/tmp'
   test_container = 'debian'
 end

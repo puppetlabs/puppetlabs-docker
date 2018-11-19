@@ -12,7 +12,7 @@ module Puppet::Parser::Functions
       flags << "--bundle-file '#{opts['bundle_file']}'"
     end
 
-    if opts['compose_file'] && opts['compose_files'].to_s != 'undef'
+    if opts['compose_files'] && opts['compose_files'].to_s != 'undef'
       opts['compose_files'].each do |file|
         flags << "--compose-file '#{file}'"
       end
