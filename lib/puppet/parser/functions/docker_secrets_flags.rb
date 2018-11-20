@@ -12,11 +12,11 @@ module Puppet::Parser::Functions
       flags << 'create'
     end
 
-    if opts['secret_name'].to_s != 'undef'
+    if opts['secret_name'] && opts['secret_name'].to_s != 'undef'
       flags << "'#{opts['secret_name']}'"
     end
 
-    if opts['secret_path'].to_s != 'undef'
+    if opts['secret_path'] && opts['secret_path'].to_s != 'undef'
       flags << "'#{opts['secret_path']}'"
     end
 
