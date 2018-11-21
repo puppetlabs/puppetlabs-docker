@@ -121,15 +121,16 @@ By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. 
 
 ```puppet
 class { 'docker':
-  tcp_bind        => ['tcp://127.0.0.1:4243','tcp://10.0.0.1:4243'],
+  tcp_bind        => ['tcp://127.0.0.1:2375'],
   socket_bind     => 'unix:///var/run/docker.sock',
   ip_forward      => true,
   iptables        => true,
   ip_masq         => true,
-  bridge          => br0,
-  fixed_cidr      => '10.20.1.0/24',
-  default_gateway => '10.20.0.1',
+  bip             => '192.168.1.1/24',
+  fixed_cidr      => '192.168.1.144/28',
 }
+
+For more information about the options to configure the default docker bridge, see (this)[https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/] page. 
 ```
 
 When setting up TLS, upload the related files (CA certificate, server certificate, and key) and include their paths in the manifest file:
