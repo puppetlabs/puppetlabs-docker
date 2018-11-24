@@ -658,7 +658,7 @@ To configure the swarm worker, add the following code to the manifest file:
 docker::swarm {'cluster_worker':
 join           => true,
 advertise_addr => '192.168.1.2',
-listen_addr    => '192.168.1.2,
+listen_addr    => '192.168.1.2',
 manager_ip     => '192.168.1.1',
 token          => 'your_join_token'
 }
