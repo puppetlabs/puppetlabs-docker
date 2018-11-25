@@ -88,6 +88,12 @@ class docker::install (
           ensure => $ensure,
           name   => $docker::docker_package_name,
         }))
+        if $ensure == 'absent' {
+          $packages = ['docker-ce-cli','containerd.io']
+          ensure_resource('package', $packages, {
+            ensure => $ensure,
+          })
+        }
       } else {
         if $ensure == 'absent' {
           exec { 'remove-docker-package':
