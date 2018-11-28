@@ -25,7 +25,9 @@ class docker::install (
   $nuget_package_provider_version = $docker::nuget_package_provider_version,
   $docker_msft_provider_version   = $docker::docker_msft_provider_version,
   $docker_ee_package_name         = $docker::docker_ee_package_name,
-  $docker_download_url            = $docker::package_location
+  $docker_download_url            = $docker::package_location,
+  $dependent_packages             = $docker::dependent_packages,
+
 ) {
   $docker_start_command = $docker::docker_start_command
   if $::osfamily {
@@ -89,8 +91,7 @@ class docker::install (
           name   => $docker::docker_package_name,
         }))
         if $ensure == 'absent' {
-          $packages = ['docker-ce-cli','containerd.io']
-          ensure_resource('package', $packages, {
+          ensure_resource('package', $dependent_packages, {
             ensure => $ensure,
           })
         }
