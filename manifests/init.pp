@@ -16,6 +16,11 @@
 #   An array of additional packages that need to be installed to support
 #   docker. Defaults change depending on the operating system.
 #
+# [*dependent_packages*]
+#  An array of packages installed by the docker-ce package v 18.09 and later.
+#  Used when uninstalling to ensure containers cannot be run on the system.
+#  Defaults change depending on the operating system.
+#
 # [*tcp_bind*]
 #   The tcp socket to bind to in the format
 #   tcp://127.0.0.1:4243
@@ -386,6 +391,7 @@ class docker(
   Optional[String] $version                                 = $docker::params::version,
   String $ensure                                            = $docker::params::ensure,
   Variant[Array[String], Hash] $prerequired_packages        = $docker::params::prerequired_packages,
+  Array $dependent_packages                                 = $docker::params::dependent_packages,
   String $docker_ce_start_command                           = $docker::params::docker_ce_start_command,
   Optional[String] $docker_ce_package_name                  = $docker::params::docker_ce_package_name,
   Optional[String] $docker_ce_source_location               = $docker::params::package_ce_source_location,

@@ -706,7 +706,7 @@ describe 'docker', :type => :class do
         } }
         it { should contain_file(service_config_file).with_content(/-g \/mnt\/docker/) }
       end
-  
+
       context 'with custom root dir && Docker version > 17.05' do
         let(:params) { {
           'root_dir' => '/mnt/docker',
@@ -714,11 +714,18 @@ describe 'docker', :type => :class do
         } }
         it { should contain_file(service_config_file).with_content(/--data-root \/mnt\/docker/) }
       end
-       
+
 
       context 'with ensure absent' do
         let(:params) { {'ensure' => 'absent' } }
         it { should contain_package('docker').with_ensure('absent') }
+      end
+
+      context 'with ensure absent and ' do
+        let(:params) { {'ensure' => 'absent' } }
+        it { should contain_package('docker').with_ensure('absent') }
+        it { should contain_package('docker-ce-cli').with_ensure('absent') }
+        it { should contain_package('containerd.io').with_ensure('absent') }
       end
 
       context 'with an invalid combination of devicemapper options' do
