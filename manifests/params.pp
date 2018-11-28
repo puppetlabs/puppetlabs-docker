@@ -305,6 +305,6 @@ class docker::params {
     'RedHat' => ['device-mapper'],
     default  => [],
   }
-  $dependent_packages = ['docker-ce-cli','containerd,io']
+  $dependent_packages = ['docker-ce-cli','containerd.io']
 
 }
