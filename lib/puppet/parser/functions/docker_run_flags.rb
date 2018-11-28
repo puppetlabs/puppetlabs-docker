@@ -42,10 +42,6 @@ module Puppet::Parser::Functions
       flags << '--privileged'
     end
 
-    if opts['detach']
-      flags << '--detach=true'
-    end
-
     if opts['health_check_cmd'] && opts['health_check_cmd'].to_s != 'undef'
       flags << "--health-cmd='#{opts['health_check_cmd']}'"
     end
