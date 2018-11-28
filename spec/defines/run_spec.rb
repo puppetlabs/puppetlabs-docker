@@ -369,11 +369,6 @@ require 'spec_helper'
         end
       end
 
-      context 'should be able to override detached' do
-        let(:params) { {'command' => 'command', 'image' => 'base', 'detach' => false} }
-        it { should contain_file(startscript_or_init).without_content(/--detach=true/) }
-      end
-
       context 'when running with a tty' do
         let(:params) { {'command' => 'command', 'image' => 'base', 'tty' => true} }
         it { should contain_file(startscript_or_init).with_content(/-t/) }

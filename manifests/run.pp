@@ -109,7 +109,6 @@ define docker::run(
   Variant[String,Boolean] $docker_service               = false,
   Optional[Boolean] $disable_network                    = false,
   Optional[Boolean] $privileged                         = false,
-  Optional[Boolean] $detach                             = undef,
   Variant[String,Array[String],Undef] $extra_parameters = undef,
   Optional[String] $systemd_restart                     = 'on-failure',
   Variant[String,Hash,Undef] $extra_systemd_parameters  = {},
@@ -168,12 +167,6 @@ define docker::run(
 
   if $systemd_restart {
     assert_type(Pattern[/^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$/], $systemd_restart)
-  }
-
-  if $detach == undef {
-    $valid_detach = $docker::params::detach_service_in_init
-  } else {
-    $valid_detach = $detach
   }
 
   $extra_parameters_array = any2array($extra_parameters)
