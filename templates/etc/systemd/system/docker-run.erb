@@ -1,12 +1,13 @@
 <%-
+	depend_services = @depend_services_array.map{|s| s =~ /\.[a-z]+$/ ? s : "#{s}.service"}
 	@after = [@service_name+".service"] +
 		@sanitised_after_array.map{ |s| "#{@service_prefix}#{s}.service"} +
 		@sanitised_depends_array.map{ |s| "#{@service_prefix}#{s}.service"} +
-		@depend_services_array.map{|s| "#{s}.service"}
+		depend_services
 	@wants = @sanitised_after_array.map{ |a| "#{@service_prefix}#{a}.service"}
 	@requires = [@service_name+".service"] +
 		@sanitised_depends_array.map{ |d| "#{@service_prefix}#{d}.service"} +
-		@depend_services_array.map{|s| "#{s}.service"}
+		depend_services
 -%>
 # This file is managed by Puppet and local changes
 # may be overwritten
