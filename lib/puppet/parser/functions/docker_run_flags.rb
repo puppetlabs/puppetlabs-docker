@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'shellwords'
 #
 # docker_run_flags.rb
 #
 module Puppet::Parser::Functions
   # Transforms a hash into a string of docker flags
-  newfunction(:docker_run_flags, :type => :rvalue) do |args|
+  newfunction(:docker_run_flags, type: :rvalue) do |args|
     opts = args[0] || {}
     flags = []
 
@@ -64,9 +66,9 @@ module Puppet::Parser::Functions
                          " \\\n"
                        end
 
-    multi_flags = lambda { |values, format|
+    multi_flags = ->(values, fmt) {
       filtered = [values].flatten.compact
-      filtered.map { |val| sprintf(format + params_join_char, val) }
+      filtered.map { |val| (fmt + params_join_char) % val }
     }
 
     [

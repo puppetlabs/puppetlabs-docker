@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'shellwords'
 #
 # docker_plugin_install_flags.rb
 #
 module Puppet::Parser::Functions
   # Transforms a hash into a string of docker plugin install flags
-  newfunction(:docker_plugin_install_flags, :type => :rvalue) do |args|
+  newfunction(:docker_plugin_install_flags, type: :rvalue) do |args|
     opts = args[0] || {}
     flags = []
     flags << "--alias #{opts['plugin_alias']}" if opts['plugin_alias'] && opts['plugin_alias'].to_s != 'undef'

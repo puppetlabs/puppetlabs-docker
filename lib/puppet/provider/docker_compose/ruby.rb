@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'deep_merge'
 
 Puppet::Type.type(:docker_compose).provide(:ruby) do
@@ -13,6 +15,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     compose_containers = []
     resource[:compose_files].each do |file|
       compose_file = YAML.safe_load(File.read(file), [], [], true)
+      # rubocop:disable Style/StringLiterals
       containers = docker([
                             'ps',
                             '--format',
@@ -22,6 +25,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
                           ]).split("\n")
       compose_containers.push(*containers)
       compose_containers.uniq!
+      # rubocop:enable Style/StringLiterals
       case compose_file['version']
       when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
         compose_services.deep_merge!(compose_file['services'])

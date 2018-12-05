@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'shellwords'
 #
 # docker_stack_flags.rb
 #
 module Puppet::Parser::Functions
   # Transforms a hash into a string of docker swarm init flags
-  newfunction(:docker_stack_flags, :type => :rvalue) do |args|
+  newfunction(:docker_stack_flags, type: :rvalue) do |args|
     opts = args[0] || {}
     flags = []
 

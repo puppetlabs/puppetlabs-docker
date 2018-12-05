@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 Puppet::Type.type(:docker_network).provide(:ruby) do
@@ -7,10 +9,10 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
   commands docker: 'docker'
 
   def network_conf
-    flags = %w[network create]
-    multi_flags = lambda { |values, format|
+    flags = ['network', 'create']
+    multi_flags = ->(values, format) {
       filtered = [values].flatten.compact
-      filtered.map { |val| sprintf(format, val) }
+      filtered.map { |val| format % val }
     }
 
     [
@@ -31,7 +33,7 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
   end
 
   def self.instances
-    output = docker(%w[network ls])
+    output = docker(['network', 'ls'])
     lines = output.split("\n")
     lines.shift # remove header row
     lines.map do |line|
@@ -47,12 +49,12 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
                  end
                end
       new(
-        :name => name,
-        :id => obj['Id'],
-        :ipam_driver => ipam_driver,
-        :subnet => subnet,
-        :ensure => :present,
-        :driver => driver,
+        name: name,
+        id: obj['Id'],
+        ipam_driver: ipam_driver,
+        subnet: subnet,
+        ensure: :present,
+        driver: driver,
       )
     end
   end
