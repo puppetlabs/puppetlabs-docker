@@ -1,6 +1,34 @@
 require 'facter'
 require 'json'
 
+Facter.add(:docker_systemroot) do
+  confine :osfamily => :windows
+  setcode do
+    Puppet::Util.get_env('SystemRoot')
+  end
+end
+
+Facter.add(:docker_program_files_path) do
+  confine :osfamily => :windows
+  setcode do
+    Puppet::Util.get_env('ProgramFiles')
+  end
+end
+
+Facter.add(:docker_program_data_path) do
+  confine :osfamily => :windows
+  setcode do
+    Puppet::Util.get_env('ProgramData')
+  end
+end
+
+Facter.add(:docker_user_temp_path) do
+  confine :osfamily => :windows
+  setcode do
+    Puppet::Util.get_env('TEMP')
+  end
+end
+
 docker_command = if Facter.value(:kernel) == 'windows'
                    'powershell -c docker'
                  else

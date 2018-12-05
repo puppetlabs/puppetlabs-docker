@@ -99,7 +99,7 @@ version: "3"
 services:
   compose_test:
     image: hello-world:nanoserver
-    command: cmd.exe /C "ping /t 8.8.8.8"
+    command: cmd.exe /C "ping 8.8.8.8 -t"
 networks:
   default:
     external:
@@ -110,7 +110,7 @@ version: "3"
 services:
   compose_test:
     image: hello-world:nanoserver-sac2016
-    command: cmd.exe /C "ping /t 8.8.8.8"
+    command: cmd.exe /C "ping 8.8.8.8 -t"
 networks:
   default:
     external:
@@ -121,14 +121,14 @@ version: "3"
 services:
   compose_test:
     image: hello-world:nanoserver
-    command: cmd.exe /C "ping /t 8.8.8.8"
+    command: cmd.exe /C "ping 8.8.8.8 -t"
       EOS
         docker_stack_override_windows = <<-EOS
 version: "3"
 services:
   compose_test:
     image: hello-world:nanoserver-sac2016
-    command: cmd.exe /C "ping /t 8.8.8.8"
+    command: cmd.exe /C "ping 8.8.8.8 -t"
       EOS
         if fact_on(host, 'osfamily') == 'windows'
           create_remote_file(host, "/tmp/docker-compose-v3.yml", docker_compose_content_v3_windows)
@@ -150,6 +150,7 @@ services:
           apply_manifest_on(host, "class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }")
           docker_path = "/cygdrive/c/Program Files/Docker"
           host.add_env_var('PATH', docker_path)
+          host.add_env_var('TEMP', 'C:\Users\Administrator\AppData\Local\Temp')
           puts "Waiting for box to come online"
           sleep 300
         end

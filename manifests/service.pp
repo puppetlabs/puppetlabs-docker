@@ -152,7 +152,7 @@ class docker::service (
     }
   }
   if $::osfamily == 'windows' {
-    file { ['C:/ProgramData/docker/', 'C:/ProgramData/docker/config/']:
+    file { ["${::docker_program_data_path}/docker/", "${::docker_program_data_path}/docker/config/"]:
       ensure  => directory,
     }
   }

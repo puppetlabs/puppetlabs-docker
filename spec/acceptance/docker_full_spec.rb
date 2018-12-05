@@ -6,7 +6,8 @@ if fact('osfamily') == 'windows'
   default_image_tag = '10.0.14393.2189'
   second_image = 'hello-world'
   default_digest = 'sha256:204c41542c0927ac0296802e44c56b886b47e99cf8220fb49d46951bd5fc1742'
-  default_dockerfile = 'c:/windows/temp/Dockerfile'
+  default_dockerfile = 'C:/Users/Administrator/AppData/Local/Temp/Dockerfile'
+  dockerfile_test = 'C:/Windows/Dockerfile_test.txt'
   #The default args are set because: 
   #restart => 'always' - there is no service created to manage containers 
   #net => 'nat' - docker uses bridged by default when running a container. When installing docker on windows the default network is NAT.
@@ -15,7 +16,7 @@ if fact('osfamily') == 'windows'
   docker_command = "\"/cygdrive/c/Program Files/Docker/docker\""
   default_docker_exec_lr_command = 'cmd /c "ping 127.0.0.1 -t > c:\windows\temp\test_file.txt"'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
-  docker_mount_path = "c:/windows/temp"
+  docker_mount_path = 'C:/Users/Administrator/AppData/Local/Temp'
   storage_driver = "windowsfilter"
 elsif fact('osfamily') == 'RedHat'
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
@@ -24,6 +25,7 @@ elsif fact('osfamily') == 'RedHat'
   default_image_tag = '3.7'
   default_digest = 'sha256:3dcdb92d7432d56604d4545cbd324b14e647b313626d99b889d0626de158f73a'
   default_dockerfile = '/root/Dockerfile'
+  dockerfile_test = "#{default_dockerfile}_test.txt"
   docker_command = "docker"
   default_docker_run_arg = ''
   default_run_command = "init"
@@ -38,6 +40,7 @@ else
   default_image_tag = '3.7'
   default_digest = 'sha256:3dcdb92d7432d56604d4545cbd324b14e647b313626d99b889d0626de158f73a'
   default_dockerfile = '/root/Dockerfile'
+  dockerfile_test = "#{default_dockerfile}_test.txt"
   docker_command = "docker"
   default_docker_run_arg = ''
   default_run_command = "init"
@@ -145,7 +148,7 @@ describe 'the Puppet Docker module' do
 
         shell("#{docker_command} inspect container-3-6", :acceptable_exit_codes => [1])
         if fact('osfamily') == 'windows'
-          shell('test -f /cygdrive/c/Windows/Temp/container-3-6.service', :acceptable_exit_codes => [1])
+          shell('test -f /cygdrive/c/Users/Administrator/AppData/Local/Temp/container-3-6.service', :acceptable_exit_codes => [1])
         else
           shell('test -f /etc/systemd/system/container-3-6.service', :acceptable_exit_codes => [1])
         end
@@ -317,6 +320,13 @@ describe 'the Puppet Docker module' do
       end
 
       it 'should create a new image based on a Dockerfile' do
+
+        if fact('osfamily') == 'windows'
+          run_cmd = 'RUN echo test > C:\\Windows\\Temp\\Dockerfile_test.txt'
+        else
+          run_cmd = "RUN echo test > #{dockerfile_test}"
+        end
+
         pp=<<-EOS
           class { 'docker': #{docker_args} }
 
@@ -327,7 +337,7 @@ describe 'the Puppet Docker module' do
 
           file { '#{default_dockerfile}':
             ensure  => present,
-            content => "FROM #{default_image}\nRUN echo test > #{default_dockerfile}_test.txt",
+            content => "FROM #{default_image}\n#{run_cmd}",
             before  => Docker::Image['alpine_with_file'],
           }
         EOS
@@ -342,8 +352,8 @@ describe 'the Puppet Docker module' do
             expect(r.stdout).to match(/_test.txt/)
           end
         else
-          shell("#{docker_command} run alpine_with_file ls #{default_dockerfile}_test.txt") do |r|
-            expect(r.stdout).to match(/#{default_dockerfile}_test.txt/)
+          shell("#{docker_command} run alpine_with_file ls #{dockerfile_test}") do |r|
+            expect(r.stdout).to match(/#{dockerfile_test}/)
           end
         end
       end
@@ -567,7 +577,7 @@ describe 'the Puppet Docker module' do
         sleep 4
         container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
         if fact('osfamily') == 'windows'
-          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Windows\\\\Temp\\\\mnt") do |r|
+          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Administrator\\\\AppData\\\\Local\\\\Temp\\\\mnt") do |r|
             expect(r.stdout).to match(/test_mount.txt/)
           end
         else

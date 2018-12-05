@@ -56,26 +56,16 @@ class docker::compose(
       $docker_download_command = "if (Invoke-WebRequest ${docker_compose_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}"
 # lint:endignore
 
-      exec { 'Enable TLS 1.2 in powershell':
-        path     => ['c:/Windows/Temp/', 'C:/Program Files/Docker/'],
-        command  => '[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12',
-        provider => powershell,
-        creates  => $docker_compose_location_versioned,
-      }
-
-      $script_path = 'C:/Windows/Temp/download_docker_compose.ps1'
-      file{ $script_path:
-        ensure  => present,
-        force   => true,
-        content => template('docker/windows/download_docker_compose.ps1.erb'),
-        notify  => Exec["Install Docker Compose ${version}"],
-      }
-
       exec { "Install Docker Compose ${version}":
-        path     => ['c:/Windows/Temp/', 'C:/Program Files/Docker/'],
-        command  => "& ${script_path}",
+        command  => template('docker/windows/download_docker_compose.ps1.erb'),
         provider => powershell,
         creates  => $docker_compose_location_versioned,
+      }
+
+      file { $docker_compose_location:
+        ensure  => 'link',
+        target  => $docker_compose_location_versioned,
+        require => Exec["Install Docker Compose ${version}"]
       }
     } else {
       ensure_packages(['curl'])
@@ -86,18 +76,18 @@ class docker::compose(
         creates => $docker_compose_location_versioned,
         require => Package['curl'],
       }
-    }
 
-    file { $docker_compose_location_versioned:
-      owner   => $file_owner,
-      mode    => '0755',
-      require => Exec["Install Docker Compose ${version}"]
-    }
+      file { $docker_compose_location_versioned:
+        owner   => $file_owner,
+        mode    => '0755',
+        require => Exec["Install Docker Compose ${version}"]
+      }
 
-    file { $docker_compose_location:
-      ensure  => 'link',
-      target  => $docker_compose_location_versioned,
-      require => File[$docker_compose_location_versioned]
+      file { $docker_compose_location:
+        ensure  => 'link',
+        target  => $docker_compose_location_versioned,
+        require => File[$docker_compose_location_versioned]
+      }
     }
   } else {
     file { [

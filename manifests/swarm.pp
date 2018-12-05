@@ -91,8 +91,8 @@ define docker::swarm(
   include docker::params
 
   if $::osfamily == 'windows' {
-    $exec_environment = 'PATH=C:/Program Files/Docker/'
-    $exec_path = ['c:/Windows/Temp/', 'C:/Program Files/Docker/']
+    $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
+    $exec_path = ["${::docker_program_files_path}/Docker/"]
     $exec_timeout = 3000
     $exec_provider = 'powershell'
     $unless_init = '$info = docker info | select-string -pattern "Swarm: active"

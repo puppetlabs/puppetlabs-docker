@@ -64,6 +64,10 @@ define docker::plugin(
 
   $docker_command = "${docker::params::docker_command} plugin"
 
+  if ($::osfamily == 'windows') {
+    fail(translate(('Feature not implemented on windows.')))
+  }
+
   if $ensure == 'present' {
     $docker_plugin_install_flags = docker_plugin_install_flags({
       plugin_name => $plugin_name,

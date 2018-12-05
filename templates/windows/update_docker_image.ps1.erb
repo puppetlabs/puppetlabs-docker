@@ -4,22 +4,24 @@
 # Returns 3 if something when wrong.
 #
 
-$docker_image=$args[0]
-$docker_cmd = "C:\Program Files\Docker\docker.exe"
+param
+(
+    [string]$DockerImage
+)
 
-Write-Host "Before - Looking for image"
-$before=$(& $docker_cmd inspect --type image --format='{{.Id}}' ${docker_image} 2>$null)
-Write-Host "Pulling image"
-& $docker_cmd pull ${docker_image}
-Write-Host "Inspecting image"
-$after=$(& $docker_cmd inspect --type image --format='{{.Id}}' ${docker_image} 2>$null)
+Write-Information "Before - Looking for image"
+$before=$(& <%= @docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
+Write-Information "Pulling image"
+& <%= @docker_command %> pull ${DockerImage}
+Write-Information "Inspecting image"
+$after=$(& <%= @docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
 If (!$after) {
-    Write-Host "Docker image ${docker_image} failed to pull!"
+    Write-Information "Docker image ${DockerImage} failed to pull!"
     Exit 3
 } ElseIf ($after -eq $before) {
-    Write-Host "No updates to ${docker_image} available. Currently on ${after}."
+    Write-Information "No updates to ${DockerImage} available. Currently on ${after}."
     Exit 2
 } Else {
-    Write-Host "${docker_image} updated. Changed from ${before} to ${after}."
+    Write-Information "${DockerImage} updated. Changed from ${before} to ${after}."
     Exit 0
 }

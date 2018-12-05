@@ -3,13 +3,17 @@ require 'spec_helper'
 describe 'docker::exec', :type => :define do
   let(:title) { 'sample' }
 	let(:facts) { {
-		:architecture              => 'amd64',
-		:osfamily                  => 'windows',
-		:operatingsystem           => 'windows',
-		:kernelrelease             => '10.0.14393',
-		:operatingsystemrelease    => '2016',
-		:operatingsystemmajrelease => '2016',
-		:os                        => { :family => 'windows', :name => 'windows', :release => { :major => '2016', :full => '2016' } }
+		:architecture               => 'amd64',
+		:osfamily                   => 'windows',
+		:operatingsystem            => 'windows',
+		:kernelrelease              => '10.0.14393',
+		:operatingsystemrelease     => '2016',
+		:operatingsystemmajrelease  => '2016',
+		:docker_program_data_path   => 'C:/ProgramData',
+		:docker_program_files_path  => 'C:/Program Files',
+		:docker_systemroot          => 'C:/Windows',
+		:docker_user_temp_path      => 'C:/Users/Administrator/AppData/Local/Temp',
+		:os                         => { :family => 'windows', :name => 'windows', :release => { :major => '2016', :full => '2016' } }
 	} }
 
   context 'when running detached' do
