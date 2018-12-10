@@ -3,7 +3,6 @@
 [![Puppet Forge Downloads](http://img.shields.io/puppetforge/dt/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Endorsement](https://img.shields.io/puppetforge/e/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 
-
 # Docker
 
 #### Table of Contents
@@ -33,7 +32,6 @@
 ## Overview
 
 The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) for Linux based distributions and [Docker EE(Enterprise Edition)](https://www.docker.com/enterprise-edition) for Windows and Linux as well as legacy releases.
-
 
 ## Description
 
@@ -130,7 +128,7 @@ class { 'docker':
   fixed_cidr      => '192.168.1.144/28',
 }
 
-For more information about the options to configure the default docker bridge, see (this)[https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/] page. 
+For more information about the options to configure the default docker bridge, see (this)[https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/] page.
 ```
 
 When setting up TLS, upload the related files (CA certificate, server certificate, and key) and include their paths in the manifest file:
@@ -148,7 +146,7 @@ class { 'docker':
 To specify which Docker rpm package to install, add the following code to the manifest file:
 
 ```puppet
-class { 'docker' :
+class { 'docker':
   manage_package              => true,
   use_upstream_package_source => false,
   package_engine_name         => 'docker-engine'
@@ -197,6 +195,13 @@ class { 'docker':
 }
 ```
 
+To pass additional parameters to the daemon, add `extra_parameters` to the manifest file:
+
+```puppet
+class { 'docker':
+  extra_parameters => ['--experimental=true', '--metrics-addr=localhost:9323'],
+```
+
 To uninstall docker, add the following to the manifest file:
 
 ```puppet
@@ -205,7 +210,8 @@ class { 'docker':
 }
 ```
 
-Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified: 
+Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified:
+
 ```puppet
 class { 'docker':
   docker_ee => true
@@ -213,8 +219,10 @@ class { 'docker':
 ```
 
 ### Proxy on Windows
+
 To use docker through a proxy on Windows, a System Environment Variable HTTP_PROXY/HTTPS_PROXY must be set. See [Docker Engine on Windows](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/configure-docker-daemon#proxy-configuration)
 This can be done using a different puppet module such as the puppet-windows_env module. After setting the variable, the docker service must be restarted.
+
 ```puppet
 windows_env { 'HTTP_PROXY'
   value  => 'http://1.2.3.4:80',
@@ -368,9 +376,9 @@ The `extra_parameters` parameter, which contains an array of command line argume
 
 By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems.
 
-It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image ise used, whether it be in a remote registry or installed on the server already by the `docker::image` define type. 
+It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image ise used, whether it be in a remote registry or installed on the server already by the `docker::image` define type.
 
-NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again. 
+NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again.
 
 To use an image tag, add the following code to the manifest file:
 
@@ -425,6 +433,7 @@ docker::run { 'helloworld':
 ```
 
 To run command on Windows 2016 requires the `restart` parameter to be set:
+
 ```puppet
 docker::run { 'helloworld':
   image => 'microsoft/nanoserver',
@@ -506,6 +515,7 @@ docker::volumes::volumes:
 Any extra options should be passed in as an array
 
 Some of the key advantages for using `volumes` over `bind mounts` are:
+
 * Easier to back up or migrate rather than `bind mounts` (legacy volumes).
 * Managed with Docker CLI or API (Puppet type uses the CLI commands).
 * Works on Windows and Linux.
@@ -543,6 +553,7 @@ class {'docker::compose':
   version => '1.9.0',
 }
 ```
+
 Set the `version` parameter to any version you need to install.
 
 This is an example of a Compose file:
@@ -604,7 +615,7 @@ To deploy the stack, add the following code to the manifest file:
 
 To remove the stack, set `ensure  => absent`.
 
-If you are using a v3.2compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command. 
+If you are using a v3.2compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command.
 
 To deploy the stack, add the following code to the manifest file.
 
@@ -616,6 +627,7 @@ docker::stack { 'yourapp':
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
+
 To remove the stack, set `ensure  => absent`.
 
 ### Swarm mode
@@ -812,7 +824,7 @@ docker::registry_auth::registries:
     version: '<docker_version>'
 ```
 
-If using Docker V1.11 or later, the docker login email flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13). 
+If using Docker V1.11 or later, the docker login email flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13).
 
 Add the following code to the manifest file:
 
@@ -1139,11 +1151,12 @@ IPv4 address for the container default gateway. This address must be part of the
 Defaults to `undefined`.
 
 #### `ipv6`
+
 Enables ipv6 support for the docker daemon
 
 Defaults to false
 
-####  `ipv6_cidr`
+#### `ipv6_cidr`
 
 IPv6 subnet for fixed IPs
 
@@ -1288,7 +1301,6 @@ Defaults to `undefined`.
 Group ownership of the unix control socket.
 
 Default is `OS and package specific`.
-
 
 #### `extra_parameters`
 
@@ -1504,4 +1516,3 @@ This module supports:
 ## Development
 
 If you would like to contribute to this module, see the guidelines in [CONTRIBUTING.MD](https://github.com/puppetlabs/puppetlabs-docker/blob/master/CONTRIBUTING.md).
-
