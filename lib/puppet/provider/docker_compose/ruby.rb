@@ -24,7 +24,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       compose_containers.uniq!
       case compose_file['version']
       when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
-        compose_services = compose_services.deep_merge!(compose_file['services'])
+        compose_services.deep_merge!(compose_file['services'])
       # in compose v1 "version" parameter is not specified
       when nil
         compose_services = compose_services.deep_merge!(compose_file)
