@@ -75,23 +75,32 @@ RSpec.configure do |c|
 
         docker_compose_content_v3 = <<-EOS
 version: "3.4"
+x-images:
+  &default-image
+  alpine:3.8
 services:
   compose_test:
-    image: ubuntu:14.04
+    image: *default-image
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
       EOS
         docker_compose_override_v3 = <<-EOS
 version: "3.4"
+x-images:
+  &default-image
+  debian:stable-slim
 services:
   compose_test:
-    image: debian:jessie
+    image: *default-image
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
         EOS
         docker_stack_override_v3 = <<-EOS
 version: "3.4"
+x-images:
+  &default-image
+  debian:stable-slim
 services:
   compose_test:
-    image: debian:jessie
+    image: *default-image
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
         EOS
         docker_compose_content_v3_windows = <<-EOS

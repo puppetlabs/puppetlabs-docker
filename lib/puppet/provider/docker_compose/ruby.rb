@@ -12,7 +12,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     compose_services = {}
     compose_containers = []
     resource[:compose_files].each do |file|
-      compose_file = YAML.safe_load(File.read(file))
+      compose_file = YAML.safe_load(File.read(file), [], [], true)
       containers = docker([
                             'ps',
                             '--format',
@@ -24,10 +24,10 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       compose_containers.uniq!
       case compose_file['version']
       when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
-        compose_services = compose_services.deep_merge(compose_file['services'])
+        compose_services = compose_services.deep_merge!(compose_file['services'])
       # in compose v1 "version" parameter is not specified
       when nil
-        compose_services = compose_services.deep_merge(compose_file)
+        compose_services = compose_services.deep_merge!(compose_file)
       else
         raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
       end
