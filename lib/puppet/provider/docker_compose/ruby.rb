@@ -27,7 +27,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
         compose_services.deep_merge!(compose_file['services'])
       # in compose v1 "version" parameter is not specified
       when nil
-        compose_services = compose_services.deep_merge!(compose_file)
+        compose_services.deep_merge!(compose_file)
       else
         raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
       end
