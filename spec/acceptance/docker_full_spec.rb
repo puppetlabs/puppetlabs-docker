@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-if fact('osfamily') == 'windows'
+if fact('operatingsystem') == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'microsoft/nanoserver'
   default_image_tag = '10.0.14393.2189'
@@ -8,8 +8,8 @@ if fact('osfamily') == 'windows'
   default_digest = 'sha256:204c41542c0927ac0296802e44c56b886b47e99cf8220fb49d46951bd5fc1742'
   default_dockerfile = 'C:/Users/Administrator/AppData/Local/Temp/Dockerfile'
   dockerfile_test = 'C:/Windows/Dockerfile_test.txt'
-  #The default args are set because: 
-  #restart => 'always' - there is no service created to manage containers 
+  #The default args are set because:
+  #restart => 'always' - there is no service created to manage containers
   #net => 'nat' - docker uses bridged by default when running a container. When installing docker on windows the default network is NAT.
   default_docker_run_arg = "restart => 'always', net => 'nat',"
   default_run_command = "ping 127.0.0.1 -t"
@@ -18,7 +18,7 @@ if fact('osfamily') == 'windows'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = 'C:/Users/Administrator/AppData/Local/Temp'
   storage_driver = "windowsfilter"
-elsif fact('osfamily') == 'RedHat'
+elsif fact('operatingsystem') == 'RedHat'
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   default_image = 'alpine'
   second_image = 'busybox'
@@ -47,7 +47,13 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
-  storage_driver = "overlay2"   
+  if fact('operatingsystem') == 'Ubuntu'
+    storage_driver = "overlay2"
+  elsif fact('operatingsystem') == 'Debian' && fact('os.release.major') == '9'
+    storage_driver = "overlay2"
+  elsif fact('operatingsystem') == 'Debian' && fact('os.release.major') == '8'
+    storage_driver = "aufs"
+  end
 end
 
 describe 'the Puppet Docker module' do
@@ -87,7 +93,7 @@ describe 'the Puppet Docker module' do
         end
 
         it 'should be start a docker process' do
-          if fact('osfamily') == 'windows' 
+          if fact('osfamily') == 'windows'
             shell('powershell Get-Process -Name dockerd') do |r|
               expect(r.stdout).to match(/ProcessName/)
             end
@@ -163,7 +169,7 @@ describe 'the Puppet Docker module' do
             storage_driver => "#{storage_driver}",
             }
           EOS
-        
+
           apply_manifest(@pp, :catch_failures => true)
           sleep 15
           end
@@ -172,8 +178,8 @@ describe 'the Puppet Docker module' do
             shell("#{docker_command} info -f \"{{ .Driver}}\"") do |r|
               expect(r.stdout).to match (/#{storage_driver}/)
             end
-          end  
-      end          
+          end
+      end
 
       context 'passing a TCP address to bind to' do
         before(:all) do
@@ -223,7 +229,7 @@ describe 'the Puppet Docker module' do
         end
 
         it 'should show docker listening on the specified unix socket' do
-          if fact('osfamily') != 'windows'  
+          if fact('osfamily') != 'windows'
             shell('ps aux | grep docker') do |r|
               expect(r.stdout).to match(/unix:\/\/\/var\/run\/docker.sock/)
             end
@@ -799,7 +805,7 @@ describe 'the Puppet Docker module' do
         apply_manifest(pp, :catch_changes => true) unless fact('selinux') == 'true'
 
       end
-      
+
       it 'should restart a unhealthy container' do
       pp5=<<-EOS
         docker::run { 'container_3_7_3':
