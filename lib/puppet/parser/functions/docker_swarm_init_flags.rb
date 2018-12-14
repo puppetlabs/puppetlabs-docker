@@ -24,6 +24,16 @@ module Puppet::Parser::Functions
       flags << "--cert-expiry '#{opts['cert_expiry']}'"
     end
 
+    if opts['default_addr_pool'].is_a? Array
+      opts['default_addr_pool'].each do |default_addr_pool|
+        flags << "--default-addr-pool #{default_addr_pool}"
+      end
+    end
+
+    if opts['default_addr_pool_mask_length'] && opts['default_addr_pool_mask_length'].to_s != 'undef'
+      flags << "--default-addr-pool-mask-length '#{opts['default_addr_pool_mask_length']}'"
+    end
+
     if opts['dispatcher_heartbeat'] && opts['dispatcher_heartbeat'].to_s != 'undef'
       flags << "--dispatcher-heartbeat '#{opts['dispatcher_heartbeat']}'"
     end
