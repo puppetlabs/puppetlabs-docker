@@ -34,6 +34,14 @@
 #  Validity period for node certificates (ns|us|ms|s|m|h) (default 2160h0m0s)
 #  defaults to undef
 #
+# [*default_addr_pool*]
+#  Array of default subnet pools for global scope networks (['30.30.0.0/16','40.40.0.0/16'])
+#  defaults to undef
+#
+# [*default_addr_pool_mask_length*]
+#  Default subnet pools mask length for default-addr-pools (CIDR block number)
+#  defaults to undef
+#
 # [*dispatcher_heartbeat*]
 #  Dispatcher heartbeat period (ns|us|ms|s|m|h) (default 5s)
 #  Defaults to undef
@@ -78,6 +86,8 @@ define docker::swarm(
   Optional[String] $advertise_addr                = undef,
   Optional[Boolean] $autolock                     = false,
   Optional[String] $cert_expiry                   = undef,
+  Optional[Array] $default_addr_pool              = undef,
+  Optional[String] $default_addr_pool_mask_length = undef,
   Optional[String] $dispatcher_heartbeat          = undef,
   Optional[String] $external_ca                   = undef,
   Optional[Boolean] $force_new_cluster            = false,
@@ -115,16 +125,18 @@ define docker::swarm(
 
   if $init {
     $docker_swarm_init_flags = docker_swarm_init_flags({
-      init                 => $init,
-      advertise_addr       => $advertise_addr,
-      autolock             => $autolock,
-      cert_expiry          => $cert_expiry,
-      dispatcher_heartbeat => $dispatcher_heartbeat,
-      external_ca          => $external_ca,
-      force_new_cluster    => $force_new_cluster,
-      listen_addr          => $listen_addr,
-      max_snapshots        => $max_snapshots,
-      snapshot_interval    => $snapshot_interval,
+      init                          => $init,
+      advertise_addr                => $advertise_addr,
+      autolock                      => $autolock,
+      cert_expiry                   => $cert_expiry,
+      dispatcher_heartbeat          => $dispatcher_heartbeat,
+      default_addr_pool             => $default_addr_pool,
+      default_addr_pool_mask_length => $default_addr_pool_mask_length,
+      external_ca                   => $external_ca,
+      force_new_cluster             => $force_new_cluster,
+      listen_addr                   => $listen_addr,
+      max_snapshots                 => $max_snapshots,
+      snapshot_interval             => $snapshot_interval,
     })
 
     $exec_init = "${docker_command} ${docker_swarm_init_flags}"
