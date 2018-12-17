@@ -1,74 +1,76 @@
-require 'rubygems'
-require 'bundler/setup'
-
 require 'puppetlabs_spec_helper/rake_tasks'
-require 'puppet_pot_generator/rake_tasks'
+require 'puppet-syntax/tasks/puppet-syntax'
+require 'puppet_blacksmith/rake_tasks' if Bundler.rubygems.find_name('puppet-blacksmith').any?
+require 'github_changelog_generator/task' if Bundler.rubygems.find_name('github_changelog_generator').any?
+require 'puppet-strings/tasks' if Bundler.rubygems.find_name('puppet-strings').any?
 
-# These gems aren't always present, for instance
-# on Travis with --without development
-begin
-  require 'puppet_blacksmith/rake_tasks'
-rescue LoadError # rubocop:disable Lint/HandleExceptions
+def changelog_user
+  return unless Rake.application.top_level_tasks.include? "changelog"
+  returnVal = nil || JSON.load(File.read('metadata.json'))['author']
+  raise "unable to find the changelog_user in .sync.yml, or the author in metadata.json" if returnVal.nil?
+  puts "GitHubChangelogGenerator user:#{returnVal}"
+  returnVal
 end
 
-begin
-  require 'rubocop/rake_task'
-rescue LoadError # rubocop:disable Lint/HandleExceptions
+def changelog_project
+  return unless Rake.application.top_level_tasks.include? "changelog"
+  returnVal = nil || JSON.load(File.read('metadata.json'))['name']
+  raise "unable to find the changelog_project in .sync.yml or the name in metadata.json" if returnVal.nil?
+  puts "GitHubChangelogGenerator project:#{returnVal}"
+  returnVal
 end
 
-begin
-  require 'puppet-strings/rake_tasks'
-rescue LoadError # rubocop:disable Lint/HandleExceptions
+def changelog_future_release
+  return unless Rake.application.top_level_tasks.include? "changelog"
+  returnVal = JSON.load(File.read('metadata.json'))['version']
+  raise "unable to find the future_release (version) in metadata.json" if returnVal.nil?
+  puts "GitHubChangelogGenerator future_release:#{returnVal}"
+  returnVal
 end
 
-PuppetLint.configuration.relative = true
-PuppetLint.configuration.disable_80chars
-PuppetLint.configuration.fail_on_warnings = true
+PuppetLint.configuration.send('disable_relative')
 
-# Forsake support for Puppet 2.6.2 for the benefit of cleaner code.
-# http://puppet-lint.com/checks/class_parameter_defaults/
-PuppetLint.configuration.disable_class_parameter_defaults
-# http://puppet-lint.com/checks/class_inherits_from_params_class/
-PuppetLint.configuration.disable_class_inherits_from_params_class
-# To fix unquoted cases in spec/fixtures/modules/apt/manifests/key.pp
-PuppetLint.configuration.disable_unquoted_string_in_case
-
-exclude_paths = [
-  "pkg/**/*",
-  "vendor/**/*",
-  "spec/**/*",
-]
-PuppetLint.configuration.ignore_paths = exclude_paths
-PuppetSyntax.fail_on_deprecation_notices = false
-PuppetSyntax.exclude_paths = exclude_paths
-
-begin
-  require 'parallel_tests/cli'
-  desc 'Run spec tests in parallel'
-  task :parallel_spec do
-    Rake::Task[:spec_prep].invoke
-    ParallelTests::CLI.new.run('-o "--format=progress" -t rspec spec/classes spec/defines'.split)
-    Rake::Task[:spec_clean].invoke
+if Bundler.rubygems.find_name('github_changelog_generator').any?
+  GitHubChangelogGenerator::RakeTask.new :changelog do |config|
+    raise "Set CHANGELOG_GITHUB_TOKEN environment variable eg 'export CHANGELOG_GITHUB_TOKEN=valid_token_here'" if Rake.application.top_level_tasks.include? "changelog" and ENV['CHANGELOG_GITHUB_TOKEN'].nil?
+    config.user = "#{changelog_user}"
+    config.project = "#{changelog_project}"
+    config.future_release = "#{changelog_future_release}"
+    config.exclude_labels = ['maintenance']
+    config.header = "# Change log\n\nAll notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org)."
+    config.add_pr_wo_labels = true
+    config.issues = false
+    config.merge_prefix = "### UNCATEGORIZED PRS; GO LABEL THEM"
+    config.configure_sections = {
+      "Changed" => {
+        "prefix" => "### Changed",
+        "labels" => ["backwards-incompatible"],
+      },
+      "Added" => {
+        "prefix" => "### Added",
+        "labels" => ["feature", "enhancement"],
+      },
+      "Fixed" => {
+        "prefix" => "### Fixed",
+        "labels" => ["bugfix"],
+      },
+    }
   end
-  desc 'Run syntax, lint, spec and metadata tests in parallel'
-  task :parallel_test => [
-    :syntax,
-    :lint,
-    :parallel_spec,
-    :metadata_lint,
-  ]
-rescue LoadError # rubocop:disable Lint/HandleExceptions
+else
+  desc 'Generate a Changelog from GitHub'
+  task :changelog do
+    raise <<EOM
+The changelog tasks depends on unreleased features of the github_changelog_generator gem.
+Please manually add it to your .sync.yml for now, and run `pdk update`:
+---
+Gemfile:
+  optional:
+    ':development':
+      - gem: 'github_changelog_generator'
+        git: 'https://github.com/skywinder/github-changelog-generator'
+        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
+        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
+EOM
+  end
 end
 
-# This fixes a backwards incompatibility in puppetlabs_spec_helper 1.1.0
-if Rake::Task.task_defined?('metadata_lint')
-  task :metadata => :metadata_lint
-end
-
-desc 'Run syntax, lint and  metadata tests'
-task :test => [
-  :syntax,
-  :lint,
-  :metadata_lint,
-  :spec,
-]

@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'shellwords'
 #
 # docker_exec_flags.rb
 #
 module Puppet::Parser::Functions
   # Transforms a hash into a string of docker exec flags
-  newfunction(:docker_exec_flags, :type => :rvalue) do |args|
+  newfunction(:docker_exec_flags, type: :rvalue) do |args|
     opts = args[0] || {}
     flags = []
 

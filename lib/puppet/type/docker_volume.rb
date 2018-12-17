@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:docker_volume) do
   @doc = 'A type representing a Docker volume'
   ensurable
