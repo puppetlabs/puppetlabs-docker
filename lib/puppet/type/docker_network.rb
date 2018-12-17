@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:docker_network) do
   @doc = 'Type representing a Docker network'
   ensurable
@@ -11,7 +13,7 @@ Puppet::Type.newtype(:docker_network) do
     desc 'The network driver used by the network'
   end
 
-  newparam(:subnet, :array_matching => :all) do
+  newparam(:subnet, array_matching: :all) do
     desc 'The subnet in CIDR format that represents a network segment'
   end
 

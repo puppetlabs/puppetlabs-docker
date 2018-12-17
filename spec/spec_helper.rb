@@ -1,12 +1,55 @@
+# frozen_string_literal: true
+
 require 'puppetlabs_spec_helper/module_spec_helper'
+require 'rspec-puppet-facts'
+
+require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spec_helper_local.rb'))
+
+include RspecPuppetFacts
+
+default_facts = {
+  puppetversion: Puppet.version,
+  facterversion: Facter.version,
+}
+
+default_fact_files = [
+  File.expand_path(File.join(File.dirname(__FILE__), 'default_facts.yml')),
+  File.expand_path(File.join(File.dirname(__FILE__), 'default_module_facts.yml')),
+]
+
+default_fact_files.each do |f|
+  next unless File.exist?(f) && File.readable?(f) && File.size?(f)
+
+  begin
+    default_facts.merge!(YAML.safe_load(File.read(f)))
+  rescue => e
+    RSpec.configuration.reporter.message "WARNING: Unable to load #{f}: #{e}"
+  end
+end
+
+RSpec.configure do |c|
+  c.default_facts = default_facts
+  c.before :each do
+    # set to strictest setting for testing
+    # by default Puppet runs at warning level
+    Puppet.settings[:strict] = :warning
+  end
+end
+
+def ensure_module_defined(module_name)
+  module_name.split('::').reduce(Object) do |last_module, next_module|
+    last_module.const_set(next_module, Module.new) unless last_module.const_defined?(next_module, false)
+    last_module.const_get(next_module, false)
+  end
+end
 
 RSpec::Matchers.define :require_string_for do |property|
   match do |type_class|
-    config = {:name => 'name'}
+    config = { name: 'name' }
     config[property] = 2
-    expect do
+    expect {
       type_class.new(config)
-    end.to raise_error(Puppet::Error, /#{property} should be a String/)
+    }.to raise_error(Puppet::Error, %r{#{property} should be a String})
   end
   failure_message do |type_class|
     "#{type_class} should require #{property} to be a String"
@@ -15,13 +58,15 @@ end
 
 RSpec::Matchers.define :require_hash_for do |property|
   match do |type_class|
-    config = {:name => 'name'}
+    config = { name: 'name' }
     config[property] = 2
-    expect do
+    expect {
       type_class.new(config)
-    end.to raise_error(Puppet::Error, /#{property} should be a Hash/)
+    }.to raise_error(Puppet::Error, %r{#{property} should be a Hash})
   end
   failure_message do |type_class|
     "#{type_class} should require #{property} to be a Hash"
   end
 end
+
+# 'spec_overrides' from sync.yml will appear below this line

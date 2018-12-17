@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:docker_compose) do
   @doc = 'A type representing a Docker Compose file'
 
@@ -34,7 +36,7 @@ Puppet::Type.newtype(:docker_compose) do
     end
   end
 
-  newparam(:compose_files, :array_matching => :all) do
+  newparam(:compose_files, array_matching: :all) do
     desc 'An array of Docker Compose Files paths.'
     validate do |value|
       raise _('compose files should be an array') unless value.is_a? Array

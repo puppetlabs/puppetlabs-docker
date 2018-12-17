@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 Puppet::Type.type(:docker_volume).provide(:ruby) do
@@ -7,10 +9,10 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
   commands docker: 'docker'
 
   def volume_conf
-    flags = %w[volume create]
-    multi_flags = lambda { |values, format|
+    flags = ['volume', 'create']
+    multi_flags = ->(values, format) {
       filtered = [values].flatten.compact
-      filtered.map { |val| sprintf(format, val) }
+      filtered.map { |val| format % val }
     }
 
     [
@@ -25,7 +27,7 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
   end
 
   def self.instances
-    output = docker(%w[volume ls])
+    output = docker(['volume', 'ls'])
     lines = output.split("\n")
     lines.shift # remove header row
     lines.map do |line|
@@ -33,11 +35,11 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
       inspect = docker(['volume', 'inspect', name])
       obj = JSON.parse(inspect).first
       new(
-        :name => name,
-        :mountpoint => obj['Mountpoint'],
-        :options => obj['Options'],
-        :ensure  => :present,
-        :driver  => driver,
+        name: name,
+        mountpoint: obj['Mountpoint'],
+        options: obj['Options'],
+        ensure: :present,
+        driver: driver,
       )
     end
   end
