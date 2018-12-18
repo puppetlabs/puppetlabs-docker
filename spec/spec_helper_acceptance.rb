@@ -70,15 +70,14 @@ RSpec.configure do |c|
       on host, puppet('module', 'install', 'puppetlabs-powershell', '--version', '2.1.5'), acceptable_exit_codes: [0, 1]
       on host, puppet('module', 'install', 'puppetlabs-reboot', '--version', '2.0.0'), acceptable_exit_codes: [0, 1]
 
-
         # net-tools required for netstat utility being used by some tests
-        if fact_on(host, 'osfamily') == 'RedHat' && fact_on(host, 'operatingsystemmajrelease') == '7'
-          on(host, 'yum install -y net-tools device-mapper')
-        end
-        if fact_on(host, 'operatingsystem') == 'Debian'
-          on(host, 'apt-get install net-tools')
-        end
-      
+      if fact_on(host, 'osfamily') == 'RedHat' && fact_on(host, 'operatingsystemmajrelease') == '7'
+        on(host, 'yum install -y net-tools device-mapper')
+      end
+
+      if fact_on(host, 'operatingsystem') == 'Debian'
+        on(host, 'apt-get install net-tools')
+      end
       docker_compose_content_v3 = <<-EOS
 version: "3.4"
 x-images:
