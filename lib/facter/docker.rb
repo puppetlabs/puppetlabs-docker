@@ -32,7 +32,7 @@ Facter.add(:docker_user_temp_path) do
 end
 
 docker_command = if Facter.value(:kernel) == 'windows'
-                   'powershell -c docker'
+                   'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
                  else
                    'docker'
                  end
