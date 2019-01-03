@@ -332,6 +332,7 @@ This is equivalent to running the  `docker run -d base /bin/sh -c "while true; d
 ```puppet
 docker::run { 'helloworld':
   image            => 'base',
+  detach           => true,
   service_prefix   => 'docker-',
   command          => '/bin/sh -c "while true; do echo hello world; sleep 1; done"',
   ports            => ['4444', '4555'],
