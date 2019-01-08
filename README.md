@@ -26,6 +26,7 @@
    * [Defined types](#definedtypes)
    * [Types](#types)
    * [Parameters](#parameters)
+   * [Functions](#functions)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
 
@@ -1502,6 +1503,12 @@ Auto pool extension threshold (in % of pool size).
 Extends the pool by the specified percentage when the threshold is passed.
 
 For further explanation please refer to the[PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
+
+### Functions
+
+#### `docker::sanitised_name`
+
+Sanitises string or array of strings for safe usage as container name inside scripts and commands.
 
 ## Limitations
 
