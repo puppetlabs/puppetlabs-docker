@@ -33,7 +33,7 @@ elsif fact('operatingsystem') == 'RedHat'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
   storage_driver = "devicemapper"
-else 
+else
   docker_args = ''
   default_image = 'alpine'
   second_image = 'busybox'
@@ -817,9 +817,14 @@ describe 'the Puppet Docker module' do
 
         if fact('osfamily') == 'windows'
           apply_manifest(pp5, :catch_failures => true)
+        elsif fact('os.release.major') =~ (/14.04|8/)
+          apply_manifest(pp5, :catch_failures => true) do |r|
+            expect(r.stdout).to match(/container_3_7_3/)
+          end
         else
           apply_manifest(pp5, :catch_failures => true) do |r|
             expect(r.stdout).to match(/docker-container_3_7_3-systemd-reload/)
+          end
           end
         end
       end
@@ -937,6 +942,11 @@ describe 'the Puppet Docker module' do
           end
         end
       end
+
+      it 'cleanup after all tests' do
+        shell("#{docker_command} rm -f $(#{docker_command} ps -a -q)")
+        # Delete all existing images
+        shell("#{docker_command} rmi -f $(#{docker_command} images -q)")
+      end
     end
   end
-end
