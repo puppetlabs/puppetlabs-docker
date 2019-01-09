@@ -47,12 +47,10 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
-  if fact('operatingsystem') == 'Ubuntu'
-    storage_driver = "overlay2"
-  elsif fact('operatingsystem') == 'Debian' && fact('os.release.major') == '9'
-    storage_driver = "overlay2"
-  elsif fact('operatingsystem') == 'Debian' && fact('os.release.major') == '8'
+  if fact('os.release.major') =~ (/14.04|8/)
     storage_driver = "aufs"
+  else
+    storage_driver = "overlay2"
   end
 end
 
