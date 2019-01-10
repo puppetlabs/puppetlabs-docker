@@ -1,3 +1,11 @@
+# Version 3.2.0
+
+Adds in support for Puppet 6
+
+Containers will be restared due to script changes in [PR #367](https://github.com/puppetlabs/puppetlabs-docker/pull/367)
+
+A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/milestone/4?closed=1)
+
 # Version 3.1.0
 
 Adding in the following faetures/functionality
