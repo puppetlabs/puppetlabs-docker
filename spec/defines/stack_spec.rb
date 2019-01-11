@@ -54,7 +54,7 @@ require 'spec_helper'
       } }
       it { should contain_exec('docker stack create foo').with_command(/docker stack deploy/) }
       it { should contain_exec('docker stack create foo').with_command(/--compose-file '\/tmp\/docker-compose.yaml'/) }
-      it { should contain_exec('docker stack create foo').with_command(/--prune'/) }
+      it { should contain_exec('docker stack create foo').with_command(/--prune/) }
     end
 
     context 'with ensure => absent'  do

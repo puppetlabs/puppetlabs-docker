@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'shellwords'
 #
 # docker_stack_flags.rb
