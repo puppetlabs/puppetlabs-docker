@@ -5,7 +5,7 @@ require 'shellwords'
 # docker_stack_flags.rb
 #
 module Puppet::Parser::Functions
-  # Transforms a hash into a string of docker swarm init flags
+  # Transforms a hash into a string of docker stack flags
   newfunction(:docker_stack_flags, type: :rvalue) do |args|
     opts = args[0] || {}
     flags = []
@@ -25,7 +25,7 @@ module Puppet::Parser::Functions
     end
 
     if opts['prune'] && opts['prune'].to_s != 'undef'
-      flags << "--prune '#{opts['prune']}'"
+      flags << '--prune'
     end
 
     if opts['with_registry_auth'] && opts['with_registry_auth'].to_s != 'undef'
