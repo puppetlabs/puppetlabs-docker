@@ -97,7 +97,7 @@ define docker::registry(
       $server_strip = regsubst($server, '/', '_', 'G')
 
       # no - with pw_hash
-      $local_user_strip = regsubst($local_user, '-', '', 'G')
+      $local_user_strip = regsubst($local_user, '[-_]', '', 'G')
 
       $_pass_hash = $pass_hash ? {
         Undef   => pw_hash($docker_auth, 'SHA-512', $local_user_strip),
