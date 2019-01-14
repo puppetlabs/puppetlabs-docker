@@ -18,7 +18,7 @@ if fact('operatingsystem') == 'windows'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = 'C:/Users/Administrator/AppData/Local/Temp'
   storage_driver = "windowsfilter"
-elsif fact('operatingsystem') == 'RedHat'
+elsif fact('operatingsystem') =~ (/RedHat|CentOS/)
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   default_image = 'alpine'
   second_image = 'busybox'
@@ -47,7 +47,7 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
-  if fact('os.release.major') =~ (/14.04|8/)
+  if fact('os.release.major') =~ (/14.04|^8$/)
     storage_driver = "aufs"
   else
     storage_driver = "overlay2"
@@ -815,6 +815,13 @@ describe 'the Puppet Docker module' do
           }
           EOS
 
+      pp_delete=<<-EOS
+      docker::run { 'container_3_7_3':
+        image   => '#{default_image}',
+        ensure  => absent,
+        }
+        EOS
+
         if fact('osfamily') == 'windows'
           apply_manifest(pp5, :catch_failures => true)
         elsif fact('os.release.major') =~ (/14.04|8/)
@@ -825,7 +832,8 @@ describe 'the Puppet Docker module' do
           apply_manifest(pp5, :catch_failures => true) do |r|
             expect(r.stdout).to match(/docker-container_3_7_3-systemd-reload/)
           end
-          end
+        end
+        apply_manifest(pp_delete, :catch_failures => true)
         end
       end
     end
@@ -864,6 +872,13 @@ describe 'the Puppet Docker module' do
           }
         EOS
 
+        pp_delete=<<-EOS
+        docker::run { 'container_4_1':
+          image   => '#{default_image}',
+          ensure  => absent,
+          }
+          EOS
+
         apply_manifest(pp2, :catch_failures => true)
 
         # A sleep to give docker time to execute properly
@@ -879,6 +894,7 @@ describe 'the Puppet Docker module' do
             expect(r.stdout).to match(/test_file.txt/)
           end
         end
+        apply_manifest(pp_delete, :catch_failures => true)
       end
 
       it 'should only run if notified when refreshonly is true' do
@@ -924,6 +940,13 @@ describe 'the Puppet Docker module' do
           }
         EOS
 
+        pp_delete=<<-EOS
+        docker::run { '#{container_name}':
+          image   => '#{default_image}',
+          ensure  => absent,
+          }
+          EOS
+
         pp2 = pp + pp_extra
 
         apply_manifest(pp2, :catch_failures => true)
@@ -941,12 +964,7 @@ describe 'the Puppet Docker module' do
             expect(r.stdout).to match(/test_file.txt/)
           end
         end
-      end
-
-      it 'cleanup after all tests' do
-        shell("#{docker_command} rm -f $(#{docker_command} ps -a -q)")
-        # Delete all existing images
-        shell("#{docker_command} rmi -f $(#{docker_command} images -q)")
+        apply_manifest(pp_delete, :catch_failures => true)
       end
     end
   end
