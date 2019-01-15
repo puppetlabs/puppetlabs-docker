@@ -46,6 +46,17 @@ require 'spec_helper'
       it { should contain_exec('docker stack create foo').with_command(/--compose-file '\/tmp\/docker-compose-2.yaml'/) }
     end
 
+    context 'with prune' do
+      let(:params) { {
+        'stack_name' => 'foo', 	
+        'compose_files' => ['/tmp/docker-compose.yaml'],
+        'prune' => true,
+      } }
+      it { should contain_exec('docker stack create foo').with_command(/docker stack deploy/) }
+      it { should contain_exec('docker stack create foo').with_command(/--compose-file '\/tmp\/docker-compose.yaml'/) }
+      it { should contain_exec('docker stack create foo').with_command(/--prune/) }
+    end
+
     context 'with ensure => absent'  do
       let(:params) { {
         'ensure' => 'absent',

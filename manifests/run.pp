@@ -109,6 +109,7 @@ define docker::run(
   Variant[String,Boolean] $docker_service               = false,
   Optional[Boolean] $disable_network                    = false,
   Optional[Boolean] $privileged                         = false,
+  Optional[Boolean] $detach                             = undef,
   Variant[String,Array[String],Undef] $extra_parameters = undef,
   Optional[String] $systemd_restart                     = 'on-failure',
   Variant[String,Hash,Undef] $extra_systemd_parameters  = {},
@@ -169,6 +170,12 @@ define docker::run(
     assert_type(Pattern[/^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$/], $systemd_restart)
   }
 
+  if $detach == undef {
+    $valid_detach = $docker::params::detach_service_in_init
+  } else {
+    $valid_detach = $detach
+  }
+
   $extra_parameters_array = any2array($extra_parameters)
   $after_array = any2array($after)
   $depends_array = any2array($depends)
@@ -204,19 +211,19 @@ define docker::run(
     osfamily              => $::osfamily,
   })
 
-  $sanitised_title = regsubst($title, '[^0-9A-Za-z.\-_]', '-', 'G')
+  $sanitised_title = docker::sanitised_name($title)
   if empty($depends_array) {
     $sanitised_depends_array = []
   }
   else {
-    $sanitised_depends_array = regsubst($depends_array, '[^0-9A-Za-z.\-_]', '-', 'G')
+    $sanitised_depends_array = docker::sanitised_name($depends_array)
   }
 
   if empty($after_array) {
     $sanitised_after_array = []
   }
   else {
-    $sanitised_after_array = regsubst($after_array, '[^0-9A-Za-z.\-_]', '-', 'G')
+    $sanitised_after_array = docker::sanitised_name($after_array)
   }
 
   if $::osfamily == 'windows' {

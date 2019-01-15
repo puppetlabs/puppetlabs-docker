@@ -9,33 +9,33 @@
 
 1. [Description](#description)
 2. [Setup](#setup)
+   * [Proxy on Windows](#proxy-on-windows)
+   * [Validating and unit testing the module](#validating-and-unit-testing-the-module)
 3. [Usage - Configuration options and additional functionality](#usage)
    * [Images](#images)
    * [Containers](#containers)
    * [Networks](#networks)
    * [Volumes](#volumes)
    * [Compose](#compose)
-   * [Swarm mode](#swarmmode)
+   * [Swarm mode](#swarm-mode)
    * [Tasks](#tasks)
-   * [Docker services](#dockerservices)
-   * [Private registries](#privateregistries)
+   * [Docker services](#docker-services)
+   * [Private registries](#private-registries)
    * [Exec](#exec)
    * [Plugins](#plugins)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
    * [Classes](#classes)
-   * [Defined types](#definedtypes)
+   * [Defined types](#defined-types)
    * [Types](#types)
    * [Parameters](#parameters)
+   * [Functions](#functions)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
 
-## Overview
-
-The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) for Linux based distributions and [Docker EE(Enterprise Edition)](https://www.docker.com/enterprise-edition) for Windows and Linux as well as legacy releases.
 
 ## Description
 
-This module install, configures, and manages [Docker](https://github.com/docker/docker).
+The Puppet docker module installs, configures, and manages [Docker](https://github.com/docker/docker) from the [Docker repository](https://docs.docker.com/installation/). It supports the latest [Docker CE (Community Edition)](https://www.docker.com/community-edition) for Linux based distributions and [Docker EE(Enterprise Edition)](https://www.docker.com/enterprise-edition) for Windows and Linux as well as legacy releases.
 
 Due to the new naming convention for Docker packages, this module prefaces any params that refer to the release with `_ce` or `_engine`. Examples of these are documented in this README.
 
@@ -127,9 +127,10 @@ class { 'docker':
   bip             => '192.168.1.1/24',
   fixed_cidr      => '192.168.1.144/28',
 }
-
-For more information about the options to configure the default docker bridge, see (this)[https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/] page.
 ```
+
+For more information about the configuration options for the default docker bridge, see the [Docker documentation](https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/).
+
 
 When setting up TLS, upload the related files (CA certificate, server certificate, and key) and include their paths in the manifest file:
 
@@ -237,6 +238,26 @@ service { 'docker'
 }
 ````
 
+### Validating and unit testing the module
+
+This module is compliant with the Puppet Development Kit [(PDK)](https://puppet.com/docs/pdk/1.x/pdk.html), which provides tools to help run unit tests on the module and validate the modules's metadata, syntax, and style.
+
+To run all validations against this module, run the following command:
+
+```
+pdk validate
+```
+
+To change validation behavior, add options flags to the command. For a complete list of command options and usage information, see the PDK command [reference](https://puppet.com/docs/pdk/1.x/pdk_reference.html#pdk-validate-command).
+
+To unit test the module, run the following command:
+
+```
+pdk test unit
+```
+
+To change unit test behavior, add option flags to the command. For a complete list of command options and usage information, see the PDK command [reference](https://puppet.com/docs/pdk/1.x/pdk_reference.html#pdk-test-unit-command).
+
 ## Usage
 
 ### Images
@@ -332,6 +353,7 @@ This is equivalent to running the  `docker run -d base /bin/sh -c "while true; d
 ```puppet
 docker::run { 'helloworld':
   image            => 'base',
+  detach           => true,
   service_prefix   => 'docker-',
   command          => '/bin/sh -c "while true; do echo hello world; sleep 1; done"',
   ports            => ['4444', '4555'],
@@ -376,9 +398,9 @@ The `extra_parameters` parameter, which contains an array of command line argume
 
 By default, automatic restarting of the service on failure is enabled by the service file for systemd based systems.
 
-It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image ise used, whether it be in a remote registry or installed on the server already by the `docker::image` define type.
+It's recommended that an image tag is used at all times with the `docker::run` define type. If not, the latest image is used whether it's in a remote registry or installed on the server already by the `docker::image` define type.
 
-NOTE: As of v3.0.0, if the latest tag is used, the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. For this this reason it highly recommended that an alternative tag be used, or the image be removed before pulling latest again.
+NOTE: As of v3.0.0, if the latest tag is used the image will be the latest at the time the of the initial puppet run. Any subsequent puppet runs will always reference the latest local image. Therefore, it's recommended that an alternative tag be used, or the image be removed before pulling latest again.
 
 To use an image tag, add the following code to the manifest file:
 
@@ -615,7 +637,7 @@ To deploy the stack, add the following code to the manifest file:
 
 To remove the stack, set `ensure  => absent`.
 
-If you are using a v3.2compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command.
+If you are using a v3.2 compose file or above on a Docker Swarm cluster, include the `docker::stack` class. Similar to using older versions of Docker, compose the file resource before running the stack command.
 
 To deploy the stack, add the following code to the manifest file.
 
@@ -824,7 +846,7 @@ docker::registry_auth::registries:
     version: '<docker_version>'
 ```
 
-If using Docker V1.11 or later, the docker login email flag has been deprecated [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13).
+If using Docker V1.11 or later, the docker login email flag has been deprecated. See the [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13).
 
 Add the following code to the manifest file:
 
@@ -879,7 +901,7 @@ docker::exec { 'cron_allow_root':
 
 ### Plugin
 
-The module supports the installation of docker plugins:
+The module supports the installation of Docker plugins:
 
 ```puppet
 docker::plugin {'foo/fooplugin:latest':
@@ -891,7 +913,7 @@ To disable an active plugin:
 
 ```puppet
 docker::plugin {'foo/fooplugin:latest':
-  enaled => false,
+  enabled => false,
 }
 ```
 
@@ -920,14 +942,15 @@ thub.com
 * docker::registry_auth
 * docker::run_instance
 * docker::services
+* docker::swarms
 * docker::systemd_reload
 * docker::volumes
 
 #### Private classes
 
-* docker::repos
-* docker::install
 * docker::config
+* docker::install
+* docker::repos
 * docker::service
 
 ### Defined types
@@ -941,6 +964,7 @@ thub.com
 * docker::stack
 * docker::swarm
 * docker::system_user
+* docker::windows_account
 
 ### Types
 
@@ -990,7 +1014,7 @@ An ipv6 or ipv4 gateway for the master subnet.
 
 #### `ip_range`
 
-The range of ip addresses used by the network.
+The range of IP addresses used by the network.
 
 #### `ipam_driver`
 
@@ -1118,7 +1142,7 @@ Enable the Docker unrestricted inter-container and the daemon host communication
 
 To disable, it requires `iptables=true`.
 
-Defaults to undef. The default value for the Docker daemon is `true`.
+Defaults to `undef`. The default value for the Docker daemon is `true`.
 
 #### `bip`
 
@@ -1336,7 +1360,7 @@ Default value is `10G`.
 
 #### `dm_fs`
 
-The filesystem to use for the base image (xfs or ext4).
+The file system to use for the base image (xfs or ext4).
 
 Defaults to `ext4`.
 
@@ -1358,13 +1382,13 @@ Do not change this parameter after the lvm devices initialize.
 
 #### `dm_loopdatasize`
 
-Specifies the size to use when creating the loopback file for the data device which is used for the thin pool.
+Specifies the size to use when creating the loop back file for the data device which is used for the thin pool.
 
 Default size is `100G`.
 
 #### `dm_loopmetadatasize`
 
-Specifies the size to use when creating the loopback file for the metadata device which is used for the thin pool.
+Specifies the size to use when creating the loop back file for the meta data device which is used for the thin pool.
 
 Default size is `2G`.
 
@@ -1372,13 +1396,13 @@ Default size is `2G`.
 
 This is deprecated. Use `dm_thinpooldev`.
 
-A custom blockdevice to use for data for the thin pool.
+A custom block device to use for data for the thin pool.
 
 #### `dm_metadatadev`
 
 This is deprecated. Use `dm_thinpooldev`.
 
-A custom blockdevice to use for metadata for the thin pool.
+A custom block device to use for meta data for the thin pool.
 
 #### `dm_thinpooldev`
 
@@ -1470,7 +1494,7 @@ The volume group to use for docker storage.
 
 #### `storage_root_size`
 
-The maximum size of the root filesystem.
+The maximum size of the root file system.
 
 #### `storage_data_size`
 
@@ -1501,6 +1525,12 @@ Auto pool extension threshold (in % of pool size).
 Extends the pool by the specified percentage when the threshold is passed.
 
 For further explanation please refer to the[PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
+
+### Functions
+
+#### `docker::sanitised_name`
+
+Sanitises string or array of strings for safe usage as container name inside scripts and commands.
 
 ## Limitations
 

@@ -27,6 +27,9 @@ namespace :acceptance do
       'ubuntu-1404',
       'ubuntu-1604',
       'ubuntu-1610',
+      'ubuntu-1804',
+      'debian-8',
+      'debian-9',
       'win-2016',
     ],
   }.each do |ns, configs|

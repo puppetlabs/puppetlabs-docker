@@ -8,7 +8,7 @@ if fact('osfamily') == 'windows'
 else
   docker_args = ''
   tmp_path = '/tmp'
-  test_container = 'debian'
+  test_container = 'alpine'
   wait_for_container_seconds = 10
 end
 
@@ -20,6 +20,9 @@ describe 'docker stack' do
         docker::swarm {'cluster_manager':
             init   => true,
             ensure => 'present',
+            advertise_addr => $facts['networking']['ip'],
+            listen_addr => $facts['networking']['ip'],
+            require => Class['docker'],
         }
       code
       apply_manifest(@install_code, :catch_failures=>true)
@@ -97,16 +100,16 @@ describe 'docker stack' do
               ensure        => present,
             }
           code
-        
+
           apply_manifest(@install_code, :catch_failures=>true)
         end
-    
+
         it "should find container with web_compose_test tag" do
             sleep wait_for_container_seconds
             shell("docker ps | grep web_compose_test", :acceptable_exit_codes => [0])
         end
       end
-    
+
       context 'Destroying project with multiple compose files' do
         before(:all) do
                 @install_code = <<-code
@@ -116,7 +119,7 @@ describe 'docker stack' do
                   ensure        => present,
                 }
               code
-            
+
               apply_manifest(@install_code, :catch_failures=>true)
 
               @destroy_code = <<-code
@@ -130,12 +133,12 @@ describe 'docker stack' do
             apply_manifest(@destroy_code, :catch_failures=>true)
             sleep 10 # wait for containers to stop
         end
-    
+
         it 'should be idempotent' do
           apply_manifest(@destroy_code, :catch_changes=>true)
           sleep 5
         end
-    
+
         it 'should not find a docker stack' do
             shell('docker stack ls') do |r|
                expect(r.stdout).to_not match(/web/)

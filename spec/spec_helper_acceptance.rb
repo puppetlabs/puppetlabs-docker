@@ -75,7 +75,7 @@ RSpec.configure do |c|
         on(host, 'yum install -y net-tools device-mapper')
       end
 
-      if fact_on(host, 'operatingsystem') == 'Debian'
+      if fact_on(host, 'osfamily') == 'Debian'
         on(host, 'apt-get install net-tools')
       end
       docker_compose_content_v3 = <<-EOS
