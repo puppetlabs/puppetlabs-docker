@@ -84,13 +84,13 @@ Facter.add(:docker) do
           docker['network'] = {}
 
           docker['network']['managed_interfaces'] = {}
-          network_list = Facter::Util::Resolution.exec('docker network ls | tail -n +2')
+          network_list = Facter::Util::Resolution.exec("#{docker_command} network ls | tail -n +2")
           docker_network_names = []
           network_list.each_line { |line| docker_network_names.push line.split[1] }
           docker_network_ids = []
           network_list.each_line { |line| docker_network_ids.push line.split[0] }
           docker_network_names.each do |network|
-            inspect = JSON.parse(Facter::Util::Resolution.exec("docker network inspect #{network}"))
+            inspect = JSON.parse(Facter::Util::Resolution.exec("#{docker_command} network inspect #{network}"))
             docker['network'][network] = inspect[0]
             network_id = docker['network'][network]['Id'][0..11]
             interfaces.each do |iface|

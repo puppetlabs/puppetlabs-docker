@@ -5,19 +5,25 @@ require 'json'
 describe Facter::Util::Fact, type: :fact do
   before :each do
     Facter.clear
-    Facter::Util::Resolution.stubs(:which).with('docker').returns('/usr/bin/docker')
+    if Facter.value(:kernel) == 'windows'
+      docker_command = 'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
+      Facter::Util::Resolution.stubs(:which).with('docker').returns('C:\Program Files\Docker\docker.exe')
+    else
+      docker_command = 'docker'
+      Facter::Util::Resolution.stubs(:which).with('docker').returns('/usr/bin/docker')
+    end
     docker_info = File.read(fixtures('facts', 'docker_info'))
-    Facter::Util::Resolution.stubs(:exec).with("docker info --format '{{json .}}'").returns(docker_info)
+    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} info --format '{{json .}}'").returns(docker_info)
     processors = File.read(fixtures('facts', 'processors'))
     Facter.fact(:processors).stubs(:value).returns(JSON.parse(processors))
 
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
-    Facter::Util::Resolution.stubs(:exec).with('docker network ls | tail -n +2').returns(docker_network_list)
+    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} network ls | tail -n +2").returns(docker_network_list)
     docker_network_names = Array.new
     docker_network_list.each_line {|line| docker_network_names.push line.split[1] }
     docker_network_names.each do |network|
       inspect = File.read(fixtures('facts', "docker_network_inspect_#{network}"))
-      Facter::Util::Resolution.stubs(:exec).with("docker network inspect #{network}").returns(inspect)
+      Facter::Util::Resolution.stubs(:exec).with("#{docker_command} network inspect #{network}").returns(inspect)
     end
   end
   after { Facter.clear }
