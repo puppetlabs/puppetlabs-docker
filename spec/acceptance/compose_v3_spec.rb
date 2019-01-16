@@ -8,7 +8,7 @@ if fact('osfamily') == 'windows'
   test_container = 'nanoserver-sac2016'
 else
   if fact('osfamily') == 'RedHat'
-    docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+    docker_args = "repo_opt => '--enablerepo=localmirror-everything'"
   else
     docker_args = ''
   end

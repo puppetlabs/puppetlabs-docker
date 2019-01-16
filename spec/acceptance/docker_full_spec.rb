@@ -19,7 +19,7 @@ if fact('operatingsystem') == 'windows'
   docker_mount_path = 'C:/Users/Administrator/AppData/Local/Temp'
   storage_driver = "windowsfilter"
 elsif fact('operatingsystem') =~ (/RedHat|CentOS/)
-  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+  docker_args = "repo_opt => '--enablerepo=localmirror-everything'"
   default_image = 'alpine'
   second_image = 'busybox'
   default_image_tag = '3.7'
