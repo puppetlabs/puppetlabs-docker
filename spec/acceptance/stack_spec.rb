@@ -146,7 +146,7 @@ describe 'docker stack' do
         end
 
         it 'should not find a docker container' do
-          shell("docker ps | grep #{test_container}", :acceptable_exit_codes => [1])
+          shell("docker ps | grep web_compose_test", :acceptable_exit_codes => [1])
         end
       end
 
