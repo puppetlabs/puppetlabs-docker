@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-if fact('operatingsystem') == 'windows'
+if fact('kernel') == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'microsoft/nanoserver'
   default_image_tag = '10.0.14393.2189'
@@ -18,8 +18,12 @@ if fact('operatingsystem') == 'windows'
   default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
   docker_mount_path = 'C:/Users/Administrator/AppData/Local/Temp'
   storage_driver = "windowsfilter"
-elsif fact('operatingsystem') =~ (/RedHat|CentOS/)
-  docker_args = "repo_opt => '--enablerepo=localmirror-everything'"
+else
+  if fact('os.family') == 'RedHat'
+    docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+  else
+    docker_args = ''
+  end
   default_image = 'alpine'
   second_image = 'busybox'
   default_image_tag = '3.7'
@@ -33,22 +37,10 @@ elsif fact('operatingsystem') =~ (/RedHat|CentOS/)
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = "/root"
   storage_driver = "devicemapper"
-else
-  docker_args = ''
-  default_image = 'alpine'
-  second_image = 'busybox'
-  default_image_tag = '3.7'
-  default_digest = 'sha256:3dcdb92d7432d56604d4545cbd324b14e647b313626d99b889d0626de158f73a'
-  default_dockerfile = '/root/Dockerfile'
-  dockerfile_test = "#{default_dockerfile}_test.txt"
-  docker_command = "docker"
-  default_docker_run_arg = ''
-  default_run_command = "init"
-  default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
-  default_docker_exec_command = 'touch /root/test_file.txt'
-  docker_mount_path = "/root"
-  if fact('os.release.major') =~ (/14.04|^8$/)
+  if fact('os.family') == 'Debian' && fact('os.release.major') =~ (/14.04|^8$/)
     storage_driver = "aufs"
+  elsif fact('os.family') == 'RedHat'
+    storage_driver = "devicemapper"
   else
     storage_driver = "overlay2"
   end
