@@ -7,8 +7,10 @@ if fact('osfamily') == 'windows'
   tmp_path = 'C:/cygwin64/tmp'
   test_container = 'nanoserver-sac2016'
 else
-  if fact('osfamily') == 'RedHat'
-    docker_args = "repo_opt => '--enablerepo=localmirror-everything'"
+  if fact('os.name') == 'RedHat'
+    docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+  elsif fact('os.name') == 'Centos'
+    docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   else
     docker_args = ''
   end
@@ -18,12 +20,12 @@ else
   test_container = 'debian'
 end
 
-describe 'docker compose' do 
+describe 'docker compose' do
   before(:all) do
     retry_on_error_matching(60, 5, /connection failure running/) do
       install_code = <<-code
         class { 'docker': #{docker_args} }
-        class { 'docker::compose': 
+        class { 'docker::compose':
           version => '1.23.2',
         }
       code
