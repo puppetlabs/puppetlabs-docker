@@ -388,6 +388,8 @@ You can specify the `ports`, `expose`, `env`, `dns`, and `volumes` values with a
 
 To pull the image before it starts, specify the `pull_on_start` parameter.
 
+Use the `detach` param to run container a container without the `-a` flag. This is only required on systems without `systemd`. This default is set in the params.pp based on the OS. Only override if you understand the consuquences and have a specific use case.
+
 To execute a command before the container stops, specify the `before_stop` parameter.
 
 Adding the container name to the `after` parameter to specify which containers start first, affects the generation of the `init.d/systemd` script.
