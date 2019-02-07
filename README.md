@@ -769,11 +769,12 @@ docker::services {'redis':
     image => 'redis:latest',
     publish => '6379:639',
     replicas => '5',
-    extra_params => ['--update-delay 1m', '--restart-window 30s']
+    mounts => ['type=bind,source=/etc/my-redis.conf,target=/etc/redis/redis.conf,readonly'],
+    extra_params => ['--update-delay 1m', '--restart-window 30s'],
   }
 ```
 
-To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service ports. To set the amount of containers running in the service, include the `replicas` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`.
+To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service ports. To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`.
 
 To update the service, add the following code to the manifest file:
 

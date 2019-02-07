@@ -21,11 +21,13 @@ describe 'docker::services', :type => :define do
       'extra_params' => ['--update-delay 1m', '--restart-window 30s'],
       'env'          => ['MY_ENV=1', 'MY_ENV2=2'],
       'label'        => ['com.example.foo="bar"', 'bar=baz'],
+      'mounts'       => ['type=bind,src=/tmp/a,dst=/tmp/a', 'type=bind,src=/tmp/b,dst=/tmp/b,readonly'],
     } }
     it { is_expected.to compile.with_all_deps }
     it { should contain_exec('test_service docker service create').with_command(/docker service create/) }
     it { should contain_exec('test_service docker service create').with_command(/--env MY_ENV=1/) }
     it { should contain_exec('test_service docker service create').with_command(/--label bar=baz/) }
+    it { should contain_exec('test_service docker service create').with_command(/--mount type=bind,src=\/tmp\/b,dst=\/tmp\/b,readonly/) }
 
     context 'multiple services declaration' do
       let(:pre_condition) {

@@ -66,6 +66,9 @@
 # [*registry_mirror*]
 #  This will allow the service to set a registry mirror.
 #  defaults to undef
+# [*mounts*]
+#  Allows attacking filesystem mounts to the service (specified as an array)
+#  defaults to []
 #
 # [*command*]
 #  Command to run on the container
@@ -89,6 +92,7 @@ define docker::services(
   Variant[String,Array,Undef] $workdir                   = undef,
   Variant[String,Array,Undef] $host_socket               = undef,
   Variant[String,Array,Undef] $registry_mirror           = undef,
+  Variant[String,Array,Undef] $mounts                    = undef,
   Variant[String,Array,Undef] $command                   = undef,
 ){
 
@@ -132,6 +136,7 @@ define docker::services(
       image           => $image,
       host_socket     => $host_socket,
       registry_mirror => $registry_mirror,
+      mounts          => $mounts,
       command         => $command,
     })
 
