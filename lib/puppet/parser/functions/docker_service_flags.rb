@@ -30,6 +30,12 @@ module Puppet::Parser::Functions
       end
     end
 
+    if opts['mounts'].is_a? Array
+      opts['mounts'].each do |mount|
+        flags << "--mount #{mount}"
+      end
+    end
+
     if opts['publish'] && opts['publish'].to_s != 'undef'
       flags << "--publish '#{opts['publish']}'"
     end
