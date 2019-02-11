@@ -51,7 +51,7 @@ end
 Facter.add(:docker_server_version) do
   setcode do
     docker_version = Facter.value(:docker_version)
-    if docker_version && docker_version['Server'].is_a?(Hash)
+    if docker_version && !docker_version['Server'].nil? && docker_version['Server'].is_a?(Hash)
       docker_version['Server']['Version']
     else
       nil
