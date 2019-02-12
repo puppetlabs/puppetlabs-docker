@@ -53,7 +53,11 @@ describe 'docker', :type => :class do
         it { should contain_class('apt') }
         it { should contain_package('docker').with_name('docker-ce').with_ensure('present') }
         it { should contain_apt__source('docker').with_location('https://download.docker.com/linux/ubuntu') }
-        it { should contain_apt__pin('docker').with_origin('download.docker.com') }
+        it { should contain_apt__pin('docker')
+          .with_ensure('present')
+          .with_origin('download.docker.com')
+          .with_priority(500)
+        }
         it { should contain_package('docker').with_install_options(nil) }
 
         it { should contain_file('/etc/default/docker').without_content(/icc=/) }
@@ -64,7 +68,11 @@ describe 'docker', :type => :class do
         it { should contain_class('apt') }
         it { should contain_package('docker').with_name('docker-ce').with_ensure('present') }
         it { should contain_apt__source('docker').with_location('https://download.docker.com/linux/debian') }
-        it { should contain_apt__pin('docker').with_origin('download.docker.com') }
+        it { should contain_apt__pin('docker')
+          .with_ensure('present')
+          .with_origin('download.docker.com')
+          .with_priority(500)
+        }
         it { should contain_package('docker').with_install_options(nil) }
 
         it { should contain_file('/etc/default/docker').without_content(/icc=/) }
