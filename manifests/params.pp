@@ -147,7 +147,7 @@ class docker::params {
       $socket_group                  = $socket_group_default
       $use_upstream_package_source   = true
       $pin_upstream_package_source   = true
-      $apt_source_pin_level          = 10
+      $apt_source_pin_level          = 500
       $repo_opt                      = undef
       $service_config                = undef
       $storage_setup_file            = undef
