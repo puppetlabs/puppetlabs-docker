@@ -1,3 +1,15 @@
+# Version 3.3.0
+
+Pins apt repo to 500 to ensure packages are updated
+
+Fixes issue in docker fact failing when docker is not started
+
+Acceptance testing updates
+
+Allows more recent version of the reboot module
+
+A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/milestone/5?closed=1)
+
 # Version 3.2.0
 
 Adds in support for Puppet 6
