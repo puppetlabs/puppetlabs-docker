@@ -10,7 +10,6 @@ Allows more recent version of the reboot module
 
 A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/milestone/5?closed=1)
 
-
 # Version 3.2.0
 
 Adds in support for Puppet 6
