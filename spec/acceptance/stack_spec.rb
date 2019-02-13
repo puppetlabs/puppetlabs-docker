@@ -31,8 +31,7 @@ describe 'docker stack' do
 
   context 'Creating stack' do
     let(:install) {"
-    docker::stack { 'web':
-      stack_name    => 'web',
+    docker_stack { 'web':
       compose_files => ['#{tmp_path}/docker-stack.yml'],
       ensure        => present,
     }"
@@ -60,21 +59,20 @@ describe 'docker stack' do
 
   context 'Destroying stack' do
     let(:install) {"
-        docker::stack { 'web':
-          stack_name    => 'web',
+        docker_stack { 'web':
           compose_files => ['#{tmp_path}/docker-stack.yml'],
           ensure        => present,
         }"
         }
         let(:destroy) {"
-            docker::stack { 'web':
-              stack_name    => 'web',
+            docker_stack { 'web':
               compose_files => ['#{tmp_path}/docker-stack.yml'],
               ensure        => absent,
             }"
         }
         it 'should run successfully' do
             apply_manifest(destroy, :catch_failures=>true)
+            sleep 10
         end
 
         it 'should be idempotent' do
@@ -94,8 +92,7 @@ describe 'docker stack' do
 
         before(:all) do
             @install_code = <<-code
-            docker::stack { 'web':
-              stack_name    => 'web',
+            docker_stack { 'web':
               compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
               ensure        => present,
             }
@@ -113,8 +110,7 @@ describe 'docker stack' do
       context 'Destroying project with multiple compose files' do
         before(:all) do
                 @install_code = <<-code
-                docker::stack { 'web':
-                  stack_name    => 'web',
+                docker_stack { 'web':
                   compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
                   ensure        => present,
                 }
@@ -123,15 +119,14 @@ describe 'docker stack' do
               apply_manifest(@install_code, :catch_failures=>true)
 
               @destroy_code = <<-code
-              docker::stack { 'web':
-                stack_name    => 'web',
+              docker_stack { 'web':
                 compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
                 ensure        => absent,
               }
             code
 
             apply_manifest(@destroy_code, :catch_failures=>true)
-            sleep 10 # wait for containers to stop
+            sleep 10# wait for containers to stop
         end
 
         it 'should be idempotent' do
