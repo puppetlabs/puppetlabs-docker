@@ -6,7 +6,11 @@ if fact('osfamily') == 'windows'
   puts "Not implemented on Windows"
   broken = true
 elsif fact('osfamily') == 'RedHat'
-  docker_args = "repo_opt => '--enablerepo=localmirror-extras'" 
+  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
+elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+  docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
+else
+  docker_args = ''
 end
 
 describe 'docker network', :win_broken => broken do
