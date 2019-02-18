@@ -47,6 +47,9 @@ define docker::stack(
 
   include docker::params
 
+  deprecation('docker::stack','The docker stack define type will be deprecated in a future release. Please migrate to the docker_stack type/provider.')
+
+
   $docker_command = "${docker::params::docker_command} stack"
 
   if $::osfamily == 'windows' {

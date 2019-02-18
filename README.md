@@ -626,6 +626,8 @@ Please note you should supply your master docker-compose file as the first eleme
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
+NOTE: this define will be deprecated in a future release in favor of the [docker type](#types)
+
 To deploy the stack, add the following code to the manifest file:
 
 ```puppet
@@ -927,7 +929,6 @@ docker::plugin {'foo/fooplugin:latest'
   ensure => 'absent',
   force_remove => true,
 }
-thub.com
 ```
 
 ## Reference
@@ -974,6 +975,7 @@ thub.com
 * docker_compose: A type that represents a docker compose file.
 * docker_network: A type that represents a docker network.
 * docker_volume: A type that represents a docker volume.
+* docker_stack: A type that repsents a docker stack.
 
 ### Parameters
 
@@ -1056,6 +1058,20 @@ Additional options for the volume driver.
 #### `mountpoint`
 
 The location that the volume is mounted to.
+
+The following parameters are available in the `docker_stack` type:
+
+#### 'bundle_file'
+
+A path to a Distributed Application Bundle file.
+
+#### 'compose_files'
+
+An array containing the docker compose file paths.
+
+#### `up_args`
+
+Arguments to be passed directly to docker stack deploy.
 
 #### Docker class parameters
 
