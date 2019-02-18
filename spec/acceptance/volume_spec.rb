@@ -8,7 +8,11 @@ if fact('osfamily') == 'windows'
 elsif ('osfamily') == 'RedHat'
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   command = 'docker'
+elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+  docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
+  command = 'docker'
 else
+  docker_args = ''
   command = 'docker'
 end
 

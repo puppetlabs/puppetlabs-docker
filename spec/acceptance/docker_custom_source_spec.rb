@@ -6,15 +6,19 @@ if fact('osfamily') == 'windows'
     docker_args = 'docker_ee => true, docker_ee_source_location => "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-14.zip"'
     default_image = 'microsoft/nanoserver'
     default_image_tag = '10.0.14393.2189'
-    #The default args are set because: 
-    #restart => 'always' - there is no service created to manage containers 
+    #The default args are set because:
+    #restart => 'always' - there is no service created to manage containers
     #net => 'nat' - docker uses bridged by default when running a container. When installing docker on windows the default network is NAT.
     default_docker_run_arg = "restart => 'always', net => 'nat',"
     default_run_command = "ping 127.0.0.1 -t"
     docker_command = "\"/cygdrive/c/Program Files/Docker/docker\""
-  skip = false
+    skip = false
+elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+    docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
+    skip = true
 else
-  skip = true
+    docker_args = ''
+    skip = true
 end
 
 describe 'the Puppet Docker module' do
@@ -32,7 +36,7 @@ describe 'the Puppet Docker module' do
     end
 
     it 'should be start a docker process' do
-        if fact('osfamily') == 'windows' 
+        if fact('osfamily') == 'windows'
         shell('powershell Get-Process -Name dockerd') do |r|
             expect(r.stdout).to match(/ProcessName/)
         end

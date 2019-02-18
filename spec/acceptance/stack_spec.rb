@@ -7,7 +7,11 @@ if fact('osfamily') == 'windows'
   wait_for_container_seconds = 120
 
 else
-  docker_args = ''
+  if fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+    docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
+  else
+    docker_args = ''
+  end
   tmp_path = '/tmp'
   test_container = 'alpine'
   wait_for_container_seconds = 10
