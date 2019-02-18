@@ -18,7 +18,7 @@
     },
     {
       "name": "puppetlabs/translate",
-      "version_requirement": ">= 0.0.1 <=1.1.0"
+      "version_requirement": ">= 0.0.1 <=1.2.0"
     },
     {
       "name": "puppetlabs/powershell",
