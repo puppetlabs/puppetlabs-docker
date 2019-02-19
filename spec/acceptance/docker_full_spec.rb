@@ -800,6 +800,7 @@ describe 'the Puppet Docker module' do
 
       it 'should restart a unhealthy container' do
       pp5=<<-EOS
+        class { 'docker': #{docker_args} }
         docker::run { 'container_3_7_3':
           image   => '#{default_image}',
           command => '#{default_run_command}',
@@ -810,6 +811,7 @@ describe 'the Puppet Docker module' do
           EOS
 
       pp_delete=<<-EOS
+      class { 'docker': #{docker_args} }
       docker::run { 'container_3_7_3':
         image   => '#{default_image}',
         ensure  => absent,
