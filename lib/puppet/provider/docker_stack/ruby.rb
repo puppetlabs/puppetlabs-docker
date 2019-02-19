@@ -78,8 +78,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
   end
 
   def bundle_file
-    return unless resource[:bundle_file].nil?
-    resource[:bundle_file].map { |x| ['-c', x] }.flatten
+    return resource[:bundle_file].map { |x| ['-c', x] }.flatten unless resource[:bundle_file].nil?
   end
 
   def compose_files
