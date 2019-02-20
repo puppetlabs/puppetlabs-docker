@@ -106,6 +106,8 @@ class docker::service (
   $service_config                    = $docker::service_config,
   $service_config_template           = $docker::service_config_template,
   $service_overrides_template        = $docker::service_overrides_template,
+  $socket_overrides_template         = $docker::socket_overrides_template,
+  $socket_override                   = $docker::socket_override,
   $service_hasstatus                 = $docker::service_hasstatus,
   $service_hasrestart                = $docker::service_hasrestart,
   $daemon_environment_files          = $docker::daemon_environment_files,
@@ -160,22 +162,36 @@ class docker::service (
   case $service_provider {
     'systemd': {
       file { '/etc/systemd/system/docker.service.d':
-        ensure => directory,
+        ensure => 'directory',
       }
 
       if $service_overrides_template {
         file { '/etc/systemd/system/docker.service.d/service-overrides.conf':
-          ensure  => present,
+          ensure  => 'present',
           content => template($service_overrides_template),
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
         }
-        exec { 'docker-systemd-reload-before-service':
-          path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
-          command     => 'systemctl daemon-reload > /dev/null',
-          before      => $_manage_service,
-          refreshonly => true,
+      }
+
+      if $socket_override {
+        file { '/etc/systemd/system/docker.socket.d':
+          ensure => 'directory',
         }
+
+        file { '/etc/systemd/system/docker.socket.d/socket-overrides.conf':
+          ensure  => 'present',
+          content => template($socket_overrides_template),
+          notify  => Exec['docker-systemd-reload-before-service'],
+          before  => $_manage_service,
+        }
+      }
+
+      exec { 'docker-systemd-reload-before-service':
+        path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
+        command     => 'systemctl daemon-reload > /dev/null',
+        notify      => $_manage_service,
+        refreshonly => true,
       }
     }
     'upstart': {

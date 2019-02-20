@@ -118,12 +118,16 @@ class docker::params {
             $storage_config             = '/etc/default/docker-storage'
             $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
             $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+            $socket_override            = false
             $service_hasstatus          = true
             $service_hasrestart         = true
             include docker::systemd_reload
           } else {
             $service_config_template    = 'docker/etc/default/docker.erb'
             $service_overrides_template = undef
+            $socket_overrides_template  = undef
+            $socket_override            = false
             $service_provider           = 'upstart'
             $service_hasstatus          = true
             $service_hasrestart         = false
@@ -136,6 +140,8 @@ class docker::params {
           $storage_config             = '/etc/default/docker-storage'
           $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
           $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+          $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+          $socket_override            = false
           $service_hasstatus          = true
           $service_hasrestart         = true
           include docker::systemd_reload
@@ -184,6 +190,8 @@ class docker::params {
       $service_provider            = 'systemd'
       $service_config_template     = 'docker/etc/sysconfig/docker.systemd.erb'
       $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
+      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+      $socket_override             = false
       $use_upstream_package_source = true
 
       $package_ce_source_location  = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
@@ -254,6 +262,8 @@ class docker::params {
       $storage_setup_file                  = undef
       $service_provider                    = undef
       $service_overrides_template          = undef
+      $socket_overrides_template           = undef
+      $socket_override                     = false
       $service_hasstatus                   = undef
       $service_hasrestart                  = undef
       $detach_service_in_init              = true
@@ -280,6 +290,8 @@ class docker::params {
       $package_ee_package_name             = undef
       $use_upstream_package_source         = true
       $service_overrides_template          = undef
+      $socket_overrides_template           = undef
+      $socket_override                     = false
       $service_hasstatus                   = undef
       $service_hasrestart                  = undef
       $service_provider                    = undef

@@ -441,6 +441,14 @@ describe 'docker', :type => :class do
         it { should contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with_content(/docker.io/) }
       end
 
+      context 'with a specific socket group and override' do
+        let(:params) { { 
+           'socket_group'    => 'root',
+           'socket_override' => true,
+        } }
+        it { should contain_file('/etc/systemd/system/docker.socket.d/socket-overrides.conf').with_content(/root/) }
+      end
+
       context 'with a custom package name' do
         let(:params) { {'docker_ce_package_name' => 'docker-custom-pkg-name' } }
         it { should contain_package('docker').with_name('docker-custom-pkg-name').with_ensure('present') }

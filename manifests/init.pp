@@ -224,7 +224,7 @@
 #
 # [*socket_group*]
 #   Group ownership of the unix control socket.
-#   Defaults to undefined
+#   Default is based on OS (docker, dockerroot, undef)
 #
 # [*extra_parameters*]
 #   Any extra parameters that should be passed to the docker daemon.
@@ -448,7 +448,7 @@ class docker(
   Optional[String] $tmp_dir                                 = $docker::params::tmp_dir,
   Variant[String,Array,Undef] $dns                          = $docker::params::dns,
   Variant[String,Array,Undef] $dns_search                   = $docker::params::dns_search,
-  Optional[String] $socket_group                            = $docker::params::socket_group,
+  Variant[String,Boolean,Undef] $socket_group               = $docker::params::socket_group,
   Array $labels                                             = $docker::params::labels,
   Variant[String,Array,Undef] $extra_parameters             = undef,
   Variant[String,Array,Undef] $shell_values                 = undef,
@@ -496,6 +496,8 @@ class docker(
   Variant[String,Boolean,Undef] $service_config             = $docker::params::service_config,
   Optional[String] $service_config_template                 = $docker::params::service_config_template,
   Variant[String,Boolean,Undef] $service_overrides_template = $docker::params::service_overrides_template,
+  Variant[String,Boolean,Undef] $socket_overrides_template  = $docker::params::socket_overrides_template,
+  Optional[Boolean] $socket_override                        = $docker::params::socket_override,
   Optional[Boolean] $service_hasstatus                      = $docker::params::service_hasstatus,
   Optional[Boolean] $service_hasrestart                     = $docker::params::service_hasrestart,
   Optional[String] $registry_mirror                         = $docker::params::registry_mirror,
