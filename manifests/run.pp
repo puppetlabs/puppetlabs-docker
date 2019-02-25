@@ -135,7 +135,7 @@ define docker::run(
   Optional[String]  $health_check_cmd                   = undef,
   Optional[Boolean] $restart_on_unhealthy               = false,
   Optional[Integer] $health_check_interval              = undef,
-  Optional[Array] $custom_unless                        = undef,
+  Variant[String,Array,Undef] $custom_unless            = [],
 ) {
   include docker::params
   if ($socket_connect != []) {
