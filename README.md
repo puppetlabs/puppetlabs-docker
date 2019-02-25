@@ -111,7 +111,7 @@ To use the CE packages, add the following code to the manifest file:
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',  
+  repo_opt => '',
 }
 ```
 
@@ -641,7 +641,7 @@ Please note you should supply your master docker-compose file as the first eleme
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
-NOTE: this define will be deprecated in a future release in favor of the [docker type](#types)
+NOTE: this define will be deprecated in a future release in favor of the [docker stack type](#types)
 
 To deploy the stack, add the following code to the manifest file:
 
@@ -666,6 +666,14 @@ docker::stack { 'yourapp':
   stack_name => 'yourapp',
   compose_files => ['/tmp/docker-compose.yaml'],
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
+}
+```
+
+To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the documentation for [here](#Types)
+```puppet
+docker_stack { 'test':
+  compose_files => ['/tmp/docker-compose.yml'],
+  ensure  => present,
 }
 ```
 
