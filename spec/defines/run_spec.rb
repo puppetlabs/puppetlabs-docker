@@ -44,7 +44,7 @@ require 'spec_helper'
         let(:params) { {'command' => 'command', 'image' => 'base'} }
         it { should compile.with_all_deps }
         it { should contain_service('docker-sample') }
-        it { should contain_file(initscript).with_content(/#{Regexp.escape(startscript)}/) }
+        it { should contain_file(initscript).with_content(/#{Regexp.escape(startscript)}/).with_mode('0644') }
         it { should contain_file(initscript).with_content(/#{Regexp.escape(stopscript)}/) }
         it { should contain_file(startscript_or_init).with_content(/docker start/).with_content(/command/).with_content(/base/)}
 

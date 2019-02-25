@@ -334,7 +334,7 @@ define docker::run(
         $stopscript = "/usr/local/bin/docker-run-${sanitised_title}-stop.sh"
         $startstop_template = 'docker/usr/local/bin/docker-run.sh.epp'
         $init_template = 'docker/etc/systemd/system/docker-run.erb'
-        $mode = '0640'
+        $mode = '0644'
       }
       'upstart': {
         $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
