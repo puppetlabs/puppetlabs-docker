@@ -120,6 +120,7 @@ class docker::params {
             $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
             $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
             $socket_override            = false
+            $service_after_override     = undef
             $service_hasstatus          = true
             $service_hasrestart         = true
             include docker::systemd_reload
@@ -128,6 +129,7 @@ class docker::params {
             $service_overrides_template = undef
             $socket_overrides_template  = undef
             $socket_override            = false
+            $service_after_override     = undef
             $service_provider           = 'upstart'
             $service_hasstatus          = true
             $service_hasrestart         = false
@@ -142,6 +144,7 @@ class docker::params {
           $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
           $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
           $socket_override            = false
+          $service_after_override     = undef
           $service_hasstatus          = true
           $service_hasrestart         = true
           include docker::systemd_reload
@@ -192,6 +195,7 @@ class docker::params {
       $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
       $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
       $socket_override             = false
+      $service_after_override      = undef
       $use_upstream_package_source = true
 
       $package_ce_source_location  = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
@@ -264,6 +268,7 @@ class docker::params {
       $service_overrides_template          = undef
       $socket_overrides_template           = undef
       $socket_override                     = false
+      $service_after_override              = undef
       $service_hasstatus                   = undef
       $service_hasrestart                  = undef
       $detach_service_in_init              = true
@@ -292,6 +297,7 @@ class docker::params {
       $service_overrides_template          = undef
       $socket_overrides_template           = undef
       $socket_override                     = false
+      $service_after_override              = undef
       $service_hasstatus                   = undef
       $service_hasrestart                  = undef
       $service_provider                    = undef

@@ -108,6 +108,7 @@ class docker::service (
   $service_overrides_template        = $docker::service_overrides_template,
   $socket_overrides_template         = $docker::socket_overrides_template,
   $socket_override                   = $docker::socket_override,
+  $service_after_override            = $docker::service_after_override,
   $service_hasstatus                 = $docker::service_hasstatus,
   $service_hasrestart                = $docker::service_hasrestart,
   $daemon_environment_files          = $docker::daemon_environment_files,
