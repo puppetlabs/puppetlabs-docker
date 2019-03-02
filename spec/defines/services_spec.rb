@@ -41,6 +41,20 @@ describe 'docker::services', :type => :define do
       it { should contain_exec('test_service docker service create').with_command(/docker service create/) }
       it { should contain_exec('test_service_2 docker service create').with_command(/docker service create/) }
     end
+
+    context 'multiple publish ports' do
+      let(:pre_condition) {
+        "
+        docker::services { 'test_service_3':
+          service_name => 'foo_3',
+          image        => 'foo:bar',
+          publish      => ['80:8080', '9000:9000' ],
+        }
+        "
+      }
+      it { should contain_exec('test_service_3 docker service create').with_command(/--publish 80:8080/) }
+      it { should contain_exec('test_service_3 docker service create').with_command(/--publish 9000:9000/) }
+    end
   end
 
   context 'with ensure => present and service update' do

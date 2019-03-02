@@ -799,7 +799,7 @@ docker::services {'redis':
   }
 ```
 
-To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service ports. To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`.
+To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service port (use an array to specify multiple published ports). To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`.
 
 To update the service, add the following code to the manifest file:
 
