@@ -36,7 +36,11 @@ module Puppet::Parser::Functions
       end
     end
 
-    if opts['publish'] && opts['publish'].to_s != 'undef'
+    if opts['publish'].is_a? Array
+      opts['publish'].each do |port|
+        flags << "--publish #{port}"
+      end
+    elsif opts['publish'].to_s != 'undef'
       flags << "--publish '#{opts['publish']}'"
     end
 

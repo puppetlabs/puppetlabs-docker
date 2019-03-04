@@ -26,7 +26,7 @@
 #  Defaults to []
 #
 # [*publish*]
-#  Publish a port as a node port.
+#  Publish port(s) as node ports.
 #  Defaults to undef
 #
 # [*replicas*]
@@ -66,6 +66,7 @@
 # [*registry_mirror*]
 #  This will allow the service to set a registry mirror.
 #  defaults to undef
+#
 # [*mounts*]
 #  Allows attacking filesystem mounts to the service (specified as an array)
 #  defaults to []
