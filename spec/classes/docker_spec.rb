@@ -441,6 +441,11 @@ describe 'docker', :type => :class do
         it { should contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with_content(/docker.io/) }
       end
 
+      context 'with an extra After entry' do
+        let(:params) {{ 'service_after_override' => 'containerd.service' }}
+        it { should contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with_content(/containerd.service/) }
+      end
+
       context 'with a specific socket group and override' do
         let(:params) { { 
            'socket_group'    => 'root',

@@ -129,6 +129,8 @@ class { 'docker':
 }
 ```
 
+For more information about the configuration options for the default docker bridge, see the [Docker documentation](https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/).
+
 The default group ownership of the Unix control socket differs based on OS. For example, on RHEL using docker-ce packages >=18.09.1, the socket file used by /usr/lib/systemd/system/docker.socket is owned by the docker group.  To override this value in /etc/sysconfig/docker and docker.socket (e.g. to use the 'root' group):
 
 ```puppet
@@ -144,8 +146,11 @@ The socket_group parameter also takes a boolean for legacy cases where setting -
 docker::socket_group: false
 ```
 
-For more information about the configuration options for the default docker bridge, see the [Docker documentation](https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/).
+To add another service to the After= line in the [Unit] section of the systemd /etc/systemd/system/service-overrides.conf file, use the service_after_override parameter:
 
+```puppet
+docker::service_after_override: containerd.service
+```
 
 When setting up TLS, upload the related files (CA certificate, server certificate, and key) and include their paths in the manifest file:
 
