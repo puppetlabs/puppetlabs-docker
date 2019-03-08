@@ -498,7 +498,7 @@ class docker(
   Variant[String,Boolean,Undef] $service_overrides_template = $docker::params::service_overrides_template,
   Variant[String,Boolean,Undef] $socket_overrides_template  = $docker::params::socket_overrides_template,
   Optional[Boolean] $socket_override                        = $docker::params::socket_override,
-  Optional[String] $service_after_override                  = $docker::params::service_after_override,
+  Variant[String,Boolean,Undef] $service_after_override     = $docker::params::service_after_override,
   Optional[Boolean] $service_hasstatus                      = $docker::params::service_hasstatus,
   Optional[Boolean] $service_hasrestart                     = $docker::params::service_hasrestart,
   Optional[String] $registry_mirror                         = $docker::params::registry_mirror,
