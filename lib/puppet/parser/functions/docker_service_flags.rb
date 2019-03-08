@@ -36,6 +36,12 @@ module Puppet::Parser::Functions
       end
     end
 
+    if opts['networks'].is_a? Array
+      opts['networks'].each do |network|
+        flags << "--network #{network}"
+      end
+    end
+
     if opts['publish'].is_a? Array
       opts['publish'].each do |port|
         flags << "--publish #{port}"

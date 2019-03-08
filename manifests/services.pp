@@ -68,7 +68,11 @@
 #  defaults to undef
 #
 # [*mounts*]
-#  Allows attacking filesystem mounts to the service (specified as an array)
+#  Allows attaching filesystem mounts to the service (specified as an array)
+#  defaults to []
+#
+# [*networks*]
+#  Allows attaching the service to networks (specified as an array)
 #  defaults to []
 #
 # [*command*]
@@ -94,6 +98,7 @@ define docker::services(
   Variant[String,Array,Undef] $host_socket               = undef,
   Variant[String,Array,Undef] $registry_mirror           = undef,
   Variant[String,Array,Undef] $mounts                    = undef,
+  Variant[Array,Undef] $networks                         = undef,
   Variant[String,Array,Undef] $command                   = undef,
 ){
 
@@ -138,6 +143,7 @@ define docker::services(
       host_socket     => $host_socket,
       registry_mirror => $registry_mirror,
       mounts          => $mounts,
+      networks        => $networks,
       command         => $command,
     })
 
