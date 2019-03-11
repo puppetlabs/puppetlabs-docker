@@ -801,10 +801,11 @@ docker::services {'redis':
     replicas => '5',
     mounts => ['type=bind,source=/etc/my-redis.conf,target=/etc/redis/redis.conf,readonly'],
     extra_params => ['--update-delay 1m', '--restart-window 30s'],
+    command => ['redis-server', '--appendonly', 'yes'],
   }
 ```
 
-To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service port (use an array to specify multiple published ports). To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`.
+To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service port (use an array to specify multiple published ports). To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`. The `command` parameter can either be specified as an array or a string.
 
 To update the service, add the following code to the manifest file:
 
