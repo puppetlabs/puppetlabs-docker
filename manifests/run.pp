@@ -49,17 +49,23 @@
 #  Default: false
 #
 # [*health_check_cmd*]
-# (optional) Specifies the command to execute to check that the container is healthy using the docker health check functionality. 
+# (optional) Specifies the command to execute to check that the container is healthy using the docker health check functionality.
 # Default: undef
 #
 # [*health_check_interval*]
 # (optional) Specifies the interval that the health check command will execute in seconds.
-# Default: undef 
+# Default: undef
 #
 # [*restart_on_unhealthy*]
 # (optional) Checks the health status of Docker container and if it is unhealthy the service will be restarted.
 # The health_check_cmd parameter must be set to true to use this functionality.
 # Default: undef
+#
+# [*net*]
+#
+# The docker network to attach to a container.
+# Can be a String or Array (if using multiple networks)
+# Default: bridge
 #
 # [*extra_parameters*]
 # An array of additional command line arguments to pass to the `docker run`
@@ -94,7 +100,7 @@ define docker::run(
   Optional[Boolean] $use_name                           = false,
   Optional[Boolean] $running                            = true,
   Variant[String,Array,Undef] $volumes_from             = [],
-  Optional[String] $net                                 = 'bridge',
+  Variant[String,Array] $net                            = 'bridge',
   Variant[String,Boolean] $username                     = false,
   Variant[String,Boolean] $hostname                     = false,
   Variant[String,Array,Undef] $env                      = [],
@@ -305,7 +311,7 @@ define docker::run(
       if $running == false {
         exec { "stop ${title} with docker":
           command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-          unless      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
+          unless      => "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true",
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
@@ -314,7 +320,7 @@ define docker::run(
       } else {
         exec { "start ${title} with docker":
           command     => "${docker_command} start ${sanitised_title}",
-          onlyif      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
+          onlyif      => "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep false",
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,

@@ -379,7 +379,7 @@ docker::run { 'helloworld':
   ports            => ['4444', '4555'],
   expose           => ['4666', '4777'],
   links            => ['mysql:db'],
-  net              => 'my-user-def-net',
+  net              => ['my-user-def-net','my-user-def-net-2],
   disable_network  => false,
   volumes          => ['/var/lib/couchdb', '/var/log'],
   volumes_from     => '6446ea52fbc9',

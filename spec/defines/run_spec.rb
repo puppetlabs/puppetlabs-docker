@@ -416,9 +416,15 @@ require 'spec_helper'
         it { should contain_file(startscript_or_init).with_content(/-v \/var\/log/) }
       end
 
-      context 'when using network mode' do
+      context 'when using network mode with a single network' do
         let(:params) { {'command' => 'command', 'image' => 'nginx', 'net' => 'host'} }
         it { should contain_file(startscript_or_init).with_content(/--net host/) }
+      end
+
+      context 'when using network mode with multiple networks' do
+        let(:params) { {'command' => 'command', 'image' => 'nginx', 'net' => ['host','foo']} }
+        it { should contain_file(startscript_or_init).with_content(/docker network connect host sample/) }
+        it { should contain_file(startscript_or_init).with_content(/docker network connect foo sample/) }
       end
 
       context 'when `pull_on_start` is true' do
