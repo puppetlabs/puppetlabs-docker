@@ -108,10 +108,10 @@ define docker::services(
 
   if $ensure == 'absent' {
     if $update {
-      fail translate(('When removing a service you can not update it.'))
+      fail(translate('When removing a service you can not update it.'))
     }
     if $scale {
-      fail translate(('When removing a service you can not update it.'))
+      fail(translate('When removing a service you can not update it.'))
     }
   }
 
