@@ -1,3 +1,15 @@
+# 3.5.0
+
+Changes range for dependent modules
+
+Use multiple networks in docker::run and docker::services
+
+Fixes quotes with docker::services command
+
+Publish multiple ports to docker::services
+
+A full list of issues and PRs associated with this release can be found [here](https://github.com/puppetlabs/puppetlabs-docker/milestone/7?closed=1)
+
 # 3.4.0
 
 Introduces docker_stack type and provider
