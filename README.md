@@ -1271,6 +1271,7 @@ Valid values:
 * `gelf`: Graylog Extended Log Format (GELF) logging driver that writes log messages to a GELF endpoint: Graylog or Logstash.
 * `fluentd`: fluentd logging driver that writes log messages to fluentd (forward input).
 * `splunk`: Splunk logging driver that writes log messages to Splunk (HTTP Event Collector).
+* `awslogs`: AWS Cloudwatch logging driver that writes log messages to a AWS Cloudwatch LogStream
 
 #### `log_opt`
 
@@ -1287,6 +1288,7 @@ Valid values:
 * `gelf`: gelf-address=udp://host:port, gelf-tag="some_tag"
 * `fluentd`: fluentd-address=host:port, fluentd-tag={{.ID}} - short container id (12 characters), {{.FullID}} - full container id, {{.Name}} - container name
 * `splunk`: splunk-token=<splunk_http_event_collector_token>, splunk-url=https://your_splunk_instance:8088|
+* `awslogs`: awslogs-group=<cloudwatch_log_group>, awslogs-stream=<cloudwatch_log_stream>, awslogs-create-group=true|false, awslogs-datetime-format=<strftime_date_format>, awslog-multiline-pattern=<multiline_start_regexp_pattern>, tag={{.ID}} - short container id (12 characters), {{.FullID}} - full container id, {{.Name}} - container name
 
 #### `selinux_enabled`
 
