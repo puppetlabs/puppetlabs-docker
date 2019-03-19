@@ -628,9 +628,18 @@ docker_compose { 'test':
   scale   => {
     'compose_test' => 2,
   },
-  options => '--x-networking'
+  options => ['--x-networking'],
 }
 ```
+
+To use a .env configuration file, specify a project directory.
+```puppet
+docker_compose { 'test':
+  compose_files => ['/tmp/docker-compose.yml'],
+  ensure  => present,
+  options => ['--project-directory', '/tmp']
+}
+``` 
 
 Give options to the ```docker-compose up``` command, such as ```--remove-orphans```, by using the ```up_args``` option.
 
@@ -638,7 +647,7 @@ To supply multiple overide compose files add the following to the manifest file:
 
 ```puppet
 docker_compose {'test':
-  compose_files => ['master-docker-compose.yml', 'override-compose.yml],
+  compose_files => ['master-docker-compose.yml', 'override-compose.yml'],
 }
 ```
 
