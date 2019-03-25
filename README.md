@@ -17,6 +17,7 @@
    * [Networks](#networks)
    * [Volumes](#volumes)
    * [Compose](#compose)
+   * [Machine](#machine)
    * [Swarm mode](#swarm-mode)
    * [Tasks](#tasks)
    * [Docker services](#docker-services)
@@ -684,6 +685,25 @@ docker_stack { 'test':
 
 To remove the stack, set `ensure  => absent`.
 
+### Machine
+
+Docker Machine is a tool that lets you install Docker Engine on virtual hosts, and manage the hosts with docker-machine commands. You can use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
+
+For more information on machines see the [Docker Machines](https://docs.docker.com/machine/) documentation.
+
+This module only takes responsability for installing the Docker Machine utility.
+
+To install Docker Machine, add the following code to the manifest file:
+
+```puppet
+class {'docker::machine':
+  ensure => present,
+  version => '1.16.1',
+}
+```
+
+Set the `version` parameter to any version you need to install.
+
 ### Swarm mode
 
 To natively manage a cluster of Docker Engines known as a swarm, Docker Engine 1.12 includes a swarm mode.
@@ -969,6 +989,7 @@ docker::plugin {'foo/fooplugin:latest'
 * docker
 * docker::compose
 * docker::images
+* docker::machine
 * docker::networks
 * docker::params
 * docker::plugins

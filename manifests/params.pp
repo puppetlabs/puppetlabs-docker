@@ -30,13 +30,16 @@ class docker::params {
     $tls_key                           = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
     $compose_version                   = '1.21.2'
     $compose_install_path              = "${::docker_program_files_path}/Docker"
+    $machine_install_path              = "${::docker_program_files_path}/Docker"
   } else {
     $tls_cacert                        = '/etc/docker/tls/ca.pem'
     $tls_cert                          = '/etc/docker/tls/cert.pem'
     $tls_key                           = '/etc/docker/tls/key.pem'
     $compose_version                   = '1.9.0'
     $compose_install_path              = '/usr/local/bin'
+    $machine_install_path              = '/usr/local/bin'
   }
+  $machine_version                   = '0.16.1'
   $ip_forward                        = true
   $iptables                          = true
   $ipv6                              = false
