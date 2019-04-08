@@ -46,7 +46,7 @@ module Puppet::Parser::Functions
       opts['publish'].each do |port|
         flags << "--publish #{port}"
       end
-    elsif opts['publish'].to_s != 'undef'
+    elsif opts['publish'] && opts['publish'].to_s != 'undef'
       flags << "--publish '#{opts['publish']}'"
     end
 
