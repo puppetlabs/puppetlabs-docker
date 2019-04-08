@@ -40,6 +40,7 @@ describe 'docker::run', :type => :define do
     it { should contain_exec('run sample with docker').with_command(/--restart="always"/) }
     it { should contain_exec('run sample with docker').with_command(/base command/) }
     it { should contain_exec('run sample with docker').with_timeout(3000) }
+    it { should contain_exec('start sample with docker').with_command(/docker start sample/) }
   end
 
   context 'with restart policy set to on-failure' do
@@ -80,6 +81,12 @@ describe 'docker::run', :type => :define do
     it { should contain_exec("stop sample with docker").with_command('docker stop --time=0 sample') }
     it { should contain_exec("remove sample with docker").with_command('docker rm -v sample') }
     it { should_not contain_file('C:/Users/Administrator/AppData/Local/Temp/docker-sample.cid"')}
+  end
+
+  context 'with ensure present and running false' do
+    let(:params) { {'ensure' => 'present', 'image' => 'base', 'restart' => 'always', 'running' => false} }
+    it { should compile.with_all_deps }
+    it { should contain_exec("stop sample with docker").with_command('docker stop --time=0 sample') }
   end
 
   context 'with ensure present and no restart policy' do
