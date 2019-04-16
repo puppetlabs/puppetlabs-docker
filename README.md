@@ -1607,12 +1607,14 @@ Sanitises string or array of strings for safe usage as container name inside scr
 
 This module supports:
 
+* Centos 7.0
 * Debian 8.0
 * Debian 9.0
+* RedHat 7.0
 * Ubuntu 14.04
 * Ubuntu 16.04
 * Ubuntu 18.04
-* Centos 7.0
+* Windows Server 2016 (Docker Enterprise Edition only)
 
 ## Development
 
