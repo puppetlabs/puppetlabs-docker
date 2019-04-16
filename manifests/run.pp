@@ -240,6 +240,7 @@ define docker::run(
     $cidfile = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
+    $container_running_check = "\$state = ${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }"
 # lint:endignore
   } else {
     $exec_environment = 'HOME=/root'
@@ -249,6 +250,7 @@ define docker::run(
     $cidfile = "/var/run/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}"
+    $container_running_check = "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true"
 # lint:endignore
   }
 
@@ -311,7 +313,7 @@ define docker::run(
       if $running == false {
         exec { "stop ${title} with docker":
           command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-          unless      => "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true",
+          onlyif      => $container_running_check,
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
@@ -320,7 +322,7 @@ define docker::run(
       } else {
         exec { "start ${title} with docker":
           command     => "${docker_command} start ${sanitised_title}",
-          onlyif      => "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep false",
+          unless      => $container_running_check,
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
