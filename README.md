@@ -240,6 +240,14 @@ class { 'docker':
 }
 ```
 
+If the curl package is being managed elsewhere and the curl ensure in this module is conflicting,
+ it can be disabled by setting the following parameter globally or in compose / machine resources:
+```puppet
+class { 'docker':
+  curl_ensure => false
+}
+```
+
 ### Proxy on Windows
 
 To use docker through a proxy on Windows, a System Environment Variable HTTP_PROXY/HTTPS_PROXY must be set. See [Docker Engine on Windows](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/configure-docker-daemon#proxy-configuration)

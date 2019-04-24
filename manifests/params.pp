@@ -108,6 +108,7 @@ class docker::params {
   $storage_pool_autoextend_percent   = undef
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
   $registry_mirror                   = undef
+  $curl_ensure                       = true
   $os_lc                             = downcase($::operatingsystem)
   $docker_msft_provider_version      = undef
   $nuget_package_provider_version    = undef
