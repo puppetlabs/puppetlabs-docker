@@ -37,6 +37,10 @@
 #   responsible for ensuring the URL points to the correct version and
 #   architecture.
 
+# [*curl_ensure*]
+#   Whether or not the curl package is ensured by this module.
+#   Defaults to true
+#
 class docker::compose(
   Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
   Optional[String] $version                                = $docker::params::compose_version,
@@ -44,7 +48,8 @@ class docker::compose(
   Optional[String] $symlink_name                           = $docker::params::compose_symlink_name,
   Optional[String] $proxy                                  = undef,
   Optional[String] $base_url                               = $docker::params::compose_base_url,
-  Optional[String] $raw_url                                = undef
+  Optional[String] $raw_url                                = undef,
+  Optional[Boolean] $curl_ensure                           = $docker::params::curl_ensure,
 ) inherits docker::params {
 
   if $proxy != undef {
@@ -93,7 +98,9 @@ class docker::compose(
         require => Exec["Install Docker Compose ${version}"]
       }
     } else {
-      ensure_packages(['curl'])
+      if $curl_ensure {
+        ensure_packages(['curl'])
+      }
       exec { "Install Docker Compose ${version}":
         path    => '/usr/bin/',
         cwd     => '/tmp',
