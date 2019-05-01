@@ -639,7 +639,7 @@ To supply multiple overide compose files add the following to the manifest file:
 
 ```puppet
 docker_compose {'test':
-  compose_files => ['master-docker-compose.yml', 'override-compose.yml],
+  compose_files => ['master-docker-compose.yml', 'override-compose.yml'],
 }
 ```
 
