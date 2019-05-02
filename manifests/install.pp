@@ -30,7 +30,7 @@ class docker::install (
 
 ) {
   $docker_start_command = $docker::docker_start_command
-  if $::osfamily {
+  if $::osfamily and !::docker::acknowledge_unsupported_os {
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
       fail(translate('This module only works on Debian, RedHat or Windows.'))
     }
