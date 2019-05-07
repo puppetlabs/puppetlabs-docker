@@ -540,6 +540,20 @@ docker_volume { 'my-volume':
 }
 ```
 
+Additional mount options can be passed to the `local` driver. For mounting a NFS export use:
+
+```puppet
+docker_volume { 'nfs-volume':
+  ensure  => present,
+  driver  => 'local',
+  options => {
+    type   => 'nfs4',
+    o      => 'addr=10.10.10.10,rw',
+    device => ':/exports/data'
+  },
+}
+```
+
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
 
 If using Hiera, configure the `docker::volumes` class in the manifest file:
@@ -547,17 +561,20 @@ If using Hiera, configure the `docker::volumes` class in the manifest file:
 ```yaml
 ---
   classes:
-    - docker::volumes::volumes
+    - docker::volumes
 
-docker::volumes::volumes:
+docker::volumes:
   blueocean:
     ensure: present
     driver: local
     options:
-      - ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
+      type: "nfs"
+      o: "addr=%{custom_manager},rw",
+      device: ":/srv/blueocean"
 ```
 
-Any extra options should be passed in as an array
+Available parameters for `options` depend on the used volume driver. For details read
+[Using volumes](https://docs.docker.com/storage/volumes/) from the Docker manual.
 
 Some of the key advantages for using `volumes` over `bind mounts` are:
 
@@ -581,8 +598,6 @@ docker::run { 'helloworld':
   volumes => ['my-volume:/var/log'],
 }
 ```
-
-For more information on volumes see the [Docker Volumes](https://docs.docker.com/engine/admin/volumes/volumes) documentation.
 
 ### Compose
 
