@@ -81,8 +81,9 @@ describe 'docker stack' do
         end
 
         it 'should be idempotent' do
-            apply_manifest(destroy, :catch_changes=>true)
-            sleep 5
+            retry_on_error_matching(10, 3, /Removing network web_default/) do
+              apply_manifest(destroy, :catch_changes=>true)
+            end
         end
 
         it 'should not find a docker stack' do
@@ -135,8 +136,9 @@ describe 'docker stack' do
         end
 
         it 'should be idempotent' do
-          apply_manifest(@destroy_code, :catch_changes=>true)
-          sleep 5
+          retry_on_error_matching(10, 3, /Removing network web_default/) do
+            apply_manifest(@destroy_code, :catch_changes=>true)
+          end
         end
 
         it 'should not find a docker stack' do
