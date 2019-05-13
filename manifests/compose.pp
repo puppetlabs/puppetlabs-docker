@@ -30,7 +30,8 @@ class docker::compose(
   Optional[String] $version                                = $docker::params::compose_version,
   Optional[String] $install_path                           = $docker::params::compose_install_path,
   Optional[String] $proxy                                  = undef,
-  Optional[String] $base_url                               = $docker::params::compose_base_url
+  Optional[String] $base_url                               = $docker::params::compose_base_url,
+  Optional[String] $raw_url                                = undef
 ) inherits docker::params {
 
   if $proxy != undef {
@@ -49,7 +50,12 @@ class docker::compose(
   $docker_compose_location_versioned = "${install_path}/docker-compose-${version}${file_extension}"
 
   if $ensure == 'present' {
-    $docker_compose_url = "${base_url}/${version}/docker-compose-${::kernel}-x86_64${file_extension}"
+
+    if $raw_url != undef {
+      $docker_compose_url = $raw_url
+    } else {
+      $docker_compose_url = "${base_url}/${version}/docker-compose-${::kernel}-x86_64${file_extension}"
+    }
 
     if $proxy != undef {
       $proxy_opt = "--proxy ${proxy}"
