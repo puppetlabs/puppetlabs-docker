@@ -20,11 +20,17 @@
 # [*proxy*]
 #   Proxy to use for downloading Docker Compose.
 #
+# [*base_url*]
+#   The base url for installation
+#   This allows use of a mirror that follows the same layout as the 
+#   official repository
+#
 class docker::compose(
   Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
   Optional[String] $version                                = $docker::params::compose_version,
   Optional[String] $install_path                           = $docker::params::compose_install_path,
-  Optional[String] $proxy                                  = undef
+  Optional[String] $proxy                                  = undef,
+  Optional[String] $base_url                               = $docker::params::compose_base_url
 ) inherits docker::params {
 
   if $proxy != undef {
@@ -43,7 +49,7 @@ class docker::compose(
   $docker_compose_location_versioned = "${install_path}/docker-compose-${version}${file_extension}"
 
   if $ensure == 'present' {
-    $docker_compose_url = "https://github.com/docker/compose/releases/download/${version}/docker-compose-${::kernel}-x86_64${file_extension}"
+    $docker_compose_url = "${base_url}/${version}/docker-compose-${::kernel}-x86_64${file_extension}"
 
     if $proxy != undef {
       $proxy_opt = "--proxy ${proxy}"
