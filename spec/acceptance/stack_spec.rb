@@ -57,9 +57,9 @@ describe 'docker stack' do
          end
     end
 
-    it 'should find a docker container' do
-        shell("docker ps | grep web_compose_test", :acceptable_exit_codes => [0])
-      end
+    it 'should not find a docker container' do
+      shell("docker ps -a -q -f \"name=web_compose_test\"", :acceptable_exit_codes => [0])
+    end
   end
 
   context 'Destroying stack' do
@@ -87,10 +87,9 @@ describe 'docker stack' do
         end
 
         it 'should not find a docker stack' do
-            sleep 5
-            shell('docker stack ls') do |r|
-               expect(r.stdout).to_not match(/web/)
-            end
+          shell('docker stack ls') do |r|
+            expect(r.stdout).to_not match(/web/)
+          end
         end
     end
 
@@ -131,8 +130,10 @@ describe 'docker stack' do
               }
             code
 
-            apply_manifest(@destroy_code, :catch_failures=>true)
-            sleep 10# wait for containers to stop
+            retry_on_error_matching(10, 3, /Removing network web_default/) do
+              apply_manifest(@destroy_code, :catch_failures=>true)
+            end
+            sleep 15 # Wait for containers to stop and be destroyed
         end
 
         it 'should be idempotent' do
@@ -148,7 +149,9 @@ describe 'docker stack' do
         end
 
         it 'should not find a docker container' do
-          shell("docker ps | grep web_compose_test", :acceptable_exit_codes => [1])
+          shell("docker ps", :acceptable_exit_codes => [0]) do |r|
+            expect(r.stdout).not_to match(/web_compose_test/)
+          end
         end
       end
 

@@ -112,7 +112,7 @@ services:
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver
+    image: winamd64/hello-world
     command: cmd.exe /C "ping 8.8.8.8 -t"
 networks:
   default:
@@ -123,7 +123,7 @@ networks:
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver-sac2016
+    image: winamd64/hello-world:nanoserver-sac2016
     command: cmd.exe /C "ping 8.8.8.8 -t"
 networks:
   default:
@@ -134,14 +134,14 @@ networks:
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver
+    image: winamd64/hello-world
     command: cmd.exe /C "ping 8.8.8.8 -t"
       EOS
       docker_stack_override_windows = <<-EOS
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver-sac2016
+    image: winamd64/hello-world:nanoserver-sac2016
       EOS
       if fact_on(host, 'osfamily') == 'windows'
         create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3_windows)
