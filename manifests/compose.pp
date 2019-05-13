@@ -25,6 +25,12 @@
 #   This allows use of a mirror that follows the same layout as the 
 #   official repository
 #
+# [*rawurl*]
+#   Override the raw URL for installation
+#   The default is to build a URL from baseurl. If rawurl is set, the caller is
+#   responsible for ensuring the URL points to the correct version and
+#   architecture.
+
 class docker::compose(
   Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
   Optional[String] $version                                = $docker::params::compose_version,
