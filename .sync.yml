@@ -1,65 +1,40 @@
 ---
-.travis.yml:
-  bundler_args: ' '
-  branches:
-    - release
-  remove_includes:
-    -
-      env: PUPPET_GEM_VERSION="~> 4.0" CHECK=parallel_spec
-      rvm: 2.1.9
-  includes:
-    -
-      env: PUPPET_GEM_VERSION="~> 4.0" CHECK=parallel_spec
-      rvm: 2.3.3
-
-Gemfile:
-  required:
-    ':development':
-      - gem: 'facter'
-        version: '>= 1.7.0'
-      - gem: "rspec-retry"
-      - gem: 'thor'
-      - gem: 'semantic_puppet'
-      - gem: 'beaker-rspec'
-        from_env: BEAKER_RSPEC_VERSION  
-      - gem: "beaker"
-        version: '~> 2.0'
-        from_env: BEAKER_VERSION
-      - gem: 'puppet-module-posix-system-r#{minor_version}'
-        platforms: ruby
-      - gem: 'rspec'
-        version: '~> 2.0'
-        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('1.8.7') && Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('1.9')"
-      - gem: 'rake'
-        version: '~> 10.0'
-        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('1.8.7') && Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('1.9')"
-
-Rakefile:
-  requires:
-    - puppet-lint/tasks/puppet-lint
-    - puppetlabs_spec_helper/rake_tasks
-    - metadata-json-lint/rake_task
-    - rspec_junit_formatter
-    - puppet_pot_generator/rake_tasks
-
-.rubocop.yml:
-  include_todos:
-    inherit_from: '.rubocop_todo.yml'
-  profiles:
-    strict:
-      configs:
-        AllCops:
-          TargetRubyVersion: '2.2'
-          Exclude:
-            - spec/defines/*
-            - spec/classes/*
-            - spec/*
-            - spec/acceptance/*
-            - rakelib/*
-
-
 .gitlab-ci.yml:
   delete: true
 
+.rubocop.yml:
+   default_configs:
+    inherit_from: .rubocop_todo.yml
+    require:
+      - rubocop-rspec
+
+.travis.yml:
+  docker_sets:
+    - set: docker/debian-8
+    - set: docker/ubuntu-14.04
+  docker_defaults:
+    bundler_args: ""
+  secure: ""
+  branches:
+    - release
+
 appveyor.yml:
   delete: true
+
+Gemfile:
+  optional:
+    ':development':
+      - gem: 'github_changelog_generator'
+        git: 'https://github.com/skywinder/github-changelog-generator'
+        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
+        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
+  required:
+    ':system_tests':
+      - gem: 'puppet-module-posix-system-r#{minor_version}'
+        platforms: ruby
+      - gem: 'puppet-module-win-system-r#{minor_version}'
+        platforms:
+          - mswin
+          - mingw
+          - x64_mingw
+      - gem: 'rspec-retry'

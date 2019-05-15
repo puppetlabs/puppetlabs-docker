@@ -14,7 +14,7 @@ end
 
 def changelog_project
   return unless Rake.application.top_level_tasks.include? "changelog"
-  returnVal = nil || JSON.load(File.read('metadata.json'))['name']
+  returnVal = nil || JSON.load(File.read('metadata.json'))['source'].match(%r{.*/([^/]*)})[1]
   raise "unable to find the changelog_project in .sync.yml or the name in metadata.json" if returnVal.nil?
   puts "GitHubChangelogGenerator project:#{returnVal}"
   returnVal
@@ -22,7 +22,7 @@ end
 
 def changelog_future_release
   return unless Rake.application.top_level_tasks.include? "changelog"
-  returnVal = JSON.load(File.read('metadata.json'))['version']
+  returnVal = "v%s" % JSON.load(File.read('metadata.json'))['version']
   raise "unable to find the future_release (version) in metadata.json" if returnVal.nil?
   puts "GitHubChangelogGenerator future_release:#{returnVal}"
   returnVal
@@ -73,13 +73,4 @@ Gemfile:
 EOM
   end
 end
-
-desc 'Run syntax, lint and  metadata tests'
-task :test => [
-  :syntax,
-  :lint,
-  :metadata_lint,
-  :spec,
-]
-
 

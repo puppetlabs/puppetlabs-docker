@@ -1,8 +1,10 @@
 ---
-require: rubocop-rspec
+require:
+- rubocop-rspec
+- rubocop-i18n
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: '2.3'
+  TargetRubyVersion: '2.1'
   Include:
   - "./**/*.rb"
   Exclude:
@@ -12,11 +14,6 @@ AllCops:
   - "**/Rakefile"
   - pkg/**/*
   - spec/fixtures/**/*
-  - spec/classes/**/*
-  - spec/acceptance/**/*
-  - spec/acceptance_swarm/**/*
-  - spec/defines/**/*
-  - spec/unit/**/*
   - vendor/**/*
   - "**/Puppetfile"
   - "**/Vagrantfile"
@@ -24,6 +21,8 @@ AllCops:
 Metrics/LineLength:
   Description: People have wide screens, use them.
   Max: 200
+GetText:
+  Enabled: false
 GetText/DecorateString:
   Description: We don't want to decorate test output.
   Exclude:
@@ -75,6 +74,7 @@ Style/TrailingCommaInLiteral:
 Style/SymbolArray:
   Description: Using percent style obscures symbolic intent of array's contents.
   EnforcedStyle: brackets
+inherit_from: ".rubocop_todo.yml"
 RSpec/MessageSpies:
   EnforcedStyle: receive
 Style/Documentation:
@@ -125,7 +125,3 @@ Style/IfUnlessModifier:
   Enabled: false
 Style/SymbolProc:
   Enabled: false
-Style/SafeNavigation:
-  Description: Does not work with all ruby versions
-  Exclude:
-  - lib/puppet/parser/functions/docker_exec_flags.rb
