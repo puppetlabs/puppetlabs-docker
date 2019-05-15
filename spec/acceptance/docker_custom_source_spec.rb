@@ -4,8 +4,8 @@ skip = false
 
 if fact('osfamily') == 'windows'
     docker_args = 'docker_ee => true, docker_ee_source_location => "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-14.zip"'
-    default_image = 'microsoft/nanoserver'
-    default_image_tag = '10.0.14393.2189'
+    default_image = 'winamd64/hello-world'
+    default_image_tag = 'nanoserver-sac2016'
     #The default args are set because:
     #restart => 'always' - there is no service created to manage containers
     #net => 'nat' - docker uses bridged by default when running a container. When installing docker on windows the default network is NAT.
