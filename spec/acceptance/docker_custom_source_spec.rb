@@ -4,7 +4,7 @@ skip = false
 
 if fact('osfamily') == 'windows'
   docker_args = 'docker_ee => true, docker_ee_source_location => "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-14.zip"'
-  default_image = 'winamd64/hello-world'
+  default_image = 'winamd64/hello-seattle'
   # The default args are set because:
   # restart => 'always' - there is no service created to manage containers
   # net => 'nat' - docker uses bridged by default when running a container. When installing docker on windows the default network is NAT.

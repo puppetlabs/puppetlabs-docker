@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 
 if fact('osfamily') == 'windows'
   docker_args = 'docker_ee => true'
-  test_docker_image = 'hello-world:nanoserver'
+  test_docker_image = 'hello-seattle:nanoserver'
   test_docker_command = 'cmd.exe /C "ping /t 8.8.8.8"'
 else
   docker_args = ''
