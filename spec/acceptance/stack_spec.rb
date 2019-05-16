@@ -3,24 +3,22 @@ require 'spec_helper_acceptance'
 if fact('osfamily') == 'windows'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
-  test_container = 'nanoserver-sac2016'
   wait_for_container_seconds = 120
 
 else
-  if fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
-    docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
-  else
-    docker_args = ''
-  end
+  docker_args = if fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+                  "version => '18.06.1~ce~3-0~ubuntu'"
+                else
+                  ''
+                end
   tmp_path = '/tmp'
-  test_container = 'alpine'
   wait_for_container_seconds = 10
 end
 
 describe 'docker stack' do
   before(:all) do
-    retry_on_error_matching(60, 5, /connection failure running/) do
-      @install_code = <<-code
+    retry_on_error_matching(60, 5, %r{connection failure running}) do
+      install_pp = <<-MANIFEST
         class { 'docker': #{docker_args} }
         docker::swarm {'cluster_manager':
             init   => true,
@@ -29,130 +27,143 @@ describe 'docker stack' do
             listen_addr => $facts['networking']['ip'],
             require => Class['docker'],
         }
-      code
-      apply_manifest(@install_code, :catch_failures=>true)
+        MANIFEST
+      apply_manifest(install_pp, catch_failures: true)
     end
   end
 
   context 'Creating stack' do
-    let(:install) {"
-    docker_stack { 'web':
-      compose_files => ['#{tmp_path}/docker-stack.yml'],
-      ensure        => present,
-    }"
-      }
+    let(:install_pp) do
+      <<-MANIFEST
+        docker_stack { 'web':
+          compose_files => ['#{tmp_path}/docker-stack.yml'],
+          ensure        => present,
+        }
+      MANIFEST
+    end
 
-    it 'should deploy stack' do
-      apply_manifest(install, :catch_failures=>true)
+    it 'deploys stack' do
+      apply_manifest(install_pp, catch_failures: true)
       sleep wait_for_container_seconds
     end
 
-    it 'should be idempotent' do
-      apply_manifest(install, :catch_changes=>true)
+    it 'is idempotent' do
+      apply_manifest(install_pp, catch_changes: true)
     end
 
-    it 'should find a stack' do
-        shell('docker stack ls') do |r|
-            expect(r.stdout).to match(/web/)
-         end
+    it 'finds a stack' do
+      shell('docker stack ls') do |r|
+        expect(r.stdout).to match(%r{web})
+      end
     end
 
-    it 'should not find a docker container' do
-      shell("docker ps -a -q -f \"name=web_compose_test\"", :acceptable_exit_codes => [0])
+    it 'does not find a docker container' do
+      shell('docker ps -a -q -f "name=web_compose_test"', acceptable_exit_codes: [0])
     end
   end
 
   context 'Destroying stack' do
-    let(:install) {"
+    let(:install) do
+      <<-MANIFEST
         docker_stack { 'web':
           compose_files => ['#{tmp_path}/docker-stack.yml'],
           ensure        => present,
-        }"
         }
-        let(:destroy) {"
-            docker_stack { 'web':
-              compose_files => ['#{tmp_path}/docker-stack.yml'],
-              ensure        => absent,
-            }"
-        }
-        it 'should run successfully' do
-            apply_manifest(destroy, :catch_failures=>true)
-            sleep 10
-        end
-
-        it 'should be idempotent' do
-            retry_on_error_matching(10, 3, /Removing network web_default/) do
-              apply_manifest(destroy, :catch_changes=>true)
-            end
-        end
-
-        it 'should not find a docker stack' do
-          shell('docker stack ls') do |r|
-            expect(r.stdout).to_not match(/web/)
-          end
-        end
+      MANIFEST
     end
 
-    context 'creating stack with multi compose files' do
+    let(:destroy) do
+      <<-MANIFEST
+        docker_stack { 'web':
+          compose_files => ['#{tmp_path}/docker-stack.yml'],
+          ensure        => absent,
+        }
+      MANIFEST
+    end
 
-        before(:all) do
-            @install_code = <<-code
-            docker_stack { 'web':
-              compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
-              ensure        => present,
-            }
-          code
+    it 'runs successfully' do
+      apply_manifest(destroy, catch_failures: true)
+      sleep 10
+    end
 
-          apply_manifest(@install_code, :catch_failures=>true)
-        end
-
-        it "should find container with web_compose_test tag" do
-            sleep wait_for_container_seconds
-            shell("docker ps | grep web_compose_test", :acceptable_exit_codes => [0])
-        end
+    it 'is idempotent' do
+      retry_on_error_matching(10, 3, %r{Removing network web_default}) do
+        apply_manifest(destroy, catch_changes: true)
       end
+    end
 
-      context 'Destroying project with multiple compose files' do
-        before(:all) do
-                @install_code = <<-code
-                docker_stack { 'web':
-                  compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
-                  ensure        => present,
-                }
-              code
-
-              apply_manifest(@install_code, :catch_failures=>true)
-
-              @destroy_code = <<-code
-              docker_stack { 'web':
-                compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
-                ensure        => absent,
-              }
-            code
-
-            retry_on_error_matching(10, 3, /Removing network web_default/) do
-              apply_manifest(@destroy_code, :catch_failures=>true)
-            end
-            sleep 15 # Wait for containers to stop and be destroyed
-        end
-
-        it 'should be idempotent' do
-          retry_on_error_matching(10, 3, /Removing network web_default/) do
-            apply_manifest(@destroy_code, :catch_changes=>true)
-          end
-        end
-
-        it 'should not find a docker stack' do
-            shell('docker stack ls') do |r|
-               expect(r.stdout).to_not match(/web/)
-            end
-        end
-
-        it 'should not find a docker container' do
-          shell("docker ps", :acceptable_exit_codes => [0]) do |r|
-            expect(r.stdout).not_to match(/web_compose_test/)
-          end
-        end
+    it 'does not find a docker stack' do
+      shell('docker stack ls') do |r|
+        expect(r.stdout).not_to match(%r{web})
       end
+    end
+  end
 
+  context 'creating stack with multi compose files' do
+    before(:all) do
+      install_pp = <<-MANIFEST
+        docker_stack { 'web':
+          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          ensure        => present,
+        }
+      MANIFEST
+
+      apply_manifest(install_pp, catch_failures: true)
+    end
+
+    it 'finds container with web_compose_test tag' do
+      sleep wait_for_container_seconds
+      shell('docker ps | grep web_compose_test', acceptable_exit_codes: [0])
+    end
+  end
+
+  context 'Destroying project with multiple compose files' do
+    let(:destroy_pp) do
+      <<-MANIFEST
+        docker_stack { 'web':
+          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          ensure        => absent,
+        }
+      MANIFEST
+    end
+
+    before(:all) do
+      install_pp = <<-MANIFEST
+        docker_stack { 'web':
+          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          ensure        => present,
+        }
+      MANIFEST
+      apply_manifest(install_pp, catch_failures: true)
+
+      destroy_pp = <<-MANIFEST
+        docker_stack { 'web':
+          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          ensure        => absent,
+        }
+      MANIFEST
+      retry_on_error_matching(10, 3, %r{Removing network web_default}) do
+        apply_manifest(destroy_pp, catch_failures: true)
+      end
+      sleep 15 # Wait for containers to stop and be destroyed
+    end
+
+    it 'is idempotent' do
+      retry_on_error_matching(10, 3, %r{Removing network web_default}) do
+        apply_manifest(destroy_pp, catch_changes: true)
+      end
+    end
+
+    it 'does not find a docker stack' do
+      shell('docker stack ls') do |r|
+        expect(r.stdout).not_to match(%r{web})
+      end
+    end
+
+    it 'does not find a docker container' do
+      shell('docker ps', acceptable_exit_codes: [0]) do |r|
+        expect(r.stdout).not_to match(%r{web_compose_test})
+      end
+    end
+  end
 end

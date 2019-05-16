@@ -38,3 +38,6 @@ Gemfile:
           - mingw
           - x64_mingw
       - gem: 'rspec-retry'
+
+spec/spec_helper.rb:
+  unmanaged: true
