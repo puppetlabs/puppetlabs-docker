@@ -41,7 +41,7 @@ class docker::compose(
   Optional[String] $install_path                           = $docker::params::compose_install_path,
   Optional[String] $proxy                                  = undef,
   Optional[String] $base_url                               = $docker::params::compose_base_url,
-  Optional[String] $raw_url                                = undef
+  Optional[String] $raw_url                                = undef,
   Optional[Boolean] $curl_ensure                           = $docker::curl_ensure,
 ) inherits docker::params {
 
