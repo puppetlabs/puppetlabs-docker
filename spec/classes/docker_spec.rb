@@ -847,11 +847,11 @@ describe 'docker', type: :class do
         it { is_expected.to contain_file(service_config_file).with_content(%r{-g \/mnt\/docker}) }
       end
 
-      context 'with custom root dir && Docker version > 17.05' do
+      context 'with custom root dir && Docker version > 18.09' do
         let(:params) do
           {
             'root_dir' => '/mnt/docker',
-            'version' => '18.03',
+            'version' => '19.09',
           }
         end
 
