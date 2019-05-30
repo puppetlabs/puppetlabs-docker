@@ -594,7 +594,7 @@ class docker(
     }
   }
 
-  if ( $version == undef ) or ( $version !~ /^(1[7-8][.][0-1][0-9][.][0-1](~|-|\.)ce|1.\d+)/ ) {
+  if ( $version == undef ) or ( $version !~ /^(17[.][0-1][0-9][.][0-1](~|-|\.)ce|1.\d+)/ ) {
     if ( $docker_ee) {
       $package_location = $docker::docker_ee_source_location
       $package_key_source = $docker::docker_ee_key_source
@@ -660,6 +660,7 @@ class docker(
   } else {
     $root_dir_flag = '--data-root'
   }
+
 
   if $ensure != 'absent' {
     contain 'docker::repos'
