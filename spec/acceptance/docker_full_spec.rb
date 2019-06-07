@@ -3,7 +3,11 @@ require 'spec_helper_acceptance'
 if fact('kernel') == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'winamd64/hello-seattle'
-  default_image_tag = 'nanoserver-sac2016'
+  if fact('os.release.major') == '2019'
+    default_image_tag = 'nanoserver'
+  else
+    default_image_tag = 'nanoserver-sac2016'
+  end
   default_digest = 'sha256:dcba85354678b50608b8c40ec6d17cce063a224aa0e12b6a55dc47b67f039e75'
   second_image = 'winamd64/hola-mundo'
   default_dockerfile = 'C:/Users/Administrator/AppData/Local/Temp/Dockerfile'
