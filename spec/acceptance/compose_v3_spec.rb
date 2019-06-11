@@ -5,11 +5,11 @@ if fact('osfamily') == 'windows'
   file_extension = '.exe'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
-  if fact('os.release.major') == '2019'
-    test_container = 'nanoserver'
-  else
-    test_container = 'nanoserver-sac2016'
-  end
+  test_container = if fact('os.release.major') == '2019'
+                     'nanoserver'
+                   else
+                     'nanoserver-sac2016'
+                   end
 else
   docker_args = if fact('os.name') == 'RedHat'
                   "repo_opt => '--enablerepo=localmirror-extras'"

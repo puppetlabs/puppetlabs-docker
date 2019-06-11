@@ -144,7 +144,7 @@ networks:
     external:
       name: nat
       EOS
-      docker_compose_override_v3_windows_2016 = <<-EOS
+      docker_compose_override_v3_windows2016 = <<-EOS
 version: "3"
 services:
   compose_test:
@@ -168,7 +168,7 @@ services:
   compose_test:
     image: winamd64/hello-seattle:nanoserver
       EOS
-      docker_stack_override_windows_2016 = <<-EOS
+      docker_stack_override_windows2016 = <<-EOS
 version: "3"
 services:
   compose_test:
@@ -178,11 +178,11 @@ services:
         create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3_windows)
         create_remote_file(host, '/tmp/docker-stack.yml', docker_stack_content_windows)
         if fact_on(host, 'os.release.major') == '2019'
-          create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_stack_override_windows)
+          create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows)
           create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows)
         else
-          create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_stack_override_windows_2016)
-          create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows_2016)
+          create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows2016)
+          create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows2016)
         end
       else
         create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3)

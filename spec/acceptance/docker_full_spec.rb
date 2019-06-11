@@ -3,11 +3,11 @@ require 'spec_helper_acceptance'
 if fact('kernel') == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'winamd64/hello-seattle'
-  if fact('os.release.major') == '2019'
-    default_image_tag = 'nanoserver'
-  else
-    default_image_tag = 'nanoserver-sac2016'
-  end
+  default_image_tag = if fact('os.release.major') == '2019'
+                        'nanoserver'
+                      else
+                        'nanoserver-sac2016'
+                      end
   default_digest = 'sha256:dcba85354678b50608b8c40ec6d17cce063a224aa0e12b6a55dc47b67f039e75'
   second_image = 'winamd64/hola-mundo'
   default_dockerfile = 'C:/Users/Administrator/AppData/Local/Temp/Dockerfile'
@@ -18,9 +18,9 @@ if fact('kernel') == 'windows'
   default_docker_run_arg = "restart => 'always', net => 'nat',"
   default_run_command = 'ping 127.0.0.1 -t'
   docker_command = '"/cygdrive/c/Program Files/Docker/docker"'
-  default_docker_exec_lr_command = 'cmd /c "ping 127.0.0.1 -t > c:\windows\temp\test_file.txt"'
-  default_docker_exec_command = 'cmd /c "echo test > c:\windows\temp\test_file.txt"'
-  docker_mount_path = 'C:/Users/Administrator/AppData/Local/Temp'
+  default_docker_exec_lr_command = 'cmd /c "ping 127.0.0.1 -t > C:\Users\Public\test_file.txt"'
+  default_docker_exec_command = 'cmd /c "echo test > C:\Users\Public\test_file.txt"'
+  docker_mount_path = 'C:/Users/Public/DockerVolume'
   storage_driver = 'windowsfilter'
 else
   docker_args = if fact('os.family') == 'RedHat'
@@ -317,7 +317,7 @@ describe 'the Puppet Docker module' do
 
       it 'creates a new image based on a Dockerfile' do
         run_cmd = if fact('osfamily') == 'windows'
-                    'RUN echo test > C:\\Windows\\Temp\\Dockerfile_test.txt'
+                    'RUN echo test > C:\\Users\\Public\\Dockerfile_test.txt'
                   else
                     "RUN echo test > #{dockerfile_test}"
                   end
@@ -343,7 +343,7 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
         if fact('osfamily') == 'windows'
-          shell("#{docker_command} run alpine_with_file cmd /c dir Windows\\\\Temp") do |r|
+          shell("#{docker_command} run alpine_with_file cmd /c dir Users\\\\Public") do |r|
             expect(r.stdout).to match(%r{_test.txt})
           end
         else
@@ -471,7 +471,7 @@ describe 'the Puppet Docker module' do
 
         container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
         if fact('osfamily') == 'windows'
-          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Windows\\\\Temp") do |r|
+          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public") do |r|
             expect(r.stdout).to match(%r{test_file.txt})
           end
         else
@@ -559,6 +559,11 @@ describe 'the Puppet Docker module' do
             #{default_docker_run_arg}
           }
 
+          file { '#{docker_mount_path}':
+            ensure => directory,
+            before => File['#{docker_mount_path}/test_mount.txt'],
+          }
+
           file { '#{docker_mount_path}/test_mount.txt':
             ensure => present,
             before => Docker::Run['container_3_4'],
@@ -572,7 +577,7 @@ describe 'the Puppet Docker module' do
         sleep 4
         container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
         if fact('osfamily') == 'windows'
-          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Administrator\\\\AppData\\\\Local\\\\Temp\\\\mnt") do |r|
+          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public\\\\DockerVolume\\\\mnt") do |r|
             expect(r.stdout).to match(%r{test_mount.txt})
           end
         else
@@ -878,7 +883,7 @@ describe 'the Puppet Docker module' do
 
       container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
       if fact('osfamily') == 'windows'
-        shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Windows\\\\Temp") do |r|
+        shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public") do |r|
           expect(r.stdout).to match(%r{test_file.txt})
         end
       else
@@ -916,7 +921,7 @@ describe 'the Puppet Docker module' do
       sleep 4
 
       if fact('osfamily') == 'windows'
-        shell("#{docker_command} exec #{container_name} cmd /c dir Windows\\\\Temp") do |r|
+        shell("#{docker_command} exec #{container_name} cmd /c dir Users\\\\Public") do |r|
           expect(r.stdout).not_to match(%r{test_file.txt})
         end
       else
@@ -948,7 +953,7 @@ describe 'the Puppet Docker module' do
       sleep 4
 
       if fact('osfamily') == 'windows'
-        shell("#{docker_command} exec #{container_name} cmd /c dir Windows\\\\Temp") do |r|
+        shell("#{docker_command} exec #{container_name} cmd /c dir Users\\\\Public") do |r|
           expect(r.stdout).to match(%r{test_file.txt})
         end
       else
