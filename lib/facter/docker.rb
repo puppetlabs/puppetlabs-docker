@@ -33,12 +33,12 @@ Facter.add(:docker_user_temp_path) do
 end
 
 Facter.add(:docker_home_dirs) do
-  confine :kernel => 'Linux'
+  confine kernel: 'Linux'
   setcode do
     home_dirs = {}
-    Etc.passwd { |user|
+    Etc.passwd do |user|
       home_dirs[user.name] = user.dir
-    }
+    end
     home_dirs
   end
 end
