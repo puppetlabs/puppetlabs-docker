@@ -10,6 +10,9 @@ describe 'docker::registry', type: :define do
       lsbdistcodename: 'jessie',
       kernelrelease: '3.2.0-4-amd64',
       operatingsystemmajrelease: '8',
+      docker_home_dirs: {
+        root: '/root',
+      },
     }
   end
   let(:params) { { 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
