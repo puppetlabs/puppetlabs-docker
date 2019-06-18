@@ -920,7 +920,7 @@ If using Docker V1.11 or later, the docker login email flag has been deprecated.
 Add the following code to the manifest file:
 
 ```puppet
-docker::registry { 'example.docker.io:5000'}
+docker::registry { 'example.docker.io:5000':
   username => 'user',
   password => 'secret',
 }
