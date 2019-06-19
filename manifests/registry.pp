@@ -61,6 +61,7 @@ define docker::registry(
     $exec_provider = undef
     $password_env = "\${password}"
     $exec_user = $local_user
+    $local_user_home = $facts['docker_home_dirs'][$local_user]
   }
 
   if $ensure == 'present' {
@@ -103,11 +104,13 @@ define docker::registry(
         Undef   => pw_hash($docker_auth, 'SHA-512', $local_user_strip),
         default => $pass_hash
       }
-      $_auth_command = "${auth_cmd} || rm -f \"/root/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
+      $_auth_command = "${auth_cmd} || rm -f \"/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
 
-      file { "/root/registry-auth-puppet_receipt_${server_strip}_${local_user}":
+      file { "/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
         ensure  => $ensure,
         content => $_pass_hash,
+        owner   => $local_user,
+        group   => $local_user,
         notify  => Exec["${title} auth"],
       }
     } else {
