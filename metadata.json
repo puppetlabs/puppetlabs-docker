@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-docker",
-  "version": "3.3.0",
+  "version": "3.5.0",
   "author": "Puppet Labs",
   "summary": "Module for installing and managing docker",
   "license": "Apache-2.0",
@@ -10,23 +10,23 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.24.0 <= 5.1.0"
+      "version_requirement": ">= 4.24.0 < 6.0.0"
     },
     {
       "name": "puppetlabs/apt",
-      "version_requirement": ">= 4.4.1 <= 6.2.1"
+      "version_requirement": ">= 4.4.1 < 7.0.0"
     },
     {
       "name": "puppetlabs/translate",
-      "version_requirement": ">= 0.0.1 <=1.1.0"
+      "version_requirement": ">= 0.0.1 < 2.0.0"
     },
     {
       "name": "puppetlabs/powershell",
-      "version_requirement": ">= 2.1.4 <= 2.2.0"
+      "version_requirement": ">= 2.1.4 < 3.0.0"
     },
     {
       "name": "puppetlabs/reboot",
-      "version_requirement": ">=2.0.0 <= 2.1.2"
+      "version_requirement": ">=2.0.0 < 3.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -60,17 +60,18 @@
     {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
-        "Server 2016"
+        "2016",
+        "2019"
       ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.2.1 < 7.0.0"
+      "version_requirement": ">= 5.5.10 < 7.0.0"
     }
   ],
-  "pdk-version": "1.8.0",
-  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git",
-  "template-ref": "1.8.0-0-g0d9da00"
+  "pdk-version": "1.10.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates.git#master",
+  "template-ref": "heads/master-0-g46a1deb"
 }

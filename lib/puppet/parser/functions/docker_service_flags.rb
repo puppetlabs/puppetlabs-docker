@@ -36,7 +36,17 @@ module Puppet::Parser::Functions
       end
     end
 
-    if opts['publish'] && opts['publish'].to_s != 'undef'
+    if opts['networks'].is_a? Array
+      opts['networks'].each do |network|
+        flags << "--network #{network}"
+      end
+    end
+
+    if opts['publish'].is_a? Array
+      opts['publish'].each do |port|
+        flags << "--publish #{port}"
+      end
+    elsif opts['publish'] && opts['publish'].to_s != 'undef'
       flags << "--publish '#{opts['publish']}'"
     end
 
@@ -74,7 +84,9 @@ module Puppet::Parser::Functions
       flags << "'#{opts['image']}'"
     end
 
-    if opts['command'] && opts['command'].to_s != 'undef'
+    if opts['command'].is_a? Array
+      flags << opts['command'].join(' ')
+    elsif opts['command'] && opts['command'].to_s != 'undef'
       flags << opts['command'].to_s
     end
 

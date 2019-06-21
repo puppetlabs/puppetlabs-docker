@@ -49,17 +49,23 @@
 #  Default: false
 #
 # [*health_check_cmd*]
-# (optional) Specifies the command to execute to check that the container is healthy using the docker health check functionality. 
+# (optional) Specifies the command to execute to check that the container is healthy using the docker health check functionality.
 # Default: undef
 #
 # [*health_check_interval*]
 # (optional) Specifies the interval that the health check command will execute in seconds.
-# Default: undef 
+# Default: undef
 #
 # [*restart_on_unhealthy*]
 # (optional) Checks the health status of Docker container and if it is unhealthy the service will be restarted.
 # The health_check_cmd parameter must be set to true to use this functionality.
 # Default: undef
+#
+# [*net*]
+#
+# The docker network to attach to a container.
+# Can be a String or Array (if using multiple networks)
+# Default: bridge
 #
 # [*extra_parameters*]
 # An array of additional command line arguments to pass to the `docker run`
@@ -94,7 +100,7 @@ define docker::run(
   Optional[Boolean] $use_name                           = false,
   Optional[Boolean] $running                            = true,
   Variant[String,Array,Undef] $volumes_from             = [],
-  Optional[String] $net                                 = 'bridge',
+  Variant[String,Array] $net                            = 'bridge',
   Variant[String,Boolean] $username                     = false,
   Variant[String,Boolean] $hostname                     = false,
   Variant[String,Array,Undef] $env                      = [],
@@ -103,6 +109,7 @@ define docker::run(
   Variant[String,Array,Undef] $dns_search               = [],
   Variant[String,Array,Undef] $lxc_conf                 = [],
   Optional[String] $service_prefix                      = 'docker-',
+  Optional[String] $service_provider                    = undef,
   Optional[Boolean] $restart_service                    = true,
   Optional[Boolean] $restart_service_on_docker_refresh  = true,
   Optional[Boolean] $manage_service                     = true,
@@ -135,7 +142,7 @@ define docker::run(
   Optional[String]  $health_check_cmd                   = undef,
   Optional[Boolean] $restart_on_unhealthy               = false,
   Optional[Integer] $health_check_interval              = undef,
-  Optional[Array] $custom_unless                        = undef,
+  Variant[String,Array,Undef] $custom_unless            = [],
 ) {
   include docker::params
   if ($socket_connect != []) {
@@ -152,11 +159,11 @@ define docker::run(
   }
 
   if ($remove_volume_on_start and !$remove_container_on_start) {
-    fail translate(("In order to remove the volume on start for ${title} you need to also remove the container"))
+    fail(translate("In order to remove the volume on start for ${title} you need to also remove the container"))
   }
 
   if ($remove_volume_on_stop and !$remove_container_on_stop) {
-    fail translate(("In order to remove the volume on stop for ${title} you need to also remove the container"))
+    fail(translate("In order to remove the volume on stop for ${title} you need to also remove the container"))
   }
 
   if $use_name {
@@ -170,8 +177,16 @@ define docker::run(
     assert_type(Pattern[/^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$/], $systemd_restart)
   }
 
+  $service_provider_real = $service_provider ? {
+    undef   => $docker::params::service_provider,
+    default => $service_provider,
+  }
+
   if $detach == undef {
-    $valid_detach = $docker::params::detach_service_in_init
+    $valid_detach = $service_provider_real ? {
+      'systemd' => false,
+      default   => $docker::params::detach_service_in_init,
+    }
   } else {
     $valid_detach = $detach
   }
@@ -234,6 +249,7 @@ define docker::run(
     $cidfile = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
+    $container_running_check = "\$state = ${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }"
 # lint:endignore
   } else {
     $exec_environment = 'HOME=/root'
@@ -243,6 +259,7 @@ define docker::run(
     $cidfile = "/var/run/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
     $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}"
+    $container_running_check = "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true"
 # lint:endignore
   }
 
@@ -305,7 +322,7 @@ define docker::run(
       if $running == false {
         exec { "stop ${title} with docker":
           command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-          unless      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
+          onlyif      => $container_running_check,
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
@@ -314,7 +331,7 @@ define docker::run(
       } else {
         exec { "start ${title} with docker":
           command     => "${docker_command} start ${sanitised_title}",
-          onlyif      => "${docker_command} inspect ${sanitised_title} -f \"{{ if (.State.Running) }} {{ nil }}{{ end }}\"",
+          unless      => $container_running_check,
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
@@ -327,14 +344,15 @@ define docker::run(
     $docker_run_inline_start = template('docker/docker-run-start.erb')
     $docker_run_inline_stop = template('docker/docker-run-stop.erb')
 
-    case $docker::params::service_provider {
+    case $service_provider_real {
       'systemd': {
         $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
         $startscript = "/usr/local/bin/docker-run-${sanitised_title}-start.sh"
         $stopscript = "/usr/local/bin/docker-run-${sanitised_title}-stop.sh"
         $startstop_template = 'docker/usr/local/bin/docker-run.sh.epp'
         $init_template = 'docker/etc/systemd/system/docker-run.erb'
-        $mode = '0640'
+        $mode = '0644'
+        $hasstatus = true
       }
       'upstart': {
         $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
@@ -342,15 +360,18 @@ define docker::run(
         $mode = '0750'
         $startscript = undef
         $stopscript = undef
-        $starstop_template = undef
+        $startstop_template = undef
+        $hasstatus = true
       }
       default: {
         if $::osfamily != 'windows' {
-          fail translate(('Docker needs a Debian or RedHat based system.'))
+          fail(translate('Docker needs a Debian or RedHat based system.'))
         }
         elsif $ensure == 'present' {
-          fail translate(('Restart parameter is required for Windows'))
+          fail(translate('Restart parameter is required for Windows'))
         }
+
+        $hasstatus = $::docker::params::service_hasstatus
       }
     }
 
@@ -377,7 +398,8 @@ define docker::run(
         service { "${service_prefix}${sanitised_title}":
           ensure    => false,
           enable    => false,
-          hasstatus => $docker::params::service_hasstatus,
+          hasstatus => $hasstatus,
+          provider  => $service_provider_real,
         }
       }
       exec {
@@ -445,7 +467,7 @@ define docker::run(
           service { "${service_prefix}${sanitised_title}":
             ensure    => $running,
             enable    => false,
-            hasstatus => $docker::params::service_hasstatus,
+            hasstatus => $hasstatus,
             require   => File[$initscript],
           }
         }
@@ -474,8 +496,8 @@ define docker::run(
           service { "${service_prefix}${sanitised_title}":
             ensure    => $running,
             enable    => true,
-            provider  => $docker::params::service_provider,
-            hasstatus => $docker::params::service_hasstatus,
+            provider  => $service_provider_real,
+            hasstatus => $hasstatus,
             require   => File[$initscript],
           }
         }
@@ -494,7 +516,7 @@ define docker::run(
           }
         }
       }
-      if $docker::params::service_provider == 'systemd' {
+      if $service_provider_real == 'systemd' {
         exec { "docker-${sanitised_title}-systemd-reload":
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',

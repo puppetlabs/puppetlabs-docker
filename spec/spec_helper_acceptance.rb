@@ -10,6 +10,20 @@ begin
 rescue LoadError # rubocop:disable Lint/HandleExceptions for optional loading
 end
 
+def idempotent_apply(hosts, manifest, opts = {}, &block)
+  block_on hosts, opts do |host|
+    file_path = host.tmpfile('apply_manifest.pp')
+    create_remote_file(host, file_path, manifest + "\n")
+
+    puppet_apply_opts = { :verbose => nil, 'detailed-exitcodes' => nil }
+    on_options = { acceptable_exit_codes: [0, 2] }
+    on host, puppet('apply', file_path, puppet_apply_opts), on_options, &block
+    puppet_apply_opts2 = { :verbose => nil, 'detailed-exitcodes' => nil }
+    on_options2 = { acceptable_exit_codes: [0] }
+    on host, puppet('apply', file_path, puppet_apply_opts2), on_options2, &block
+  end
+end
+
 # This method allows a block to be passed in and if an exception is raised
 # that matches the 'error_matcher' matcher, the block will wait a set number
 # of seconds before retrying.
@@ -112,7 +126,7 @@ services:
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver
+    image: winamd64/hello-seattle
     command: cmd.exe /C "ping 8.8.8.8 -t"
 networks:
   default:
@@ -123,7 +137,18 @@ networks:
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver-sac2016
+    image: winamd64/hello-seattle:nanoserver
+    command: cmd.exe /C "ping 8.8.8.8 -t"
+networks:
+  default:
+    external:
+      name: nat
+      EOS
+      docker_compose_override_v3_windows2016 = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: winamd64/hello-seattle:nanoserver-sac2016
     command: cmd.exe /C "ping 8.8.8.8 -t"
 networks:
   default:
@@ -134,20 +159,31 @@ networks:
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver
+    image: winamd64/hello-seattle
     command: cmd.exe /C "ping 8.8.8.8 -t"
       EOS
       docker_stack_override_windows = <<-EOS
 version: "3"
 services:
   compose_test:
-    image: hello-world:nanoserver-sac2016
+    image: winamd64/hello-seattle:nanoserver
+      EOS
+      docker_stack_override_windows2016 = <<-EOS
+version: "3"
+services:
+  compose_test:
+    image: winamd64/hello-seattle:nanoserver-sac2016
       EOS
       if fact_on(host, 'osfamily') == 'windows'
         create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3_windows)
         create_remote_file(host, '/tmp/docker-stack.yml', docker_stack_content_windows)
-        create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows)
-        create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows)
+        if fact_on(host, 'os.release.major') == '2019'
+          create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows)
+          create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows)
+        else
+          create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows2016)
+          create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows2016)
+        end
       else
         create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3)
         create_remote_file(host, '/tmp/docker-stack.yml', docker_compose_content_v3)

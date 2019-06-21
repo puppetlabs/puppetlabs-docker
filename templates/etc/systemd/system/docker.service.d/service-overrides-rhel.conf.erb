@@ -1,3 +1,8 @@
+<% if @service_after_override -%>
+[Unit]
+After=<%= @service_after_override %>
+
+<% end -%>
 [Service]
 EnvironmentFile=-/etc/sysconfig/docker
 EnvironmentFile=-/etc/sysconfig/docker-storage

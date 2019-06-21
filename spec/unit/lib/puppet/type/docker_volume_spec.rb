@@ -18,13 +18,13 @@ describe volume do
     ]
   end
 
-  it 'should have expected properties' do
+  it 'has expected properties' do
     properties.each do |property|
       expect(volume.properties.map(&:name)).to be_include(property)
     end
   end
 
-  it 'should have expected parameters' do
+  it 'has expected parameters' do
     params.each do |param|
       expect(volume.parameters).to be_include(param)
     end

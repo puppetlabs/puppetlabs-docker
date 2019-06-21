@@ -17,6 +17,7 @@
    * [Networks](#networks)
    * [Volumes](#volumes)
    * [Compose](#compose)
+   * [Machine](#machine)
    * [Swarm mode](#swarm-mode)
    * [Tasks](#tasks)
    * [Docker services](#docker-services)
@@ -111,7 +112,7 @@ To use the CE packages, add the following code to the manifest file:
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',  
+  repo_opt => '',
 }
 ```
 
@@ -131,6 +132,26 @@ class { 'docker':
 
 For more information about the configuration options for the default docker bridge, see the [Docker documentation](https://docs.docker.com/v17.09/engine/userguide/networking/default_network/custom-docker0/).
 
+The default group ownership of the Unix control socket differs based on OS. For example, on RHEL using docker-ce packages >=18.09.1, the socket file used by /usr/lib/systemd/system/docker.socket is owned by the docker group.  To override this value in /etc/sysconfig/docker and docker.socket (e.g. to use the 'root' group):
+
+```puppet
+class {'docker':
+  socket_group => 'root',
+  socket_override => true,
+}
+```
+
+The socket_group parameter also takes a boolean for legacy cases where setting -G in /etc/sysconfig/docker is not desired:
+
+```puppet
+docker::socket_group: false
+```
+
+To add another service to the After= line in the [Unit] section of the systemd /etc/systemd/system/service-overrides.conf file, use the service_after_override parameter:
+
+```puppet
+docker::service_after_override: containerd.service
+```
 
 When setting up TLS, upload the related files (CA certificate, server certificate, and key) and include their paths in the manifest file:
 
@@ -359,7 +380,7 @@ docker::run { 'helloworld':
   ports            => ['4444', '4555'],
   expose           => ['4666', '4777'],
   links            => ['mysql:db'],
-  net              => 'my-user-def-net',
+  net              => ['my-user-def-net','my-user-def-net-2'],
   disable_network  => false,
   volumes          => ['/var/lib/couchdb', '/var/log'],
   volumes_from     => '6446ea52fbc9',
@@ -519,6 +540,20 @@ docker_volume { 'my-volume':
 }
 ```
 
+Additional mount options can be passed to the `local` driver. For mounting a NFS export use:
+
+```puppet
+docker_volume { 'nfs-volume':
+  ensure  => present,
+  driver  => 'local',
+  options => {
+    type   => 'nfs4',
+    o      => 'addr=10.10.10.10,rw',
+    device => ':/exports/data'
+  },
+}
+```
+
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
 
 If using Hiera, configure the `docker::volumes` class in the manifest file:
@@ -526,17 +561,20 @@ If using Hiera, configure the `docker::volumes` class in the manifest file:
 ```yaml
 ---
   classes:
-    - docker::volumes::volumes
+    - docker::volumes
 
-docker::volumes::volumes:
+docker::volumes:
   blueocean:
     ensure: present
     driver: local
     options:
-      - ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
+      type: "nfs"
+      o: "addr=%{custom_manager},rw",
+      device: ":/srv/blueocean"
 ```
 
-Any extra options should be passed in as an array
+Available parameters for `options` depend on the used volume driver. For details read
+[Using volumes](https://docs.docker.com/storage/volumes/) from the Docker manual.
 
 Some of the key advantages for using `volumes` over `bind mounts` are:
 
@@ -560,8 +598,6 @@ docker::run { 'helloworld':
   volumes => ['my-volume:/var/log'],
 }
 ```
-
-For more information on volumes see the [Docker Volumes](https://docs.docker.com/engine/admin/volumes/volumes) documentation.
 
 ### Compose
 
@@ -618,13 +654,15 @@ To supply multiple overide compose files add the following to the manifest file:
 
 ```puppet
 docker_compose {'test':
-  compose_files => ['master-docker-compose.yml', 'override-compose.yml],
+  compose_files => ['master-docker-compose.yml', 'override-compose.yml'],
 }
 ```
 
 Please note you should supply your master docker-compose file as the first element in the array. As per docker, multi compose file support compose files are merged in the order they are specified in the array.
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
+
+NOTE: this define will be deprecated in a future release in favor of the [docker stack type](#types)
 
 To deploy the stack, add the following code to the manifest file:
 
@@ -652,7 +690,34 @@ docker::stack { 'yourapp':
 }
 ```
 
+To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the documentation for [here](#Types)
+```puppet
+docker_stack { 'test':
+  compose_files => ['/tmp/docker-compose.yml'],
+  ensure  => present,
+}
+```
+
 To remove the stack, set `ensure  => absent`.
+
+### Machine
+
+Docker Machine is a tool that lets you install Docker Engine on virtual hosts, and manage the hosts with docker-machine commands. You can use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
+
+For more information on machines see the [Docker Machines](https://docs.docker.com/machine/) documentation.
+
+This module only takes responsability for installing the Docker Machine utility.
+
+To install Docker Machine, add the following code to the manifest file:
+
+```puppet
+class {'docker::machine':
+  ensure => present,
+  version => '1.16.1',
+}
+```
+
+Set the `version` parameter to any version you need to install.
 
 ### Swarm mode
 
@@ -771,10 +836,11 @@ docker::services {'redis':
     replicas => '5',
     mounts => ['type=bind,source=/etc/my-redis.conf,target=/etc/redis/redis.conf,readonly'],
     extra_params => ['--update-delay 1m', '--restart-window 30s'],
+    command => ['redis-server', '--appendonly', 'yes'],
   }
 ```
 
-To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service ports. To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`.
+To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service port (use an array to specify multiple published ports). To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`. The `command` parameter can either be specified as an array or a string.
 
 To update the service, add the following code to the manifest file:
 
@@ -854,7 +920,7 @@ If using Docker V1.11 or later, the docker login email flag has been deprecated.
 Add the following code to the manifest file:
 
 ```puppet
-docker::registry { 'example.docker.io:5000'}
+docker::registry { 'example.docker.io:5000':
   username => 'user',
   password => 'secret',
 }
@@ -927,7 +993,6 @@ docker::plugin {'foo/fooplugin:latest'
   ensure => 'absent',
   force_remove => true,
 }
-thub.com
 ```
 
 ## Reference
@@ -939,6 +1004,7 @@ thub.com
 * docker
 * docker::compose
 * docker::images
+* docker::machine
 * docker::networks
 * docker::params
 * docker::plugins
@@ -974,6 +1040,7 @@ thub.com
 * docker_compose: A type that represents a docker compose file.
 * docker_network: A type that represents a docker network.
 * docker_volume: A type that represents a docker volume.
+* docker_stack: A type that repsents a docker stack.
 
 ### Parameters
 
@@ -1056,6 +1123,20 @@ Additional options for the volume driver.
 #### `mountpoint`
 
 The location that the volume is mounted to.
+
+The following parameters are available in the `docker_stack` type:
+
+#### 'bundle_file'
+
+A path to a Distributed Application Bundle file.
+
+#### 'compose_files'
+
+An array containing the docker compose file paths.
+
+#### `up_args`
+
+Arguments to be passed directly to docker stack deploy.
 
 #### Docker class parameters
 
@@ -1226,6 +1307,7 @@ Valid values:
 * `gelf`: Graylog Extended Log Format (GELF) logging driver that writes log messages to a GELF endpoint: Graylog or Logstash.
 * `fluentd`: fluentd logging driver that writes log messages to fluentd (forward input).
 * `splunk`: Splunk logging driver that writes log messages to Splunk (HTTP Event Collector).
+* `awslogs`: AWS Cloudwatch logging driver that writes log messages to a AWS Cloudwatch LogStream
 
 #### `log_opt`
 
@@ -1242,6 +1324,7 @@ Valid values:
 * `gelf`: gelf-address=udp://host:port, gelf-tag="some_tag"
 * `fluentd`: fluentd-address=host:port, fluentd-tag={{.ID}} - short container id (12 characters), {{.FullID}} - full container id, {{.Name}} - container name
 * `splunk`: splunk-token=<splunk_http_event_collector_token>, splunk-url=https://your_splunk_instance:8088|
+* `awslogs`: awslogs-group=<cloudwatch_log_group>, awslogs-stream=<cloudwatch_log_stream>, awslogs-create-group=true|false, awslogs-datetime-format=<strftime_date_format>, awslog-multiline-pattern=<multiline_start_regexp_pattern>, tag={{.ID}} - short container id (12 characters), {{.FullID}} - full container id, {{.Name}} - container name
 
 #### `selinux_enabled`
 
@@ -1539,12 +1622,14 @@ Sanitises string or array of strings for safe usage as container name inside scr
 
 This module supports:
 
+* Centos 7.0
 * Debian 8.0
 * Debian 9.0
+* RedHat 7.0
 * Ubuntu 14.04
 * Ubuntu 16.04
 * Ubuntu 18.04
-* Centos 7.0
+* Windows Server 2016 (Docker Enterprise Edition only)
 
 ## Development
 

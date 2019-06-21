@@ -140,7 +140,21 @@ define docker::image(
       timeout     => $exec_timeout,
       logoutput   => true,
     }
-  } elsif $ensure == 'latest' or $image_tag == 'latest' or $ensure == 'present' {
+  } elsif $ensure == 'latest' or $image_tag == 'latest' {
+    notify { "Check if image ${image_arg} is in-sync":
+      noop      => false,
+    }
+    ~> exec { "echo 'Update of ${image_arg} complete'":
+      environment => $exec_environment,
+      path        => $exec_path,
+      timeout     => $exec_timeout,
+      onlyif      => $image_install,
+      require     => File[$update_docker_image_path],
+      provider    => $exec_provider,
+      logoutput   => true,
+      refreshonly => true,
+    }
+  } elsif $ensure == 'present' {
     exec { $image_install:
       unless      => $_image_find,
       environment => $exec_environment,
@@ -153,5 +167,5 @@ define docker::image(
     }
   }
 
-  Docker::Image <| title == $title |> -> Docker::Run <| image == $image_arg |>
+  Docker::Image <| title == $title |>
 }
