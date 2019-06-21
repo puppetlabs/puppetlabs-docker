@@ -7,8 +7,8 @@ require 'puppet'
 
 def swarm_update(image, service)
   cmd_string = 'docker service update'
-  cmd_string << " --image #{image}" unless image.nil?
-  cmd_string << " #{service}" unless service.nil?
+  cmd_string += " --image #{image}" unless image.nil?
+  cmd_string += " #{service}" unless service.nil?
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
