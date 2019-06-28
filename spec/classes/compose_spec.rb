@@ -117,20 +117,30 @@ describe 'docker::compose', type: :class do
   end
 
   context 'when base_url is provided' do
-    let(:params) { {:base_url => 'http://example.org',
-                    :version => '1.7.0'} }
+    let(:params) do
+      { base_url: 'http://example.org',
+        version: '1.7.0' }
+    end
+
     it { is_expected.to compile }
-    it { is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-      'curl -s -S -L  http://example.org/1.7.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.7.0')
+    it {
+      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
+        'curl -s -S -L  http://example.org/1.7.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.7.0',
+      )
     }
   end
 
   context 'when raw_url is provided' do
-    let(:params) { {:raw_url => 'http://example.org',
-                    :version => '1.7.0'} }
+    let(:params) do
+      { raw_url: 'http://example.org',
+        version: '1.7.0' }
+    end
+
     it { is_expected.to compile }
-    it { is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-      'curl -s -S -L  http://example.org -o /usr/local/bin/docker-compose-1.7.0')
+    it {
+      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
+        'curl -s -S -L  http://example.org -o /usr/local/bin/docker-compose-1.7.0',
+      )
     }
   end
 end
