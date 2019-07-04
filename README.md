@@ -540,7 +540,7 @@ docker_volume { 'my-volume':
 }
 ```
 
-Additional mount options can be passed to the `local` driver. For mounting a NFS export use:
+You can pass additional mount options to the `local` driver. For mounting an NFS export, use:
 
 ```puppet
 docker_volume { 'nfs-volume':
@@ -573,7 +573,7 @@ docker::volumes:
       device: ":/srv/blueocean"
 ```
 
-Available parameters for `options` depend on the used volume driver. For details read
+Available parameters for `options` depend on the used volume driver. For details, see
 [Using volumes](https://docs.docker.com/storage/volumes/) from the Docker manual.
 
 Some of the key advantages for using `volumes` over `bind mounts` are:
@@ -702,11 +702,11 @@ To remove the stack, set `ensure  => absent`.
 
 ### Machine
 
-Docker Machine is a tool that lets you install Docker Engine on virtual hosts, and manage the hosts with docker-machine commands. You can use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
+You can use Docker Machine to install Docker Engine on virtual hosts, and manage the hosts with docker-machine commands. You can also use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
 
-For more information on machines see the [Docker Machines](https://docs.docker.com/machine/) documentation.
+For more information on machines, see the [Docker Machines](https://docs.docker.com/machine/) documentation.
 
-This module only takes responsability for installing the Docker Machine utility.
+This module only installs the Docker Machine utility.
 
 To install Docker Machine, add the following code to the manifest file:
 
