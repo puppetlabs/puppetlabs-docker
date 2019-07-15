@@ -68,6 +68,7 @@ class docker::params {
   $dns                               = undef
   $dns_search                        = undef
   $proxy                             = undef
+  $compose_base_url                  = 'https://github.com/docker/compose/releases/download'
   $no_proxy                          = undef
   $execdriver                        = undef
   $storage_driver                    = undef
