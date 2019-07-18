@@ -379,10 +379,6 @@
 #   Sets the prefered container registry mirror.
 #   Default: undef
 #
-# [*curl_ensure*]
-#   Whether or not the curl package is ensured by this module.
-#   Default: true
-#
 # [*nuget_package_provider_version*]
 #   The version of the NuGet Package provider
 #   Default: undef
@@ -507,7 +503,6 @@ class docker(
   Optional[Boolean] $service_hasrestart                     = $docker::params::service_hasrestart,
   Optional[String] $registry_mirror                         = $docker::params::registry_mirror,
   Boolean $acknowledge_unsupported_os                       = false,
-  Optional[Boolean] $curl_ensure                            = $docker::params::curl_ensure,
   # Windows specific parameters
   Optional[String] $docker_msft_provider_version            = $docker::params::docker_msft_provider_version,
   Optional[String] $nuget_package_provider_version          = $docker::params::nuget_package_provider_version,

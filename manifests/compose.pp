@@ -33,7 +33,7 @@
 
 # [*curl_ensure*]
 #   Whether or not the curl package is ensured by this module.
-#
+#   Defaults to true
 #
 class docker::compose(
   Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
@@ -42,7 +42,7 @@ class docker::compose(
   Optional[String] $proxy                                  = undef,
   Optional[String] $base_url                               = $docker::params::compose_base_url,
   Optional[String] $raw_url                                = undef,
-  Optional[Boolean] $curl_ensure                           = $docker::curl_ensure,
+  Optional[Boolean] $curl_ensure                           = $docker::params::curl_ensure,
 ) inherits docker::params {
 
   if $proxy != undef {
