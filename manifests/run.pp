@@ -62,7 +62,6 @@
 # Default: undef
 #
 # [*net*]
-#
 # The docker network to attach to a container.
 # Can be a String or Array (if using multiple networks)
 # Default: bridge
@@ -81,6 +80,13 @@
 # [*custom_unless*]
 # (optional) Specify an additional unless for the Docker run command when using restart.
 # Default: undef
+# Value when undef: "${docker_command} inspect ${sanitised_title}"
+#
+# [*custom_check_name*]
+# (optional) Specify a custom container name for running and restart checks, i.e. for containers that spawn new containers
+# Note: Does not apply to ensure == 'absent' checks
+# Default: undef
+# Value when undef: ${sanitised_title}
 #
 # [*after_create*]
 # (optional) Specifies the command to execute after container is created but before it is started.
@@ -142,7 +148,8 @@ define docker::run(
   Optional[String]  $health_check_cmd                   = undef,
   Optional[Boolean] $restart_on_unhealthy               = false,
   Optional[Integer] $health_check_interval              = undef,
-  Variant[String,Array,Undef] $custom_unless            = [],
+  Variant[String,Array,Undef] $custom_unless            = undef,
+  Variant[String,Undef] $custom_check_name              = undef,
 ) {
   include docker::params
   if ($socket_connect != []) {
@@ -241,6 +248,12 @@ define docker::run(
     $sanitised_after_array = docker::sanitised_name($after_array)
   }
 
+  if $custom_check_name {
+    $check_name = $custom_check_name
+  } else {
+    $check_name = $sanitised_title
+  }
+
   if $::osfamily == 'windows' {
     $exec_environment = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
     $exec_timeout = 3000
@@ -248,8 +261,8 @@ define docker::run(
     $exec_provider = 'powershell'
     $cidfile = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
-    $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
-    $container_running_check = "\$state = ${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }"
+    $container_restart_check = "${docker_command} inspect ${check_name} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
+    $container_running_check = "\$state = ${docker_command} inspect ${check_name} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }"
 # lint:endignore
   } else {
     $exec_environment = 'HOME=/root'
@@ -258,15 +271,22 @@ define docker::run(
     $exec_provider = undef
     $cidfile = "/var/run/${service_prefix}${sanitised_title}.cid"
 # lint:ignore:140chars
-    $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}"
-    $container_running_check = "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true"
+    $container_restart_check = "${docker_command} inspect ${check_name} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}"
+    $container_running_check = "${docker_command} inspect ${check_name} -f \"{{ .State.Running }}\" | grep true"
 # lint:endignore
+  }
+  # Allow override for unless commands
+  $inspect = "${docker_command} inspect ${check_name}"
+  if $custom_unless {
+    $exec_unless = concat($custom_unless, $inspect)
+  } else {
+    $exec_unless = $inspect
   }
 
   if $restart_on_unhealthy {
     exec { "Restart unhealthy container ${title} with docker":
       command     => "${docker_command} restart ${sanitised_title}",
-      onlyif      => $restart_check,
+      onlyif      => $container_restart_check,
       environment => $exec_environment,
       path        => $exec_path,
       provider    => $exec_provider,
@@ -304,12 +324,6 @@ define docker::run(
         "--name ${sanitised_title} --cidfile=${cidfile}",
         "--restart=\"${restart}\" ${image} ${command}",
       ]
-      $inspect = ["${docker_command} inspect ${sanitised_title}"]
-      if $custom_unless {
-        $exec_unless = concat($custom_unless, $inspect)
-      } else {
-        $exec_unless = $inspect
-      }
       exec { "run ${title} with docker":
         command     => join($run_with_docker_command, ' '),
         unless      => $exec_unless,
