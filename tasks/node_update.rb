@@ -5,7 +5,7 @@ require 'json'
 require 'open3'
 require 'puppet'
 
-def node_update(availability,role,node)
+def node_update(availability, role, node)
   cmd_string = 'docker node update'
   cmd_string += " --availability #{availability}" unless availability.nil?
   cmd_string += " --role #{role}" unless role.nil?
@@ -22,7 +22,7 @@ role = params['role']
 node = params['node']
 
 begin
-  result = node_update(availability,role,node)
+  result = node_update(availability, role, node)
   puts result
   exit 0
 rescue Puppet::Error => e

@@ -5,7 +5,7 @@ require 'json'
 require 'open3'
 require 'puppet'
 
-def node_ls(filter,quiet)
+def node_ls(filter, quiet)
   cmd_string = 'docker node ls'
   cmd_string += " --filter=#{filter}" unless filter.nil?
   cmd_string += ' --quiet' unless quiet.nil?
@@ -19,9 +19,8 @@ params = JSON.parse(STDIN.read)
 filter = params['filter']
 quiet = params['quiet']
 
-
 begin
-  result = node_ls(filter,quiet)
+  result = node_ls(filter, quiet)
   puts result
   exit 0
 rescue Puppet::Error => e

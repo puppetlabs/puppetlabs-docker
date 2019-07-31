@@ -5,7 +5,7 @@ require 'json'
 require 'open3'
 require 'puppet'
 
-def node_rm(force,node)
+def node_rm(force, node)
   cmd_string = 'docker node rm'
   cmd_string += ' --force' unless force.nil?
   cmd_string += " #{node}" unless node.nil?
@@ -20,7 +20,7 @@ force = params['force']
 node = params['node']
 
 begin
-  result = node_rm(force,node)
+  result = node_rm(force, node)
   puts result
   exit 0
 rescue Puppet::Error => e
