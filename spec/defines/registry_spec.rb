@@ -10,9 +10,6 @@ describe 'docker::registry', type: :define do
       lsbdistcodename: 'jessie',
       kernelrelease: '3.2.0-4-amd64',
       operatingsystemmajrelease: '8',
-      docker_home_dirs: {
-        root: '/root',
-      },
       os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.2' } },
     }
   end

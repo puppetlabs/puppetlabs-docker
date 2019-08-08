@@ -26,21 +26,25 @@
 #   The local user to log in as. Docker will store credentials in this
 #   users home directory
 #
+# @param local_user_home
+#   The local user home directory.
+#   
 # @param receipt
 #   Required to be true for idempotency
 #
 # @param version
 #
 define docker::registry(
-  Optional[String]               $server     = $title,
-  Optional[Enum[present,absent]] $ensure     = 'present',
-  Optional[String]               $username   = undef,
-  Optional[String]               $password   = undef,
-  Optional[String]               $pass_hash  = undef,
-  Optional[String]               $email      = undef,
-  Optional[String]               $local_user = 'root',
-  Optional[String]               $version    = $docker::version,
-  Optional[Boolean]              $receipt    = true,
+  Optional[String]               $server          = $title,
+  Optional[Enum[present,absent]] $ensure          = 'present',
+  Optional[String]               $username        = undef,
+  Optional[String]               $password        = undef,
+  Optional[String]               $pass_hash       = undef,
+  Optional[String]               $email           = undef,
+  Optional[String]               $local_user      = 'root',
+  Optional[String]               $local_user_home = undef,
+  Optional[String]               $version         = $docker::version,
+  Optional[Boolean]              $receipt         = true,
 ) {
   include docker::params
 
@@ -60,7 +64,15 @@ define docker::registry(
     $exec_provider    = undef
     $password_env     = "\${password}"
     $exec_user        = $local_user
-    $local_user_home  = $facts['docker_home_dirs'][$local_user]
+    if $local_user_home {
+      $_local_user_home = $local_user_home
+    } else {
+      # set sensible default
+      $_local_user_home = $local_user == 'root' ? {
+        true    => '/root',
+        default => "/home/${local_user}",
+      }
+    }
   }
 
   if $ensure == 'present' {
@@ -100,9 +112,9 @@ define docker::registry(
         default => $pass_hash
       }
 
-      $_auth_command = "${auth_cmd} || (rm -f \"/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\"; exit 1;)"
+      $_auth_command = "${auth_cmd} || (rm -f \"/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\"; exit 1;)"
 
-      file { "/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
+      file { "/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
         ensure  => $ensure,
         content => $_pass_hash,
         owner   => $local_user,
