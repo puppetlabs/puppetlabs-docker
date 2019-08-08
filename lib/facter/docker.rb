@@ -2,7 +2,6 @@
 
 require 'facter'
 require 'json'
-require 'etc'
 
 Facter.add(:docker_systemroot) do
   confine osfamily: :windows
@@ -29,17 +28,6 @@ Facter.add(:docker_user_temp_path) do
   confine osfamily: :windows
   setcode do
     Puppet::Util.get_env('TEMP')
-  end
-end
-
-Facter.add(:docker_home_dirs) do
-  confine kernel: 'Linux'
-  setcode do
-    home_dirs = {}
-    Etc.passwd do |user|
-      home_dirs[user.name] = user.dir
-    end
-    home_dirs
   end
 end
 

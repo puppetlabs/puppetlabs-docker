@@ -40,6 +40,7 @@ define docker::registry(
   Optional[String] $pass_hash                          = undef,
   Optional[String] $email                              = undef,
   Optional[String] $local_user                         = 'root',
+  Optional[String] $local_user_home                    = undef,
   Optional[String] $version                            = $docker::version,
   Optional[Boolean] $receipt                           = true,
 ) {
@@ -61,7 +62,16 @@ define docker::registry(
     $exec_provider = undef
     $password_env = "\${password}"
     $exec_user = $local_user
-    $local_user_home = $facts['docker_home_dirs'][$local_user]
+
+    if $local_user_home {
+      $_local_user_home = $local_user_home
+    } else {
+      # set sensible default
+      $_local_user_home = $local_user == 'root' ? {
+        true    => '/root',
+        default => "/home/${local_user}",
+      }
+    }
   }
 
   if $ensure == 'present' {
@@ -104,9 +114,9 @@ define docker::registry(
         Undef   => pw_hash($docker_auth, 'SHA-512', $local_user_strip),
         default => $pass_hash
       }
-      $_auth_command = "${auth_cmd} || rm -f \"/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
+      $_auth_command = "${auth_cmd} || rm -f \"/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
 
-      file { "/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
+      file { "/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
         ensure  => $ensure,
         content => $_pass_hash,
         owner   => $local_user,
