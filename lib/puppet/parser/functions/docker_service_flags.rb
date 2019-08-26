@@ -10,12 +10,12 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['detach'].to_s != 'true'
-      flags << '--detach'
-    end
-
     if opts['service_name'] && opts['service_name'].to_s != 'undef'
       flags << "'#{opts['service_name']}'"
+    end
+
+    if opts['detach'].to_s != 'false'
+      flags << '--detach'
     end
 
     if opts['env'].is_a? Array
