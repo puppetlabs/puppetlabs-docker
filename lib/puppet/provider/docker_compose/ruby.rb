@@ -18,11 +18,13 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       # rubocop:disable Style/StringLiterals
       containers = docker([
                             'ps',
+                            '--no-trunc',
                             '--format',
-                            "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
+                            "{{.Label \"com.docker.compose.service\"}}-{{.Image}}-{{.Command}}",
                             '--filter',
                             "label=com.docker.compose.project=#{name}",
                           ]).split("\n")
+      containers = containers.map { |c| c.tr('"\'', '') }
       compose_containers.push(*containers)
       compose_containers.uniq!
       # rubocop:enable Style/StringLiterals
@@ -43,8 +45,10 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
     counts = Hash[*compose_services.each.map { |key, array|
                     image = (array['image']) ? array['image'] : get_image(key, compose_services)
+                    command = (array['command']) ? array['command'] : get_command(key, compose_services)
+                    command = command.tr('"\'', '')
                     Puppet.info("Checking for compose service #{key} #{image}")
-                    ["#{key}-#{image}", compose_containers.count("#{key}-#{image}")]
+                    ["#{key}-#{image}-#{command}", compose_containers.count("#{key}-#{image}-#{command}")]
                   }.flatten]
 
     # No containers found for the project
@@ -60,7 +64,6 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   end
 
   def get_image(service_name, compose_services)
-    image = compose_services[service_name]['image']
     unless image
       if compose_services[service_name]['extends']
         image = get_image(compose_services[service_name]['extends'], compose_services)
@@ -69,6 +72,11 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       end
     end
     image
+  end
+
+  def get_command(service_name, compose_services)
+    command = compose_services[service_name]['command']
+    command
   end
 
   def create
