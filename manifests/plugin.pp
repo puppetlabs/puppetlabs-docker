@@ -79,7 +79,7 @@ define docker::plugin(
     })
 
     $exec_install = "${docker_command} install ${docker_plugin_install_flags}"
-    $unless_install = "${docker_command} ls | grep -w ${plugin_name}"
+    $unless_install = "${docker_command} ls --format='{{.PluginReference}}' | grep -w ${plugin_name}"
 
     exec { "plugin install ${plugin_name}":
       command     => $exec_install,
@@ -95,7 +95,7 @@ define docker::plugin(
     })
 
     $exec_rm = "${docker_command} rm ${docker_plugin_remove_flags}"
-    $onlyif_rm = "${docker_command} ls | grep -w ${plugin_name}"
+    $onlyif_rm = "${docker_command} ls --format='{{.PluginReference}}' | grep -w ${plugin_name}"
 
     exec { "plugin remove ${plugin_name}":
       command     => $exec_rm,
@@ -109,11 +109,12 @@ define docker::plugin(
   if $enabled {
     $docker_plugin_enable_flags = docker_plugin_enable_flags({
       plugin_name => $plugin_name,
+      plugin_alias => $plugin_alias,
       timeout => $timeout,
     })
 
     $exec_enable = "${docker_command} enable ${docker_plugin_enable_flags}"
-    $onlyif_enable = "${docker_command} ls -f enabled=false | grep -w ${plugin_name}"
+    $onlyif_enable = "${docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w ${plugin_name}"
 
     exec { "plugin enable ${plugin_name}":
       command     => $exec_enable,
@@ -129,7 +130,7 @@ define docker::plugin(
       environment => 'HOME=/root',
       path        => ['/bin', '/usr/bin'],
       timeout     => 0,
-      unless      => "${docker_command} ls -f enabled=false | grep -w ${plugin_name}",
+      unless      => "${docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w ${plugin_name}",
     }
   }
 }
