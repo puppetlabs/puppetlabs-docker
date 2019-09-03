@@ -23,11 +23,14 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
       ['--ipam-driver=%s',  :ipam_driver],
       ['--aux-address=%s',  :aux_address],
       ['--opt=%s',          :options],
-      ['%s',                :additional_flags],
     ].each do |(format, key)|
       values    = resource[key]
       new_flags = multi_flags.call(values, format)
       flags.concat(new_flags)
+    end
+    additional_flags = resource[:additional_flags].split
+    additional_flags.each do |additional_flag|
+      flags << additional_flag
     end
     flags << resource[:name]
   end
