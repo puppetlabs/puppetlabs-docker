@@ -52,7 +52,6 @@ Facter.add(:docker_hosted_containers) do
             containers_hash['service_errors'] += "Found no hostname or vip for #{service_id}"
           end
           containers_hash['service_ids'].push(service_id)
-          containers_hash['container_ids'].push(container_id)
         end  
       end
       containers_hash['container_count'] = container_count
