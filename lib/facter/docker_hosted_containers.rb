@@ -47,6 +47,8 @@ Facter.add(:docker_hosted_containers) do
             containers_hash[service_hostname] = service_meta_data[0]
           elsif service_vip
             containers_hash[service_vip] = service_meta_data[0]
+          else
+            containers_hash['service_errors'] += "Found no hostname or vip for #{service_id}"
           end
           containers_hash['service_ids'].push(service_id)
         end  
