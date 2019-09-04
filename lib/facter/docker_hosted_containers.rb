@@ -36,10 +36,10 @@ Facter.add(:docker_hosted_containers) do
         end
       end
       service_array = Facter::Core::Execution.exec('/usr/bin/docker service -q').chomp.split(%r{\n})
-      if service.array
+      if service_array
         service_array.each do |service_id|
           service_count += 1
-          service_inspect_json = Facter::Core::Execution.exec("#{service inspect} #{service_id}")
+          service_inspect_json = Facter::Core::Execution.exec("#{service_inspect} #{service_id}")
           service_meta_data = JSON.parse(service_inspect_json)
           service_hostname = Facter::Core::Execution.exec("#{service_inspect} -f \"{{ .Spec.TaskTemplate.ContainerSpec.Hostname }}\" #{service_id}").sub(%r{^/}, '')
           service_vip = Facter::Core::Execution.exec("#{service_inspect} -f \"{{ .Endpoint.VirtualIPs }}\" #{service_id} | awk \"{ print $2 }\" | sed \"s,/.*$,,\"")
