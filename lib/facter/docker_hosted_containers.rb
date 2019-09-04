@@ -6,6 +6,7 @@ Facter.add(:docker_hosted_containers) do
     service_inspect="/usr/bin/docker service inspect"
     containers_hash = {}
     containers_hash['container_ids'] = []
+    containers_hash['service_ids'] = []
     docker_binary = Facter::Core::Execution.exec('/usr/bin/which docker')
     if docker_binary !~ %r{docker}
       containers_hash['docker_host'] = 'not a docker host'
@@ -35,7 +36,7 @@ Facter.add(:docker_hosted_containers) do
           containers_hash['container_ids'].push(container_id)
         end
       end
-      service_array = Facter::Core::Execution.exec('/usr/bin/docker service -q').chomp.split(%r{\n})
+      service_array = Facter::Core::Execution.exec('/usr/bin/docker service ls -q').chomp.split(%r{\n})
       if service_array
         service_array.each do |service_id|
           service_count += 1
@@ -51,6 +52,7 @@ Facter.add(:docker_hosted_containers) do
             containers_hash['service_errors'] += "Found no hostname or vip for #{service_id}"
           end
           containers_hash['service_ids'].push(service_id)
+          containers_hash['container_ids'].push(container_id)
         end  
       end
       containers_hash['container_count'] = container_count
