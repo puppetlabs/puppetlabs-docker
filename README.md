@@ -657,7 +657,7 @@ Please note you should supply your master docker-compose file as the first eleme
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
-NOTE: this define will be deprecated in a future release in favor of the [docker stack type](#types)
+NOTE: this define will be deprecated in a future release in favor of the [docker stack type](REFERENCE.md#docker_stack)
 
 To deploy the stack, add the following code to the manifest file:
 
@@ -681,15 +681,17 @@ docker::stack { 'yourapp':
   ensure  => present,
   stack_name => 'yourapp',
   compose_files => ['/tmp/docker-compose.yaml'],
+  with_registry_auth => true,
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
 
-To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the documentation for [here](#Types)
+To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the [docker_stack type documentation](REFERENCE.md#docker_stack).
 ```puppet
 docker_stack { 'test':
   compose_files => ['/tmp/docker-compose.yml'],
   ensure  => present,
+  up_args => '--with-registry-auth',
 }
 ```
 
