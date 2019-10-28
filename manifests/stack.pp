@@ -33,6 +33,10 @@
 # [*with_registry_auth*]
 #  Send registry authentication details to Swarm agents
 #  Defaults to undef
+#
+# [*timeout*]
+#  Adjust the timeout for deploying a docker stack in seconds
+#  Defaults to 300
 
 define docker::stack(
 
@@ -43,6 +47,7 @@ define docker::stack(
   Optional[Boolean] $prune                                       = false,
   Optional[Boolean] $with_registry_auth                          = false,
   Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image = undef,
+  Optional[Integer] $timeout                                     = 300,
 ){
 
   include docker::params
@@ -80,6 +85,7 @@ define docker::stack(
       unless   => $check_stack,
       path     => $exec_path,
       provider => $provider,
+      timeout  => $timeout,
     }
   }
 
