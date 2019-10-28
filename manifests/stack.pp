@@ -35,7 +35,7 @@
 #  Defaults to undef
 #
 # [*timeout*]
-#  Adjust the timeout for deploying a docker stack in seconds
+#  Adjust the timeout for deploying a docker stack (in seconds)
 #  Defaults to 300
 
 define docker::stack(
@@ -96,6 +96,7 @@ define docker::stack(
       onlyif   => $check_stack,
       path     => $exec_path,
       provider => $provider,
+      timeout  => $timeout,
     }
   }
 }
