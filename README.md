@@ -697,6 +697,17 @@ docker_stack { 'test':
 
 To remove the stack, set `ensure  => absent`.
 
+There is an optional timout setting which is usefull if your stack takes longe than the default 5 minutes to build. You ncan specify the timout in seconds like this.
+```puppet
+ docker::stack { 'yourapp':
+   ensure  => present,
+   stack_name => 'yourapp',
+   compose_files => ['/tmp/docker-compose.yaml'],
+   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
+   timeout => 600,
+}
+```
+
 ### Machine
 
 You can use Docker Machine to install Docker Engine on virtual hosts, and manage the hosts with docker-machine commands. You can also use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
