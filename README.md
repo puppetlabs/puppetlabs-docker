@@ -697,7 +697,7 @@ docker_stack { 'test':
 
 To remove the stack, set `ensure  => absent`.
 
-There is an optional timout setting which is usefull if your stack takes longe than the default 5 minutes to build. You ncan specify the timout in seconds like this.
+There is an optional timeout setting which is usefull if your stack takes longer than the default 5 minutes to build. You can specify the timout (in seconds) like this.
 ```puppet
  docker::stack { 'yourapp':
    ensure  => present,
