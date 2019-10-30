@@ -17,6 +17,12 @@
 #   The path where to install Docker Compose.
 #   Defaults to the value set in $docker::params::compose_install_path
 #
+# [*symlink_name*]
+#   The name of the symlink created pointing to the actual docker-compose binary
+#   This allows use of own docker-compose wrapper scripts for the times it's
+#   necessary to set certain things before running the docker-compose binary
+#   Defaults to the value set in $docker::params::compose_symlink_name
+#
 # [*proxy*]
 #   Proxy to use for downloading Docker Compose.
 #
@@ -35,6 +41,7 @@ class docker::compose(
   Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
   Optional[String] $version                                = $docker::params::compose_version,
   Optional[String] $install_path                           = $docker::params::compose_install_path,
+  Optional[String] $symlink_name                           = $docker::params::compose_symlink_name,
   Optional[String] $proxy                                  = undef,
   Optional[String] $base_url                               = $docker::params::compose_base_url,
   Optional[String] $raw_url                                = undef
@@ -52,7 +59,7 @@ class docker::compose(
     $file_owner = 'root'
   }
 
-  $docker_compose_location = "${install_path}/docker-compose${file_extension}"
+  $docker_compose_location = "${install_path}/${symlink_name}${file_extension}"
   $docker_compose_location_versioned = "${install_path}/docker-compose-${version}${file_extension}"
 
   if $ensure == 'present' {
