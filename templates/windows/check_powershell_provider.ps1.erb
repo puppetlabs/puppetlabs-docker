@@ -40,7 +40,7 @@ If ($package -eq $null) {
 
 <% if @version -%>
 Write-Information "Checking Docker package version"
-if ($package.Version.ToString() -ne  "<%= @version %>"){
+if ($package.Version.ToString() -notmatch  "<%= @version %>"){
     Write-Error "Incorrect Docker package version installed."
     Exit 1
 }
