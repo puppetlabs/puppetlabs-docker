@@ -1,24 +1,24 @@
 {
   "name": "puppetlabs-docker",
-  "version": "3.5.0",
-  "author": "Puppet Labs",
+  "version": "3.8.0",
+  "author": "puppetlabs",
   "summary": "Module for installing and managing docker",
   "license": "Apache-2.0",
-  "source": "https://github.com/puppetlabs/puppetlabs-docker.git",
+  "source": "git://github.com/puppetlabs/puppetlabs-docker",
   "project_page": "https://github.com/puppetlabs/puppetlabs-docker",
   "issues_url": "https://github.com/puppetlabs/puppetlabs-docker/issues",
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.24.0 < 6.0.0"
+      "version_requirement": ">= 4.24.0 < 7.0.0"
     },
     {
       "name": "puppetlabs/apt",
-      "version_requirement": ">= 4.4.1 < 7.0.0"
+      "version_requirement": ">= 4.4.1 < 8.0.0"
     },
     {
       "name": "puppetlabs/translate",
-      "version_requirement": ">= 0.0.1 < 2.0.0"
+      "version_requirement": ">= 0.0.1 < 3.0.0"
     },
     {
       "name": "puppetlabs/powershell",
@@ -54,7 +54,8 @@
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "8.0",
-        "9.0"
+        "9.0",
+        "10"
       ]
     },
     {

@@ -1,11 +1,11 @@
 <%-
 	depend_services = @depend_services_array.map{|s| s =~ /\.[a-z]+$/ ? s : "#{s}.service"}
-	@after = [@service_name+".service"] +
+	@after = [@service_name.nil? ? "" : "#@service_name.service"] +
 		@sanitised_after_array.map{ |s| "#{@service_prefix}#{s}.service"} +
 		@sanitised_depends_array.map{ |s| "#{@service_prefix}#{s}.service"} +
 		depend_services
 	@wants = @sanitised_after_array.map{ |a| "#{@service_prefix}#{a}.service"}
-	@requires = [@service_name+".service"] +
+	@requires = [@service_name.nil? ? "" : "#@service_name.service"] +
 		@sanitised_depends_array.map{ |d| "#{@service_prefix}#{d}.service"} +
 		depend_services
 -%>
@@ -17,11 +17,11 @@ Description=Daemon for <%= @title %>
 After=<%= @after.uniq.join(" ") %>
 Wants=<%= @wants.uniq.join(" ") %>
 Requires=<%= @requires.uniq.join(" ") %>
+StartLimitIntervalSec=20
+StartLimitBurst=5
 
 [Service]
 Restart=<%= @systemd_restart %>
-StartLimitInterval=20
-StartLimitBurst=5
 TimeoutStartSec=0
 RestartSec=5
 Environment="HOME=/root"

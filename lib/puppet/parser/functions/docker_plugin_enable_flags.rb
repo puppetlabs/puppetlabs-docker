@@ -10,7 +10,11 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
     flags << '--force' if opts['force_remove'] == true
-    flags << "'#{opts['plugin_name']}'" if opts['plugin_name'] && opts['plugin_name'].to_s != 'undef'
+    if opts['plugin_alias'] && opts['plugin_alias'].to_s != 'undef'
+      flags << "'#{opts['plugin_alias']}'"
+    elsif opts['plugin_name'] && opts['plugin_name'].to_s != 'undef'
+      flags << "'#{opts['plugin_name']}'"
+    end
     flags.flatten.join(' ')
   end
 end

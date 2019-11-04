@@ -5,10 +5,10 @@ require 'json'
 require 'open3'
 require 'puppet'
 
-def swarm_update(image, service)
-  cmd_string = 'docker service update'
-  cmd_string += " --image #{image}" unless image.nil?
-  cmd_string += " #{service}" unless service.nil?
+def node_ls(filter, quiet)
+  cmd_string = 'docker node ls'
+  cmd_string += " --filter=#{filter}" unless filter.nil?
+  cmd_string += ' --quiet' unless quiet.nil?
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
@@ -16,11 +16,11 @@ def swarm_update(image, service)
 end
 
 params = JSON.parse(STDIN.read)
-image = params['image']
-service = params['service']
+filter = params['filter']
+quiet = params['quiet']
 
 begin
-  result = swarm_update(image, service)
+  result = node_ls(filter, quiet)
   puts result
   exit 0
 rescue Puppet::Error => e

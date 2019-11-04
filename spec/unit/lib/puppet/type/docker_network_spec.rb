@@ -12,6 +12,7 @@ describe network do
       :ip_range,
       :aux_address,
       :options,
+      :additional_flags,
     ]
   end
 
