@@ -63,6 +63,7 @@
 * [`node_rm`](#node_rm): Update a node
 * [`node_update`](#node_update): Update a node
 * [`service_scale`](#service_scale): Scale one replicated service
+* [`service_rm`](#service_rm): Removes an existing service.
 * [`service_update`](#service_update): Updates an existing service.
 * [`swarm_init`](#swarm_init): Initializes a swarm
 * [`swarm_join`](#swarm_join): Join a swarm
