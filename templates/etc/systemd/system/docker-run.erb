@@ -22,7 +22,7 @@ StartLimitBurst=5
 
 [Service]
 Restart=<%= @systemd_restart %>
-TimeoutStartSec=<%= @timeout_start_sec %>
+TimeoutStartSec=0
 RestartSec=5
 Environment="HOME=/root"
 <%- if @_syslog_identifier -%>
