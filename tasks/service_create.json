@@ -1,0 +1,38 @@
+{
+  "description": "Create a new Docker service",
+  "input_method": "stdin",
+  "parameters": {
+    "service": {
+      "description": "The name of the service to create",
+      "type": "String[1]"
+    },
+    "image": {
+        "description": "The new image to use for the service",
+        "type": "String[1]"
+    },
+    "replicas": {
+      "description": "Number of replicas",
+      "type": "Integer"
+    },
+    "expose": {
+      "description": "Publish service ports externally to the swarm",
+      "type": "Variant[String,Array,Undef]"
+    },
+    "env": {
+      "description": "Set environment variables",
+      "type": "Optional[Hash]"
+    },
+    "command": {
+      "description": "Command to run on the container",
+      "type": "Variant[String,Array,Undef]"
+    },
+    "extra_params": {
+      "description": "Allows you to pass any other flag that the Docker service create supports.",
+      "type": "Optional[Array]"
+    },
+    "detach": {
+      "description": "Exit immediately instead of waiting for the service to converge",
+      "type": "Optional[Boolean]"
+    }
+  }
+}
