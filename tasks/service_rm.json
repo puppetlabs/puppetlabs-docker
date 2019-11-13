@@ -1,19 +1,11 @@
 
 {
-  "description": "Scale one replicated service",
+  "description": "Remove one replicated service",
   "input_method": "stdin",
   "parameters": {
     "service": {
       "description": "Name or ID of the service",
       "type": "String[1]"
     },
-    "scale": {
-      "description": "Number of replicas",
-      "type": "Integer"
-    },
-    "detatch": {
-      "description": "Exit immediately instead of waiting for the service to converge",
-      "type": "Optional[Boolean]"
-    }
   }
 }
