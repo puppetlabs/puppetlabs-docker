@@ -86,6 +86,12 @@
 # (optional) Specifies the command to execute after container is created but before it is started.
 # Default: undef
 #
+# [*remain_after_exit*]
+# (optional) If the container is to be managed by a systemd unit file set the
+# RemainAfterExit option on the unit file.  Can be any valid value for this systemd
+# configuration.
+# Default: Not included in unit file
+#
 define docker::run(
   Optional[Pattern[/^[\S]*$/]] $image,
   Optional[Pattern[/^present$|^absent$/]] $ensure       = 'present',
@@ -143,6 +149,7 @@ define docker::run(
   Optional[Boolean] $restart_on_unhealthy               = false,
   Optional[Integer] $health_check_interval              = undef,
   Variant[String,Array,Undef] $custom_unless            = [],
+  Optional[String] $remain_after_exit                   = undef,
 ) {
   include docker::params
   if ($socket_connect != []) {

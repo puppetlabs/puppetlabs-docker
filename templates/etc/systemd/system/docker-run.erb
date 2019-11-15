@@ -30,6 +30,9 @@ SyslogIdentifier=<%= @_syslog_identifier %>
 <%- end -%>
 ExecStart=/usr/local/bin/docker-run-<%= @sanitised_title %>-start.sh
 ExecStop=-/usr/local/bin/docker-run-<%= @sanitised_title %>-stop.sh
+<%- if @remain_after_exit %>
+RemainAfterExit=<%= @remain_after_exit %>
+<%- end -%>
 
 [Install]
 WantedBy=multi-user.target
