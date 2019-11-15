@@ -34,7 +34,7 @@ end
 docker_command = if Facter.value(:kernel) == 'windows'
                    'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
                  else
-                   'docker'
+                   'timeout -k 90 60 docker'
                  end
 
 def interfaces
