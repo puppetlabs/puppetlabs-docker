@@ -157,7 +157,8 @@ describe 'docker::image', type: :define do
   context 'with ensure => latest' do
     let(:params) { { 'ensure' => 'latest' } }
 
-    it { is_expected.to contain_exec("echo 'Update of base complete'").with_onlyif('/usr/local/bin/update_docker_image.sh base') }
+    it { is_expected.to contain_exec('/usr/local/bin/update_docker_image.sh base') }
+    it { is_expected.to contain_exec("echo 'Update of base complete'") }
   end
 
   context 'with ensure => latest and image_tag => precise' do
