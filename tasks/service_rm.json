@@ -5,6 +5,6 @@
     "service": {
       "description": "Name or ID of the service",
       "type": "String[1]"
-    },
+    }
   }
 }
