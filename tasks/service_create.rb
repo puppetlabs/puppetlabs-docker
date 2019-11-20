@@ -7,36 +7,30 @@ require 'puppet'
 
 def service_create(image, replicas, expose, env, command, extra_params, service, detach)
   cmd_string = 'docker service create'
-
-# add extra parameters first
  if extra_params.is_a? Array
    extra_params.each do |param|
      cmd_string += " #{param}"
    end
  end
-
-# different options to set
  cmd_string += " --name #{service}" unless service.nil?
- cmd_string += " --replicas #{replicas}" unless replicas.nil?
- cmd_string += " --publish #{expose}" unless expose.nil?
-
-# iterate over env has and add every key:value pair with a separte --env
- if env.is_a? Hash
-   env.each do |key, value|
-     cmd_string += " --env #{key}='#{value}'"
+  cmd_string += " --replicas #{replicas}" unless replicas.nil?
+  cmd_string += " --publish #{expose}" unless expose.nil?
+  if env.is_a? Hash
+    env.each do |key, value|
+      cmd_string += " --env #{key}='#{value}'"
+    end
   end
-end
 
-# additional commands
-if command.is_a? Array
-  cmd_string += command.join(' ')
-elsif command && command.to_s != 'undef'
-  cmd_string += command.to_s
-end
+  if command.is_a? Array
+    cmd_string += command.join(' ')
+  elsif command && command.to_s != 'undef'
+    cmd_string += command.to_s
+  end
 
-# detach and image
-cmd_string += ' -d' unless detach.nil?
-cmd_string += " #{image}" unless image.nil?
+
+ cmd_string += ' -d' unless detach.nil?
+ cmd_string += " #{image}" unless image.nil?
+
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
