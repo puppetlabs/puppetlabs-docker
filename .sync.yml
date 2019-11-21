@@ -36,3 +36,4 @@ Gemfile:
     - gem: rspec-retry
 spec/spec_helper.rb:
   unmanaged: true
+  coverage_report: true
