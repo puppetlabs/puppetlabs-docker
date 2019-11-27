@@ -144,11 +144,19 @@ define docker::image(
     notify { "Check if image ${image_arg} is in-sync":
       noop      => false,
     }
+    ~> exec { $image_install:
+      environment => $exec_environment,
+      path        => $exec_path,
+      timeout     => $exec_timeout,
+      returns     => ['0', '2'],
+      require     => File[$update_docker_image_path],
+      provider    => $exec_provider,
+      logoutput   => true,
+    }
     ~> exec { "echo 'Update of ${image_arg} complete'":
       environment => $exec_environment,
       path        => $exec_path,
       timeout     => $exec_timeout,
-      onlyif      => $image_install,
       require     => File[$update_docker_image_path],
       provider    => $exec_provider,
       logoutput   => true,
