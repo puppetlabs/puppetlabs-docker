@@ -35,6 +35,8 @@ Gemfile:
       - mingw
       - x64_mingw
     - gem: rspec-retry
+Rakefile:
+  changelog_since_tag: 3.5.0
 spec/spec_helper.rb:
   unmanaged: true
   coverage_report: true
