@@ -7,6 +7,8 @@
     require:
     - rubocop-rspec
 ".travis.yml":
+  deploy_to_forge:
+    enabled: false
   docker_sets:
   - set: docker/debian-8
   - set: docker/ubuntu-14.04
