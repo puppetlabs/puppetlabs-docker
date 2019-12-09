@@ -1047,6 +1047,14 @@ Data type: `Optional[String]`
 
 Default value: $docker::params::compose_install_path
 
+##### `symlink_name`
+
+Data type: `Optional[String]`
+
+
+
+Default value: $docker::params::compose_symlink_name
+
 ##### `proxy`
 
 Data type: `Optional[String]`
@@ -2516,6 +2524,12 @@ Default: undef
 (optional) Specifies the command to execute after container is created but before it is started.
 Default: undef
 
+[*remain_after_exit*]
+(optional) If the container is to be managed by a systemd unit file set the
+RemainAfterExit option on the unit file.  Can be any valid value for this systemd
+configuration.
+Default: Not included in unit file
+
 #### Parameters
 
 The following parameters are available in the `docker::run` defined type.
@@ -2965,6 +2979,14 @@ Data type: `Variant[String,Array,Undef]`
 
 
 Default value: []
+
+##### `remain_after_exit`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
 
 ### docker::secrets
 
