@@ -56,12 +56,12 @@ end
 Facter.add(:docker_client_version) do
   setcode do
     docker_version = Facter.value(:docker_version)
-    if docker_version 
-            if !docker_version['Client'].nil?
-                    docker_version['Client']['Version']
-            else
-                    docker_version['Version']
-            end
+    if docker_version
+      if !docker_version['Client'].nil?
+        docker_version['Client']['Version']
+      else
+        docker_version['Version']
+      end
     end
   end
 end
