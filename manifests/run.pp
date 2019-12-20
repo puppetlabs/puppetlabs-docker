@@ -130,7 +130,7 @@ define docker::run(
   Variant[String,Array,Undef] $after                    = [],
   Variant[String,Array,Undef] $after_service            = [],
   Variant[String,Array,Undef] $depends                  = [],
-  Variant[String,Array,Undef] $depend_services          = [],
+  Variant[String,Array,Undef] $depend_services          = ['docker.service'],
   Optional[Boolean] $tty                                = false,
   Variant[String,Array,Undef] $socket_connect           = [],
   Variant[String,Array,Undef] $hostentries              = [],
