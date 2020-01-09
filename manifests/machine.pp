@@ -20,11 +20,15 @@
 # [*proxy*]
 #   Proxy to use for downloading Docker Machine.
 #
+# [*url*]
+#   The URL from which the docker machine binary should be fetched
+#   Defaults to a auto determined value based on version, kernel and OS.
 class docker::machine(
-  Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
-  Optional[String] $version                                = $docker::params::machine_version,
-  Optional[String] $install_path                           = $docker::params::machine_install_path,
-  Optional[String] $proxy                                  = undef
+  Optional[Pattern[/^present$|^absent$/]]              $ensure       = 'present',
+  Optional[String]                                     $version      = $docker::params::machine_version,
+  Optional[String]                                     $install_path = $docker::params::machine_install_path,
+  Optional[String]                                     $proxy        = undef,
+  Optional[Variant[Stdlib::HTTPUrl, Stdlib::HTTPSUrl]] $url          = undef,
 ) inherits docker::params {
 
   if $proxy != undef {
@@ -43,7 +47,10 @@ class docker::machine(
   $docker_machine_location_versioned = "${install_path}/docker-machine-${version}${file_extension}"
 
   if $ensure == 'present' {
-    $docker_machine_url = "https://github.com/docker/machine/releases/download/v${version}/docker-machine-${::kernel}-x86_64${file_extension}"
+    $docker_machine_url = $url ? {
+      undef   => "https://github.com/docker/machine/releases/download/v${version}/docker-machine-${::kernel}-x86_64${file_extension}",
+      default => $url,
+    }
 
     if $proxy != undef {
       $proxy_opt = "--proxy ${proxy}"
