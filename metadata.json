@@ -22,7 +22,7 @@
     },
     {
       "name": "puppetlabs/powershell",
-      "version_requirement": ">= 2.1.4 < 3.0.0"
+      "version_requirement": ">= 2.1.4 <= 3.0.0"
     },
     {
       "name": "puppetlabs/reboot",
@@ -74,5 +74,5 @@
   ],
   "pdk-version": "1.15.0",
   "template-url": "https://github.com/puppetlabs/pdk-templates#master",
-  "template-ref": "heads/master-0-gcaed9d7"
+  "template-ref": "heads/master-0-g941e819"
 }
