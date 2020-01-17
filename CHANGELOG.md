@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.9.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.9.1) (2020-01-17)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.9.0...v3.9.1)
+
+### Fixed
+
+- \(maint\) fix dependencies of powershell to 4.0.0 [\#568](https://github.com/puppetlabs/puppetlabs-docker/pull/568) ([sheenaajay](https://github.com/sheenaajay))
+
 ## [v3.9.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.9.0) (2019-12-09)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.8.0...v3.9.0)
