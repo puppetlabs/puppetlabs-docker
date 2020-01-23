@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-docker",
-  "version": "3.8.0",
+  "version": "3.9.1",
   "author": "puppetlabs",
   "summary": "Module for installing and managing docker",
   "license": "Apache-2.0",
@@ -22,7 +22,7 @@
     },
     {
       "name": "puppetlabs/powershell",
-      "version_requirement": ">= 2.1.4 < 3.0.0"
+      "version_requirement": ">= 2.1.4 < 4.0.0"
     },
     {
       "name": "puppetlabs/reboot",
@@ -72,7 +72,7 @@
       "version_requirement": ">= 5.5.10 < 7.0.0"
     }
   ],
-  "pdk-version": "1.14.1",
+  "pdk-version": "1.15.0",
   "template-url": "https://github.com/puppetlabs/pdk-templates#master",
-  "template-ref": "heads/master-0-gfaf9e8b"
+  "template-ref": "heads/master-0-g941e819"
 }

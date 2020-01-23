@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.9.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.9.1) (2020-01-17)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.9.0...v3.9.1)
+
+### Fixed
+
+- \(maint\) fix dependencies of powershell to 4.0.0 [\#568](https://github.com/puppetlabs/puppetlabs-docker/pull/568) ([sheenaajay](https://github.com/sheenaajay))
+
+## [v3.9.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.9.0) (2019-12-09)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.8.0...v3.9.0)
+
+### Added
+
+- Add option for RemainAfterExit [\#549](https://github.com/puppetlabs/puppetlabs-docker/pull/549) ([vdavidoff](https://github.com/vdavidoff))
+
+### Fixed
+
+- Fix error does not show when image:tag does not exists \(\#552\) [\#553](https://github.com/puppetlabs/puppetlabs-docker/pull/553) ([rafaelcarv](https://github.com/rafaelcarv))
+- Allow defining the name of the docker-compose symlink [\#544](https://github.com/puppetlabs/puppetlabs-docker/pull/544) ([gtufte](https://github.com/gtufte))
+- Clarify usage of docker\_stack type up\_args and fix link to docs [\#537](https://github.com/puppetlabs/puppetlabs-docker/pull/537) ([jacksgt](https://github.com/jacksgt))
+- Move StartLimit\* options to \[Unit\], fix StartLimitIntervalSec [\#531](https://github.com/puppetlabs/puppetlabs-docker/pull/531) ([runejuhl](https://github.com/runejuhl))
+
 ## [v3.8.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.8.0) (2019-10-01)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.7.0...v3.8.0)
