@@ -27,7 +27,7 @@
 #
 # [*resolve_image*]
 #  Query the registry to resolve image digest and supported platforms
-#  Only accepts (“always”|“changed”|“never”)
+#  Only accepts ("always"|"changed"|"never")
 #  Defaults to undef
 #
 # [*with_registry_auth*]
