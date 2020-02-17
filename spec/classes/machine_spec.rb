@@ -113,4 +113,20 @@ describe 'docker::machine', type: :class do
       )
     }
   end
+
+  context 'with docker_machine_url is provided' do
+    let(:params) do
+      {
+        version: '0.16.2',
+        url: 'https://gitlab-docker-machine-downloads.s3.amazonaws.com/v0.16.2-gitlab.3/docker-machine',
+      }
+    end
+
+    it { is_expected.to compile }
+    it {
+      is_expected.to contain_exec('Install Docker Machine 0.16.2').with_command(
+        'curl -s -S -L  https://gitlab-docker-machine-downloads.s3.amazonaws.com/v0.16.2-gitlab.3/docker-machine -o /usr/local/bin/docker-machine-0.16.2',
+      )
+    }
+  end
 end
