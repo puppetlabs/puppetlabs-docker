@@ -14,15 +14,15 @@ describe 'docker::machine' do
       apply_manifest(pp, catch_changes: true)
     end
 
-    describe file('/usr/local/bin/docker-machine-0.16.1') do
-      its('owner') { is_expected.to eq 'root' }
-      its('mode') { is_expected.to cmp '0755' }
-      it { is_expected.to be_file }
+    it 'machine configurable check of docker-machine-0.16.1' do
+      expect(file('/usr/local/bin/docker-machine-0.16.1')).to be_file
+      expect(file('/usr/local/bin/docker-machine-0.16.1')).to be_owned_by 'root'
+      expect(file('/usr/local/bin/docker-machine-0.16.1')).to be_mode 755
     end
 
-    describe file('/usr/local/bin/docker-machine') do
-      its('link_path') { is_expected.to eq '/usr/local/bin/docker-machine-0.16.1' }
-      it { is_expected.to be_symlink }
+    it 'machine configurable check of docker-machine' do
+      expect(file('/usr/local/bin/docker-machine')).to be_linked_to '/usr/local/bin/docker-machine-0.16.1'
+      expect(file('/usr/local/bin/docker-machine')).to be_symlink
     end
 
     it 'is installed and working' do
@@ -46,15 +46,15 @@ describe 'docker::machine' do
       apply_manifest(pp, catch_changes: true)
     end
 
-    describe file('/usr/local/bin/docker-machine-0.16.2-gitlab.3') do
-      its('owner') { is_expected.to eq 'root' }
-      its('mode') { is_expected.to cmp '0755' }
-      it { is_expected.to be_file }
+    it 'machine configurable check of docker-machine-0.16.2-gitlab.3' do
+      expect(file('/usr/local/bin/docker-machine-0.16.2-gitlab.3')).to be_file
+      expect(file('/usr/local/bin/docker-machine-0.16.2-gitlab.3')).to be_owned_by 'root'
+      expect(file('/usr/local/bin/docker-machine-0.16.2-gitlab.3')).to be_mode 755
     end
 
-    describe file('/usr/local/bin/docker-machine') do
-      its('link_path') { is_expected.to eq '/usr/local/bin/docker-machine-0.16.2-gitlab.3' }
-      it { is_expected.to be_symlink }
+    it 'machine configurable check of docker-machine' do
+      expect(file('/usr/local/bin/docker-machine')).to be_linked_to '/usr/local/bin/docker-machine-0.16.2-gitlab.3'
+      expect(file('/usr/local/bin/docker-machine')).to be_symlink
     end
 
     it 'is installed and working' do
