@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 
 skip = false
 
-if fact('osfamily') == 'windows'
+if os[:family] == 'windows'
   docker_args = 'docker_ee => true, docker_ee_source_location => "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-14.zip"'
   default_image = 'winamd64/hello-seattle'
   # The default args are set because:
@@ -12,7 +12,7 @@ if fact('osfamily') == 'windows'
   default_run_command = 'ping 127.0.0.1 -t'
   docker_command = '"/cygdrive/c/Program Files/Docker/docker"'
   skip = false
-elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
   docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
   skip = true
 else
@@ -33,23 +33,24 @@ describe 'the Puppet Docker module' do
     end
 
     it 'runs idempotently' do
+      require 'pry'; binding.pry
       apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
     end
 
     it 'is start a docker process' do
       if fact('osfamily') == 'windows'
-        shell('powershell Get-Process -Name dockerd') do |r|
+        run_shell('powershell Get-Process -Name dockerd') do |r|
           expect(r.stdout).to match(%r{ProcessName})
         end
       else
-        shell('ps aux | grep docker') do |r|
+        run_shell('ps aux | grep docker') do |r|
           expect(r.stdout).to match %r{dockerd -H unix:\/\/\/var\/run\/docker.sock}
         end
       end
     end
 
     it 'installs a working docker client' do
-      shell("#{docker_command} ps", acceptable_exit_codes: [0])
+      run_shell("#{docker_command} ps", expect_failures: false)
     end
 
     it 'stops a running container and remove container' do
@@ -88,7 +89,7 @@ describe 'the Puppet Docker module' do
       # A sleep to give docker time to execute properly
       sleep 15
 
-      shell("#{docker_command} ps", acceptable_exit_codes: [0])
+      run_shell("#{docker_command} ps", expect_failures: false)
 
       apply_manifest(pp2, catch_failures: true)
       apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
@@ -96,11 +97,11 @@ describe 'the Puppet Docker module' do
       # A sleep to give docker time to execute properly
       sleep 15
 
-      shell("#{docker_command} inspect container-3-6", acceptable_exit_codes: [1])
-      if fact('osfamily') == 'windows'
-        shell('test -f /cygdrive/c/Users/Administrator/AppData/Local/Temp/container-3-6.service', acceptable_exit_codes: [1])
+      run_shell("#{docker_command} inspect container-3-6", expect_failures: true)
+      if os[:family] == 'windows'
+        run_shell('test -f /cygdrive/c/Users/Administrator/AppData/Local/Temp/container-3-6.service', expect_failures: true)
       else
-        shell('test -f /etc/systemd/system/container-3-6.service', acceptable_exit_codes: [1])
+        run_shell('test -f /etc/systemd/system/container-3-6.service', expect_failures: true)
       end
     end
   end

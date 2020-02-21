@@ -1,9 +1,9 @@
 require 'spec_helper_acceptance'
 
-if fact('kernel') == 'windows'
+if os[:kernel] == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'winamd64/hello-seattle'
-  default_image_tag = if fact('os.release.major') == '2019'
+  default_image_tag = if os[:release][:major] == '2019'
                         'nanoserver'
                       else
                         'nanoserver-sac2016'
@@ -23,9 +23,9 @@ if fact('kernel') == 'windows'
   docker_mount_path = 'C:/Users/Public/DockerVolume'
   storage_driver = 'windowsfilter'
 else
-  docker_args = if fact('os.family') == 'RedHat'
+  docker_args = if os[:family] == 'RedHat'
                   "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+                elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
@@ -43,9 +43,9 @@ else
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = '/root'
   storage_driver = 'devicemapper'
-  storage_driver = if fact('os.family') == 'Debian' && fact('os.release.major') =~ %r{14.04|^8$}
+  storage_driver = if os[:family] == 'Debian' && os[:release][:major] =~ %r{14.04|^8$}
                      'aufs'
-                   elsif fact('os.family') == 'RedHat'
+                   elsif os[:family] == 'RedHat'
                      'devicemapper'
                    else
                      'overlay2'
@@ -57,17 +57,17 @@ describe 'the Puppet Docker module' do
     before(:each) do
       retry_on_error_matching(60, 5, %r{connection failure running}) do
         # Stop all container using systemd
-        shell('ls -D -1 /etc/systemd/system/docker-container* | sed \'s/\/etc\/systemd\/system\///g\' | sed \'s/\.service//g\' | while read container; do service $container stop; done')
+        run_shell('ls -D -1 /etc/systemd/system/docker-container* | sed \'s/\/etc\/systemd\/system\///g\' | sed \'s/\.service//g\' | while read container; do service $container stop; done')
         # Delete all running containers
-        shell("#{docker_command} rm -f $(#{docker_command} ps -a -q) || true")
+        run_shell("#{docker_command} rm -f $(#{docker_command} ps -a -q) || true")
         # Delete all existing images
-        shell("#{docker_command} rmi -f $(#{docker_command} images -q) || true")
+        run_shell("#{docker_command} rmi -f $(#{docker_command} images -q) || true")
         # Check to make sure no images are present
-        shell("#{docker_command} images | wc -l") do |r|
+        run_shell("#{docker_command} images | wc -l") do |r|
           expect(r.stdout).to match(%r{^0|1$}) # rubocop:disable RSpec/ExpectInHook:
         end
         # Check to make sure no running containers are present
-        shell("#{docker_command} ps | wc -l") do |r|
+        run_shell("#{docker_command} ps | wc -l") do |r|
           expect(r.stdout).to match(%r{^0|1$}) # rubocop:disable RSpec/ExpectInHook:
         end
       end
@@ -82,23 +82,23 @@ describe 'the Puppet Docker module' do
         end
 
         it 'runs idempotently' do
-          apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+          apply_manifest(pp, catch_changes: true) unless selinux == 'true'
         end
 
         it 'is start a docker process' do
-          if fact('osfamily') == 'windows'
-            shell('powershell Get-Process -Name dockerd') do |r|
+          if os[:family] == 'windows'
+            run_shell('powershell Get-Process -Name dockerd') do |r|
               expect(r.stdout).to match(%r{ProcessName})
             end
           else
-            shell('ps aux | grep docker') do |r|
+            run_shell('ps aux | grep docker') do |r|
               expect(r.stdout).to match(%r{dockerd -H unix:\/\/\/var\/run\/docker.sock})
             end
           end
         end
 
         it 'installs a working docker client' do
-          shell("#{docker_command} ps", acceptable_exit_codes: [0])
+          run_shell("#{docker_command} ps", expect_failures: false)
         end
 
         it 'stops a running container and remove container' do
@@ -132,24 +132,24 @@ describe 'the Puppet Docker module' do
         EOS
 
           apply_manifest(pp, catch_failures: true)
-          apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+          apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
           # A sleep to give docker time to execute properly
           sleep 15
 
-          shell("#{docker_command} ps", acceptable_exit_codes: [0])
+          run_shell("#{docker_command} ps", expect_failures: false)
 
           apply_manifest(pp2, catch_failures: true)
-          apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+          apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
           # A sleep to give docker time to execute properly
           sleep 15
 
-          shell("#{docker_command} inspect container-3-6", acceptable_exit_codes: [1])
-          if fact('osfamily') == 'windows'
-            shell('test -f /cygdrive/c/Users/Administrator/AppData/Local/Temp/container-3-6.service', acceptable_exit_codes: [1])
+          run_shell("#{docker_command} inspect container-3-6", expect_failures: true)
+          if os[:family] == 'windows'
+            run_shell('test -f /cygdrive/c/Users/Administrator/AppData/Local/Temp/container-3-6.service', expect_failures: true)
           else
-            shell('test -f /etc/systemd/system/container-3-6.service', acceptable_exit_codes: [1])
+            run_shell('test -f /etc/systemd/system/container-3-6.service', expect_failures: true)
           end
         end
       end
@@ -170,7 +170,7 @@ describe 'the Puppet Docker module' do
         end
 
         it 'results in the docker daemon being configured with the specified storage driver' do
-          shell("#{docker_command} info -f \"{{ .Driver}}\"") do |r|
+          run_shell("#{docker_command} info -f \"{{ .Driver}}\"") do |r|
             expect(r.stdout).to match %r{#{storage_driver}}
           end
         end
@@ -187,17 +187,17 @@ describe 'the Puppet Docker module' do
         end
 
         it 'runs idempotently' do
-          idempotent_apply(default, pp, {}) unless fact('selinux') == 'true'
+          idempotent_apply(pp) unless selinux == 'true'
           sleep 4
         end
 
         it 'results in docker listening on the specified address' do
-          if fact('osfamily') == 'windows'
-            shell('netstat -a -b') do |r|
+          if os[:family] == 'windows'
+            run_shell('netstat -a -b') do |r|
               expect(r.stdout).to match(%r{127.0.0.1:4444})
             end
           else
-            shell('netstat -tulpn | grep docker') do |r|
+            run_shell('netstat -tulpn | grep docker') do |r|
               expect(r.stdout).to match(%r{tcp\s+0\s+0\s+127.0.0.1:4444\s+0.0.0.0\:\*\s+LISTEN\s+\d+\/docker})
             end
           end
@@ -215,13 +215,13 @@ describe 'the Puppet Docker module' do
         end
 
         it 'runs idempotently' do
-          idempotent_apply(default, pp, {}) unless fact('selinux') == 'true'
+          idempotent_apply(pp) unless selinux == 'true'
           sleep 4
         end
 
         it 'shows docker listening on the specified unix socket' do
-          if fact('osfamily') != 'windows'
-            shell('ps aux | grep docker') do |r|
+          if os[:family] != 'windows'
+            run_shell('ps aux | grep docker') do |r|
               expect(r.stdout).to match(%r{unix:\/\/\/var\/run\/docker.sock})
             end
           end
@@ -238,7 +238,7 @@ describe 'the Puppet Docker module' do
           apply_manifest(pp, catch_failures: true)
 
           # Wait for reboot if windows
-          sleep 300 if fact('osfamily') == 'windows'
+          sleep 300 if os[:family] == 'windows'
         end
 
         it 'uninstalls successfully' do
@@ -249,7 +249,7 @@ describe 'the Puppet Docker module' do
           EOS
           apply_manifest(pp, catch_failures: true)
           sleep 4
-          shell('docker ps', acceptable_exit_codes: [1, 127])
+          run_shell('docker ps', expect_failures: true)
         end
       end
     end
@@ -264,12 +264,12 @@ describe 'the Puppet Docker module' do
           }
         EOS
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} images") do |r|
+        run_shell("#{docker_command} images") do |r|
           expect(r.stdout).to match(%r{#{default_image}})
         end
       end
@@ -285,12 +285,12 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} images") do |r|
+        run_shell("#{docker_command} images") do |r|
           expect(r.stdout).to match(%r{#{default_image}\s+#{default_image_tag}})
         end
       end
@@ -305,18 +305,18 @@ describe 'the Puppet Docker module' do
           }
         EOS
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} images --digests") do |r|
+        run_shell("#{docker_command} images --digests") do |r|
           expect(r.stdout).to match(%r{#{default_image}.*#{default_digest}})
         end
       end
 
       it 'creates a new image based on a Dockerfile' do
-        run_cmd = if fact('osfamily') == 'windows'
+        run_cmd = if os[:family] == 'windows'
                     'RUN echo test > C:\\Users\\Public\\Dockerfile_test.txt'
                   else
                     "RUN echo test > #{dockerfile_test}"
@@ -338,16 +338,16 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
-        if fact('osfamily') == 'windows'
-          shell("#{docker_command} run alpine_with_file cmd /c dir Users\\\\Public") do |r|
+        if os[:family] == 'windows'
+          run_shell("#{docker_command} run alpine_with_file cmd /c dir Users\\\\Public") do |r|
             expect(r.stdout).to match(%r{_test.txt})
           end
         else
-          shell("#{docker_command} run alpine_with_file ls #{dockerfile_test}") do |r|
+          run_shell("#{docker_command} run alpine_with_file ls #{dockerfile_test}") do |r|
             expect(r.stdout).to match(%r{#{dockerfile_test}})
           end
         end
@@ -376,44 +376,44 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
         # Commit currently running container as an image
-        container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        shell("#{docker_command} commit #{container_id.stdout.strip} alpine_from_commit")
+        container_id = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
+        run_shell("#{docker_command} commit #{container_id.stdout.strip} alpine_from_commit")
 
         # Stop all container using systemd
-        shell('ls -D -1 /etc/systemd/system/docker-container* | sed \'s/\/etc\/systemd\/system\///g\' | sed \'s/\.service//g\' | while read container; do service $container stop; done')
+        run_shell('ls -D -1 /etc/systemd/system/docker-container* | sed \'s/\/etc\/systemd\/system\///g\' | sed \'s/\.service//g\' | while read container; do service $container stop; done')
 
         # Stop all running containers
-        shell("#{docker_command} rm -f $(docker ps -a -q) || true")
+        run_shell("#{docker_command} rm -f $(docker ps -a -q) || true")
 
         # Make sure no other containers are running
-        shell("#{docker_command} ps | wc -l") do |r|
+        run_shell("#{docker_command} ps | wc -l") do |r|
           expect(r.stdout).to match(%r{^1$})
         end
 
         # Export new to a tar file
-        shell("#{docker_command} save alpine_from_commit > /root/rootfs.tar")
+        run_shell("#{docker_command} save alpine_from_commit > /root/rootfs.tar")
 
         # Remove all images
-        shell("#{docker_command} rmi $(docker images -q) || true")
+        run_shell("#{docker_command} rmi $(docker images -q) || true")
 
         # Make sure no other images are present
-        shell("#{docker_command} images | wc -l") do |r|
+        run_shell("#{docker_command} images | wc -l") do |r|
           expect(r.stdout).to match(%r{^1$})
         end
 
         apply_manifest(pp2, catch_failures: true)
-        apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} run alpine_from_commit ls /root") do |r|
+        run_shell("#{docker_command} run alpine_from_commit ls /root") do |r|
           expect(r.stdout).to match(%r{test_file_for_tar_test.txt})
         end
       end
@@ -434,12 +434,12 @@ describe 'the Puppet Docker module' do
           }
         EOS
         apply_manifest(pp2, catch_failures: true)
-        apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} images") do |r|
+        run_shell("#{docker_command} images") do |r|
           expect(r.stdout).not_to match(%r{#{default_image}})
         end
       end
@@ -464,23 +464,23 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        if fact('osfamily') == 'windows'
-          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public") do |r|
+        container_id = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
+        if os[:family] == 'windows'
+          run_shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public") do |r|
             expect(r.stdout).to match(%r{test_file.txt})
           end
         else
-          shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
+          run_shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
             expect(r.stdout).to match(%r{test_file.txt})
           end
         end
 
-        container_name = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
+        container_name = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
         expect(container_name.stdout.strip.to_s).to match(%r{(container-3-1|container_3_1)})
       end
 
@@ -503,12 +503,12 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} ps") do |r|
+        run_shell("#{docker_command} ps") do |r|
           expect(r.stdout).to match(%r{#{default_run_command}.+5555\/tcp\, 0\.0\.0.0\:\d+\-\>4444\/tcp})
         end
       end
@@ -531,14 +531,14 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
+        container_id = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
 
-        shell("#{docker_command} exec #{container_id.stdout.strip} hostname") do |r|
+        run_shell("#{docker_command} exec #{container_id.stdout.strip} hostname") do |r|
           expect(r.stdout).to match(%r{testdomain.com})
         end
       end
@@ -571,17 +571,17 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
-        container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        if fact('osfamily') == 'windows'
-          shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public\\\\DockerVolume\\\\mnt") do |r|
+        container_id = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
+        if os[:family] == 'windows'
+          run_shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public\\\\DockerVolume\\\\mnt") do |r|
             expect(r.stdout).to match(%r{test_mount.txt})
           end
         else
-          shell("#{docker_command} exec #{container_id.stdout.strip} ls /root/mnt") do |r|
+          run_shell("#{docker_command} exec #{container_id.stdout.strip} ls /root/mnt") do |r|
             expect(r.stdout).to match(%r{test_mount.txt})
           end
         end
@@ -607,12 +607,12 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell('#{docker_command} inspect container_3_5_5') do |r|
+        run_shell('#{docker_command} inspect container_3_5_5') do |r|
           expect(r.stdout).to match(%r{"CpusetCpus"\: "0"})
         end
       end
@@ -635,12 +635,12 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        container1 = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
+        container1 = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
 
         pp2 = <<-EOS
           class { 'docker': #{docker_args} }
@@ -660,15 +660,15 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp2, catch_failures: true)
-        apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        container2 = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
+        container2 = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
 
-        container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-        shell("#{docker_command} inspect -f \"{{ .HostConfig.Links }}\" #{container_id.stdout.strip}") do |r|
+        container_id = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
+        run_shell("#{docker_command} inspect -f \"{{ .HostConfig.Links }}\" #{container_id.stdout.strip}") do |r|
           expect(r.stdout).to match("/#{container1.stdout.strip}:/#{container2.stdout.strip}/the_link")
         end
       end
@@ -705,22 +705,22 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} ps | wc -l") do |r|
+        run_shell("#{docker_command} ps | wc -l") do |r|
           expect(r.stdout).to match(%r{^2$})
         end
 
         apply_manifest(pp2, catch_failures: true)
-        apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 4
 
-        shell("#{docker_command} ps | wc -l") do |r|
+        run_shell("#{docker_command} ps | wc -l") do |r|
           expect(r.stdout).to match(%r{^1$})
         end
       end
@@ -756,20 +756,20 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 15
 
-        shell("#{docker_command} inspect container_3_6_1", acceptable_exit_codes: [0])
+        run_shell("#{docker_command} inspect container_3_6_1", expect_failures: false)
 
         apply_manifest(pp2, catch_failures: true)
-        apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
         # A sleep to give docker time to execute properly
         sleep 15
 
-        shell("#{docker_command} inspect container_3_6_1", acceptable_exit_codes: [1])
+        run_shell("#{docker_command} inspect container_3_6_1", expect_failures: true)
       end
 
       it 'allows dependency for ordering of independent run and image' do
@@ -796,7 +796,7 @@ describe 'the Puppet Docker module' do
         EOS
 
         apply_manifest(pp, catch_failures: true)
-        apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+        apply_manifest(pp, catch_changes: true) unless selinux == 'true'
       end
 
       it 'restarts a unhealthy container' do
@@ -819,9 +819,9 @@ describe 'the Puppet Docker module' do
         }
         EOS
 
-        if fact('osfamily') == 'windows'
+        if os[:family] == 'windows'
           apply_manifest(pp5, catch_failures: true)
-        elsif fact('os.release.major') =~ %r{14.04|8}
+        elsif os[:release] =~ %r{14.04|^8$}
           apply_manifest(pp5, catch_failures: true) do |r|
             expect(r.stdout).to match(%r{container_3_7_3})
           end
@@ -853,12 +853,12 @@ describe 'the Puppet Docker module' do
         EOS
 
       apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+      apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 15
 
-      container1 = shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
+      container1 = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $NF}'")
 
       pp2 = <<-EOS
           class { 'docker': #{docker_args} }
@@ -881,13 +881,13 @@ describe 'the Puppet Docker module' do
       # A sleep to give docker time to execute properly
       sleep 4
 
-      container_id = shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
-      if fact('osfamily') == 'windows'
-        shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public") do |r|
+      container_id = run_shell("#{docker_command} ps | awk 'FNR == 2 {print $1}'")
+      if os[:family] == 'windows'
+        run_shell("#{docker_command} exec #{container_id.stdout.strip} cmd /c dir Users\\\\Public") do |r|
           expect(r.stdout).to match(%r{test_file.txt})
         end
       else
-        shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
+        run_shell("#{docker_command} exec #{container_id.stdout.strip} ls /root") do |r|
           expect(r.stdout).to match(%r{test_file.txt})
         end
       end
@@ -915,17 +915,17 @@ describe 'the Puppet Docker module' do
         EOS
 
       apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+      apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 4
 
-      if fact('osfamily') == 'windows'
-        shell("#{docker_command} exec #{container_name} cmd /c dir Users\\\\Public") do |r|
+      if os[:family] == 'windows'
+        run_shell("#{docker_command} exec #{container_name} cmd /c dir Users\\\\Public") do |r|
           expect(r.stdout).not_to match(%r{test_file.txt})
         end
       else
-        shell("#{docker_command} exec #{container_name} ls /root") do |r|
+        run_shell("#{docker_command} exec #{container_name} ls /root") do |r|
           expect(r.stdout).not_to match(%r{test_file.txt})
         end
       end
@@ -947,18 +947,18 @@ describe 'the Puppet Docker module' do
       pp2 = pp + pp_extra
 
       apply_manifest(pp2, catch_failures: true)
-      apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+      apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 4
 
-      if fact('osfamily') == 'windows'
-        shell("#{docker_command} exec #{container_name} cmd /c dir Users\\\\Public") do |r|
-          expect(r.stdout).to match(%r{test_file.txt})
+      if os[:family] == 'windows'
+        run_shell("#{docker_command} exec #{container_name} cmd /c dir Users\\\\Public") do |r|
+          expect(r.stdout).to match(%r{home})
         end
       else
-        shell("#{docker_command} exec #{container_name} ls /root") do |r|
-          expect(r.stdout).to match(%r{test_file.txt})
+        run_shell("#{docker_command} exec #{container_name} ls /") do |r|
+          expect(r.stdout).to match(%r{home})
         end
       end
       apply_manifest(pp_delete, catch_failures: true)

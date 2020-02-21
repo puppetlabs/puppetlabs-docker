@@ -1,12 +1,12 @@
 require 'spec_helper_acceptance'
 
-if fact('osfamily') == 'windows'
+if os[:family] == 'windows'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
   wait_for_container_seconds = 120
 
 else
-  docker_args = if fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+  docker_args = if os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
@@ -52,13 +52,13 @@ describe 'docker stack' do
     end
 
     it 'finds a stack' do
-      shell('docker stack ls') do |r|
+      run_shell('docker stack ls') do |r|
         expect(r.stdout).to match(%r{web})
       end
     end
 
     it 'does not find a docker container' do
-      shell('docker ps -a -q -f "name=web_compose_test"', acceptable_exit_codes: [0])
+      run_shell('docker ps -a -q -f "name=web_compose_test"', expect_failures: false)
     end
   end
 
@@ -93,7 +93,7 @@ describe 'docker stack' do
     end
 
     it 'does not find a docker stack' do
-      shell('docker stack ls') do |r|
+      run_shell('docker stack ls') do |r|
         expect(r.stdout).not_to match(%r{web})
       end
     end
@@ -113,7 +113,7 @@ describe 'docker stack' do
 
     it 'finds container with web_compose_test tag' do
       sleep wait_for_container_seconds
-      shell('docker ps | grep web_compose_test', acceptable_exit_codes: [0])
+      run_shell('docker ps | grep web_compose_test', expect_failures: false)
     end
   end
 
@@ -155,13 +155,13 @@ describe 'docker stack' do
     end
 
     it 'does not find a docker stack' do
-      shell('docker stack ls') do |r|
+      run_shell('docker stack ls') do |r|
         expect(r.stdout).not_to match(%r{web})
       end
     end
 
     it 'does not find a docker container' do
-      shell('docker ps', acceptable_exit_codes: [0]) do |r|
+      run_shell('docker ps', expect_failures: false) do |r|
         expect(r.stdout).not_to match(%r{web_compose_test})
       end
     end
