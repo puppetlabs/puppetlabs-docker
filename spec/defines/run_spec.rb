@@ -74,6 +74,7 @@ require 'spec_helper'
 
         if systemd
           it { is_expected.to contain_file(initscript).with_content(%r{^SyslogIdentifier=docker-sample$}) }
+          it { is_expected.to contain_file(initscript).with_content(%r{^WantedBy=docker.service$}) }
         end
       end
 
@@ -104,6 +105,7 @@ require 'spec_helper'
           it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?docker-foo.service}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?docker-bar.service}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?docker-foo_bar-baz.service}) }
+          it { is_expected.to contain_file(initscript).with_content(%r{WantedBy=docker.service}) }
         else
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+docker-foo}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+docker-bar}) }
@@ -132,12 +134,24 @@ require 'spec_helper'
             it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?foo.service(\s+|$)}) }
             it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?bar.service(\s+|$)}) }
             it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?baz.target(\s+|$)}) }
+            it { is_expected.to contain_file(initscript).with_content(%r{WantedBy=docker.service}) }
           end
         else
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+foo}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+bar}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Stop:.*\s+foo}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Stop:.*\s+bar}) }
+        end
+      end
+
+      context 'with different docker service name' do
+        # let(:pre_condition) { ["class { 'docker': docker_group => 'docker', service_name => 'dockerd', service_provider => systemd, acknowledge_unsupported_os => true }"] }
+        let(:pre_condition) { pre_condition.gsub("service_name => 'docker'", "service_name => 'dockerd'") }
+
+        let(:params) { params }
+
+        if systemd
+          it { is_expected.to contain_file(initscript).with_content(%r{^WantedBy=dockerd.service$}) }
         end
       end
 
