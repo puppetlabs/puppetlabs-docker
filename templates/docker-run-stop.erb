@@ -5,3 +5,6 @@
 <% if @remove_container_on_stop -%>
     /usr/bin/<%= @docker_command %> rm <% if @remove_volume_on_stop %>-v<% end %> <%= @sanitised_title %>
 <% end -%>
+<% if @after_stop -%>
+    <%= @after_stop %>
+<% end -%>

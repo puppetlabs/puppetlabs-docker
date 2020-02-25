@@ -23,3 +23,6 @@
 <% end %>
 
 /usr/bin/<%= @docker_command %> start <% if ! @valid_detach %>-a<% end %> <%= @sanitised_title %>
+<% if @after_start -%>
+    <%= @after_start %>
+<% end -%>
