@@ -10,7 +10,7 @@ image = params['image']
 service = params['service']
 
 begin
-  puts "Deprecated: use docker::service_update instead"
+  puts 'Deprecated: use docker::service_update instead'
   result = service_update(image, service)
   puts result
   exit 0
