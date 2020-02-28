@@ -10,7 +10,15 @@
       "description": "Role of the node",
       "type": "Optional[Enum['manager', 'worker']]"
     },
-    "nodeid": {
+    "label_add": {
+      "description": "Add or update a node label (key=value)",
+      "type": "Optional[Array]"
+    },
+    "label_rm": {
+      "description": "Remove a node label if exists.",
+      "type": "Optional[Array]"
+    },
+    "node": {
       "description": "ID of the node in the swarm",
       "type": "String[1]"
     }
