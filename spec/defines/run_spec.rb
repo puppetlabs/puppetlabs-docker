@@ -550,6 +550,30 @@ require 'spec_helper'
         it { is_expected.not_to contain_file(stopscript_or_init).with_content(%r{before_stop}) }
       end
 
+      context 'when `after_start` is set' do
+        let(:params) { params.merge('after_start' => 'echo after_start') }
+
+        it { is_expected.to contain_file(startscript_or_init).with_content(%r{after_start}) }
+      end
+
+      context 'when `after_start` is not set' do
+        let(:params) { params.merge('after_start' => false) }
+
+        it { is_expected.not_to contain_file(startscript_or_init).with_content(%r{after_start}) }
+      end
+
+      context 'when `after_stop` is set' do
+        let(:params) { params.merge('after_stop' => 'echo after_stop') }
+
+        it { is_expected.to contain_file(stopscript_or_init).with_content(%r{after_stop}) }
+      end
+
+      context 'when `after_stop` is not set' do
+        let(:params) { params.merge('after_stop' => false) }
+
+        it { is_expected.not_to contain_file(stopscript_or_init).with_content(%r{after_stop}) }
+      end
+
       context 'when `after_create` is set' do
         let(:params) { params.merge('after_create' => 'echo after_create') }
 
