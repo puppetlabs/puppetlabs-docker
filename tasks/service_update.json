@@ -9,6 +9,14 @@
       "image": {
           "description": "The new image to use for the service",
           "type": "String[1]"
+      },
+      "constraint_add": {
+        "description": "Add or update a service constraint (selector==value, selector!=value)",
+        "type": "Optional[Array]"
+      },
+      "constraint_rm": {
+        "description": "Remove a service constraint if exists.",
+        "type": "Optional[Array]"
       }
   }
 }

@@ -1,4 +1,3 @@
-
 {
   "description": "Gets the swarm token from the master",
   "input_method": "stdin",
