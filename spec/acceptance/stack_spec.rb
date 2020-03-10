@@ -2,20 +2,19 @@ require 'spec_helper_acceptance'
 
 if os[:family] == 'windows'
   docker_args = 'docker_ee => true'
-  tmp_path = 'C:/cygwin64/tmp'
+  tmp_path = 'C:\\tmp\\'
   wait_for_container_seconds = 120
-
 else
-  docker_args = if os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
+  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
                 end
-  tmp_path = '/tmp'
+  tmp_path = '/tmp/'
   wait_for_container_seconds = 10
 end
 
-describe 'docker stack' do
+describe 'docker stack', win_broken: true do
   before(:all) do
     retry_on_error_matching(60, 5, %r{connection failure running}) do
       install_pp = <<-MANIFEST
@@ -36,7 +35,7 @@ describe 'docker stack' do
     let(:install_pp) do
       <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml'],
           ensure        => present,
         }
       MANIFEST
@@ -66,7 +65,7 @@ describe 'docker stack' do
     let(:install) do
       <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml'],
           ensure        => present,
         }
       MANIFEST
@@ -75,7 +74,7 @@ describe 'docker stack' do
     let(:destroy) do
       <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml'],
           ensure        => absent,
         }
       MANIFEST
@@ -103,7 +102,7 @@ describe 'docker stack' do
     before(:all) do
       install_pp = <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml', '#{tmp_path}docker-stack-override.yml'],
           ensure        => present,
         }
       MANIFEST
@@ -121,7 +120,7 @@ describe 'docker stack' do
     let(:destroy_pp) do
       <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml', '#{tmp_path}docker-stack-override.yml'],
           ensure        => absent,
         }
       MANIFEST
@@ -130,7 +129,7 @@ describe 'docker stack' do
     before(:all) do
       install_pp = <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml', '#{tmp_path}docker-stack-override.yml'],
           ensure        => present,
         }
       MANIFEST
@@ -138,7 +137,7 @@ describe 'docker stack' do
 
       destroy_pp = <<-MANIFEST
         docker_stack { 'web':
-          compose_files => ['#{tmp_path}/docker-stack.yml', '#{tmp_path}/docker-stack-override.yml'],
+          compose_files => ['#{tmp_path}docker-stack.yml', '#{tmp_path}docker-stack-override.yml'],
           ensure        => absent,
         }
       MANIFEST

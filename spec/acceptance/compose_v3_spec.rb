@@ -5,7 +5,7 @@ if os[:family] == 'windows'
   file_extension = '.exe'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
-  test_container = if os[:release] =~ /2019/
+  test_container = if os[:release] =~ %r{2019}
                      'nanoserver'
                    else
                      'nanoserver-sac2016'
@@ -39,7 +39,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'Creating compose v3 projects' do
+  context 'Creating compose v3 projects', win_broken: true do
     let(:install_pp) do
       <<-MANIFEST
         docker_compose { 'web':
@@ -62,7 +62,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'creating compose projects with multi compose files' do
+  context 'creating compose projects with multi compose files', win_broken: true do
     before(:all) do
       install_pp = <<-MANIFEST
         docker_compose { 'web1':
@@ -79,7 +79,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'Destroying project with multiple compose files' do
+  context 'Destroying project with multiple compose files', win_broken: true do
     let(:destroy_pp) do
       <<-MANIFEST
         docker_compose { 'web1':

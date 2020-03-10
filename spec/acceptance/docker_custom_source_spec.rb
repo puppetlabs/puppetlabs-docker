@@ -33,12 +33,11 @@ describe 'the Puppet Docker module' do
     end
 
     it 'runs idempotently' do
-      require 'pry'; binding.pry
-      apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+      apply_manifest(pp, catch_changes: true) unless selinux == 'true'
     end
 
     it 'is start a docker process' do
-      if fact('osfamily') == 'windows'
+      if os[:family] == 'windows'
         run_shell('powershell Get-Process -Name dockerd') do |r|
           expect(r.stdout).to match(%r{ProcessName})
         end
@@ -84,7 +83,7 @@ describe 'the Puppet Docker module' do
     EOS
 
       apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true) unless fact('selinux') == 'true'
+      apply_manifest(pp, catch_changes: true) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 15
@@ -92,7 +91,7 @@ describe 'the Puppet Docker module' do
       run_shell("#{docker_command} ps", expect_failures: false)
 
       apply_manifest(pp2, catch_failures: true)
-      apply_manifest(pp2, catch_changes: true) unless fact('selinux') == 'true'
+      apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 15

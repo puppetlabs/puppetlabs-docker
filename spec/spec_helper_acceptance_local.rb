@@ -38,9 +38,6 @@ RSpec.configure do |c|
   # Add exclusive filter for Windows untill all the windows functionality is implemented
   c.filter_run_excluding win_broken: true
 
-  # Project root
-  proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-
   # Readable test descriptions
   c.formatter = :documentation
 
@@ -58,7 +55,7 @@ RSpec.configure do |c|
       run_shell('mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/internal-mirror.repo', expect_failures: true)
       run_shell('rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm', expect_failures: true)
       run_shell('yum update -y -q')
-     # run_shell('yum upgrade -y')
+      # run_shell('yum upgrade -y')
     end
     if os[:family] == 'debian' || os[:family] == 'ubuntu'
       run_shell('apt-get update -y')
@@ -184,7 +181,7 @@ services:
     retry_on_error_matching(60, 5, %r{connection failure running}) do
       @windows_ip = ip
     end
-    apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }")
+    apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }", catch_failures: true)
     docker_path = '/cygdrive/c/Program Files/Docker'
     run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
     puts 'Waiting for box to come online'

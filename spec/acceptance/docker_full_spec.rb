@@ -53,7 +53,7 @@ else
 end
 
 describe 'the Puppet Docker module' do
-  context 'clean up before each test' do
+  context 'clean up before each test', win_broken: true do
     before(:each) do
       retry_on_error_matching(60, 5, %r{connection failure running}) do
         # Stop all container using systemd
@@ -74,7 +74,7 @@ describe 'the Puppet Docker module' do
     end
 
     describe 'docker class' do
-      context 'without any parameters' do
+      context 'without any parameters', win_brokn: true do
         let(:pp) { "class { 'docker': #{docker_args} }" }
 
         it 'runs successfully' do
@@ -673,7 +673,7 @@ describe 'the Puppet Docker module' do
         end
       end
 
-      it 'stops a running container' do
+      it 'stops a running container', win_broken: true do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -835,7 +835,7 @@ describe 'the Puppet Docker module' do
     end
   end
 
-  describe 'docker::exec'  do
+  describe 'docker::exec', win_broken: true do
     it 'runs a command inside an already running container' do
       pp = <<-EOS
           class { 'docker': #{docker_args} }
@@ -894,7 +894,7 @@ describe 'the Puppet Docker module' do
       apply_manifest(pp_delete, catch_failures: true)
     end
 
-    it 'onlies run if notified when refreshonly is true' do
+    it 'onlies run if notified when refreshonly is true', win_broken: true do
       container_name = 'container_4_2'
       pp = <<-EOS
           class { 'docker': #{docker_args} }

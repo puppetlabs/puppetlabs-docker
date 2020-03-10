@@ -7,7 +7,7 @@ registry_port = 5000
 if os[:family] == 'windows'
   result = run_shell("ipconfig | findstr /i 'ipv4'")
   raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
-  ip = result.stdout.split("\n")[0].split(':')[1].strip()
+  ip = result.stdout.split("\n")[0].split(':')[1].strip
   @windows_ip = ip
   docker_arg = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
   docker_registry_image = 'stefanscherer/registry-windows'
@@ -194,7 +194,7 @@ describe 'docker' do
       sleep 10
     end
 
-    it 'is able to login to the registry', retry: 3, retry_wait: 10 do
+    it 'is able to login to the registry', retry: 3, retry_wait: 10, win_broken: true do
       pp = <<-MANIFEST
         docker::registry { '#{registry_address}':
           username => 'username',
@@ -206,7 +206,7 @@ describe 'docker' do
       run_shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{server_strip}_root\"", expect_failures: false)
     end
 
-    it 'is able to logout from the registry' do
+    it 'is able to logout from the registry', win_broken: true do
       pp = <<-MANIFEST
         docker::registry { '#{registry_address}':
           ensure=> absent,
