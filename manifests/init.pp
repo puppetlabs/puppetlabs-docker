@@ -509,13 +509,13 @@ class docker(
 ) inherits docker::params {
 
 
-  if $::osfamily and !$acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
+  if $facts['osfamily'] and !$acknowledge_unsupported_os {
+    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['osfamily']) |$a, $b| {
       fail(translate('This module only works on Debian, Red Hat or Windows based systems.'))
     }
   }
 
-  if ($::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0) {
+  if ($facts['operatingsystem'] == 'CentOS') and (versioncmp($facts['operatingsystemmajrelease'], '7') < 0) {
     fail(translate('This module only works on CentOS version 7 and higher based systems.'))
   }
 
@@ -530,7 +530,7 @@ class docker(
   }
 
   if $log_driver {
-    if $::osfamily == 'windows' {
+    if $facts['osfamily'] == 'windows' {
       assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|awslogs|etwlogs)$/], $log_driver) |$a, $b| {
         fail(translate('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs'))
       }
@@ -542,7 +542,7 @@ class docker(
   }
 
   if $storage_driver {
-    if $::osfamily == 'windows' {
+    if $facts['osfamily'] == 'windows' {
       assert_type(Pattern[/^(windowsfilter)$/], $storage_driver) |$a, $b| {
         fail(translate('Valid values for storage_driver on windows are windowsfilter'))
       }
@@ -553,7 +553,7 @@ class docker(
     }
   }
 
-  if ($bridge) and ($::osfamily == 'windows') {
+  if ($bridge) and ($facts['osfamily'] == 'windows') {
       assert_type(Pattern[/^(none|nat|transparent|overlay|l2bridge|l2tunnel)$/], $bridge) |$a, $b| {
         fail(translate('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.'))
     }
@@ -605,7 +605,7 @@ class docker(
       $docker_start_command = $docker::docker_ee_start_command
       $docker_package_name = $docker::docker_ee_package_name
     } else {
-      case $::osfamily {
+      case $facts['osfamily'] {
         'Debian' : {
           $package_location = $docker_ce_source_location
           $package_key_source = $docker_ce_key_source
@@ -631,7 +631,7 @@ class docker(
       $docker_package_name = $docker_ce_package_name
     }
   } else {
-    case $::osfamily {
+    case $facts['osfamily'] {
       'Debian' : {
         $package_location = $docker_package_location
         $package_key_source = $docker_package_key_source
@@ -668,10 +668,28 @@ class docker(
     contain 'docker::config'
     contain 'docker::service'
 
-    Class['docker::repos'] -> Class['docker::install'] -> Class['docker::config'] -> Class['docker::service']
-    Class['docker'] -> Docker::Registry <||> -> Docker::Image <||>
-    Class['docker'] -> Docker::Image <||>
-    Class['docker'] -> Docker::Run <||>
+    create_resources(
+      'docker::registry',
+      lookup("${module_name}::registries", Hash, 'deep', {}),
+    )
+
+    create_resources(
+      'docker::image',
+      lookup("${module_name}::images", Hash, 'deep', {}),
+    )
+
+    create_resources(
+      'docker::run',
+      lookup("${module_name}::runs", Hash, 'deep', {}),
+    )
+
+    Class['docker::repos']
+    -> Class['docker::install']
+    -> Class['docker::config']
+    -> Class['docker::service']
+    -> Docker::Registry <||>
+    -> Docker::Image <||>
+    -> Docker::Run <||>
   } else {
     contain 'docker::repos'
     contain 'docker::install'
