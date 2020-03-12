@@ -74,7 +74,7 @@ describe 'the Puppet Docker module' do
     end
 
     describe 'docker class' do
-      context 'without any parameters', win_brokn: true do
+      context 'without any parameters', win_broken: true do
         let(:pp) { "class { 'docker': #{docker_args} }" }
 
         it 'runs successfully' do
