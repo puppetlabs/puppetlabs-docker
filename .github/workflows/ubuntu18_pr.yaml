@@ -11,6 +11,22 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6
+    - name: Prepare inventory file
+      run: |
+        cat <<EOF >> inventory.yaml
+        ---
+        version: 2
+        groups:
+        - name: local
+          targets:
+          - uri: litmus_localhost
+            config:
+              transport: local
+        - name: ssh_nodes
+          targets: []
+        - name: winrm_nodes
+          targets: []
+        EOF
     - name: Install gems and puppet agent
       run: |
         bundle install
