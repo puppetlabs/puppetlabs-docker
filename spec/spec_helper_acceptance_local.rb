@@ -71,7 +71,7 @@ RSpec.configure do |c|
     run_shell('puppet module install puppetlabs-reboot --version 2.0.0', expect_failures: true)
 
     # net-tools required for netstat utility being used by some tests
-    if os[:family] == 'redhat' && os[:release].to_f == '7'
+    if os[:family] == 'redhat' && os[:release].to_i == '7'
       run_shell('yum install -y net-tools device-mapper')
     end
 
@@ -182,7 +182,7 @@ services:
       @windows_ip = ip
     end
     apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }", catch_failures: true)
-    docker_path = '/cygdrive/c/Program Files/Docker'
+    docker_path = 'C:\\Program Files\\Docker'
     run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
     puts 'Waiting for box to come online'
     sleep 300
