@@ -74,7 +74,7 @@ end
 Facter.add(:docker_version) do
   setcode do
     if Facter::Util::Resolution.which('docker')
-      value = Facter::Core::Execution.execute(
+      value = Facter::Util::Resolution.exec(
         "#{docker_command} version --format '{{json .}}'",
       )
       val = JSON.parse(value)
