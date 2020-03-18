@@ -15,7 +15,8 @@ describe 'Facter::Util::Fact' do
     Facter::Util::Resolution.stubs(:exec).with("#{docker_command} info --format '{{json .}}'").returns(docker_info)
     processors = File.read(fixtures('facts', 'processors'))
     Facter.fact(:processors).stubs(:value).returns(JSON.parse(processors))
-
+    docker_version = File.read(fixtures('facts', 'docker_version'))
+    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} version --format '{{json .}}'").returns(docker_version)
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
     Facter::Util::Resolution.stubs(:exec).with("#{docker_command} network ls | tail -n +2").returns(docker_network_list)
     docker_network_names = []
@@ -84,6 +85,9 @@ describe 'Facter::Util::Fact' do
   end
 
   describe 'docker info' do
+    before :each do
+      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+    end
     it 'has valid entries' do
       expect(Facter.fact(:docker).value).to include(
         'Architecture' => 'x86_64',
