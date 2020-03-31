@@ -278,6 +278,46 @@ class docker::params {
       $service_hasrestart                  = undef
       $detach_service_in_init              = true
     }
+    'Suse': {
+      $docker_group                        = $docker_group_default
+      $socket_group                        = $socket_group_default
+      $package_key_source                  = undef
+      $package_key_check_source            = undef
+      $package_source_location             = undef
+      $package_key_id                      = undef
+      $package_repos                       = undef
+      $package_release                     = undef
+      $package_ce_key_source               = undef
+      $package_ce_source_location          = undef
+      $package_ce_key_id                   = undef
+      $package_ce_repos                    = undef
+      $package_ce_release                  = undef
+      $package_ee_source_location          = undef
+      $package_ee_key_source               = undef
+      $package_ee_key_id                   = undef
+      $package_ee_release                  = undef
+      $package_ee_repos                    = undef
+      $package_ee_package_name             = undef
+      $use_upstream_package_source         = true
+      $service_overrides_template          = undef
+      $socket_overrides_template           = undef
+      $socket_override                     = false
+      $service_after_override              = undef
+      $service_hasstatus                   = undef
+      $service_hasrestart                  = undef
+      $service_provider                    = 'systemd'
+      $package_name                        = $docker_ce_package_name
+      $service_name                        = $service_name_default
+      $detach_service_in_init              = true
+      $repo_opt                            = undef
+      $nowarn_kernel                       = false
+      $service_config                      = undef
+      $storage_config                      = undef
+      $storage_setup_file                  = undef
+      $service_config_template             = undef
+      $pin_upstream_package_source         = undef
+      $apt_source_pin_level                = undef
+    }
     default: {
       $docker_group                        = $docker_group_default
       $socket_group                        = $socket_group_default
