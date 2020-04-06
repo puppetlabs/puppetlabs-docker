@@ -62,12 +62,14 @@
 * [`node_ls`](#node_ls): List nodes in the swarm
 * [`node_rm`](#node_rm): Update a node
 * [`node_update`](#node_update): Update a node
+* [`service_create`](#service_create): Create one service
+* [`service_rm`](#service_rm): Removes an existing service.
 * [`service_scale`](#service_scale): Scale one replicated service
+* [`service_update`](#service_update): Updates an existing service.
 * [`swarm_init`](#swarm_init): Initializes a swarm
 * [`swarm_join`](#swarm_join): Join a swarm
 * [`swarm_leave`](#swarm_leave): Leave a swarm
 * [`swarm_token`](#swarm_token): Gets the swarm token from the master
-* [`swarm_update`](#swarm_update): Updates an existing service.
 
 ## Classes
 

@@ -1,4 +1,3 @@
-
 {
   "description": "Scale one replicated service",
   "input_method": "stdin",
@@ -11,7 +10,7 @@
       "description": "Number of replicas",
       "type": "Integer"
     },
-    "detatch": {
+    "detach": {
       "description": "Exit immediately instead of waiting for the service to converge",
       "type": "Optional[Boolean]"
     }
