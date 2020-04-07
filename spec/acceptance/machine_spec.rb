@@ -26,7 +26,7 @@ describe 'docker::machine' do
     end
 
     it 'is installed and working' do
-      shell('docker-machine --help', acceptable_exit_codes: [0])
+      run_shell('docker-machine --help', expect_failures: false)
     end
   end
 
@@ -58,7 +58,7 @@ describe 'docker::machine' do
     end
 
     it 'is installed and working' do
-      shell('docker-machine --help', acceptable_exit_codes: [0])
+      run_shell('docker-machine --help', expect_failures: false)
     end
   end
 end
