@@ -1,0 +1,37 @@
+name: "ubuntu1804"
+
+on: [push, pull_request]
+
+jobs:
+  LitmusAcceptance:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+    - name: Prepare inventory file
+      run: |
+        cat <<EOF >> inventory.yaml
+        ---
+        version: 2
+        groups:
+        - name: local
+          targets:
+          - uri: litmus_localhost
+            config:
+              transport: local
+        - name: ssh_nodes
+          targets: []
+        - name: winrm_nodes
+          targets: []
+        EOF
+    - name: Install gems and puppet agent
+      run: |
+        bundle install
+        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent'
+    - name: Install module
+      run: bundle exec rake 'litmus:install_module'
+    - name: Run acceptance tests
+      run: sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:acceptance:localhost'     

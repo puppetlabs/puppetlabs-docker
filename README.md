@@ -27,6 +27,7 @@
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
+7. [Acceptance](#acceptance)
 
 
 ## Description
@@ -1022,3 +1023,8 @@ This module supports:
 ## Development
 
 If you would like to contribute to this module, see the guidelines in [CONTRIBUTING.MD](https://github.com/puppetlabs/puppetlabs-docker/blob/master/CONTRIBUTING.md).
+
+## Acceptance
+
+Acceptance tests for this module leverage [puppet_litmus](https://github.com/puppetlabs/puppet_litmus).
+To run the acceptance tests follow the instructions [here](https://github.com/puppetlabs/puppet_litmus/wiki/Tutorial:-use-Litmus-to-execute-acceptance-tests-with-a-sample-module-(MoTD)#install-the-necessary-gems-for-the-module).

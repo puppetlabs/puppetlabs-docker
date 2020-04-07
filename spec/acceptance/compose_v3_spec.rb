@@ -1,21 +1,21 @@
 require 'spec_helper_acceptance'
 
-if fact('osfamily') == 'windows'
+if os[:family] == 'windows'
   install_dir = '/cygdrive/c/Program Files/Docker'
   file_extension = '.exe'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
-  test_container = if fact('os.release.major') == '2019'
+  test_container = if os[:release] =~ %r{2019}
                      'nanoserver'
                    else
                      'nanoserver-sac2016'
                    end
 else
-  docker_args = if fact('os.name') == 'RedHat'
+  docker_args = if os[:name] == 'RedHat'
                   "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif fact('os.name') == 'Centos'
+                elsif os[:name] == 'Centos'
                   "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+                elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
@@ -39,7 +39,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'Creating compose v3 projects' do
+  context 'Creating compose v3 projects', win_broken: true do
     let(:install_pp) do
       <<-MANIFEST
         docker_compose { 'web':
@@ -50,19 +50,19 @@ describe 'docker compose' do
     end
 
     it 'is idempotent' do
-      idempotent_apply(default, install_pp, {})
+      idempotent_apply(install_pp)
     end
 
     it 'has docker compose installed' do
-      shell('docker-compose --help', acceptable_exit_codes: [0])
+      run_shell('docker-compose --help', expect_failures: false)
     end
 
     it 'finds a docker container' do
-      shell('docker inspect web_compose_test_1', acceptable_exit_codes: [0])
+      run_shell('docker inspect web_compose_test_1', expect_failures: false)
     end
   end
 
-  context 'creating compose projects with multi compose files' do
+  context 'creating compose projects with multi compose files', win_broken: true do
     before(:all) do
       install_pp = <<-MANIFEST
         docker_compose { 'web1':
@@ -75,11 +75,11 @@ describe 'docker compose' do
     end
 
     it "should find container with #{test_container} tag" do
-      shell("docker inspect web1_compose_test_1 | grep #{test_container}", acceptable_exit_codes: [0])
+      run_shell("docker inspect web1_compose_test_1 | grep #{test_container}", acceptable_exit_codes: [0])
     end
   end
 
-  context 'Destroying project with multiple compose files' do
+  context 'Destroying project with multiple compose files', win_broken: true do
     let(:destroy_pp) do
       <<-MANIFEST
         docker_compose { 'web1':
@@ -101,11 +101,11 @@ describe 'docker compose' do
     end
 
     it 'is idempotent' do
-      idempotent_apply(default, destroy_pp, {})
+      idempotent_apply(destroy_pp)
     end
 
     it 'does not find a docker container' do
-      shell('docker inspect web1_compose_test_1', acceptable_exit_codes: [1])
+      run_shell('docker inspect web1_compose_test_1', expect_failures: true)
     end
   end
 
@@ -120,11 +120,11 @@ describe 'docker compose' do
           version => '#{version}',
         }
       MANIFEST
-      idempotent_apply(default, pp, {})
+      idempotent_apply(pp)
     end
 
     it 'has installed the requested version' do
-      shell('docker-compose --version', acceptable_exit_codes: [0]) do |r|
+      run_shell('docker-compose --version', expect_failures: false) do |r|
         expect(r.stdout).to match(%r{#{version}})
       end
     end
@@ -142,12 +142,12 @@ describe 'docker compose' do
           version => '#{version}',
         }
       MANIFEST
-      idempotent_apply(default, pp, {})
+      idempotent_apply(pp)
     end
 
     it 'has removed the relevant files' do
-      shell("test -e \"#{install_dir}/docker-compose#{file_extension}\"", acceptable_exit_codes: [1])
-      shell("test -e \"#{install_dir}/docker-compose-#{version}#{file_extension}\"", acceptable_exit_codes: [1])
+      run_shell("test -e \"#{install_dir}/docker-compose#{file_extension}\"", expect_failures: true)
+      run_shell("test -e \"#{install_dir}/docker-compose-#{version}#{file_extension}\"", expect_failures: true)
     end
 
     after(:all) do

@@ -2,13 +2,13 @@ require 'spec_helper_acceptance'
 
 volume_name = 'test-volume'
 
-if fact('osfamily') == 'windows'
+if os[:family] == 'windows'
   docker_args = 'docker_ee => true'
   command = '"/cygdrive/c/Program Files/Docker/docker"'
 elsif 'osfamily' == 'RedHat'
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
   command = 'docker'
-elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
   docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
   command = 'docker'
 else
@@ -25,7 +25,7 @@ describe 'docker volume' do
   end
 
   it 'exposes volume subcommand' do
-    shell("#{command} volume --help", acceptable_exit_codes: [0])
+    run_shell("#{command} volume --help", expect_failures: false)
   end
 
   context 'with a local volume described in Puppet' do
@@ -36,15 +36,15 @@ describe 'docker volume' do
         }
       MANIFEST
 
-      idempotent_apply(default, pp, {})
+      idempotent_apply(pp)
     end
 
     it 'has created a volume' do
-      shell("#{command} volume inspect #{volume_name}", acceptable_exit_codes: [0])
+      run_shell("#{command} volume inspect #{volume_name}", expect_failures: false)
     end
 
     after(:all) do
-      shell("#{command} volume rm #{volume_name}")
+      run_shell("#{command} volume rm #{volume_name}")
     end
   end
 end
