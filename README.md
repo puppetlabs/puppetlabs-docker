@@ -552,12 +552,9 @@ You can pass additional mount options to the `local` driver. For mounting an NFS
 docker_volume { 'nfs-volume':
   ensure  => present,
   driver  => 'local',
-  options => {
-    type   => 'nfs4',
-    o      => 'addr=10.10.10.10,rw',
-    device => ':/exports/data'
-  },
+  options => ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
 }
+
 ```
 
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
@@ -574,9 +571,7 @@ docker::volumes:
     ensure: present
     driver: local
     options:
-      type: "nfs"
-      o: "addr=%{custom_manager},rw",
-      device: ":/srv/blueocean"
+      - ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
 ```
 
 Available parameters for `options` depend on the used volume driver. For details, see
