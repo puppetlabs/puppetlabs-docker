@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Puppet::Type.type(:docker_network).provider(:docker_network) do
+describe Puppet::Type.type(:docker_network).provider(:ruby) do
   let(:provider) { resource.provider }
   let(:instance) { provider.class.instances.first }
   let(:resource) do
@@ -13,7 +13,8 @@ describe Puppet::Type.type(:docker_network).provider(:docker_network) do
   end
 
   before :each do
-    Puppet::Util.stubs(:which).with('docker').returns('/usr/local/bin/docker')
+    # need to reach deep into puppet to unhook the confinement call, so the provider gets properly loaded
+    Puppet::Confine::Exists.any_instance.stubs(:which).with('docker').returns('/usr/local/bin/docker') # rubocop:disable RSpec/AnyInstance
   end
 
   describe 'create' do
