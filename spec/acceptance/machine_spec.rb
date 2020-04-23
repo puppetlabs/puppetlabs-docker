@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'docker::machine' do
+describe 'docker::machine', win_broken: true do
   context 'with default parameters' do
     pp = <<-EOS
       include docker::machine

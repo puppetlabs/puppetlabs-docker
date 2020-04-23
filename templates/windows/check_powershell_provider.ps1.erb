@@ -1,4 +1,5 @@
 # this file checks the status of the Windows Docker package using the DockerMsftProvider powershell provider
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $dockerProviderName="DockerMsftProvider"
 
 Write-Information "Checking Package Provider"
