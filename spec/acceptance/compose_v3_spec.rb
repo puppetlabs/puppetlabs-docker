@@ -11,11 +11,9 @@ if os[:family] == 'windows'
                      'nanoserver-sac2016'
                    end
 else
-  docker_args = if os[:name] == 'RedHat'
+  docker_args = if os[:family] == 'redhat'
                   "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif os[:name] == 'Centos'
-                  "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
+                elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
