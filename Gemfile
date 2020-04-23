@@ -30,11 +30,13 @@ group :development do
   gem "puppet-module-win-dev-r#{minor_version}", '~> 0.4',       require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "ruby-pwsh",                                               require: false
   gem "github_changelog_generator",                              require: false, git: 'https://github.com/skywinder/github-changelog-generator', ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018' if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')
+  gem "rspec-retry",                                  require: false
+  gem "ed25519"
+  gem "bcrypt_pbkdf"
 end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}", require: false, platforms: [:ruby]
   gem "puppet-module-win-system-r#{minor_version}",   require: false, platforms: [:mswin, :mingw, :x64_mingw]
-  gem "rspec-retry",                                  require: false
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
