@@ -6,7 +6,7 @@
 **Classes**
 
 * [`docker`](#docker): 
-* [`docker::compose`](#dockercompose): 
+* [`docker::compose`](#dockercompose): [*curl_ensure*]   Whether or not the curl package is ensured by this module.   Defaults to true
 * [`docker::config`](#dockerconfig): == Class: docker::config
 * [`docker::images`](#dockerimages): docker::images
 * [`docker::install`](#dockerinstall): 
@@ -62,14 +62,15 @@
 * [`node_ls`](#node_ls): List nodes in the swarm
 * [`node_rm`](#node_rm): Update a node
 * [`node_update`](#node_update): Update a node
-* [`service_create`](#service_create): Create one service
-* [`service_rm`](#service_rm): Removes an existing service.
+* [`service_create`](#service_create): Create a new Docker service
+* [`service_rm`](#service_rm): Remove one replicated service
 * [`service_scale`](#service_scale): Scale one replicated service
 * [`service_update`](#service_update): Updates an existing service.
 * [`swarm_init`](#swarm_init): Initializes a swarm
 * [`swarm_join`](#swarm_join): Join a swarm
 * [`swarm_leave`](#swarm_leave): Leave a swarm
 * [`swarm_token`](#swarm_token): Gets the swarm token from the master
+* [`swarm_update`](#swarm_update): Updates an existing service.
 
 ## Classes
 
@@ -1019,7 +1020,9 @@ Default value: $docker::params::nuget_package_provider_version
 
 ### docker::compose
 
-The docker::compose class.
+[*curl_ensure*]
+  Whether or not the curl package is ensured by this module.
+  Defaults to true
 
 #### Parameters
 
@@ -1080,6 +1083,14 @@ Data type: `Optional[String]`
 
 
 Default value: `undef`
+
+##### `curl_ensure`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: $docker::params::curl_ensure
 
 ### docker::config
 
@@ -1179,6 +1190,14 @@ Class to install Docker Machine using the recommended curl command.
 [*proxy*]
   Proxy to use for downloading Docker Machine.
 
+[*url*]
+  The URL from which the docker machine binary should be fetched
+  Defaults to a auto determined value based on version, kernel and OS.
+
+[*curl_ensure*]
+  Whether or not the curl package is ensured by this module.
+  Defaults to true
+
 #### Parameters
 
 The following parameters are available in the `docker::machine` class.
@@ -1214,6 +1233,22 @@ Data type: `Optional[String]`
 
 
 Default value: `undef`
+
+##### `url`
+
+Data type: `Optional[Variant[Stdlib::HTTPUrl, Stdlib::HTTPSUrl]]`
+
+
+
+Default value: `undef`
+
+##### `curl_ensure`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: $docker::params::curl_ensure
 
 ### docker::networks
 
@@ -2836,7 +2871,7 @@ Data type: `Variant[String,Array,Undef]`
 
 
 
-Default value: []
+Default value: ['docker.service']
 
 ##### `tty`
 
@@ -2879,6 +2914,22 @@ Data type: `Variant[String,Boolean]`
 Default value: `false`
 
 ##### `before_stop`
+
+Data type: `Variant[String,Boolean]`
+
+
+
+Default value: `false`
+
+##### `after_start`
+
+Data type: `Variant[String,Boolean]`
+
+
+
+Default value: `false`
+
+##### `after_stop`
 
 Data type: `Variant[String,Boolean]`
 
@@ -3590,10 +3641,6 @@ Default value: present
 
 The volume driver used by the volume
 
-##### `options`
-
-Additional options for the volume driver
-
 ##### `mountpoint`
 
 The location that the volume is mounted to
@@ -3607,6 +3654,10 @@ The following parameters are available in the `docker_volume` type.
 namevar
 
 The name of the volume
+
+##### `options`
+
+Additional options for the volume driver
 
 ## Functions
 
@@ -3824,11 +3875,93 @@ Data type: `Optional[Enum['manager', 'worker']]`
 
 Role of the node
 
+##### `label_add`
+
+Data type: `Optional[Array]`
+
+Add or update a node label (key=value)
+
+##### `label_rm`
+
+Data type: `Optional[Array]`
+
+Remove a node label if exists.
+
 ##### `node`
 
 Data type: `String[1]`
 
-Hostname or ID of the node in the swarm
+ID of the node in the swarm
+
+### service_create
+
+Create a new Docker service
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `service`
+
+Data type: `String[1]`
+
+The name of the service to create
+
+##### `image`
+
+Data type: `String[1]`
+
+The new image to use for the service
+
+##### `replicas`
+
+Data type: `Integer`
+
+Number of replicas
+
+##### `expose`
+
+Data type: `Variant[String,Array,Undef]`
+
+Publish service ports externally to the swarm
+
+##### `env`
+
+Data type: `Optional[Hash]`
+
+Set environment variables
+
+##### `command`
+
+Data type: `Variant[String,Array,Undef]`
+
+Command to run on the container
+
+##### `extra_params`
+
+Data type: `Optional[Array]`
+
+Allows you to pass any other flag that the Docker service create supports.
+
+##### `detach`
+
+Data type: `Optional[Boolean]`
+
+Exit immediately instead of waiting for the service to converge
+
+### service_rm
+
+Remove one replicated service
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `service`
+
+Data type: `String[1]`
+
+Name or ID of the service
 
 ### service_scale
 
@@ -3850,11 +3983,43 @@ Data type: `Integer`
 
 Number of replicas
 
-##### `detatch`
+##### `detach`
 
 Data type: `Optional[Boolean]`
 
 Exit immediately instead of waiting for the service to converge
+
+### service_update
+
+Updates an existing service.
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `service`
+
+Data type: `String[1]`
+
+The service to update
+
+##### `image`
+
+Data type: `String[1]`
+
+The new image to use for the service
+
+##### `constraint_add`
+
+Data type: `Optional[Array]`
+
+Add or update a service constraint (selector==value, selector!=value)
+
+##### `constraint_rm`
+
+Data type: `Optional[Array]`
+
+Remove a service constraint if exists.
 
 ### swarm_init
 
