@@ -1,11 +1,10 @@
  # == Define: docker::secrets
 define docker::secrets (
-
-  Optional[Pattern[/^present$|^absent$/]] $ensure = 'present',
-  Variant[String,Array,Undef] $label              = [],
-  Optional[String] $secret_name                   = undef,
-  Optional[String] $secret_path                   = undef,
-){
+  Optional[Pattern[/^present$|^absent$/]] $ensure      = 'present',
+  Variant[String,Array,Undef]             $label       = [],
+  Optional[String]                        $secret_name = undef,
+  Optional[String]                        $secret_path = undef,
+) {
   include docker::params
 
   $docker_command = "${docker::params::docker_command} secret"

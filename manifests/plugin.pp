@@ -48,18 +48,17 @@
 #
 
 define docker::plugin(
-  Optional[Pattern[/^present$|^absent$/]] $ensure  = 'present',
-  String $plugin_name                              = $title,
-  Optional[Boolean] $enabled                       = true,
-  Optional[String] $timeout                        = undef,
-  Optional[String] $plugin_alias                   = undef,
-  Optional[Boolean] $disable_on_install            = false,
-  Optional[Boolean] $disable_content_trust         = true,
-  Optional[Boolean] $grant_all_permissions         = true,
-  Optional[Boolean] $force_remove                  = true,
-  Optional[Array] $settings                        = [],
-  ){
-
+  Optional[Pattern[/^present$|^absent$/]] $ensure                = 'present',
+  String                                  $plugin_name           = $title,
+  Optional[Boolean]                       $enabled               = true,
+  Optional[String]                        $timeout               = undef,
+  Optional[String]                        $plugin_alias          = undef,
+  Optional[Boolean]                       $disable_on_install    = false,
+  Optional[Boolean]                       $disable_content_trust = true,
+  Optional[Boolean]                       $grant_all_permissions = true,
+  Optional[Boolean]                       $force_remove          = true,
+  Optional[Array]                         $settings              = [],
+) {
   include docker::params
 
   $docker_command = "${docker::params::docker_command} plugin"

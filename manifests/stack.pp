@@ -35,16 +35,14 @@
 #  Defaults to undef
 
 define docker::stack(
-
-  Optional[Pattern[/^present$|^absent$/]] $ensure                = 'present',
-  Optional[String] $stack_name                                   = undef,
-  Optional[String] $bundle_file                                  = undef,
-  Optional[Array] $compose_files                                 = undef,
-  Optional[Boolean] $prune                                       = false,
-  Optional[Boolean] $with_registry_auth                          = false,
-  Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image = undef,
-){
-
+  Optional[Pattern[/^present$|^absent$/]]         $ensure             = 'present',
+  Optional[String]                                $stack_name         = undef,
+  Optional[String]                                $bundle_file        = undef,
+  Optional[Array]                                 $compose_files      = undef,
+  Optional[Boolean]                               $prune              = false,
+  Optional[Boolean]                               $with_registry_auth = false,
+  Optional[Pattern[/^always$|^changed$|^never$/]] $resolve_image      = undef,
+) {
   include docker::params
 
   deprecation('docker::stack','The docker stack define type will be deprecated in a future release. Please migrate to the docker_stack type/provider.')

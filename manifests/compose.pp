@@ -28,7 +28,7 @@
 #
 # [*base_url*]
 #   The base url for installation
-#   This allows use of a mirror that follows the same layout as the 
+#   This allows use of a mirror that follows the same layout as the
 #   official repository
 #
 # [*raw_url*]
@@ -42,14 +42,14 @@
 #   Defaults to true
 #
 class docker::compose(
-  Optional[Pattern[/^present$|^absent$/]] $ensure          = 'present',
-  Optional[String] $version                                = $docker::params::compose_version,
-  Optional[String] $install_path                           = $docker::params::compose_install_path,
-  Optional[String] $symlink_name                           = $docker::params::compose_symlink_name,
-  Optional[String] $proxy                                  = undef,
-  Optional[String] $base_url                               = $docker::params::compose_base_url,
-  Optional[String] $raw_url                                = undef,
-  Optional[Boolean] $curl_ensure                           = $docker::params::curl_ensure,
+  Optional[Pattern[/^present$|^absent$/]] $ensure       = 'present',
+  Optional[String]                        $version      = $docker::params::compose_version,
+  Optional[String]                        $install_path = $docker::params::compose_install_path,
+  Optional[String]                        $symlink_name = $docker::params::compose_symlink_name,
+  Optional[String]                        $proxy        = undef,
+  Optional[String]                        $base_url     = $docker::params::compose_base_url,
+  Optional[String]                        $raw_url      = undef,
+  Optional[Boolean]                       $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
 
   if $proxy != undef {

@@ -6,10 +6,11 @@
 # [*create_user*]
 #   Boolean to cotrol whether the user should be created
 #
-define docker::system_user (
-  $create_user = true) {
-
+define docker::system_user(
+  $create_user = true
+) {
   include docker
+
   $docker_group = $docker::docker_group
 
   if $create_user {

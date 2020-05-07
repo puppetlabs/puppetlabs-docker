@@ -5,14 +5,14 @@
 define docker::exec(
   Optional[Boolean] $detach        = false,
   Optional[Boolean] $interactive   = false,
-  Optional[Array] $env             = [],
+  Optional[Array]   $env           = [],
   Optional[Boolean] $tty           = false,
-  Optional[String] $container      = undef,
-  Optional[String] $command        = undef,
-  Optional[String] $unless         = undef,
+  Optional[String]  $container     = undef,
+  Optional[String]  $command       = undef,
+  Optional[String]  $unless        = undef,
   Optional[Boolean] $sanitise_name = true,
   Optional[Boolean] $refreshonly   = false,
-  Optional[String] $onlyif         = undef,
+  Optional[String]  $onlyif        = undef,
 ) {
   include docker::params
 

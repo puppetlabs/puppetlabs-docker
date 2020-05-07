@@ -12,11 +12,6 @@ class docker::params {
   $docker_ce_channel                 = stable
   $docker_ee                         = false
   $docker_ee_start_command           = 'dockerd'
-  if ($::osfamily == 'windows') {
-    $docker_ee_package_name          = 'Docker'
-  } else {
-    $docker_ee_package_name          = 'docker-ee'
-  }
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
   $docker_ee_key_id                  = undef
@@ -24,21 +19,6 @@ class docker::params {
   $tcp_bind                          = undef
   $tls_enable                        = false
   $tls_verify                        = true
-  if ($::osfamily == 'windows') {
-    $tls_cacert                        = "${::docker_program_data_path}/docker/certs.d/ca.pem"
-    $tls_cert                          = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
-    $tls_key                           = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
-    $compose_version                   = '1.21.2'
-    $compose_install_path              = "${::docker_program_files_path}/Docker"
-    $machine_install_path              = "${::docker_program_files_path}/Docker"
-  } else {
-    $tls_cacert                        = '/etc/docker/tls/ca.pem'
-    $tls_cert                          = '/etc/docker/tls/cert.pem'
-    $tls_key                           = '/etc/docker/tls/key.pem'
-    $compose_version                   = '1.9.0'
-    $compose_install_path              = '/usr/local/bin'
-    $machine_install_path              = '/usr/local/bin'
-  }
   $machine_version                   = '0.16.1'
   $ip_forward                        = true
   $iptables                          = true
@@ -90,11 +70,6 @@ class docker::params {
   $overlay2_override_kernel_check    = false
   $manage_package                    = true
   $package_source                    = undef
-  if ($::osfamily == 'windows') {
-    $docker_command                  = 'docker'
-  } else {
-    $docker_command                  = 'docker'
-  }
   $service_name_default              = 'docker'
   $docker_group_default              = 'docker'
   $storage_devs                      = undef
@@ -114,11 +89,32 @@ class docker::params {
   $docker_msft_provider_version      = undef
   $nuget_package_provider_version    = undef
 
+  if ($::osfamily == 'windows') {
+    $docker_ee_package_name = 'Docker'
+    $tls_cacert             = "${::docker_program_data_path}/docker/certs.d/ca.pem"
+    $tls_cert               = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
+    $tls_key                = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
+    $compose_version        = '1.21.2'
+    $compose_install_path   = "${::docker_program_files_path}/Docker"
+    $machine_install_path   = "${::docker_program_files_path}/Docker"
+    $docker_command         = 'docker'
+  } else {
+    $docker_ee_package_name = 'docker-ee'
+    $tls_cacert             = '/etc/docker/tls/ca.pem'
+    $tls_cert               = '/etc/docker/tls/cert.pem'
+    $tls_key                = '/etc/docker/tls/key.pem'
+    $compose_version        = '1.9.0'
+    $compose_install_path   = '/usr/local/bin'
+    $machine_install_path   = '/usr/local/bin'
+    $docker_command         = 'docker'
+  }
+
   case $::osfamily {
     'Debian' : {
       case $::operatingsystem {
         'Ubuntu' : {
           $package_release = "ubuntu-${::lsbdistcodename}"
+
           if (versioncmp($::operatingsystemrelease, '15.04') >= 0) {
             $service_provider           = 'systemd'
             $storage_config             = '/etc/default/docker-storage'
@@ -129,6 +125,7 @@ class docker::params {
             $service_after_override     = undef
             $service_hasstatus          = true
             $service_hasrestart         = true
+
             include docker::systemd_reload
           } else {
             $service_config_template    = 'docker/etc/default/docker.erb'
@@ -143,7 +140,7 @@ class docker::params {
           }
         }
         default: {
-          $package_release = "debian-${::lsbdistcodename}"
+          $package_release            = "debian-${::lsbdistcodename}"
           $service_provider           = 'systemd'
           $storage_config             = '/etc/default/docker-storage'
           $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -153,6 +150,7 @@ class docker::params {
           $service_after_override     = undef
           $service_hasstatus          = true
           $service_hasrestart         = true
+
           include docker::systemd_reload
         }
       }
@@ -182,7 +180,6 @@ class docker::params {
       $package_ee_repos              = $docker_ee_repos
       $package_ee_package_name       = $docker_ee_package_name
 
-
       if ($service_provider == 'systemd') {
         $detach_service_in_init = false
       } else {
@@ -190,11 +187,11 @@ class docker::params {
       }
     }
     'RedHat' : {
-      $service_config     = '/etc/sysconfig/docker'
-      $storage_config     = '/etc/sysconfig/docker-storage'
-      $storage_setup_file = '/etc/sysconfig/docker-storage-setup'
-      $service_hasstatus  = true
-      $service_hasrestart = true
+      $service_config              = '/etc/sysconfig/docker'
+      $storage_config              = '/etc/sysconfig/docker-storage'
+      $storage_setup_file          = '/etc/sysconfig/docker-storage-setup'
+      $service_hasstatus           = true
+      $service_hasrestart          = true
 
       $service_provider            = 'systemd'
       $service_config_template     = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -373,6 +370,6 @@ class docker::params {
     'RedHat' => ['device-mapper'],
     default  => [],
   }
-  $dependent_packages = ['docker-ce-cli','containerd.io']
 
+  $dependent_packages = ['docker-ce-cli','containerd.io']
 }

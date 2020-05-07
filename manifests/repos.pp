@@ -6,8 +6,7 @@ class docker::repos (
   $key_source       = $docker::package_key_source,
   $key_check_source = $docker::package_key_check_source,
   $architecture     = $facts['architecture'],
-  ) {
-
+) {
   ensure_packages($docker::prerequired_packages)
 
   case $::osfamily {
