@@ -1,5 +1,12 @@
-# == Class: docker::repos
+# @summary
 #
+# @param location
+#
+# @param key_source
+#
+# @param key_check_source
+#
+# @param architecture
 #
 class docker::repos (
   $location         = $docker::package_location,

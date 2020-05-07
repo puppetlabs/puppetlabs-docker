@@ -1,84 +1,68 @@
-# == Define: docker::services
+# @summary define that managers a Docker services
 #
-# A define that managers a Docker services
-#
-# == Paramaters
-#
-# [*ensure*]
+# @param ensure
 #  This ensures that the service is present or not.
-#  Defaults to present
 #
-# [*image*]
+# @param image
 #  The Docker image to spwan the service from.
-#  Defualts to undef
 #
-# [*detach*]
+# @param detach
 #  Exit immediately instead of waiting for the service to converge (default true)
-#  Defaults to true
 #
-# [*env*]
+# @param env
 #  Set environment variables
-#  Defaults to []
 #
-# [*label*]
+# @param label
 #  Service labels.
 #  This used as metdata to configure constraints etc.
-#  Defaults to []
 #
-# [*publish*]
+# @param publish
 #  Publish port(s) as node ports.
-#  Defaults to undef
 #
-# [*replicas*]
+# @param replicas
 #  Number of tasks (containers per service)
-#  defaults to undef
 #
-# [*tty*]
+# @param tty
 #  Allocate a pseudo-TTY
-#  Defaults to false
 #
-# [*user*]
+# @param user
 #  Username or UID (format: <name|uid>[:<group|gid>])
-#  Defaults to undef
 #
-# [*workdir*]
+# @param workdir
 #  Working directory inside the container
-#  Defaults to false
 #
-# [*extra_params*]
+# @param extra_params
 #  Allows you to pass any other flag that the Docker service create supports.
 #  This must be passed as an array. See docker service create --help for all options
-#  defaults to []
 #
-# [*update*]
+# @param update
 #  This changes the docker command to
 #  docker service update, you must pass a service name with this option
 #
-# [*scale*]
+# @param scale
 #  This changes the docker command to
 #  docker service scale, this can only be used with service name and
 #  replicas
 #
-# [*host_socket*]
+# @param host_socket
 #  This will allow the service to connect to the host linux socket.
-#  defaults to undef
 #
-# [*registry_mirror*]
+# @param registry_mirror
 #  This will allow the service to set a registry mirror.
-#  defaults to undef
 #
-# [*mounts*]
+# @param mounts
 #  Allows attaching filesystem mounts to the service (specified as an array)
-#  defaults to []
 #
-# [*networks*]
+# @param networks
 #  Allows attaching the service to networks (specified as an array)
-#  defaults to []
 #
-# [*command*]
+# @param command
 #  Command to run on the container
 #
-
+# @param create
+#
+# @param service_name
+#
 define docker::services(
   Optional[Enum[present,absent]]  $ensure          = 'present',
   Optional[Boolean]               $create          = true,

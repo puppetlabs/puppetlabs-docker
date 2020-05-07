@@ -1,6 +1,16 @@
-
+# @summary
+#   A define which executes a command inside a container.
 #
-# A define which executes a command inside a container.
+# @param detach
+# @param interactive
+# @param env
+# @param tty
+# @param container
+# @param command
+# @param unless
+# @param sanitise_name
+# @param refreshonly
+# @param onlyif
 #
 define docker::exec(
   Optional[Boolean] $detach        = false,

@@ -1,6 +1,5 @@
-# == Class: docker::systemd_reload
-#
-# For systems that have systemd
+# @summary
+#   For systems that have systemd
 #
 class docker::systemd_reload {
   exec { 'docker-systemd-reload':

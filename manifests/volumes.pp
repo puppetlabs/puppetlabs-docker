@@ -1,4 +1,7 @@
-# docker::volumes
+# @summary
+#
+# @param volumes
+#
 class docker::volumes(
   $volumes
 ) {

@@ -1,4 +1,7 @@
-# docker::images
+# @summary
+#
+# @param images
+#
 class docker::images(
   $images
 ) {

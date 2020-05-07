@@ -1,4 +1,13 @@
- # == Define: docker::secrets
+# @summary
+#
+# @param ensure
+#
+# @param label
+#
+# @param secret_name
+#
+# @param secret_path
+#
 define docker::secrets (
   Optional[Enum[present,absent]]  $ensure      = 'present',
   Optional[Variant[String,Array]] $label       = [],

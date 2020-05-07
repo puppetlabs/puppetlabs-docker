@@ -1,45 +1,36 @@
-# == Class: docker::compose
+# @summary install Docker Compose using the recommended curl command.
 #
-# Class to install Docker Compose using the recommended curl command.
-#
-# === Parameters
-#
-# [*ensure*]
+# @param ensure
 #   Whether to install or remove Docker Compose
 #   Valid values are absent present
-#   Defaults to present
 #
-# [*version*]
+# @param version
 #   The version of Docker Compose to install.
-#   Defaults to the value set in $docker::params::compose_version
 #
-# [*install_path*]
+# @param install_path
 #   The path where to install Docker Compose.
-#   Defaults to the value set in $docker::params::compose_install_path
 #
-# [*symlink_name*]
+# @param symlink_name
 #   The name of the symlink created pointing to the actual docker-compose binary
 #   This allows use of own docker-compose wrapper scripts for the times it's
 #   necessary to set certain things before running the docker-compose binary
-#   Defaults to the value set in $docker::params::compose_symlink_name
 #
-# [*proxy*]
+# @param proxy
 #   Proxy to use for downloading Docker Compose.
 #
-# [*base_url*]
+# @param base_url
 #   The base url for installation
 #   This allows use of a mirror that follows the same layout as the
 #   official repository
 #
-# [*raw_url*]
+# @param raw_url
 #   Override the raw URL for installation
 #   The default is to build a URL from baseurl. If rawurl is set, the caller is
 #   responsible for ensuring the URL points to the correct version and
 #   architecture.
-
-# [*curl_ensure*]
+#
+# @param curl_ensure
 #   Whether or not the curl package is ensured by this module.
-#   Defaults to true
 #
 class docker::compose(
   Optional[Enum[present,absent]] $ensure       = 'present',

@@ -1,52 +1,42 @@
-# == Define: docker::plugin
+# @summary
+#   A define that manages a docker plugin
 #
-# A define that manages a docker plugin
-#
-# == Parameters
-#
-# [*plugin_name*]
+# @param plugin_name
 #  This ensures whether the plugin is installed or not.
-#  Defaults to present
 #  Note that the default behaviour of docker plugin
 #  requires a plugin be disabled before it can be removed
 #
-# [*plugin_name*]
+# @param plugin_name
 #  The name of the docker plugin
-#  Defaults to the $title used in the define.
 #
-# [*enabled*]
+# @param enabled
 #  A setting to enable or disable an installed plugin.
-#  Defaults to true
 #
-# [*timeout*]
+# @param timeout
 #  The number of seconds to wait when enabling a plugin
-#  Defaults to undef
 #
-# [*plugin_alias*]
+# @param plugin_alias
 #  An alternative name to use for an installed plugin
-#  Defaults to undef
 #
-# [*disable_on_install*]
+# @param disable_on_install
 #  Alters the default behaviour of enabling a plugin upon install
-#  Defaults to false
 #
-# [*disable_content_trust*]
+# @param disable_content_trust
 #  Skip image verification
-#  Defaults to true
 #
-# [*grant_all_permissions]
+# @param grant_all_permissions
 #  Grant all permissions necessary to run the plugin
-#  Defaults to true
 #
-# [*force_remove*]
+# @param force_remove
 #  Force the removal of an active plugin
-#  Defaults to true
 #
-# [*settings*]
+# @param settings
 #  Any additional settings to pass to the plugin during install
-#  Defaults to undef
 #
-
+# @param ensure
+#
+# @param grant_all_permissions
+#
 define docker::plugin(
   Optional[Enum[present,absent]] $ensure                = 'present',
   String                         $plugin_name           = $title,

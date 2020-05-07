@@ -5,36 +5,38 @@
 
 **Classes**
 
-* [`docker`](#docker): 
-* [`docker::compose`](#dockercompose): [*curl_ensure*]   Whether or not the curl package is ensured by this module.   Defaults to true
-* [`docker::config`](#dockerconfig): == Class: docker::config
-* [`docker::images`](#dockerimages): docker::images
-* [`docker::install`](#dockerinstall): 
-* [`docker::machine`](#dockermachine): == Class: docker::machine  Class to install Docker Machine using the recommended curl command.  === Parameters  [*ensure*]   Whether to insta
-* [`docker::networks`](#dockernetworks): docker::networks
-* [`docker::params`](#dockerparams): == Class: docker::params  Default parameter values for the docker module
-* [`docker::plugins`](#dockerplugins): docker::plugins
-* [`docker::registry_auth`](#dockerregistry_auth): docker::registry_auth
-* [`docker::repos`](#dockerrepos): == Class: docker::repos
-* [`docker::run_instance`](#dockerrun_instance): docker::run_instance
-* [`docker::service`](#dockerservice): == Class: docker::service  Class to manage the docker service daemon  === Parameters [*tcp_bind*]   Which tcp port, if any, to bind the docke
-* [`docker::swarms`](#dockerswarms): docker::swarms
-* [`docker::systemd_reload`](#dockersystemd_reload): == Class: docker::systemd_reload  For systems that have systemd
-* [`docker::volumes`](#dockervolumes): docker::volumes
+* [`docker`](#docker): Module to install an up-to-date version of Docker from package.
+* [`docker::compose`](#dockercompose): install Docker Compose using the recommended curl command.
+* [`docker::config`](#dockerconfig): 
+* [`docker::images`](#dockerimages): 
+* [`docker::install`](#dockerinstall): Module to install an up-to-date version of Docker from a package repository.
+Only for Debian, Red Hat and Windows
+* [`docker::machine`](#dockermachine): install Docker Machine using the recommended curl command.
+* [`docker::networks`](#dockernetworks): 
+* [`docker::params`](#dockerparams): Default parameter values for the docker module
+* [`docker::plugins`](#dockerplugins): 
+* [`docker::registry_auth`](#dockerregistry_auth): 
+* [`docker::repos`](#dockerrepos): 
+* [`docker::run_instance`](#dockerrun_instance): 
+* [`docker::service`](#dockerservice): manage the docker service daemon
+* [`docker::swarms`](#dockerswarms): 
+* [`docker::systemd_reload`](#dockersystemd_reload): For systems that have systemd
+* [`docker::volumes`](#dockervolumes): 
 
 **Defined types**
 
 * [`docker::exec`](#dockerexec): A define which executes a command inside a container.
-* [`docker::image`](#dockerimage): == Class: docker  Module to install an up-to-date version of a Docker image from the registry  === Parameters [*ensure*]   Whether you want t
-* [`docker::plugin`](#dockerplugin): 
-* [`docker::registry`](#dockerregistry): == Class: docker  Module to configure private docker registries from which to pull Docker images If the registry does not require authenticat
-* [`docker::run`](#dockerrun): == Define: docker:run  A define which manages a running docker container.  == Parameters  [*restart*] Sets a restart policy on the docker run
-* [`docker::secrets`](#dockersecrets): == Define: docker::secrets
-* [`docker::services`](#dockerservices): 
-* [`docker::stack`](#dockerstack): 
-* [`docker::swarm`](#dockerswarm): 
-* [`docker::system_user`](#dockersystem_user): == Define: docker::system_user  Define to manage docker group users  === Parameters [*create_user*]   Boolean to cotrol whether the user shou
-* [`docker::windows_account`](#dockerwindows_account): == Define: docker::windows_account  Define the Windows account that owns the docker services
+* [`docker::image`](#dockerimage): Module to install an up-to-date version of a Docker image
+from the registry
+* [`docker::plugin`](#dockerplugin): A define that manages a docker plugin
+* [`docker::registry`](#dockerregistry): Module to configure private docker registries from which to pull Docker images
+* [`docker::run`](#dockerrun): A define which manages a running docker container.
+* [`docker::secrets`](#dockersecrets): 
+* [`docker::services`](#dockerservices): define that managers a Docker services
+* [`docker::stack`](#dockerstack): deploys Docker stacks or compose v3
+* [`docker::swarm`](#dockerswarm): managers a Docker Swarm Mode cluster
+* [`docker::system_user`](#dockersystem_user): manage docker group users
+* [`docker::windows_account`](#dockerwindows_account): Windows account that owns the docker services
 
 **Resource types**
 
@@ -76,7 +78,7 @@
 
 ### docker
 
-The docker class.
+Module to install an up-to-date version of Docker from package.
 
 #### Parameters
 
@@ -86,7 +88,7 @@ The following parameters are available in the `docker` class.
 
 Data type: `Optional[String]`
 
-
+The package version to install, used to set the package name.
 
 Default value: $docker::params::version
 
@@ -94,7 +96,7 @@ Default value: $docker::params::version
 
 Data type: `String`
 
-
+Passed to the docker package.
 
 Default value: $docker::params::ensure
 
@@ -102,7 +104,7 @@ Default value: $docker::params::ensure
 
 Data type: `Variant[Array[String], Hash]`
 
-
+An array of additional packages that need to be installed to support docker.
 
 Default value: $docker::params::prerequired_packages
 
@@ -110,9 +112,682 @@ Default value: $docker::params::prerequired_packages
 
 Data type: `Array`
 
-
+An array of packages installed by the docker-ce package v 18.09 and later.
+Used when uninstalling to ensure containers cannot be run on the system.
 
 Default value: $docker::params::dependent_packages
+
+##### `tcp_bind`
+
+Data type: `Optional[Variant[String,Array[String]]]`
+
+The tcp socket to bind to in the format
+tcp://127.0.0.1:4243
+
+Default value: $docker::params::tcp_bind
+
+##### `tls_enable`
+
+Data type: `Boolean`
+
+Enable TLS.
+
+Default value: $docker::params::tls_enable
+
+##### `tls_verify`
+
+Data type: `Boolean`
+
+Use TLS and verify the remote
+
+Default value: $docker::params::tls_verify
+
+##### `tls_cacert`
+
+Data type: `Optional[String]`
+
+Path to TLS CA certificate
+
+Default value: $docker::params::tls_cacert
+
+##### `tls_cert`
+
+Data type: `Optional[String]`
+
+Path to TLS certificate file
+
+Default value: $docker::params::tls_cert
+
+##### `tls_key`
+
+Data type: `Optional[String]`
+
+Path to TLS key file
+
+Default value: $docker::params::tls_key
+
+##### `ip_forward`
+
+Data type: `Boolean`
+
+Enables IP forwarding on the Docker host.
+
+Default value: $docker::params::ip_forward
+
+##### `iptables`
+
+Data type: `Boolean`
+
+Enable Docker's addition of iptables rules.
+
+Default value: $docker::params::iptables
+
+##### `ip_masq`
+
+Data type: `Boolean`
+
+Enable IP masquerading for bridge's IP range.
+
+Default value: $docker::params::ip_masq
+
+##### `icc`
+
+Data type: `Optional[Boolean]`
+
+Enable or disable Docker's unrestricted inter-container and Docker daemon host communication.
+(Requires iptables=true to disable)
+
+Default value: $docker::params::icc
+
+##### `bip`
+
+Data type: `Optional[String]`
+
+Specify docker's network bridge IP, in CIDR notation.
+
+Default value: $docker::params::bip
+
+##### `mtu`
+
+Data type: `Optional[String]`
+
+Docker network MTU.
+
+Default value: $docker::params::mtu
+
+##### `bridge`
+
+Data type: `Optional[String]`
+
+Attach containers to a pre-existing network bridge
+use 'none' to disable container networking
+
+Default value: $docker::params::bridge
+
+##### `fixed_cidr`
+
+Data type: `Optional[String]`
+
+IPv4 subnet for fixed IPs
+10.20.0.0/16
+
+Default value: $docker::params::fixed_cidr
+
+##### `default_gateway`
+
+Data type: `Optional[String]`
+
+IPv4 address of the container default gateway;
+this address must be part of the bridge subnet
+(which is defined by bridge)
+
+Default value: $docker::params::default_gateway
+
+##### `ipv6`
+
+Data type: `Optional[Boolean]`
+
+Enables ipv6 support for the docker daemon
+
+Default value: $docker::params::ipv6
+
+##### `ipv6_cidr`
+
+Data type: `Optional[String]`
+
+IPv6 subnet for fixed IPs
+
+Default value: $docker::params::ipv6_cidr
+
+##### `default_gateway_ipv6`
+
+Data type: `Optional[String]`
+
+IPv6 address of the container default gateway:
+
+Default value: $docker::params::default_gateway_ipv6
+
+##### `socket_bind`
+
+Data type: `String`
+
+The unix socket to bind to.
+
+Default value: $docker::params::socket_bind
+
+##### `log_level`
+
+Data type: `Optional[String]`
+
+Set the logging level
+Valid values: debug, info, warn, error, fatal
+
+Default value: $docker::params::log_level
+
+##### `log_driver`
+
+Data type: `Optional[String]`
+
+Set the log driver.
+Docker default is json-file.
+Valid values: none, json-file, syslog, journald, gelf, fluentd
+Valid values description:
+  none     : Disables any logging for the container.
+             docker logs won't be available with this driver.
+  json-file: Default logging driver for Docker.
+             Writes JSON messages to file.
+  syslog   : Syslog logging driver for Docker.
+             Writes log messages to syslog.
+  journald : Journald logging driver for Docker.
+             Writes log messages to journald.
+  gelf     : Graylog Extended Log Format (GELF) logging driver for Docker.
+             Writes log messages to a GELF endpoint: Graylog or Logstash.
+  fluentd  : Fluentd logging driver for Docker.
+             Writes log messages to fluentd (forward input).
+  splunk   : Splunk logging driver for Docker.
+             Writes log messages to Splunk (HTTP Event Collector).
+  awslogs  : AWS Cloudwatch Logs logging driver for Docker.
+             Write log messages to Cloudwatch API
+
+Default value: $docker::params::log_driver
+
+##### `log_opt`
+
+Data type: `Array`
+
+Set the log driver specific options
+Valid values per log driver:
+  none     : undef
+  json-file:
+             max-size=[0-9+][k|m|g]
+             max-file=[0-9+]
+  syslog   :
+             syslog-address=[tcp|udp]://host:port
+             syslog-address=unix://path
+             syslog-facility=daemon|kern|user|mail|auth|
+                             syslog|lpr|news|uucp|cron|
+                             authpriv|ftp|
+                             local0|local1|local2|local3|
+                             local4|local5|local6|local7
+             syslog-tag="some_tag"
+  journald : undef
+  gelf     :
+             gelf-address=udp://host:port
+             gelf-tag="some_tag"
+  fluentd  :
+             fluentd-address=host:port
+             fluentd-tag={{.ID}} - short container id (12 characters)|
+                         {{.FullID}} - full container id
+                         {{.Name}} - container name
+  splunk   :
+             splunk-token=<splunk_http_event_collector_token>
+             splunk-url=https://your_splunk_instance:8088
+  awslogs  :
+             awslogs-group=<Cloudwatch Log Group>
+             awslogs-stream=<Cloudwatch Log Stream>
+             awslogs-create-group=true|false
+             awslogs-datetime-format=<Date format> - strftime expression
+             awslogs-multiline-pattern=multiline start pattern using a regular expression
+             tag={{.ID}} - short container id (12 characters)|
+                 {{.FullID}} - full container id
+                 {{.Name}} - container name
+
+Default value: $docker::params::log_opt
+
+##### `selinux_enabled`
+
+Data type: `Optional[Boolean]`
+
+Enable selinux support. Default is false. SELinux does  not  presently
+support  the  BTRFS storage driver.
+
+Default value: $docker::params::selinux_enabled
+
+##### `use_upstream_package_source`
+
+Data type: `Optional[Boolean]`
+
+Whether or not to use the upstream package source.
+If you run your own package mirror, you may set this
+to false.
+
+Default value: $docker::params::use_upstream_package_source
+
+##### `pin_upstream_package_source`
+
+Data type: `Optional[Boolean]`
+
+Pin upstream package source; this option currently only has any effect on
+apt-based distributions.  Set to false to remove pinning on the upstream
+package repository.  See also "apt_source_pin_level".
+
+Default value: $docker::params::pin_upstream_package_source
+
+##### `apt_source_pin_level`
+
+Data type: `Optional[Integer]`
+
+What level to pin our source package repository to; this only is relevent
+if you're on an apt-based system (Debian, Ubuntu, etc) and
+$use_upstream_package_source is set to true.  Set this to false to disable
+pinning, and undef to ensure the apt preferences file apt::source uses to
+define pins is removed.
+
+Default value: $docker::params::apt_source_pin_level
+
+##### `service_state`
+
+Data type: `String`
+
+Whether you want to docker daemon to start up
+
+Default value: $docker::params::service_state
+
+##### `service_enable`
+
+Data type: `Boolean`
+
+Whether you want to docker daemon to start up at boot
+
+Default value: $docker::params::service_enable
+
+##### `manage_service`
+
+Data type: `Boolean`
+
+Specify whether the service should be managed.
+
+Default value: $docker::params::manage_service
+
+##### `root_dir`
+
+Data type: `Optional[String]`
+
+Custom root directory for containers
+
+Default value: $docker::params::root_dir
+
+##### `dns`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Custom dns server address
+
+Default value: $docker::params::dns
+
+##### `dns_search`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Custom dns search domains
+
+Default value: $docker::params::dns_search
+
+##### `socket_group`
+
+Data type: `Optional[Variant[String,Boolean]]`
+
+Group ownership of the unix control socket.
+
+Default value: $docker::params::socket_group
+
+##### `extra_parameters`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Any extra parameters that should be passed to the docker daemon.
+
+Default value: `undef`
+
+##### `shell_values`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Array of shell values to pass into init script config files
+
+Default value: `undef`
+
+##### `proxy`
+
+Data type: `Optional[String]`
+
+Will set the http_proxy and https_proxy env variables in /etc/sysconfig/docker (redhat/centos) or /etc/default/docker (debian)
+
+Default value: $docker::params::proxy
+
+##### `no_proxy`
+
+Data type: `Optional[String]`
+
+Will set the no_proxy variable in /etc/sysconfig/docker (redhat/centos) or /etc/default/docker (debian)
+
+Default value: $docker::params::no_proxy
+
+##### `storage_driver`
+
+Data type: `Optional[String]`
+
+Specify a storage driver to use
+Valid values: aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs
+
+Default value: $docker::params::storage_driver
+
+##### `dm_basesize`
+
+Data type: `Optional[String]`
+
+The size to use when creating the base device, which limits the size of images and containers.
+
+Default value: $docker::params::dm_basesize
+
+##### `dm_fs`
+
+Data type: `Optional[String]`
+
+The filesystem to use for the base image (xfs or ext4)
+
+Default value: $docker::params::dm_fs
+
+##### `dm_mkfsarg`
+
+Data type: `Optional[String]`
+
+Specifies extra mkfs arguments to be used when creating the base device.
+
+Default value: $docker::params::dm_mkfsarg
+
+##### `dm_mountopt`
+
+Data type: `Optional[String]`
+
+Specifies extra mount options used when mounting the thin devices.
+
+Default value: $docker::params::dm_mountopt
+
+##### `dm_blocksize`
+
+Data type: `Optional[String]`
+
+A custom blocksize to use for the thin pool.
+Default blocksize is 64K.
+Warning: _DO NOT_ change this parameter after the lvm devices have been initialized.
+
+Default value: $docker::params::dm_blocksize
+
+##### `dm_loopdatasize`
+
+Data type: `Optional[String]`
+
+Specifies the size to use when creating the loopback file for the "data" device which is used for the thin pool
+
+Default value: $docker::params::dm_loopdatasize
+
+##### `dm_loopmetadatasize`
+
+Data type: `Optional[String]`
+
+Specifies the size to use when creating the loopback file for the "metadata" device which is used for the thin pool
+
+Default value: $docker::params::dm_loopmetadatasize
+
+##### `dm_datadev`
+
+Data type: `Optional[String]`
+
+(deprecated - dm_thinpooldev should be used going forward)
+A custom blockdevice to use for data for the thin pool.
+
+Default value: $docker::params::dm_datadev
+
+##### `dm_metadatadev`
+
+Data type: `Optional[String]`
+
+(deprecated - dm_thinpooldev should be used going forward)
+A custom blockdevice to use for metadata for the thin pool.
+
+Default value: $docker::params::dm_metadatadev
+
+##### `dm_thinpooldev`
+
+Data type: `Optional[String]`
+
+Specifies a custom block storage device to use for the thin pool.
+
+Default value: $docker::params::dm_thinpooldev
+
+##### `dm_use_deferred_removal`
+
+Data type: `Optional[Boolean]`
+
+Enables use of deferred device removal if libdm and the kernel driver support the mechanism.
+
+Default value: $docker::params::dm_use_deferred_removal
+
+##### `dm_use_deferred_deletion`
+
+Data type: `Optional[Boolean]`
+
+Enables use of deferred device deletion if libdm and the kernel driver support the mechanism.
+
+Default value: $docker::params::dm_use_deferred_deletion
+
+##### `dm_blkdiscard`
+
+Data type: `Optional[Boolean]`
+
+Enables or disables the use of blkdiscard when removing devicemapper devices.
+
+Default value: $docker::params::dm_blkdiscard
+
+##### `dm_override_udev_sync_check`
+
+Data type: `Optional[Boolean]`
+
+By default, the devicemapper backend attempts to synchronize with the udev
+device manager for the Linux kernel. This option allows disabling that
+synchronization, to continue even though the configuration may be buggy.
+
+Default value: $docker::params::dm_override_udev_sync_check
+
+##### `overlay2_override_kernel_check`
+
+Data type: `Boolean`
+
+Overrides the Linux kernel version check allowing using overlay2 with kernel < 4.0.
+
+Default value: $docker::params::overlay2_override_kernel_check
+
+##### `manage_package`
+
+Data type: `Boolean`
+
+Won't install or define the docker package, useful if you want to use your own package
+
+Default value: $docker::params::manage_package
+
+##### `service_name`
+
+Data type: `Optional[String]`
+
+Specify custom service name
+
+Default value: $docker::params::service_name
+
+##### `docker_users`
+
+Data type: `Array`
+
+Specify an array of users to add to the docker group
+
+Default value: []
+
+##### `docker_group`
+
+Data type: `String`
+
+Specify a string for the docker group
+
+Default value: $docker::params::docker_group
+
+##### `daemon_environment_files`
+
+Data type: `Array`
+
+Specify additional environment files to add to the
+service-overrides.conf
+
+Default value: []
+
+##### `repo_opt`
+
+Data type: `Optional[Variant[String,Hash]]`
+
+Specify a string to pass as repository options (RedHat only)
+
+Default value: $docker::params::repo_opt
+
+##### `storage_devs`
+
+Data type: `Optional[String]`
+
+A quoted, space-separated list of devices to be used.
+
+Default value: $docker::params::storage_devs
+
+##### `storage_vg`
+
+Data type: `Optional[String]`
+
+The volume group to use for docker storage.
+
+Default value: $docker::params::storage_vg
+
+##### `storage_root_size`
+
+Data type: `Optional[String]`
+
+The size to which the root filesystem should be grown.
+
+Default value: $docker::params::storage_root_size
+
+##### `storage_data_size`
+
+Data type: `Optional[String]`
+
+The desired size for the docker data LV
+
+Default value: $docker::params::storage_data_size
+
+##### `storage_min_data_size`
+
+Data type: `Optional[String]`
+
+The minimum size of data volume otherwise pool creation fails
+
+Default value: $docker::params::storage_min_data_size
+
+##### `storage_chunk_size`
+
+Data type: `Optional[String]`
+
+Controls the chunk size/block size of thin pool.
+
+Default value: $docker::params::storage_chunk_size
+
+##### `storage_growpart`
+
+Data type: `Optional[Boolean]`
+
+Enable resizing partition table backing root volume group.
+
+Default value: $docker::params::storage_growpart
+
+##### `storage_auto_extend_pool`
+
+Data type: `Optional[String]`
+
+Enable/disable automatic pool extension using lvm
+
+Default value: $docker::params::storage_auto_extend_pool
+
+##### `storage_pool_autoextend_threshold`
+
+Data type: `Optional[String]`
+
+Auto pool extension threshold (in % of pool size)
+
+Default value: $docker::params::storage_pool_autoextend_threshold
+
+##### `storage_pool_autoextend_percent`
+
+Data type: `Optional[String]`
+
+Extend the pool by specified percentage when threshold is hit.
+
+Default value: $docker::params::storage_pool_autoextend_percent
+
+##### `tmp_dir_config`
+
+Data type: `Optional[Boolean]`
+
+Whether to set the TMPDIR value in the systemd config file
+Default: true (set the value); false will comment out the line.
+Note: false is backwards compatible prior to PR #58
+
+Default value: $docker::params::tmp_dir_config
+
+##### `tmp_dir`
+
+Data type: `Optional[String]`
+
+Sets the tmp dir for Docker (path)
+
+Default value: $docker::params::tmp_dir
+
+##### `registry_mirror`
+
+Data type: `Optional[String]`
+
+Sets the prefered container registry mirror.
+
+Default value: $docker::params::registry_mirror
+
+##### `nuget_package_provider_version`
+
+Data type: `Optional[String]`
+
+The version of the NuGet Package provider
+
+Default value: $docker::params::nuget_package_provider_version
+
+##### `docker_msft_provider_version`
+
+Data type: `Optional[String]`
+
+The version of the Microsoft Docker Provider Module
+
+Default value: $docker::params::docker_msft_provider_version
 
 ##### `docker_ce_start_command`
 
@@ -282,214 +957,6 @@ Data type: `Optional[String]`
 
 Default value: $docker::params::package_ee_release
 
-##### `tcp_bind`
-
-Data type: `Variant[String,Array[String],Undef]`
-
-
-
-Default value: $docker::params::tcp_bind
-
-##### `tls_enable`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::tls_enable
-
-##### `tls_verify`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::tls_verify
-
-##### `tls_cacert`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::tls_cacert
-
-##### `tls_cert`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::tls_cert
-
-##### `tls_key`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::tls_key
-
-##### `ip_forward`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::ip_forward
-
-##### `ip_masq`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::ip_masq
-
-##### `ipv6`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::ipv6
-
-##### `ipv6_cidr`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::ipv6_cidr
-
-##### `default_gateway_ipv6`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::default_gateway_ipv6
-
-##### `bip`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::bip
-
-##### `mtu`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::mtu
-
-##### `iptables`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::iptables
-
-##### `icc`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::icc
-
-##### `socket_bind`
-
-Data type: `String`
-
-
-
-Default value: $docker::params::socket_bind
-
-##### `fixed_cidr`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::fixed_cidr
-
-##### `bridge`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::bridge
-
-##### `default_gateway`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::default_gateway
-
-##### `log_level`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::log_level
-
-##### `log_driver`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::log_driver
-
-##### `log_opt`
-
-Data type: `Array`
-
-
-
-Default value: $docker::params::log_opt
-
-##### `selinux_enabled`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::selinux_enabled
-
-##### `use_upstream_package_source`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::use_upstream_package_source
-
-##### `pin_upstream_package_source`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::pin_upstream_package_source
-
-##### `apt_source_pin_level`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: $docker::params::apt_source_pin_level
-
 ##### `package_release`
 
 Data type: `Optional[String]`
@@ -497,78 +964,6 @@ Data type: `Optional[String]`
 
 
 Default value: $docker::params::package_release
-
-##### `service_state`
-
-Data type: `String`
-
-
-
-Default value: $docker::params::service_state
-
-##### `service_enable`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::service_enable
-
-##### `manage_service`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::manage_service
-
-##### `root_dir`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::root_dir
-
-##### `tmp_dir_config`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::tmp_dir_config
-
-##### `tmp_dir`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::tmp_dir
-
-##### `dns`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: $docker::params::dns
-
-##### `dns_search`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: $docker::params::dns_search
-
-##### `socket_group`
-
-Data type: `Variant[String,Boolean,Undef]`
-
-
-
-Default value: $docker::params::socket_group
 
 ##### `labels`
 
@@ -578,166 +973,6 @@ Data type: `Array`
 
 Default value: $docker::params::labels
 
-##### `extra_parameters`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `shell_values`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `proxy`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::proxy
-
-##### `no_proxy`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::no_proxy
-
-##### `storage_driver`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_driver
-
-##### `dm_basesize`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_basesize
-
-##### `dm_fs`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_fs
-
-##### `dm_mkfsarg`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_mkfsarg
-
-##### `dm_mountopt`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_mountopt
-
-##### `dm_blocksize`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_blocksize
-
-##### `dm_loopdatasize`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_loopdatasize
-
-##### `dm_loopmetadatasize`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_loopmetadatasize
-
-##### `dm_datadev`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_datadev
-
-##### `dm_metadatadev`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_metadatadev
-
-##### `dm_thinpooldev`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::dm_thinpooldev
-
-##### `dm_use_deferred_removal`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::dm_use_deferred_removal
-
-##### `dm_use_deferred_deletion`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::dm_use_deferred_deletion
-
-##### `dm_blkdiscard`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::dm_blkdiscard
-
-##### `dm_override_udev_sync_check`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::dm_override_udev_sync_check
-
-##### `overlay2_override_kernel_check`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::overlay2_override_kernel_check
-
 ##### `execdriver`
 
 Data type: `Optional[String]`
@@ -745,14 +980,6 @@ Data type: `Optional[String]`
 
 
 Default value: $docker::params::execdriver
-
-##### `manage_package`
-
-Data type: `Boolean`
-
-
-
-Default value: $docker::params::manage_package
 
 ##### `package_source`
 
@@ -762,46 +989,6 @@ Data type: `Optional[String]`
 
 Default value: $docker::params::package_source
 
-##### `service_name`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::service_name
-
-##### `docker_users`
-
-Data type: `Array`
-
-
-
-Default value: []
-
-##### `docker_group`
-
-Data type: `String`
-
-
-
-Default value: $docker::params::docker_group
-
-##### `daemon_environment_files`
-
-Data type: `Array`
-
-
-
-Default value: []
-
-##### `repo_opt`
-
-Data type: `Variant[String,Hash,Undef]`
-
-
-
-Default value: $docker::params::repo_opt
-
 ##### `os_lc`
 
 Data type: `Optional[String]`
@@ -810,89 +997,9 @@ Data type: `Optional[String]`
 
 Default value: $docker::params::os_lc
 
-##### `storage_devs`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_devs
-
-##### `storage_vg`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_vg
-
-##### `storage_root_size`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_root_size
-
-##### `storage_data_size`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_data_size
-
-##### `storage_min_data_size`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_min_data_size
-
-##### `storage_chunk_size`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_chunk_size
-
-##### `storage_growpart`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: $docker::params::storage_growpart
-
-##### `storage_auto_extend_pool`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_auto_extend_pool
-
-##### `storage_pool_autoextend_threshold`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_pool_autoextend_threshold
-
-##### `storage_pool_autoextend_percent`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::storage_pool_autoextend_percent
-
 ##### `storage_config`
 
-Data type: `Variant[String,Boolean,Undef]`
+Data type: `Optional[Variant[String,Boolean]]`
 
 
 
@@ -924,7 +1031,7 @@ Default value: $docker::params::service_provider
 
 ##### `service_config`
 
-Data type: `Variant[String,Boolean,Undef]`
+Data type: `Optional[Variant[String,Boolean]]`
 
 
 
@@ -940,7 +1047,7 @@ Default value: $docker::params::service_config_template
 
 ##### `service_overrides_template`
 
-Data type: `Variant[String,Boolean,Undef]`
+Data type: `Optional[Variant[String,Boolean]]`
 
 
 
@@ -948,7 +1055,7 @@ Default value: $docker::params::service_overrides_template
 
 ##### `socket_overrides_template`
 
-Data type: `Variant[String,Boolean,Undef]`
+Data type: `Optional[Variant[String,Boolean]]`
 
 
 
@@ -964,7 +1071,7 @@ Default value: $docker::params::socket_override
 
 ##### `service_after_override`
 
-Data type: `Variant[String,Boolean,Undef]`
+Data type: `Optional[Variant[String,Boolean]]`
 
 
 
@@ -986,14 +1093,6 @@ Data type: `Optional[Boolean]`
 
 Default value: $docker::params::service_hasrestart
 
-##### `registry_mirror`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::registry_mirror
-
 ##### `acknowledge_unsupported_os`
 
 Data type: `Boolean`
@@ -1002,27 +1101,9 @@ Data type: `Boolean`
 
 Default value: `false`
 
-##### `docker_msft_provider_version`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::docker_msft_provider_version
-
-##### `nuget_package_provider_version`
-
-Data type: `Optional[String]`
-
-
-
-Default value: $docker::params::nuget_package_provider_version
-
 ### docker::compose
 
-[*curl_ensure*]
-  Whether or not the curl package is ensured by this module.
-  Defaults to true
+install Docker Compose using the recommended curl command.
 
 #### Parameters
 
@@ -1030,9 +1111,10 @@ The following parameters are available in the `docker::compose` class.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
-
+Whether to install or remove Docker Compose
+Valid values are absent present
 
 Default value: 'present'
 
@@ -1040,7 +1122,7 @@ Default value: 'present'
 
 Data type: `Optional[String]`
 
-
+The version of Docker Compose to install.
 
 Default value: $docker::params::compose_version
 
@@ -1048,7 +1130,7 @@ Default value: $docker::params::compose_version
 
 Data type: `Optional[String]`
 
-
+The path where to install Docker Compose.
 
 Default value: $docker::params::compose_install_path
 
@@ -1056,7 +1138,9 @@ Default value: $docker::params::compose_install_path
 
 Data type: `Optional[String]`
 
-
+The name of the symlink created pointing to the actual docker-compose binary
+This allows use of own docker-compose wrapper scripts for the times it's
+necessary to set certain things before running the docker-compose binary
 
 Default value: $docker::params::compose_symlink_name
 
@@ -1064,7 +1148,7 @@ Default value: $docker::params::compose_symlink_name
 
 Data type: `Optional[String]`
 
-
+Proxy to use for downloading Docker Compose.
 
 Default value: `undef`
 
@@ -1072,7 +1156,9 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+The base url for installation
+This allows use of a mirror that follows the same layout as the
+official repository
 
 Default value: $docker::params::compose_base_url
 
@@ -1080,7 +1166,10 @@ Default value: $docker::params::compose_base_url
 
 Data type: `Optional[String]`
 
-
+Override the raw URL for installation
+The default is to build a URL from baseurl. If rawurl is set, the caller is
+responsible for ensuring the URL points to the correct version and
+architecture.
 
 Default value: `undef`
 
@@ -1088,17 +1177,17 @@ Default value: `undef`
 
 Data type: `Optional[Boolean]`
 
-
+Whether or not the curl package is ensured by this module.
 
 Default value: $docker::params::curl_ensure
 
 ### docker::config
 
-== Class: docker::config
+The docker::config class.
 
 ### docker::images
 
-docker::images
+The docker::images class.
 
 #### Parameters
 
@@ -1112,7 +1201,8 @@ Data type: `Any`
 
 ### docker::install
 
-The docker::install class.
+Module to install an up-to-date version of Docker from a package repository.
+Only for Debian, Red Hat and Windows
 
 #### Parameters
 
@@ -1122,7 +1212,7 @@ The following parameters are available in the `docker::install` class.
 
 Data type: `Any`
 
-
+The package version to install, used to set the package name.
 
 Default value: $docker::version
 
@@ -1130,7 +1220,7 @@ Default value: $docker::version
 
 Data type: `Any`
 
-
+The version of the NuGet Package provider
 
 Default value: $docker::nuget_package_provider_version
 
@@ -1138,7 +1228,7 @@ Default value: $docker::nuget_package_provider_version
 
 Data type: `Any`
 
-
+The version of the Microsoft Docker Provider Module
 
 Default value: $docker::docker_msft_provider_version
 
@@ -1146,7 +1236,7 @@ Default value: $docker::docker_msft_provider_version
 
 Data type: `Any`
 
-
+The name of the Docker Enterprise Edition package
 
 Default value: $docker::docker_ee_package_name
 
@@ -1168,35 +1258,7 @@ Default value: $docker::dependent_packages
 
 ### docker::machine
 
-== Class: docker::machine
-
-Class to install Docker Machine using the recommended curl command.
-
-=== Parameters
-
-[*ensure*]
-  Whether to install or remove Docker Machine
-  Valid values are absent present
-  Defaults to present
-
-[*version*]
-  The version of Docker Machine to install.
-  Defaults to the value set in $docker::params::machine_version
-
-[*install_path*]
-  The path where to install Docker Machine.
-  Defaults to the value set in $docker::params::machine_install_path
-
-[*proxy*]
-  Proxy to use for downloading Docker Machine.
-
-[*url*]
-  The URL from which the docker machine binary should be fetched
-  Defaults to a auto determined value based on version, kernel and OS.
-
-[*curl_ensure*]
-  Whether or not the curl package is ensured by this module.
-  Defaults to true
+install Docker Machine using the recommended curl command.
 
 #### Parameters
 
@@ -1204,9 +1266,10 @@ The following parameters are available in the `docker::machine` class.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
-
+Whether to install or remove Docker Machine
+Valid values are absent present
 
 Default value: 'present'
 
@@ -1214,7 +1277,7 @@ Default value: 'present'
 
 Data type: `Optional[String]`
 
-
+The version of Docker Machine to install.
 
 Default value: $docker::params::machine_version
 
@@ -1222,7 +1285,7 @@ Default value: $docker::params::machine_version
 
 Data type: `Optional[String]`
 
-
+The path where to install Docker Machine.
 
 Default value: $docker::params::machine_install_path
 
@@ -1230,7 +1293,7 @@ Default value: $docker::params::machine_install_path
 
 Data type: `Optional[String]`
 
-
+Proxy to use for downloading Docker Machine.
 
 Default value: `undef`
 
@@ -1238,7 +1301,7 @@ Default value: `undef`
 
 Data type: `Optional[Variant[Stdlib::HTTPUrl, Stdlib::HTTPSUrl]]`
 
-
+The URL from which the docker machine binary should be fetched
 
 Default value: `undef`
 
@@ -1246,13 +1309,13 @@ Default value: `undef`
 
 Data type: `Optional[Boolean]`
 
-
+Whether or not the curl package is ensured by this module.
 
 Default value: $docker::params::curl_ensure
 
 ### docker::networks
 
-docker::networks
+The docker::networks class.
 
 #### Parameters
 
@@ -1266,13 +1329,11 @@ Data type: `Any`
 
 ### docker::params
 
-== Class: docker::params
-
 Default parameter values for the docker module
 
 ### docker::plugins
 
-docker::plugins
+The docker::plugins class.
 
 #### Parameters
 
@@ -1286,7 +1347,7 @@ Data type: `Any`
 
 ### docker::registry_auth
 
-docker::registry_auth
+The docker::registry_auth class.
 
 #### Parameters
 
@@ -1300,7 +1361,7 @@ Data type: `Any`
 
 ### docker::repos
 
-== Class: docker::repos
+The docker::repos class.
 
 #### Parameters
 
@@ -1336,11 +1397,11 @@ Data type: `Any`
 
 
 
-Default value: $facts['architecture']
+Default value: $facts['os']['architecture']
 
 ### docker::run_instance
 
-docker::run_instance
+The docker::run_instance class.
 
 #### Parameters
 
@@ -1354,47 +1415,94 @@ Data type: `Any`
 
 ### docker::service
 
-== Class: docker::service
-
-Class to manage the docker service daemon
-
-=== Parameters
-[*tcp_bind*]
-  Which tcp port, if any, to bind the docker service to.
-
-[*ip_forward*]
-  This flag interacts with the IP forwarding setting on
-  your host system's kernel
-
-[*iptables*]
-  Enable Docker's addition of iptables rules
-
-[*ip_masq*]
-  Enable IP masquerading for bridge's IP range.
-
-[*socket_bind*]
-  Which local unix socket to bind the docker service to.
-
-[*socket_group*]
-  Which local unix socket to bind the docker service to.
-
-[*root_dir*]
-  Specify a non-standard root directory for docker.
-
-[*extra_parameters*]
-  Plain additional parameters to pass to the docker daemon
-
-[*shell_values*]
-  Array of shell values to pass into init script config files
-
-[*manage_service*]
-  Specify whether the service should be managed.
-  Valid values are 'true', 'false'.
-  Defaults to 'true'.
+manage the docker service daemon
 
 #### Parameters
 
 The following parameters are available in the `docker::service` class.
+
+##### `tcp_bind`
+
+Data type: `Any`
+
+Which tcp port, if any, to bind the docker service to.
+
+Default value: $docker::tcp_bind
+
+##### `ip_forward`
+
+Data type: `Any`
+
+This flag interacts with the IP forwarding setting on
+your host system's kernel
+
+Default value: $docker::ip_forward
+
+##### `iptables`
+
+Data type: `Any`
+
+Enable Docker's addition of iptables rules
+
+Default value: $docker::iptables
+
+##### `ip_masq`
+
+Data type: `Any`
+
+Enable IP masquerading for bridge's IP range.
+
+Default value: $docker::ip_masq
+
+##### `socket_bind`
+
+Data type: `Any`
+
+Which local unix socket to bind the docker service to.
+
+Default value: $docker::socket_bind
+
+##### `socket_group`
+
+Data type: `Any`
+
+Which local unix socket to bind the docker service to.
+
+Default value: $docker::socket_group
+
+##### `root_dir`
+
+Data type: `Any`
+
+Specify a non-standard root directory for docker.
+
+Default value: $docker::root_dir
+
+##### `extra_parameters`
+
+Data type: `Any`
+
+Plain additional parameters to pass to the docker daemon
+
+Default value: $docker::extra_parameters
+
+##### `shell_values`
+
+Data type: `Any`
+
+Array of shell values to pass into init script config files
+
+Default value: $docker::shell_values
+
+##### `manage_service`
+
+Data type: `Any`
+
+Specify whether the service should be managed.
+Valid values are 'true', 'false'.
+Defaults to 'true'.
+
+Default value: $docker::manage_service
 
 ##### `docker_command`
 
@@ -1419,38 +1527,6 @@ Data type: `Any`
 
 
 Default value: $docker::service_name
-
-##### `tcp_bind`
-
-Data type: `Any`
-
-
-
-Default value: $docker::tcp_bind
-
-##### `ip_forward`
-
-Data type: `Any`
-
-
-
-Default value: $docker::ip_forward
-
-##### `iptables`
-
-Data type: `Any`
-
-
-
-Default value: $docker::iptables
-
-##### `ip_masq`
-
-Data type: `Any`
-
-
-
-Default value: $docker::ip_masq
 
 ##### `icc`
 
@@ -1508,14 +1584,6 @@ Data type: `Any`
 
 Default value: $docker::default_gateway_ipv6
 
-##### `socket_bind`
-
-Data type: `Any`
-
-
-
-Default value: $docker::socket_bind
-
 ##### `log_level`
 
 Data type: `Any`
@@ -1547,14 +1615,6 @@ Data type: `Any`
 
 
 Default value: $docker::selinux_enabled
-
-##### `socket_group`
-
-Data type: `Any`
-
-
-
-Default value: $docker::socket_group
 
 ##### `labels`
 
@@ -1595,38 +1655,6 @@ Data type: `Any`
 
 
 Default value: $docker::service_enable
-
-##### `manage_service`
-
-Data type: `Any`
-
-
-
-Default value: $docker::manage_service
-
-##### `root_dir`
-
-Data type: `Any`
-
-
-
-Default value: $docker::root_dir
-
-##### `extra_parameters`
-
-Data type: `Any`
-
-
-
-Default value: $docker::extra_parameters
-
-##### `shell_values`
-
-Data type: `Any`
-
-
-
-Default value: $docker::shell_values
 
 ##### `proxy`
 
@@ -2054,7 +2082,7 @@ Default value: $docker::root_dir_flag
 
 ### docker::swarms
 
-docker::swarms
+The docker::swarms class.
 
 #### Parameters
 
@@ -2068,13 +2096,11 @@ Data type: `Any`
 
 ### docker::systemd_reload
 
-== Class: docker::systemd_reload
-
 For systems that have systemd
 
 ### docker::volumes
 
-docker::volumes
+The docker::volumes class.
 
 #### Parameters
 
@@ -2178,30 +2204,8 @@ Default value: `undef`
 
 ### docker::image
 
-== Class: docker
-
 Module to install an up-to-date version of a Docker image
 from the registry
-
-=== Parameters
-[*ensure*]
-  Whether you want the image present or absent.
-
-[*image*]
-  If you want the name of the image to be different from the
-  name of the puppet resource you can pass a value here.
-
-[*image_tag*]
-  If you want a specific tag of the image to be installed
-
-[*image_digest*]
-  If you want a specific content digest of the image to be installed
-
-[*docker_file*]
-  If you want to add a docker image from specific docker file
-
-[*docker_tar*]
-  If you want to load a docker image from specific docker tar
 
 #### Parameters
 
@@ -2209,9 +2213,9 @@ The following parameters are available in the `docker::image` defined type.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^(present|absent|latest)$/]]`
+Data type: `Optional[Enum[present,absent,latest]]`
 
-
+Whether you want the image present or absent.
 
 Default value: 'present'
 
@@ -2219,7 +2223,8 @@ Default value: 'present'
 
 Data type: `Optional[Pattern[/^[\S]*$/]]`
 
-
+If you want the name of the image to be different from the
+name of the puppet resource you can pass a value here.
 
 Default value: $title
 
@@ -2227,7 +2232,7 @@ Default value: $title
 
 Data type: `Optional[String]`
 
-
+If you want a specific tag of the image to be installed
 
 Default value: `undef`
 
@@ -2235,7 +2240,23 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
+If you want a specific content digest of the image to be installed
 
+Default value: `undef`
+
+##### `docker_file`
+
+Data type: `Optional[String]`
+
+If you want to add a docker image from specific docker file
+
+Default value: `undef`
+
+##### `docker_tar`
+
+Data type: `Optional[String]`
+
+If you want to load a docker image from specific docker tar
 
 Default value: `undef`
 
@@ -2247,23 +2268,7 @@ Data type: `Optional[Boolean]`
 
 Default value: `false`
 
-##### `docker_file`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `undef`
-
 ##### `docker_dir`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `undef`
-
-##### `docker_tar`
 
 Data type: `Optional[String]`
 
@@ -2273,25 +2278,25 @@ Default value: `undef`
 
 ### docker::plugin
 
-The docker::plugin class.
+A define that manages a docker plugin
 
 #### Parameters
 
 The following parameters are available in the `docker::plugin` defined type.
 
-##### `ensure`
-
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
-
-
-
-Default value: 'present'
-
 ##### `plugin_name`
 
 Data type: `String`
 
+This ensures whether the plugin is installed or not.
+Note that the default behaviour of docker plugin
+requires a plugin be disabled before it can be removed
 
+Default value: $title
+
+##### `plugin_name`
+
+The name of the docker plugin
 
 Default value: $title
 
@@ -2299,7 +2304,7 @@ Default value: $title
 
 Data type: `Optional[Boolean]`
 
-
+A setting to enable or disable an installed plugin.
 
 Default value: `true`
 
@@ -2307,7 +2312,7 @@ Default value: `true`
 
 Data type: `Optional[String]`
 
-
+The number of seconds to wait when enabling a plugin
 
 Default value: `undef`
 
@@ -2315,7 +2320,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+An alternative name to use for an installed plugin
 
 Default value: `undef`
 
@@ -2323,7 +2328,7 @@ Default value: `undef`
 
 Data type: `Optional[Boolean]`
 
-
+Alters the default behaviour of enabling a plugin upon install
 
 Default value: `false`
 
@@ -2331,7 +2336,7 @@ Default value: `false`
 
 Data type: `Optional[Boolean]`
 
-
+Skip image verification
 
 Default value: `true`
 
@@ -2339,7 +2344,7 @@ Default value: `true`
 
 Data type: `Optional[Boolean]`
 
-
+Grant all permissions necessary to run the plugin
 
 Default value: `true`
 
@@ -2347,7 +2352,7 @@ Default value: `true`
 
 Data type: `Optional[Boolean]`
 
-
+Force the removal of an active plugin
 
 Default value: `true`
 
@@ -2355,45 +2360,27 @@ Default value: `true`
 
 Data type: `Optional[Array]`
 
-
+Any additional settings to pass to the plugin during install
 
 Default value: []
 
+##### `ensure`
+
+Data type: `Optional[Enum[present,absent]]`
+
+
+
+Default value: 'present'
+
+##### `grant_all_permissions`
+
+
+
+Default value: `true`
+
 ### docker::registry
 
-== Class: docker
-
 Module to configure private docker registries from which to pull Docker images
-If the registry does not require authentication, this module is not required.
-
-=== Parameters
-[*server*]
-  The hostname and port of the private Docker registry. Ex: dockerreg:5000
-
-[*ensure*]
-  Whether or not you want to login or logout of a repository
-
-[*username*]
-  Username for authentication to private Docker registry.
-  auth is not required.
-
-[*password*]
-  Password for authentication to private Docker registry. Leave undef if
-  auth is not required.
-
-[*pass_hash*]
-  The hash to be used for receipt. If left as undef, a hash will be generated
-
-[*email*]
-  Email for registration to private Docker registry. Leave undef if
-  auth is not required.
-
-[*local_user*]
-  The local user to log in as. Docker will store credentials in this
-  users home directory
-
-[*receipt*]
-  Required to be true for idempotency
 
 #### Parameters
 
@@ -2403,15 +2390,15 @@ The following parameters are available in the `docker::registry` defined type.
 
 Data type: `Optional[String]`
 
-
+The hostname and port of the private Docker registry. Ex: dockerreg:5000
 
 Default value: $title
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
-
+Whether or not you want to login or logout of a repository
 
 Default value: 'present'
 
@@ -2419,7 +2406,8 @@ Default value: 'present'
 
 Data type: `Optional[String]`
 
-
+Username for authentication to private Docker registry.
+auth is not required.
 
 Default value: `undef`
 
@@ -2427,7 +2415,8 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Password for authentication to private Docker registry. Leave undef if
+auth is not required.
 
 Default value: `undef`
 
@@ -2435,7 +2424,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+The hash to be used for receipt. If left as undef, a hash will be generated
 
 Default value: `undef`
 
@@ -2443,7 +2432,8 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Email for registration to private Docker registry. Leave undef if
+auth is not required.
 
 Default value: `undef`
 
@@ -2451,9 +2441,18 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+The local user to log in as. Docker will store credentials in this
+users home directory
 
 Default value: 'root'
+
+##### `receipt`
+
+Data type: `Optional[Boolean]`
+
+Required to be true for idempotency
+
+Default value: `true`
 
 ##### `version`
 
@@ -2463,23 +2462,8 @@ Data type: `Optional[String]`
 
 Default value: $docker::version
 
-##### `receipt`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `true`
-
 ### docker::run
 
-== Define: docker:run
-
-A define which manages a running docker container.
-
-== Parameters
-
-[*restart*]
 Sets a restart policy on the docker run.
 Note: If set, puppet will NOT setup an init script to manage, instead
 it will do a raw docker run command using a CID file to track the container
@@ -2498,70 +2482,35 @@ systemd_restart option to specify the policy you want.
 This will allow the docker container to be restarted if it dies, without
 puppet help.
 
-[*service_prefix*]
-  (optional) The name to prefix the startup script with and the Puppet
-  service resource title with.  Default: 'docker-'
-
-[*restart_service*]
-  (optional) Whether or not to restart the service if the the generated init
-  script changes.  Default: true
-
-[*restart_service_on_docker_refresh*]
-  Whether or not to restart the service if the docker service is restarted.
-  Only has effect if the docker_service parameter is set.
-  Default: true
-
-[*manage_service*]
- (optional) Whether or not to create a puppet Service resource for the init
- script.  Disabling this may be useful if integrating with existing modules.
- Default: true
-
-[*docker_service*]
- (optional) If (and how) the Docker service itself is managed by Puppet
- true          -> Service['docker']
- false         -> no Service dependency
- anything else -> Service[docker_service]
- Default: false
-
-[*health_check_cmd*]
 (optional) Specifies the command to execute to check that the container is healthy using the docker health check functionality.
 Default: undef
 
-[*health_check_interval*]
 (optional) Specifies the interval that the health check command will execute in seconds.
 Default: undef
 
-[*restart_on_unhealthy*]
 (optional) Checks the health status of Docker container and if it is unhealthy the service will be restarted.
 The health_check_cmd parameter must be set to true to use this functionality.
 Default: undef
-
-[*net*]
 
 The docker network to attach to a container.
 Can be a String or Array (if using multiple networks)
 Default: bridge
 
-[*extra_parameters*]
 An array of additional command line arguments to pass to the `docker run`
 command. Useful for adding additional new or experimental options that the
 module does not yet support.
 
-[*systemd_restart*]
 (optional) If the container is to be managed by a systemd unit file set the
 Restart option on the unit file.  Can be any valid value for this systemd
 configuration.  Most commonly used are on-failure or always.
 Default: on-failure
 
-[*custom_unless*]
 (optional) Specify an additional unless for the Docker run command when using restart.
 Default: undef
 
-[*after_create*]
 (optional) Specifies the command to execute after container is created but before it is started.
 Default: undef
 
-[*remain_after_exit*]
 (optional) If the container is to be managed by a systemd unit file set the
 RemainAfterExit option on the unit file.  Can be any valid value for this systemd
 configuration.
@@ -2571,6 +2520,136 @@ Default: Not included in unit file
 
 The following parameters are available in the `docker::run` defined type.
 
+##### `restart`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### `service_prefix`
+
+Data type: `Optional[String]`
+
+(optional) The name to prefix the startup script with and the Puppet
+service resource title with.  Default: 'docker-'
+
+Default value: 'docker-'
+
+##### `restart_service`
+
+Data type: `Optional[Boolean]`
+
+(optional) Whether or not to restart the service if the the generated init
+script changes.  Default: true
+
+Default value: `true`
+
+##### `restart_service_on_docker_refresh`
+
+Data type: `Optional[Boolean]`
+
+Whether or not to restart the service if the docker service is restarted.
+Only has effect if the docker_service parameter is set.
+Default: true
+
+Default value: `true`
+
+##### `manage_service`
+
+Data type: `Optional[Boolean]`
+
+(optional) Whether or not to create a puppet Service resource for the init
+script.  Disabling this may be useful if integrating with existing modules.
+Default: true
+
+Default value: `true`
+
+##### `docker_service`
+
+Data type: `Variant[String,Boolean]`
+
+(optional) If (and how) the Docker service itself is managed by Puppet
+true          -> Service['docker']
+false         -> no Service dependency
+anything else -> Service[docker_service]
+Default: false
+
+Default value: `false`
+
+##### `health_check_cmd`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### `health_check_interval`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### `restart_on_unhealthy`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `false`
+
+##### `net`
+
+Data type: `Variant[String,Array]`
+
+
+
+Default value: 'bridge'
+
+##### `extra_parameters`
+
+Data type: `Optional[Variant[String,Array[String]]]`
+
+
+
+Default value: `undef`
+
+##### `systemd_restart`
+
+Data type: `Optional[String]`
+
+
+
+Default value: 'on-failure'
+
+##### `custom_unless`
+
+Data type: `Optional[Variant[String,Array]]`
+
+
+
+Default value: []
+
+##### `after_create`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### `remain_after_exit`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
 ##### `image`
 
 Data type: `Optional[Pattern[/^[\S]*$/]]`
@@ -2579,7 +2658,7 @@ Data type: `Optional[Pattern[/^[\S]*$/]]`
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
 
 
@@ -2667,19 +2746,11 @@ Default value: `true`
 
 ##### `volumes_from`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
 Default value: []
-
-##### `net`
-
-Data type: `Variant[String,Array]`
-
-
-
-Default value: 'bridge'
 
 ##### `username`
 
@@ -2699,7 +2770,7 @@ Default value: `false`
 
 ##### `env`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2707,7 +2778,7 @@ Default value: []
 
 ##### `env_file`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2715,7 +2786,7 @@ Default value: []
 
 ##### `dns`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2723,7 +2794,7 @@ Default value: []
 
 ##### `dns_search`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2731,19 +2802,11 @@ Default value: []
 
 ##### `lxc_conf`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
 Default value: []
-
-##### `service_prefix`
-
-Data type: `Optional[String]`
-
-
-
-Default value: 'docker-'
 
 ##### `service_provider`
 
@@ -2752,38 +2815,6 @@ Data type: `Optional[String]`
 
 
 Default value: `undef`
-
-##### `restart_service`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `true`
-
-##### `restart_service_on_docker_refresh`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `true`
-
-##### `manage_service`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `true`
-
-##### `docker_service`
-
-Data type: `Variant[String,Boolean]`
-
-
-
-Default value: `false`
 
 ##### `disable_network`
 
@@ -2809,25 +2840,9 @@ Data type: `Optional[Boolean]`
 
 Default value: `undef`
 
-##### `extra_parameters`
-
-Data type: `Variant[String,Array[String],Undef]`
-
-
-
-Default value: `undef`
-
-##### `systemd_restart`
-
-Data type: `Optional[String]`
-
-
-
-Default value: 'on-failure'
-
 ##### `extra_systemd_parameters`
 
-Data type: `Variant[String,Hash,Undef]`
+Data type: `Optional[Variant[String,Hash]]`
 
 
 
@@ -2843,7 +2858,7 @@ Default value: `false`
 
 ##### `after`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2851,7 +2866,7 @@ Default value: []
 
 ##### `after_service`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2859,7 +2874,7 @@ Default value: []
 
 ##### `depends`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2867,7 +2882,7 @@ Default value: []
 
 ##### `depend_services`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2883,7 +2898,7 @@ Default value: `false`
 
 ##### `socket_connect`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -2891,19 +2906,11 @@ Default value: []
 
 ##### `hostentries`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
 Default value: []
-
-##### `restart`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `undef`
 
 ##### `before_start`
 
@@ -2936,14 +2943,6 @@ Data type: `Variant[String,Boolean]`
 
 
 Default value: `false`
-
-##### `after_create`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `undef`
 
 ##### `remove_container_on_start`
 
@@ -3001,49 +3000,9 @@ Data type: `Optional[Boolean]`
 
 Default value: `false`
 
-##### `health_check_cmd`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `undef`
-
-##### `restart_on_unhealthy`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `false`
-
-##### `health_check_interval`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: `undef`
-
-##### `custom_unless`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: []
-
-##### `remain_after_exit`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `undef`
-
 ### docker::secrets
 
-== Define: docker::secrets
+The docker::secrets class.
 
 #### Parameters
 
@@ -3051,7 +3010,7 @@ The following parameters are available in the `docker::secrets` defined type.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
 
 
@@ -3059,7 +3018,7 @@ Default value: 'present'
 
 ##### `label`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -3083,7 +3042,7 @@ Default value: `undef`
 
 ### docker::services
 
-The docker::services class.
+define that managers a Docker services
 
 #### Parameters
 
@@ -3091,11 +3050,152 @@ The following parameters are available in the `docker::services` defined type.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
-
+This ensures that the service is present or not.
 
 Default value: 'present'
+
+##### `image`
+
+Data type: `Optional[Variant[String,Array]]`
+
+The Docker image to spwan the service from.
+
+Default value: `undef`
+
+##### `detach`
+
+Data type: `Optional[Boolean]`
+
+Exit immediately instead of waiting for the service to converge (default true)
+
+Default value: `true`
+
+##### `env`
+
+Data type: `Optional[Array]`
+
+Set environment variables
+
+Default value: []
+
+##### `label`
+
+Data type: `Optional[Array]`
+
+Service labels.
+This used as metdata to configure constraints etc.
+
+Default value: []
+
+##### `publish`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Publish port(s) as node ports.
+
+Default value: `undef`
+
+##### `replicas`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Number of tasks (containers per service)
+
+Default value: `undef`
+
+##### `tty`
+
+Data type: `Optional[Boolean]`
+
+Allocate a pseudo-TTY
+
+Default value: `false`
+
+##### `user`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Username or UID (format: <name|uid>[:<group|gid>])
+
+Default value: `undef`
+
+##### `workdir`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Working directory inside the container
+
+Default value: `undef`
+
+##### `extra_params`
+
+Data type: `Optional[Array]`
+
+Allows you to pass any other flag that the Docker service create supports.
+This must be passed as an array. See docker service create --help for all options
+
+Default value: []
+
+##### `update`
+
+Data type: `Optional[Boolean]`
+
+This changes the docker command to
+docker service update, you must pass a service name with this option
+
+Default value: `false`
+
+##### `scale`
+
+Data type: `Optional[Boolean]`
+
+This changes the docker command to
+docker service scale, this can only be used with service name and
+replicas
+
+Default value: `false`
+
+##### `host_socket`
+
+Data type: `Optional[Variant[String,Array]]`
+
+This will allow the service to connect to the host linux socket.
+
+Default value: `undef`
+
+##### `registry_mirror`
+
+Data type: `Optional[Variant[String,Array]]`
+
+This will allow the service to set a registry mirror.
+
+Default value: `undef`
+
+##### `mounts`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Allows attaching filesystem mounts to the service (specified as an array)
+
+Default value: `undef`
+
+##### `networks`
+
+Data type: `Optional[Array]`
+
+Allows attaching the service to networks (specified as an array)
+
+Default value: `undef`
+
+##### `command`
+
+Data type: `Optional[Variant[String,Array]]`
+
+Command to run on the container
+
+Default value: `undef`
 
 ##### `create`
 
@@ -3105,145 +3205,9 @@ Data type: `Optional[Boolean]`
 
 Default value: `true`
 
-##### `update`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `false`
-
-##### `scale`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `false`
-
-##### `detach`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `true`
-
-##### `tty`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `false`
-
-##### `env`
-
-Data type: `Optional[Array]`
-
-
-
-Default value: []
-
-##### `label`
-
-Data type: `Optional[Array]`
-
-
-
-Default value: []
-
-##### `extra_params`
-
-Data type: `Optional[Array]`
-
-
-
-Default value: []
-
-##### `image`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
 ##### `service_name`
 
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `publish`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `replicas`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `user`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `workdir`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `host_socket`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `registry_mirror`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `mounts`
-
-Data type: `Variant[String,Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `networks`
-
-Data type: `Variant[Array,Undef]`
-
-
-
-Default value: `undef`
-
-##### `command`
-
-Data type: `Variant[String,Array,Undef]`
+Data type: `Optional[Variant[String,Array]]`
 
 
 
@@ -3251,7 +3215,7 @@ Default value: `undef`
 
 ### docker::stack
 
-The docker::stack class.
+deploys Docker stacks or compose v3
 
 #### Parameters
 
@@ -3259,9 +3223,9 @@ The following parameters are available in the `docker::stack` defined type.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
-
+This ensures that the stack is present or not.
 
 Default value: 'present'
 
@@ -3269,7 +3233,7 @@ Default value: 'present'
 
 Data type: `Optional[String]`
 
-
+The name of the stack that you are deploying
 
 Default value: `undef`
 
@@ -3277,9 +3241,35 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Path to a Distributed Application Bundle file
+Please note this is experimental
 
 Default value: `undef`
+
+##### `prune`
+
+Data type: `Optional[Boolean]`
+
+Prune services that are no longer referenced
+
+Default value: `false`
+
+##### `resolve_image`
+
+Data type: `Optional[Enum['always','changed','never']]`
+
+Query the registry to resolve image digest and supported platforms
+Only accepts ("always"|"changed"|"never")
+
+Default value: `undef`
+
+##### `with_registry_auth`
+
+Data type: `Optional[Boolean]`
+
+Send registry authentication details to Swarm agents
+
+Default value: `false`
 
 ##### `compose_files`
 
@@ -3289,33 +3279,9 @@ Data type: `Optional[Array]`
 
 Default value: `undef`
 
-##### `prune`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `false`
-
-##### `with_registry_auth`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: `false`
-
-##### `resolve_image`
-
-Data type: `Optional[Pattern[/^always$|^changed$|^never$/]]`
-
-
-
-Default value: `undef`
-
 ### docker::swarm
 
-The docker::swarm class.
+managers a Docker Swarm Mode cluster
 
 #### Parameters
 
@@ -3323,9 +3289,11 @@ The following parameters are available in the `docker::swarm` defined type.
 
 ##### `ensure`
 
-Data type: `Optional[Pattern[/^present$|^absent$/]]`
+Data type: `Optional[Enum[present,absent]]`
 
-
+This ensures that the cluster is present or not.
+Note this forcefully removes a node from the cluster. Make sure all worker nodes
+have been removed before managers
 
 Default value: 'present'
 
@@ -3333,7 +3301,8 @@ Default value: 'present'
 
 Data type: `Optional[Boolean]`
 
-
+This creates the first worker node for a new cluster.
+Set init to true to create a new cluster
 
 Default value: `false`
 
@@ -3341,7 +3310,9 @@ Default value: `false`
 
 Data type: `Optional[Boolean]`
 
-
+This adds either a worker or manger node to the cluster.
+The role of the node is defined by the join token.
+Set to true to join the cluster
 
 Default value: `false`
 
@@ -3349,7 +3320,8 @@ Default value: `false`
 
 Data type: `Optional[String]`
 
-
+The address that your node will advertise to the cluster for raft.
+On multihomed servers this flag must be passed
 
 Default value: `undef`
 
@@ -3357,7 +3329,7 @@ Default value: `undef`
 
 Data type: `Optional[Boolean]`
 
-
+Enable manager autolocking (requiring an unlock key to start a stopped manager)
 
 Default value: `false`
 
@@ -3365,7 +3337,7 @@ Default value: `false`
 
 Data type: `Optional[String]`
 
-
+Validity period for node certificates (ns|us|ms|s|m|h) (default 2160h0m0s)
 
 Default value: `undef`
 
@@ -3373,7 +3345,7 @@ Default value: `undef`
 
 Data type: `Optional[Array]`
 
-
+Array of default subnet pools for global scope networks (['30.30.0.0/16','40.40.0.0/16'])
 
 Default value: `undef`
 
@@ -3381,7 +3353,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Default subnet pools mask length for default-addr-pools (CIDR block number)
 
 Default value: `undef`
 
@@ -3389,7 +3361,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Dispatcher heartbeat period (ns|us|ms|s|m|h) (default 5s)
 
 Default value: `undef`
 
@@ -3397,7 +3369,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Specifications of one or more certificate signing endpoints
 
 Default value: `undef`
 
@@ -3405,7 +3377,7 @@ Default value: `undef`
 
 Data type: `Optional[Boolean]`
 
-
+Force create a new cluster from current state
 
 Default value: `false`
 
@@ -3413,7 +3385,8 @@ Default value: `false`
 
 Data type: `Optional[String]`
 
-
+The address that your node will listen to the cluster for raft.
+On multihomed servers this flag must be passed
 
 Default value: `undef`
 
@@ -3421,7 +3394,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Number of additional Raft snapshots to retain
 
 Default value: `undef`
 
@@ -3429,7 +3402,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+Number of log entries between Raft snapshots (default 10000)
 
 Default value: `undef`
 
@@ -3437,7 +3410,8 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+The authentication token to join the cluster. The token also defines the type of
+node (worker or manager)
 
 Default value: `undef`
 
@@ -3445,19 +3419,13 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-
+The ip address of a manager node to join the cluster.
 
 Default value: `undef`
 
 ### docker::system_user
 
-== Define: docker::system_user
-
-Define to manage docker group users
-
-=== Parameters
-[*create_user*]
-  Boolean to cotrol whether the user should be created
+manage docker group users
 
 #### Parameters
 
@@ -3467,15 +3435,13 @@ The following parameters are available in the `docker::system_user` defined type
 
 Data type: `Any`
 
-
+Boolean to cotrol whether the user should be created
 
 Default value: `true`
 
 ### docker::windows_account
 
-== Define: docker::windows_account
-
-Define the Windows account that owns the docker services
+Windows account that owns the docker services
 
 ## Resource types
 

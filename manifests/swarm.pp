@@ -1,80 +1,61 @@
-# == Define: docker::swarm
+# @summary
+#  managers a Docker Swarm Mode cluster
 #
-# A define that managers a Docker Swarm Mode cluster
-#
-# == Paramaters
-#
-# [*ensure*]
+# @param ensure
 #  This ensures that the cluster is present or not.
-#  Defaults to present
 #  Note this forcefully removes a node from the cluster. Make sure all worker nodes
 #  have been removed before managers
 #
-# [*init*]
+# @param init
 #  This creates the first worker node for a new cluster.
 #  Set init to true to create a new cluster
-#  Defaults to false
 #
-# [*join*]
+# @param join
 #  This adds either a worker or manger node to the cluster.
 #  The role of the node is defined by the join token.
 #  Set to true to join the cluster
-#  Defaults to false
 #
-# [*advertise_addr*]
+# @param advertise_addr
 #  The address that your node will advertise to the cluster for raft.
 #  On multihomed servers this flag must be passed
-#  Defaults to undef
 #
-# [*autolock*]
+# @param autolock
 #   Enable manager autolocking (requiring an unlock key to start a stopped manager)
-#   Defaults to undef
 #
-# [*cert_expiry*]
+# @param cert_expiry
 #  Validity period for node certificates (ns|us|ms|s|m|h) (default 2160h0m0s)
-#  defaults to undef
 #
-# [*default_addr_pool*]
+# @param default_addr_pool
 #  Array of default subnet pools for global scope networks (['30.30.0.0/16','40.40.0.0/16'])
-#  defaults to undef
 #
-# [*default_addr_pool_mask_length*]
+# @param default_addr_pool_mask_length
 #  Default subnet pools mask length for default-addr-pools (CIDR block number)
-#  defaults to undef
 #
-# [*dispatcher_heartbeat*]
+# @param dispatcher_heartbeat
 #  Dispatcher heartbeat period (ns|us|ms|s|m|h) (default 5s)
-#  Defaults to undef
 #
-# [*external_ca*]
+# @param external_ca
 #  Specifications of one or more certificate signing endpoints
-#  Defaults to undef
 #
-# [*force_new_cluster*]
+# @param force_new_cluster
 #  Force create a new cluster from current state
-#  Defaults to false
 #
-# [*listen_addr*]
+# @param listen_addr
 #  The address that your node will listen to the cluster for raft.
 #  On multihomed servers this flag must be passed
-#  Defaults to undef
 #
-# [*max_snapshots*]
+# @param max_snapshots
 #  Number of additional Raft snapshots to retain
-#  Defaults to undef
 #
-# [*snapshot_interval*]
+# @param snapshot_interval
 #  Number of log entries between Raft snapshots (default 10000)
-#  Defaults to undef
 #
-# [*token*]
+# @param token
 #  The authentication token to join the cluster. The token also defines the type of
 #  node (worker or manager)
-#  Defaults to undef
 #
-# [*manager_ip*]
+# @param manager_ip
 #  The ip address of a manager node to join the cluster.
-#  Defaults to undef
 #
 define docker::swarm(
   Optional[Enum[present,absent]] $ensure                        = 'present',

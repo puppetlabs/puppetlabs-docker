@@ -1,40 +1,181 @@
-# == Class: docker::service
+# @summary manage the docker service daemon
 #
-# Class to manage the docker service daemon
-#
-# === Parameters
-# [*tcp_bind*]
+# @param tcp_bind
 #   Which tcp port, if any, to bind the docker service to.
 #
-# [*ip_forward*]
+# @param ip_forward
 #   This flag interacts with the IP forwarding setting on
 #   your host system's kernel
 #
-# [*iptables*]
+# @param iptables
 #   Enable Docker's addition of iptables rules
 #
-# [*ip_masq*]
+# @param ip_masq
 #   Enable IP masquerading for bridge's IP range.
 #
-# [*socket_bind*]
+# @param socket_bind
 #   Which local unix socket to bind the docker service to.
 #
-# [*socket_group*]
+# @param socket_group
 #   Which local unix socket to bind the docker service to.
 #
-# [*root_dir*]
+# @param root_dir
 #   Specify a non-standard root directory for docker.
 #
-# [*extra_parameters*]
+# @param extra_parameters
 #   Plain additional parameters to pass to the docker daemon
 #
-# [*shell_values*]
+# @param shell_values
 #   Array of shell values to pass into init script config files
 #
-# [*manage_service*]
+# @param manage_service
 #   Specify whether the service should be managed.
 #   Valid values are 'true', 'false'.
 #   Defaults to 'true'.
+#
+# @param docker_command
+#
+# @param docker_start_command
+#
+# @param service_name
+#
+# @param icc
+#
+# @param bridge
+#
+# @param fixed_cidr
+#
+# @param default_gateway
+#
+# @param ipv6
+#
+# @param ipv6_cidr
+#
+# @param default_gateway_ipv6
+#
+# @param log_level
+#
+# @param log_driver
+#
+# @param log_opt
+#
+# @param selinux_enabled
+#
+# @param labels
+#
+# @param dns
+#
+# @param dns_search
+#
+# @param service_state
+#
+# @param service_enable
+#
+# @param proxy
+#
+# @param no_proxy
+#
+# @param execdriver
+#
+# @param bip
+#
+# @param mtu
+#
+# @param storage_driver
+#
+# @param dm_basesize
+#
+# @param dm_fs
+#
+# @param dm_mkfsarg
+#
+# @param dm_mountopt
+#
+# @param dm_blocksize
+#
+# @param dm_loopdatasize
+#
+# @param dm_loopmetadatasize
+#
+# @param dm_datadev
+#
+# @param dm_metadatadev
+#
+# @param tmp_dir_config
+#
+# @param tmp_dir
+#
+# @param dm_thinpooldev
+#
+# @param dm_use_deferred_removal
+#
+# @param dm_use_deferred_deletion
+#
+# @param dm_blkdiscard
+#
+# @param dm_override_udev_sync_check
+#
+# @param overlay2_override_kernel_check
+#
+# @param storage_devs
+#
+# @param storage_vg
+#
+# @param storage_root_size
+#
+# @param storage_data_size
+#
+# @param storage_min_data_size
+#
+# @param storage_chunk_size
+#
+# @param storage_growpart
+#
+# @param storage_auto_extend_pool
+#
+# @param storage_pool_autoextend_threshold
+#
+# @param storage_pool_autoextend_percent
+#
+# @param storage_config
+#
+# @param storage_config_template
+#
+# @param storage_setup_file
+#
+# @param service_provider
+#
+# @param service_config
+#
+# @param service_config_template
+#
+# @param service_overrides_template
+#
+# @param socket_overrides_template
+#
+# @param socket_override
+#
+# @param service_after_override
+#
+# @param service_hasstatus
+#
+# @param service_hasrestart
+#
+# @param daemon_environment_files
+#
+# @param tls_enable
+#
+# @param tls_verify
+#
+# @param tls_cacert
+#
+# @param tls_cert
+#
+# @param tls_key
+#
+# @param registry_mirror
+#
+# @param root_dir_flag
 #
 class docker::service (
   $docker_command                    = $docker::docker_command,

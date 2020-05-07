@@ -1,39 +1,27 @@
-# == Define: docker::stack
+# @summary
+#  deploys Docker stacks or compose v3
 #
-# A define that deploys Docker stacks or compose v3
-#
-# == Paramaters
-#
-# [*ensure*]
+# @param ensure
 #  This ensures that the stack is present or not.
-#  Defaults to present
 #
-# [*stack_name*]
+# @param stack_name
 #   The name of the stack that you are deploying
-#   Defaults to undef
 #
-# [*bundle_file*]
+# @param bundle_file
 #  Path to a Distributed Application Bundle file
 #  Please note this is experimental
-#  Defaults to undef
 #
-# [*compose_file*]
-#  Path to a Compose file
-#  Defaults to undef
-#
-# [*prune*]
+# @param prune
 #  Prune services that are no longer referenced
-#  Defaults to undef
 #
-# [*resolve_image*]
+# @param resolve_image
 #  Query the registry to resolve image digest and supported platforms
 #  Only accepts ("always"|"changed"|"never")
-#  Defaults to undef
 #
-# [*with_registry_auth*]
+# @param with_registry_auth
 #  Send registry authentication details to Swarm agents
-#  Defaults to undef
-
+#
+# @param compose_files
 define docker::stack(
   Optional[Enum[present,absent]]             $ensure             = 'present',
   Optional[String]                           $stack_name         = undef,

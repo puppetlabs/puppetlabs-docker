@@ -1,27 +1,29 @@
-# == Class: docker
+# @summary
+#   Module to install an up-to-date version of a Docker image
+#   from the registry
 #
-# Module to install an up-to-date version of a Docker image
-# from the registry
-#
-# === Parameters
-# [*ensure*]
+# @param ensure
 #   Whether you want the image present or absent.
 #
-# [*image*]
+# @param image
 #   If you want the name of the image to be different from the
 #   name of the puppet resource you can pass a value here.
 #
-# [*image_tag*]
+# @param image_tag
 #   If you want a specific tag of the image to be installed
 #
-# [*image_digest*]
+# @param image_digest
 #   If you want a specific content digest of the image to be installed
 #
-# [*docker_file*]
+# @param docker_file
 #   If you want to add a docker image from specific docker file
 #
-# [*docker_tar*]
+# @param docker_tar
 #   If you want to load a docker image from specific docker tar
+#
+# @param force
+#
+# @param docker_dir
 #
 define docker::image(
   Optional[Enum[present,absent,latest]] $ensure       = 'present',

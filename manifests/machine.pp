@@ -1,32 +1,25 @@
-# == Class: docker::machine
+# @summary
+#  install Docker Machine using the recommended curl command.
 #
-# Class to install Docker Machine using the recommended curl command.
-#
-# === Parameters
-#
-# [*ensure*]
+# @param ensure
 #   Whether to install or remove Docker Machine
 #   Valid values are absent present
-#   Defaults to present
 #
-# [*version*]
+# @param version
 #   The version of Docker Machine to install.
-#   Defaults to the value set in $docker::params::machine_version
 #
-# [*install_path*]
+# @param install_path
 #   The path where to install Docker Machine.
-#   Defaults to the value set in $docker::params::machine_install_path
 #
-# [*proxy*]
+# @param proxy
 #   Proxy to use for downloading Docker Machine.
 #
-# [*url*]
+# @param url
 #   The URL from which the docker machine binary should be fetched
-#   Defaults to a auto determined value based on version, kernel and OS.
 #
-# [*curl_ensure*]
+# @param curl_ensure
 #   Whether or not the curl package is ensured by this module.
-#   Defaults to true
+#
 class docker::machine(
   Optional[Enum[present,absent]]                       $ensure       = 'present',
   Optional[String]                                     $version      = $docker::params::machine_version,

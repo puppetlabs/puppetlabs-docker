@@ -1,115 +1,88 @@
-# == Class: docker
+# @summary
+#   Module to install an up-to-date version of Docker from package.
 #
-# Module to install an up-to-date version of Docker from package.
-#
-# === Parameters
-#
-# [*version*]
+# @param version
 #   The package version to install, used to set the package name.
-#   Defaults to undefined
 #
-# [*ensure*]
+# @param ensure
 #   Passed to the docker package.
-#   Defaults to present
 #
-# [*prerequired_packages*]
-#   An array of additional packages that need to be installed to support
-#   docker. Defaults change depending on the operating system.
+# @param prerequired_packages
+#   An array of additional packages that need to be installed to support docker.
 #
-# [*dependent_packages*]
+# @param dependent_packages
 #  An array of packages installed by the docker-ce package v 18.09 and later.
 #  Used when uninstalling to ensure containers cannot be run on the system.
-#  Defaults change depending on the operating system.
 #
-# [*tcp_bind*]
+# @param tcp_bind
 #   The tcp socket to bind to in the format
 #   tcp://127.0.0.1:4243
-#   Defaults to undefined
 #
-# [*tls_enable*]
+# @param tls_enable
 #   Enable TLS.
-#   Defaults to false
 #
-# [*tls_verify*]
+# @param tls_verify
 #  Use TLS and verify the remote
-#  Defaults to true
 #
-# [*tls_cacert*]
+# @param tls_cacert
 #   Path to TLS CA certificate
-#   Defaults to '/etc/docker/tls/ca.pem on linux and C:/ProgramData/docker/certs.d/ca.pem on Windows'
 #
-# [*tls_cert*]
+# @param tls_cert
 #   Path to TLS certificate file
-#   Defaults to '/etc/docker/tls/cert.pem on linux and C:/ProgramData/docker/certs.d/server-cert.pem on Windows'
 #
-# [*tls_key*]
+# @param tls_key
 #   Path to TLS key file
-#   Defaults to '/etc/docker/tls/key.pem' on linux and C:/ProgramData/docker/certs.d/server-key.pem on Windows
 #
-# [*ip_forward*]
+# @param ip_forward
 #   Enables IP forwarding on the Docker host.
-#   The default is true.
 #
-# [*iptables*]
+# @param iptables
 #   Enable Docker's addition of iptables rules.
-#   Default is true.
 #
-# [*ip_masq*]
+# @param ip_masq
 #   Enable IP masquerading for bridge's IP range.
-#   The default is true.
 #
-# [*icc*]
+# @param icc
 #   Enable or disable Docker's unrestricted inter-container and Docker daemon host communication.
 #   (Requires iptables=true to disable)
-#   Default is undef. (Docker daemon's default is true)
 #
-# [*bip*]
+# @param bip
 #   Specify docker's network bridge IP, in CIDR notation.
-#   Defaults to undefined.
 #
-# [*mtu*]
+# @param mtu
 #   Docker network MTU.
-#   Defaults to undefined.
 #
-# [*bridge*]
+# @param bridge
 #   Attach containers to a pre-existing network bridge
 #   use 'none' to disable container networking
-#   Defaults to undefined.
 #
-# [*fixed_cidr*]
+# @param fixed_cidr
 #   IPv4 subnet for fixed IPs
 #   10.20.0.0/16
-#   Defaults to undefined
 #
-# [*default_gateway*]
+# @param default_gateway
 #   IPv4 address of the container default gateway;
 #   this address must be part of the bridge subnet
 #   (which is defined by bridge)
-#   Defaults to undefined
 #
-# [*ipv6*]
+# @param ipv6
 #  Enables ipv6 support for the docker daemon
-#  Defaults to false
 #
-# [*ipv6_cidr*]
+# @param ipv6_cidr
 #  IPv6 subnet for fixed IPs
 #
-# [*default_gateway_ipv6*]
+# @param default_gateway_ipv6
 #  IPv6 address of the container default gateway:
-#  Defaults to undefined
 #
-# [*socket_bind*]
-#   The unix socket to bind to. Defaults to
-#   unix:///var/run/docker.sock.
+# @param socket_bind
+#   The unix socket to bind to.
 #
-# [*log_level*]
+# @param log_level
 #   Set the logging level
-#   Defaults to undef: docker defaults to info if no value specified
 #   Valid values: debug, info, warn, error, fatal
 #
-# [*log_driver*]
+# @param log_driver
 #   Set the log driver.
-#   Defaults to undef.
 #   Docker default is json-file.
 #   Valid values: none, json-file, syslog, journald, gelf, fluentd
 #   Valid values description:
@@ -130,9 +103,8 @@
 #     awslogs  : AWS Cloudwatch Logs logging driver for Docker.
 #                Write log messages to Cloudwatch API
 #
-# [*log_opt*]
+# @param log_opt
 #   Set the log driver specific options
-#   Defaults to undef
 #   Valid values per log driver:
 #     none     : undef
 #     json-file:
@@ -169,224 +141,221 @@
 #                    {{.FullID}} - full container id
 #                    {{.Name}} - container name
 #
-# [*selinux_enabled*]
+# @param selinux_enabled
 #   Enable selinux support. Default is false. SELinux does  not  presently
 #   support  the  BTRFS storage driver.
-#   Valid values: true, false
 #
-# [*use_upstream_package_source*]
+# @param use_upstream_package_source
 #   Whether or not to use the upstream package source.
 #   If you run your own package mirror, you may set this
 #   to false.
 #
-# [*pin_upstream_package_source*]
+# @param pin_upstream_package_source
 #   Pin upstream package source; this option currently only has any effect on
 #   apt-based distributions.  Set to false to remove pinning on the upstream
 #   package repository.  See also "apt_source_pin_level".
-#   Defaults to true
 #
-# [*apt_source_pin_level*]
+# @param apt_source_pin_level
 #   What level to pin our source package repository to; this only is relevent
 #   if you're on an apt-based system (Debian, Ubuntu, etc) and
 #   $use_upstream_package_source is set to true.  Set this to false to disable
 #   pinning, and undef to ensure the apt preferences file apt::source uses to
 #   define pins is removed.
-#   Defaults to 10
 #
-# [*package_source_location*]
-#   If you're using an upstream package source, what is it's
-#   location. Defaults to http://get.docker.com/ubuntu on Debian
-#
-# [*service_state*]
+# @param service_state
 #   Whether you want to docker daemon to start up
-#   Defaults to running
 #
-# [*service_enable*]
+# @param service_enable
 #   Whether you want to docker daemon to start up at boot
-#   Defaults to true
 #
-# [*manage_service*]
+# @param manage_service
 #   Specify whether the service should be managed.
-#   Valid values are 'true', 'false'.
-#   Defaults to 'true'.
 #
-# [*root_dir*]
+# @param root_dir
 #   Custom root directory for containers
-#   Defaults to undefined
 #
-# [*dns*]
+# @param dns
 #   Custom dns server address
-#   Defaults to undefined
 #
-# [*dns_search*]
+# @param dns_search
 #   Custom dns search domains
-#   Defaults to undefined
 #
-# [*socket_group*]
+# @param socket_group
 #   Group ownership of the unix control socket.
-#   Default is based on OS (docker, dockerroot, undef)
 #
-# [*extra_parameters*]
+# @param extra_parameters
 #   Any extra parameters that should be passed to the docker daemon.
-#   Defaults to undefined
 #
-# [*shell_values*]
+# @param shell_values
 #   Array of shell values to pass into init script config files
 #
-# [*proxy*]
+# @param proxy
 #   Will set the http_proxy and https_proxy env variables in /etc/sysconfig/docker (redhat/centos) or /etc/default/docker (debian)
 #
-# [*no_proxy*]
+# @param no_proxy
 #   Will set the no_proxy variable in /etc/sysconfig/docker (redhat/centos) or /etc/default/docker (debian)
 #
-# [*storage_driver*]
+# @param storage_driver
 #   Specify a storage driver to use
-#   Default is undef: let docker choose the correct one
 #   Valid values: aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs
 #
-# [*dm_basesize*]
+# @param dm_basesize
 #   The size to use when creating the base device, which limits the size of images and containers.
-#   Default value is 10G
 #
-# [*dm_fs*]
+# @param dm_fs
 #   The filesystem to use for the base image (xfs or ext4)
-#   Defaults to ext4
 #
-# [*dm_mkfsarg*]
+# @param dm_mkfsarg
 #   Specifies extra mkfs arguments to be used when creating the base device.
 #
-# [*dm_mountopt*]
+# @param dm_mountopt
 #   Specifies extra mount options used when mounting the thin devices.
 #
-# [*dm_blocksize*]
+# @param dm_blocksize
 #   A custom blocksize to use for the thin pool.
 #   Default blocksize is 64K.
 #   Warning: _DO NOT_ change this parameter after the lvm devices have been initialized.
 #
-# [*dm_loopdatasize*]
+# @param dm_loopdatasize
 #   Specifies the size to use when creating the loopback file for the "data" device which is used for the thin pool
-#   Default size is 100G
 #
-# [*dm_loopmetadatasize*]
+# @param dm_loopmetadatasize
 #   Specifies the size to use when creating the loopback file for the "metadata" device which is used for the thin pool
-#   Default size is 2G
 #
-# [*dm_datadev*]
+# @param dm_datadev
 #   (deprecated - dm_thinpooldev should be used going forward)
 #   A custom blockdevice to use for data for the thin pool.
 #
-# [*dm_metadatadev*]
+# @param dm_metadatadev
 #   (deprecated - dm_thinpooldev should be used going forward)
 #   A custom blockdevice to use for metadata for the thin pool.
 #
-# [*dm_thinpooldev*]
+# @param dm_thinpooldev
 #   Specifies a custom block storage device to use for the thin pool.
 #
-# [*dm_use_deferred_removal*]
+# @param dm_use_deferred_removal
 #   Enables use of deferred device removal if libdm and the kernel driver support the mechanism.
 #
-# [*dm_use_deferred_deletion*]
+# @param dm_use_deferred_deletion
 #    Enables use of deferred device deletion if libdm and the kernel driver support the mechanism.
 #
-# [*dm_blkdiscard*]
+# @param dm_blkdiscard
 #   Enables or disables the use of blkdiscard when removing devicemapper devices.
-#   Defaults to false
 #
-# [*dm_override_udev_sync_check*]
+# @param dm_override_udev_sync_check
 #   By default, the devicemapper backend attempts to synchronize with the udev
 #   device manager for the Linux kernel. This option allows disabling that
 #   synchronization, to continue even though the configuration may be buggy.
-#   Defaults to true
 #
-# [*overlay2_override_kernel_check*]
+# @param overlay2_override_kernel_check
 #   Overrides the Linux kernel version check allowing using overlay2 with kernel < 4.0.
-#   Default value is false
 #
-# [*manage_package*]
+# @param manage_package
 #   Won't install or define the docker package, useful if you want to use your own package
-#   Defaults to true
 #
-# [*package_name*]
-#   Specify custom package name
-#   Default is set on a per system basis in docker::params
-#
-# [*service_name*]
+# @param service_name
 #   Specify custom service name
-#   Default is set on a per system basis in docker::params
 #
-# [*docker_command*]
-#   Specify a custom docker command name
-#   Default is set on a per system basis in docker::params
-#
-# [*daemon_subcommand*]
-#  Specify a subcommand/flag for running docker as daemon
-#  Default is set on a per system basis in docker::params
-#
-# [*docker_users*]
+# @param docker_users
 #   Specify an array of users to add to the docker group
-#   Default is empty
 #
-# [*docker_group*]
+# @param docker_group
 #   Specify a string for the docker group
-#   Default is OS and package specific
 #
-# [*daemon_environment_files*]
+# @param daemon_environment_files
 #   Specify additional environment files to add to the
 #   service-overrides.conf
 #
-# [*repo_opt*]
+# @param repo_opt
 #   Specify a string to pass as repository options (RedHat only)
 #
-# [*storage_devs*]
+# @param storage_devs
 #   A quoted, space-separated list of devices to be used.
 #
-# [*storage_vg*]
+# @param storage_vg
 #   The volume group to use for docker storage.
 #
-# [*storage_root_size*]
+# @param storage_root_size
 #   The size to which the root filesystem should be grown.
 #
-# [*storage_data_size*]
+# @param storage_data_size
 #   The desired size for the docker data LV
 #
-# [*storage_min_data_size*]
+# @param storage_min_data_size
 #   The minimum size of data volume otherwise pool creation fails
 #
-# [*storage_chunk_size*]
+# @param storage_chunk_size
 #   Controls the chunk size/block size of thin pool.
 #
-# [*storage_growpart*]
+# @param storage_growpart
 #   Enable resizing partition table backing root volume group.
 #
-# [*storage_auto_extend_pool*]
+# @param storage_auto_extend_pool
 #   Enable/disable automatic pool extension using lvm
 #
-# [*storage_pool_autoextend_threshold*]
+# @param storage_pool_autoextend_threshold
 #   Auto pool extension threshold (in % of pool size)
 #
-# [*storage_pool_autoextend_percent*]
+# @param storage_pool_autoextend_percent
 #   Extend the pool by specified percentage when threshold is hit.
 #
-# [*tmp_dir_config*]
+# @param tmp_dir_config
 #    Whether to set the TMPDIR value in the systemd config file
 #    Default: true (set the value); false will comment out the line.
 #    Note: false is backwards compatible prior to PR #58
 #
-# [*tmp_dir*]
+# @param tmp_dir
 #    Sets the tmp dir for Docker (path)
 #
-# [*registry_mirror*]
+# @param registry_mirror
 #   Sets the prefered container registry mirror.
-#   Default: undef
 #
-# [*nuget_package_provider_version*]
+# @param nuget_package_provider_version
 #   The version of the NuGet Package provider
-#   Default: undef
 #
-# [*docker_msft_provider_version*]
+# @param docker_msft_provider_version
 #   The version of the Microsoft Docker Provider Module
-#   Default: undef
-
+#
+# @param docker_ce_start_command
+# @param docker_ce_package_name
+# @param docker_ce_source_location
+# @param docker_ce_key_source
+# @param docker_ce_key_id
+# @param docker_ce_release
+# @param docker_package_location
+# @param docker_package_key_source
+# @param docker_package_key_check_source
+# @param docker_package_key_id
+# @param docker_package_release
+# @param docker_engine_start_command
+# @param docker_engine_package_name
+# @param docker_ce_channel
+# @param docker_ee
+# @param docker_ee_package_name
+# @param docker_ee_source_location
+# @param docker_ee_key_source
+# @param docker_ee_key_id
+# @param docker_ee_repos
+# @param docker_ee_release
+# @param package_release
+# @param labels
+# @param execdriver
+# @param package_source
+# @param os_lc
+# @param storage_config
+# @param storage_config_template
+# @param storage_setup_file
+# @param service_provider
+# @param service_config
+# @param service_config_template
+# @param service_overrides_template
+# @param socket_overrides_template
+# @param socket_override
+# @param service_after_override
+# @param service_hasstatus
+# @param service_hasrestart
+# @param acknowledge_unsupported_os
+#
 class docker(
   Optional[String]                        $version                           = $docker::params::version,
   String                                  $ensure                            = $docker::params::ensure,

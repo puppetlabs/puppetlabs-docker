@@ -1,4 +1,7 @@
-# docker::networks
+# @summary
+#
+# @param networks
+#
 class docker::networks(
   $networks
 ) {

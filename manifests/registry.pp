@@ -1,36 +1,35 @@
-# == Class: docker
+# @summary
+#   Module to configure private docker registries from which to pull Docker images
 #
-# Module to configure private docker registries from which to pull Docker images
-# If the registry does not require authentication, this module is not required.
-#
-# === Parameters
-# [*server*]
+# @param server
 #   The hostname and port of the private Docker registry. Ex: dockerreg:5000
 #
-# [*ensure*]
+# @param ensure
 #   Whether or not you want to login or logout of a repository
 #
-# [*username*]
+# @param username
 #   Username for authentication to private Docker registry.
 #   auth is not required.
 #
-# [*password*]
+# @param password
 #   Password for authentication to private Docker registry. Leave undef if
 #   auth is not required.
 #
-# [*pass_hash*]
+# @param pass_hash
 #   The hash to be used for receipt. If left as undef, a hash will be generated
 #
-# [*email*]
+# @param email
 #   Email for registration to private Docker registry. Leave undef if
 #   auth is not required.
 #
-# [*local_user*]
+# @param local_user
 #   The local user to log in as. Docker will store credentials in this
 #   users home directory
 #
-# [*receipt*]
+# @param receipt
 #   Required to be true for idempotency
+#
+# @param version
 #
 define docker::registry(
   Optional[String]               $server     = $title,

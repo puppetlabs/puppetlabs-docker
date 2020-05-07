@@ -1,4 +1,7 @@
-# docker::plugins
+# @summary
+#
+# @param plugins
+#
 class docker::plugins(
   $plugins
 ) {

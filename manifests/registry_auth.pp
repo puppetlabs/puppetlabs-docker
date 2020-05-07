@@ -1,4 +1,7 @@
-# docker::registry_auth
+# @summary
+#
+# @param registries
+#
 class docker::registry_auth(
   $registries
 ) {

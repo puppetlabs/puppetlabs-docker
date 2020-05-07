@@ -1,23 +1,23 @@
-# == Class: docker
+# @summary
+#  Module to install an up-to-date version of Docker from a package repository.
+#  Only for Debian, Red Hat and Windows
 #
-# Module to install an up-to-date version of Docker from a package repository.
-# This module works only on Debian Red Hat and Windows based distributions.
-#
-# === Parameters
-# [*version*]
+# @param version
 #   The package version to install, used to set the package name.
 #
-# [*nuget_package_provider_version*]
+# @param nuget_package_provider_version
 #   The version of the NuGet Package provider
-#   Default: undef
 #
-# [*docker_msft_provider_version*]
+# @param docker_msft_provider_version
 #   The version of the Microsoft Docker Provider Module
-#   Default: undef
 #
-# [*docker_ee_package_name*]
+# @param docker_ee_package_name
 #   The name of the Docker Enterprise Edition package
-#   Default: Docker
+#
+# @param docker_download_url
+#
+# @param dependent_packages
+#
 class docker::install(
   $version                        = $docker::version,
   $nuget_package_provider_version = $docker::nuget_package_provider_version,

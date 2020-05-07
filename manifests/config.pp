@@ -1,4 +1,4 @@
-# == Class: docker::config
+# @summary
 #
 class docker::config {
   if $facts['os']['family'] != 'windows' {

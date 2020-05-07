@@ -1,4 +1,7 @@
-# docker::run_instance
+# @summary
+#
+# @param instance
+#
 class docker::run_instance(
   $instance
 ) {

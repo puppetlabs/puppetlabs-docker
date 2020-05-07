@@ -1,4 +1,7 @@
-# docker::swarms
+# @summary
+#
+# @param swarms
+#
 class docker::swarms(
   $swarms
 ) {
