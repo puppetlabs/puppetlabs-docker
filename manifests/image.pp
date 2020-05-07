@@ -34,24 +34,25 @@ define docker::image(
   Optional[String]                      $docker_tar   = undef,
 ) {
   include docker::params
+
   $docker_command = $docker::params::docker_command
 
   if $::osfamily == 'windows' {
     $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
-    $update_docker_image_path = "${::docker_user_temp_path}/update_docker_image.ps1"
-    $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
-    $exec_timeout = 3000
-    $update_docker_image_owner = undef
-    $exec_path = ["${::docker_program_files_path}/Docker/"]
-    $exec_provider = 'powershell'
+    $update_docker_image_path     = "${::docker_user_temp_path}/update_docker_image.ps1"
+    $exec_environment             = "PATH=${::docker_program_files_path}/Docker/"
+    $exec_timeout                 = 3000
+    $update_docker_image_owner    = undef
+    $exec_path                    = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_provider                = 'powershell'
   } else {
     $update_docker_image_template = 'docker/update_docker_image.sh.erb'
-    $update_docker_image_path = '/usr/local/bin/update_docker_image.sh'
-    $update_docker_image_owner = 'root'
-    $exec_environment = 'HOME=/root'
-    $exec_path = ['/bin', '/usr/bin']
-    $exec_timeout = 0
-    $exec_provider = undef
+    $update_docker_image_path     = '/usr/local/bin/update_docker_image.sh'
+    $update_docker_image_owner    = 'root'
+    $exec_environment             = 'HOME=/root'
+    $exec_path                    = [ '/bin', '/usr/bin', ]
+    $exec_timeout                 = 0
+    $exec_provider                = undef
   }
 
   # Wrapper used to ensure images are up to date
@@ -66,29 +67,29 @@ define docker::image(
   )
 
   if ($docker_file) and ($docker_tar) {
-    fail translate('docker::image must not have both $docker_file and $docker_tar set')
+    fail(translate('docker::image must not have both $docker_file and $docker_tar set'))
   }
 
   if ($docker_dir) and ($docker_tar) {
-    fail translate('docker::image must not have both $docker_dir and $docker_tar set')
+    fail(translate('docker::image must not have both $docker_dir and $docker_tar set'))
   }
 
   if ($image_digest) and ($docker_file) {
-    fail translate('docker::image must not have both $image_digest and $docker_file set')
+    fail(translate('docker::image must not have both $image_digest and $docker_file set'))
   }
 
   if ($image_digest) and ($docker_dir) {
-    fail translate('docker::image must not have both $image_digest and $docker_dir set')
+    fail(translate('docker::image must not have both $image_digest and $docker_dir set'))
   }
 
   if ($image_digest) and ($docker_tar) {
-    fail translate('docker::image must not have both $image_digest and $docker_tar set')
+    fail(translate('docker::image must not have both $image_digest and $docker_tar set'))
   }
 
   if $force {
-    $image_force   = '-f '
+    $image_force = '-f '
   } else {
-    $image_force   = ''
+    $image_force = ''
   }
 
   if $image_tag {
@@ -99,12 +100,12 @@ define docker::image(
     $image_arg     = "${image}@${image_digest}"
     $image_remove  = "${docker_command} rmi ${image_force}${image}:${image_digest}"
     $image_find    = "${docker_command} images -q ${image}@${image_digest}"
-
   } else {
     $image_arg     = $image
     $image_remove  = "${docker_command} rmi ${image_force}${image}"
     $image_find    = "${docker_command} images -q ${image}"
   }
+
   if $::osfamily == 'windows' {
     $_image_find = "If (-not (${image_find}) ) { Exit 1 }"
   } else {
@@ -142,7 +143,7 @@ define docker::image(
     }
   } elsif $ensure == 'latest' or $image_tag == 'latest' {
     notify { "Check if image ${image_arg} is in-sync":
-      noop      => false,
+      noop => false,
     }
     ~> exec { $image_install:
       environment => $exec_environment,

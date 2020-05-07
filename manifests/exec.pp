@@ -20,22 +20,24 @@ define docker::exec(
 
   if $::osfamily == 'windows' {
     $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
-    $exec_timeout = 3000
-    $exec_path = ["${::docker_program_files_path}/Docker/"]
-    $exec_provider = 'powershell'
+    $exec_timeout     = 3000
+    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_provider    = 'powershell'
   } else {
     $exec_environment = 'HOME=/root'
-    $exec_path = ['/bin', '/usr/bin']
-    $exec_timeout = 0
-    $exec_provider = undef
+    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_timeout     = 0
+    $exec_provider    = undef
   }
 
-  $docker_exec_flags = docker_exec_flags({
-    detach      => $detach,
-    interactive => $interactive,
-    tty         => $tty,
-    env         => any2array($env),
-  })
+  $docker_exec_flags = docker_exec_flags(
+    {
+      detach      => $detach,
+      interactive => $interactive,
+      tty         => $tty,
+      env         => any2array($env),
+    }
+  )
 
 
   if $sanitise_name {
@@ -43,12 +45,15 @@ define docker::exec(
   } else {
     $sanitised_container = $container
   }
+
   $exec = "${docker_command} exec ${docker_exec_flags} ${sanitised_container} ${command}"
+
   $unless_command = $unless ? {
     undef   => undef,
     ''      => undef,
     default => "${docker_command} exec ${docker_exec_flags} ${sanitised_container} ${$unless}",
   }
+
   $onlyif_command = $onlyif ? {
     undef     => undef,
     ''        => undef,

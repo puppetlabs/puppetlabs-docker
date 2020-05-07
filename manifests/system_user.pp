@@ -15,6 +15,7 @@ define docker::system_user(
 
   if $create_user {
     ensure_resource('user', $name, {'ensure' => 'present' })
+
     User[$name] -> Exec["docker-system-user-${name}"]
   }
 

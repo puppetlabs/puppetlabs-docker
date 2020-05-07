@@ -35,20 +35,19 @@ class docker::machine(
   Optional[Variant[Stdlib::HTTPUrl, Stdlib::HTTPSUrl]] $url          = undef,
   Optional[Boolean]                                    $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
-
   if $proxy != undef {
     validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
   if $::osfamily == 'windows' {
     $file_extension = '.exe'
-    $file_owner = 'Administrator'
+    $file_owner     = 'Administrator'
   } else {
     $file_extension = ''
-    $file_owner = 'root'
+    $file_owner     = 'root'
   }
 
-  $docker_machine_location = "${install_path}/docker-machine${file_extension}"
+  $docker_machine_location           = "${install_path}/docker-machine${file_extension}"
   $docker_machine_location_versioned = "${install_path}/docker-machine-${version}${file_extension}"
 
   if $ensure == 'present' {
@@ -64,9 +63,7 @@ class docker::machine(
     }
 
     if $::osfamily == 'windows' {
-# lint:ignore:140chars
-      $docker_download_command = "if (Invoke-WebRequest ${docker_machine_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}"
-# lint:endignore
+      $docker_download_command = "if (Invoke-WebRequest ${docker_machine_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
 
       exec { "Install Docker Machine ${version}":
         command  => template('docker/windows/download_docker_machine.ps1.erb'),
@@ -77,12 +74,13 @@ class docker::machine(
       file { $docker_machine_location:
         ensure  => 'link',
         target  => $docker_machine_location_versioned,
-        require => Exec["Install Docker Machine ${version}"]
+        require => Exec["Install Docker Machine ${version}"],
       }
     } else {
       if $curl_ensure {
         ensure_packages(['curl'])
       }
+
       exec { "Install Docker Machine ${version}":
         path    => '/usr/bin/',
         cwd     => '/tmp',
@@ -94,20 +92,21 @@ class docker::machine(
       file { $docker_machine_location_versioned:
         owner   => $file_owner,
         mode    => '0755',
-        require => Exec["Install Docker Machine ${version}"]
+        require => Exec["Install Docker Machine ${version}"],
       }
 
       file { $docker_machine_location:
         ensure  => 'link',
         target  => $docker_machine_location_versioned,
-        require => File[$docker_machine_location_versioned]
+        require => File[$docker_machine_location_versioned],
       }
     }
   } else {
-    file { [
-      $docker_machine_location_versioned,
-      $docker_machine_location
-      ]:
+    file { $docker_machine_location_versioned:
+      ensure => absent,
+    }
+
+    file { $docker_machine_location:
       ensure => absent,
     }
   }

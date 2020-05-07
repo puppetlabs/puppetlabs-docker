@@ -363,13 +363,13 @@ class docker::params {
   # https://github.com/docker/docker/issues/4734
   $prerequired_packages = $::osfamily ? {
     'Debian' => $::operatingsystem ? {
-      'Debian' => ['cgroupfs-mount'],
-      'Ubuntu' => ['cgroup-lite', 'apparmor'],
+      'Debian' => [ 'cgroupfs-mount', ],
+      'Ubuntu' => [ 'cgroup-lite', 'apparmor', ],
       default  => [],
     },
     'RedHat' => ['device-mapper'],
     default  => [],
   }
 
-  $dependent_packages = ['docker-ce-cli','containerd.io']
+  $dependent_packages = [ 'docker-ce-cli', 'containerd.io', ]
 }

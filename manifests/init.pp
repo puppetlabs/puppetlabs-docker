@@ -508,8 +508,6 @@ class docker(
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,
   Optional[String]                        $nuget_package_provider_version    = $docker::params::nuget_package_provider_version,
 ) inherits docker::params {
-
-
   if $facts['osfamily'] and !$acknowledge_unsupported_os {
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['osfamily']) |$a, $b| {
       fail(translate('This module only works on Debian, Red Hat or Windows based systems.'))
@@ -570,11 +568,9 @@ class docker(
     fail(translate('You should provide parameters only for loop lvm or direct lvm, not both.'))
   }
 
-# lint:ignore:140chars
   if ($dm_datadev or $dm_metadatadev) and $dm_thinpooldev {
-    fail(translate('You can use the $dm_thinpooldev parameter, or the $dm_datadev and $dm_metadatadev parameter pair, but you cannot use both.'))
+    fail(translate('You can use the $dm_thinpooldev parameter, or the $dm_datadev and $dm_metadatadev parameter pair, but you cannot use both.')) # lint:ignore:140chars
   }
-# lint:endignore
 
   if ($dm_datadev or $dm_metadatadev) {
     notice('The $dm_datadev and $dm_metadatadev parameter pair are deprecated.  The $dm_thinpooldev parameter should be used instead.')
@@ -584,79 +580,79 @@ class docker(
     fail(translate('You need to provide both $dm_datadev and $dm_metadatadev parameters for direct lvm.'))
   }
 
-  if ($dm_basesize or $dm_fs or $dm_mkfsarg or $dm_mountopt or $dm_blocksize or $dm_loopdatasize or
-      $dm_loopmetadatasize or $dm_datadev or $dm_metadatadev) and ($storage_driver != 'devicemapper') {
+  if ($dm_basesize or $dm_fs or $dm_mkfsarg or $dm_mountopt or $dm_blocksize or $dm_loopdatasize or $dm_loopmetadatasize or $dm_datadev or $dm_metadatadev) and ($storage_driver != 'devicemapper') {
     fail(translate('Values for dm_ variables will be ignored unless storage_driver is set to devicemapper.'))
   }
 
   if($tls_enable) {
-    if(!$tcp_bind) {
+    if(! $tcp_bind) {
       fail(translate('You need to provide tcp bind parameter for TLS.'))
     }
   }
 
-  if ( $version == undef ) or ( $version !~ /^(17[.][0-1][0-9][.][0-1](~|-|\.)ce|1.\d+)/ ) {
-    if ( $docker_ee) {
-      $package_location = $docker::docker_ee_source_location
-      $package_key_source = $docker::docker_ee_key_source
+  if ($version == undef) or ($version !~ /^(17[.][0-1][0-9][.][0-1](~|-|\.)ce|1.\d+)/) {
+    if ($docker_ee) {
+      $package_location         = $docker::docker_ee_source_location
+      $package_key_source       = $docker::docker_ee_key_source
       $package_key_check_source = true
-      $package_key = $docker::docker_ee_key_id
-      $package_repos = $docker::docker_ee_repos
-      $release = $docker::docker_ee_release
-      $docker_start_command = $docker::docker_ee_start_command
-      $docker_package_name = $docker::docker_ee_package_name
+      $package_key              = $docker::docker_ee_key_id
+      $package_repos            = $docker::docker_ee_repos
+      $release                  = $docker::docker_ee_release
+      $docker_start_command     = $docker::docker_ee_start_command
+      $docker_package_name      = $docker::docker_ee_package_name
     } else {
       case $facts['osfamily'] {
         'Debian' : {
-          $package_location = $docker_ce_source_location
+          $package_location   = $docker_ce_source_location
           $package_key_source = $docker_ce_key_source
-          $package_key = $docker_ce_key_id
-          $package_repos = $docker_ce_channel
-          $release = $docker_ce_release
+          $package_key        = $docker_ce_key_id
+          $package_repos      = $docker_ce_channel
+          $release            = $docker_ce_release
         }
         'Redhat' : {
-          $package_location = $docker_ce_source_location
-          $package_key_source = $docker_ce_key_source
+          $package_location         = $docker_ce_source_location
+          $package_key_source       = $docker_ce_key_source
           $package_key_check_source = true
         }
         'windows': {
           fail(translate('This module only work for Docker Enterprise Edition on Windows.'))
         }
         default: {
-          $package_location = $docker_package_location
-          $package_key_source = $docker_package_key_source
+          $package_location         = $docker_package_location
+          $package_key_source       = $docker_package_key_source
           $package_key_check_source = $docker_package_key_check_source
         }
       }
+
       $docker_start_command = $docker_ce_start_command
-      $docker_package_name = $docker_ce_package_name
+      $docker_package_name  = $docker_ce_package_name
     }
   } else {
     case $facts['osfamily'] {
       'Debian' : {
-        $package_location = $docker_package_location
-        $package_key_source = $docker_package_key_source
+        $package_location         = $docker_package_location
+        $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
-        $package_key = $docker_package_key_id
-        $package_repos = 'main'
-        $release = $docker_package_release
+        $package_key              = $docker_package_key_id
+        $package_repos            = 'main'
+        $release                  = $docker_package_release
       }
       'Redhat' : {
-        $package_location = $docker_package_location
-        $package_key_source = $docker_package_key_source
+        $package_location         = $docker_package_location
+        $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
       default : {
-        $package_location = $docker_package_location
-        $package_key_source = $docker_package_key_source
+        $package_location         = $docker_package_location
+        $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
     }
     $docker_start_command = $docker_engine_start_command
-    $docker_package_name = $docker_engine_package_name
+    $docker_package_name  = $docker_engine_package_name
   }
 
-  if ( $version != undef ) and ( $version =~ /^(17[.]0[0-4]|1.\d+)/ ) {
+  if ($version != undef) and ($version =~ /^(17[.]0[0-4]|1.\d+)/) {
     $root_dir_flag = '-g'
   } else {
     $root_dir_flag = '--data-root'
@@ -664,10 +660,10 @@ class docker(
 
 
   if $ensure != 'absent' {
-    contain 'docker::repos'
-    contain 'docker::install'
-    contain 'docker::config'
-    contain 'docker::service'
+    contain docker::repos
+    contain docker::install
+    contain docker::config
+    contain docker::service
 
     create_resources(
       'docker::registry',

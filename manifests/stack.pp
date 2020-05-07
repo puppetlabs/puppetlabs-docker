@@ -47,29 +47,30 @@ define docker::stack(
 
   deprecation('docker::stack','The docker stack define type will be deprecated in a future release. Please migrate to the docker_stack type/provider.')
 
-
   $docker_command = "${docker::params::docker_command} stack"
 
   if $::osfamily == 'windows' {
-    $exec_path = ['C:/Program Files/Docker/']
+    $exec_path   = [ 'C:/Program Files/Docker/', ]
     $check_stack = '$info = docker stack ls | select-string -pattern web
                     if ($info -eq $null) { Exit 1 } else { Exit 0 }'
-    $provider = 'powershell'
+    $provider    = 'powershell'
   } else {
-    $exec_path = ['/bin', '/usr/bin']
+    $exec_path   = [ '/bin', '/usr/bin', ]
     $check_stack = "${docker_command} ls | grep ${stack_name}"
-    $provider = undef
+    $provider    = undef
   }
 
-  if $ensure == 'present'{
-    $docker_stack_flags = docker_stack_flags ({
-      stack_name         => $stack_name,
-      bundle_file        => $bundle_file,
-      compose_files      => $compose_files,
-      prune              => $prune,
-      with_registry_auth => $with_registry_auth,
-      resolve_image      => $resolve_image,
-    })
+  if $ensure == 'present' {
+    $docker_stack_flags = docker_stack_flags (
+      {
+        stack_name         => $stack_name,
+        bundle_file        => $bundle_file,
+        compose_files      => $compose_files,
+        prune              => $prune,
+        with_registry_auth => $with_registry_auth,
+        resolve_image      => $resolve_image,
+      }
+    )
 
     $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
 
@@ -81,8 +82,7 @@ define docker::stack(
     }
   }
 
-  if $ensure == 'absent'{
-
+  if $ensure == 'absent' {
     exec { "docker stack destroy ${stack_name}":
       command  => "${docker_command} rm ${stack_name}",
       onlyif   => $check_stack,

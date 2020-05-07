@@ -100,8 +100,7 @@ define docker::services(
   Optional[Variant[String,Array]] $mounts          = undef,
   Optional[Array]                 $networks        = undef,
   Optional[Variant[String,Array]] $command         = undef,
-){
-
+) {
   include docker::params
 
   $docker_command = "${docker::params::docker_command} service"
@@ -110,44 +109,46 @@ define docker::services(
     if $update {
       fail(translate('When removing a service you can not update it.'))
     }
+
     if $scale {
       fail(translate('When removing a service you can not update it.'))
     }
   }
 
   if $::osfamily == 'windows' {
-    $exec_timeout = 3000
-    $exec_path = ["${::docker_program_files_path}/Docker/"]
+    $exec_timeout  = 3000
+    $exec_path     = [ "${::docker_program_files_path}/Docker/", ]
     $exec_provider = 'powershell'
   } else {
     $exec_environment = 'HOME=/root'
-    $exec_path = ['/bin', '/usr/bin']
-    $exec_timeout = 0
-    $exec_provider = undef
+    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_timeout     = 0
+    $exec_provider    = undef
   }
 
-
   if $create {
-    $docker_service_create_flags = docker_service_flags({
-      detach          => $detach,
-      env             => any2array($env),
-      service_name    => $service_name,
-      label           => any2array($label),
-      publish         => $publish,
-      replicas        => $replicas,
-      tty             => $tty,
-      user            => $user,
-      workdir         => $workdir,
-      extra_params    => any2array($extra_params),
-      image           => $image,
-      host_socket     => $host_socket,
-      registry_mirror => $registry_mirror,
-      mounts          => $mounts,
-      networks        => $networks,
-      command         => $command,
-    })
+    $docker_service_create_flags = docker_service_flags(
+      {
+        detach          => $detach,
+        env             => any2array($env),
+        service_name    => $service_name,
+        label           => any2array($label),
+        publish         => $publish,
+        replicas        => $replicas,
+        tty             => $tty,
+        user            => $user,
+        workdir         => $workdir,
+        extra_params    => any2array($extra_params),
+        image           => $image,
+        host_socket     => $host_socket,
+        registry_mirror => $registry_mirror,
+        mounts          => $mounts,
+        networks        => $networks,
+        command         => $command,
+      }
+    )
 
-    $exec_create = "${docker_command} create --name ${docker_service_create_flags}"
+    $exec_create   = "${docker_command} create --name ${docker_service_create_flags}"
     $unless_create = "docker service ps ${service_name}"
 
     exec { "${title} docker service create":
@@ -161,21 +162,23 @@ define docker::services(
   }
 
   if $update {
-    $docker_service_flags = docker_service_flags({
-      detach          => $detach,
-      env             => any2array($env),
-      service_name    => $service_name,
-      label           => any2array($label),
-      publish         => $publish,
-      replicas        => $replicas,
-      tty             => $tty,
-      user            => $user,
-      workdir         => $workdir,
-      extra_params    => any2array($extra_params),
-      image           => $image,
-      host_socket     => $host_socket,
-      registry_mirror => $registry_mirror,
-    })
+    $docker_service_flags = docker_service_flags(
+      {
+        detach          => $detach,
+        env             => any2array($env),
+        service_name    => $service_name,
+        label           => any2array($label),
+        publish         => $publish,
+        replicas        => $replicas,
+        tty             => $tty,
+        user            => $user,
+        workdir         => $workdir,
+        extra_params    => any2array($extra_params),
+        image           => $image,
+        host_socket     => $host_socket,
+        registry_mirror => $registry_mirror,
+      }
+    )
 
     $exec_update = "${docker_command} update ${docker_service_flags}"
 
@@ -189,11 +192,13 @@ define docker::services(
   }
 
   if $scale {
-    $docker_service_flags = docker_service_flags({
-      service_name => $service_name,
-      replicas     => $replicas,
-      extra_params => any2array($extra_params),
-    })
+    $docker_service_flags = docker_service_flags(
+      {
+        service_name => $service_name,
+        replicas     => $replicas,
+        extra_params => any2array($extra_params),
+      }
+    )
 
     $exec_scale = "${docker_command} scale ${service_name}=${replicas}"
 

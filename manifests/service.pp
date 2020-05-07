@@ -120,17 +120,16 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
   $root_dir_flag                     = $docker::root_dir_flag,
 ) {
-
   unless $::osfamily =~ /(Debian|RedHat|windows)/ or $::docker::acknowledge_unsupported_os {
     fail(translate('The docker::service class needs a Debian, Redhat or Windows based system.'))
   }
 
-  $dns_array = any2array($dns)
-  $dns_search_array = any2array($dns_search)
-  $labels_array = any2array($labels)
+  $dns_array              = any2array($dns)
+  $dns_search_array       = any2array($dns_search)
+  $labels_array           = any2array($labels)
   $extra_parameters_array = any2array($extra_parameters)
-  $shell_values_array = any2array($shell_values)
-  $tcp_bind_array = any2array($tcp_bind)
+  $shell_values_array     = any2array($shell_values)
+  $tcp_bind_array         = any2array($tcp_bind)
 
   if $service_config != undef {
     $_service_config = $service_config
@@ -149,16 +148,24 @@ class docker::service (
 
   if $::osfamily == 'RedHat' {
     file { $storage_setup_file:
-      ensure  => present,
+      ensure  => file,
       force   => true,
       content => template('docker/etc/sysconfig/docker-storage-setup.erb'),
       before  => $_manage_service,
       notify  => $_manage_service,
     }
   }
+
   if $::osfamily == 'windows' {
-    file { ["${::docker_program_data_path}/docker/", "${::docker_program_data_path}/docker/config/"]:
-      ensure  => directory,
+    $dirs = [
+      "${::docker_program_data_path}/docker/",
+      "${::docker_program_data_path}/docker/config/",
+    ]
+
+    $dirs.each |$dir| {
+      file { $dir:
+        ensure  => directory,
+      }
     }
   }
 
@@ -170,7 +177,7 @@ class docker::service (
 
       if $service_overrides_template {
         file { '/etc/systemd/system/docker.service.d/service-overrides.conf':
-          ensure  => 'present',
+          ensure  => file,
           content => template($service_overrides_template),
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
@@ -183,7 +190,7 @@ class docker::service (
         }
 
         file { '/etc/systemd/system/docker.socket.d/socket-overrides.conf':
-          ensure  => 'present',
+          ensure  => file,
           content => template($socket_overrides_template),
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
@@ -191,7 +198,7 @@ class docker::service (
       }
 
       exec { 'docker-systemd-reload-before-service':
-        path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
+        path        => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', ],
         command     => 'systemctl daemon-reload > /dev/null',
         notify      => $_manage_service,
         refreshonly => true,
@@ -210,7 +217,7 @@ class docker::service (
 
   if $storage_config {
     file { $storage_config:
-      ensure  => present,
+      ensure  => file,
       force   => true,
       content => template($storage_config_template),
       notify  => $_manage_service,
@@ -219,7 +226,7 @@ class docker::service (
 
   if $_service_config {
     file { $_service_config:
-      ensure  => present,
+      ensure  => file,
       force   => true,
       content => template($service_config_template),
       notify  => $_manage_service,

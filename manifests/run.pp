@@ -158,9 +158,10 @@ define docker::run(
   if ($socket_connect != []) {
     $sockopts = join(any2array($socket_connect), ',')
     $docker_command = "${docker::params::docker_command} -H ${sockopts}"
-  }else {
+  } else {
     $docker_command = $docker::params::docker_command
   }
+
   $service_name = $docker::service_name
   $docker_group = $docker::docker_group
 
@@ -202,75 +203,72 @@ define docker::run(
   }
 
   $extra_parameters_array = any2array($extra_parameters)
-  $after_array = any2array($after)
-  $depends_array = any2array($depends)
-  $depend_services_array = any2array($depend_services)
+  $after_array            = any2array($after)
+  $depends_array          = any2array($depends)
+  $depend_services_array  = any2array($depend_services)
 
-  $docker_run_flags = docker_run_flags({
-    cpuset                => any2array($cpuset),
-    disable_network       => $disable_network,
-    dns                   => any2array($dns),
-    dns_search            => any2array($dns_search),
-    env                   => any2array($env),
-    env_file              => any2array($env_file),
-    expose                => any2array($expose),
-    extra_params          => any2array($extra_parameters),
-    hostentries           => any2array($hostentries),
-    hostname              => $hostname,
-    links                 => any2array($links),
-    lxc_conf              => any2array($lxc_conf),
-    memory_limit          => $memory_limit,
-    net                   => $net,
-    ports                 => any2array($ports),
-    labels                => any2array($labels),
-    privileged            => $privileged,
-    socket_connect        => any2array($socket_connect),
-    tty                   => $tty,
-    username              => $username,
-    volumes               => any2array($volumes),
-    volumes_from          => any2array($volumes_from),
-    read_only             => $read_only,
-    health_check_cmd      => $health_check_cmd,
-    restart_on_unhealthy  => $restart_on_unhealthy,
-    health_check_interval => $health_check_interval,
-    osfamily              => $::osfamily,
-  })
+  $docker_run_flags = docker_run_flags(
+    {
+      cpuset                => any2array($cpuset),
+      disable_network       => $disable_network,
+      dns                   => any2array($dns),
+      dns_search            => any2array($dns_search),
+      env                   => any2array($env),
+      env_file              => any2array($env_file),
+      expose                => any2array($expose),
+      extra_params          => any2array($extra_parameters),
+      hostentries           => any2array($hostentries),
+      hostname              => $hostname,
+      links                 => any2array($links),
+      lxc_conf              => any2array($lxc_conf),
+      memory_limit          => $memory_limit,
+      net                   => $net,
+      ports                 => any2array($ports),
+      labels                => any2array($labels),
+      privileged            => $privileged,
+      socket_connect        => any2array($socket_connect),
+      tty                   => $tty,
+      username              => $username,
+      volumes               => any2array($volumes),
+      volumes_from          => any2array($volumes_from),
+      read_only             => $read_only,
+      health_check_cmd      => $health_check_cmd,
+      restart_on_unhealthy  => $restart_on_unhealthy,
+      health_check_interval => $health_check_interval,
+      osfamily              => $::osfamily,
+    }
+  )
 
   $sanitised_title = docker::sanitised_name($title)
+
   if empty($depends_array) {
     $sanitised_depends_array = []
-  }
-  else {
+  } else {
     $sanitised_depends_array = docker::sanitised_name($depends_array)
   }
 
   if empty($after_array) {
     $sanitised_after_array = []
-  }
-  else {
+  } else {
     $sanitised_after_array = docker::sanitised_name($after_array)
   }
 
   if $::osfamily == 'windows' {
-    $exec_environment = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
-    $exec_timeout = 3000
-    $exec_path = ["${::docker_program_files_path}/Docker/"]
-    $exec_provider = 'powershell'
-    $cidfile = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
-# lint:ignore:140chars
-    $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}"
-    $container_running_check = "\$state = ${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }"
-# lint:endignore
+    $exec_environment        = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
+    $exec_timeout            = 3000
+    $exec_path               = ["${::docker_program_files_path}/Docker/"]
+    $exec_provider           = 'powershell'
+    $cidfile                 = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
+    $restart_check           = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}" # lint:ignore:140chars
+    $container_running_check = "\$state = ${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }" # lint:ignore:140chars
   } else {
-    $exec_environment = 'HOME=/root'
-    $exec_path = ['/bin', '/usr/bin']
-    $exec_timeout = 0
-    $exec_provider = undef
-    $cidfile = "/var/run/${service_prefix}${sanitised_title}.cid"
-# lint:ignore:140chars
-    $restart_check = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}"
-    $container_running_check = "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true"
-# lint:endignore
+    $exec_environment        = 'HOME=/root'
+    $exec_path               = ['/bin', '/usr/bin']
+    $exec_timeout            = 0
+    $exec_provider           = undef
+    $cidfile                 = "/var/run/${service_prefix}${sanitised_title}.cid"
+    $restart_check           = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \"unhealthy\" .State.Health.Status }} {{ .Name }}{{ end }}' | grep ${sanitised_title}" # lint:ignore:140chars
+    $container_running_check = "${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\" | grep true" # lint:ignore:140chars
   }
 
   if $restart_on_unhealthy {
@@ -280,7 +278,7 @@ define docker::run(
       environment => $exec_environment,
       path        => $exec_path,
       provider    => $exec_provider,
-      timeout     => $exec_timeout
+      timeout     => $exec_timeout,
     }
   }
 
@@ -292,7 +290,7 @@ define docker::run(
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
-        timeout     => $exec_timeout
+        timeout     => $exec_timeout,
       }
 
       exec { "remove ${title} with docker":
@@ -301,32 +299,34 @@ define docker::run(
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
-        timeout     => $exec_timeout
+        timeout     => $exec_timeout,
       }
 
       file { $cidfile:
         ensure => absent,
       }
-    }
-    else {
+    } else {
       $run_with_docker_command = [
         "${docker_command} run -d ${docker_run_flags}",
         "--name ${sanitised_title} --cidfile=${cidfile}",
         "--restart=\"${restart}\" ${image} ${command}",
       ]
-      $inspect = ["${docker_command} inspect ${sanitised_title}"]
+
+      $inspect = [ "${docker_command} inspect ${sanitised_title}", ]
+
       if $custom_unless {
         $exec_unless = concat($custom_unless, $inspect)
       } else {
         $exec_unless = $inspect
       }
+
       exec { "run ${title} with docker":
         command     => join($run_with_docker_command, ' '),
         unless      => $exec_unless,
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
-        timeout     => $exec_timeout
+        timeout     => $exec_timeout,
       }
 
       if $running == false {
@@ -336,7 +336,7 @@ define docker::run(
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
-          timeout     => $exec_timeout
+          timeout     => $exec_timeout,
           }
       } else {
         exec { "start ${title} with docker":
@@ -345,33 +345,32 @@ define docker::run(
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
-          timeout     => $exec_timeout
+          timeout     => $exec_timeout,
         }
       }
     }
   } else {
-
     $docker_run_inline_start = template('docker/docker-run-start.erb')
-    $docker_run_inline_stop = template('docker/docker-run-stop.erb')
+    $docker_run_inline_stop  = template('docker/docker-run-stop.erb')
 
     case $service_provider_real {
       'systemd': {
-        $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-        $startscript = "/usr/local/bin/docker-run-${sanitised_title}-start.sh"
-        $stopscript = "/usr/local/bin/docker-run-${sanitised_title}-stop.sh"
+        $initscript         = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+        $startscript        = "/usr/local/bin/docker-run-${sanitised_title}-start.sh"
+        $stopscript         = "/usr/local/bin/docker-run-${sanitised_title}-stop.sh"
         $startstop_template = 'docker/usr/local/bin/docker-run.sh.epp'
-        $init_template = 'docker/etc/systemd/system/docker-run.erb'
-        $mode = '0644'
-        $hasstatus = true
+        $init_template      = 'docker/etc/systemd/system/docker-run.erb'
+        $mode               = '0644'
+        $hasstatus          = true
       }
       'upstart': {
-        $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
-        $init_template = 'docker/etc/init.d/docker-run.erb'
-        $mode = '0750'
-        $startscript = undef
-        $stopscript = undef
+        $initscript         = "/etc/init.d/${service_prefix}${sanitised_title}"
+        $init_template      = 'docker/etc/init.d/docker-run.erb'
+        $mode               = '0750'
+        $startscript        = undef
+        $stopscript         = undef
         $startstop_template = undef
-        $hasstatus = true
+        $hasstatus          = true
       }
       default: {
         if $::osfamily != 'windows' {
@@ -393,15 +392,14 @@ define docker::run(
 
     if $ensure == 'absent' {
       if $::osfamily == 'windows'{
-        exec {
-          "stop container ${service_prefix}${sanitised_title}":
+        exec { "stop container ${service_prefix}${sanitised_title}":
           command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
           onlyif      => "${docker_command} inspect ${sanitised_title}",
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
           timeout     => $exec_timeout,
-          notify      => Exec["remove container ${service_prefix}${sanitised_title}"]
+          notify      => Exec["remove container ${service_prefix}${sanitised_title}"],
         }
       }
       else {
@@ -412,60 +410,59 @@ define docker::run(
           provider  => $service_provider_real,
         }
       }
-      exec {
-        "remove container ${service_prefix}${sanitised_title}":
+      exec { "remove container ${service_prefix}${sanitised_title}":
         command     => "${docker_command} rm -v ${sanitised_title}",
         onlyif      => "${docker_command} inspect ${sanitised_title}",
         environment => $exec_environment,
         path        => $exec_path,
         refreshonly => true,
         provider    => $exec_provider,
-        timeout     => $exec_timeout
+        timeout     => $exec_timeout,
       }
+
       if $::osfamily != 'windows' {
         file { "/etc/systemd/system/${service_prefix}${sanitised_title}.service":
           ensure => absent,
-          path   => "/etc/systemd/system/${service_prefix}${sanitised_title}.service",
         }
+
         if ($startscript) {
           file { $startscript:
-            ensure => absent
+            ensure => absent,
           }
         }
+
         if ($stopscript) {
           file { $stopscript:
-            ensure => absent
+            ensure => absent,
           }
         }
-      }
-      else {
+      } else {
         file { $cidfile:
           ensure => absent,
         }
       }
-    }
-    else {
+    } else {
       if ($startscript) {
         file { $startscript:
-          ensure  => present,
+          ensure  => file,
           content => epp($startstop_template, {'script' => $docker_run_inline_start}),
           owner   => 'root',
           group   => $docker_group,
-          mode    => '0770'
+          mode    => '0770',
         }
       }
       if ($stopscript) {
         file { $stopscript:
-          ensure  => present,
+          ensure  => file,
           content => epp($startstop_template, {'script' => $docker_run_inline_stop}),
           owner   => 'root',
           group   => $docker_group,
-          mode    => '0770'
+          mode    => '0770',
         }
       }
 
       file { $initscript:
-        ensure  => present,
+        ensure  => file,
         content => template($init_template),
         owner   => 'root',
         group   => $docker_group,
@@ -480,8 +477,7 @@ define docker::run(
             hasstatus => $hasstatus,
             require   => File[$initscript],
           }
-        }
-        else {
+        } else {
           # Transition help from moving from CID based container detection to
           # Name-based container detection. See #222 for context.
           # This code should be considered temporary until most people have
@@ -493,6 +489,7 @@ define docker::run(
               "/usr/bin/test -f /var/run/docker-${sanitised_title}.cid &&",
               "/usr/bin/test -f /etc/init.d/${service_prefix}${sanitised_title}",
             ]
+
             exec { "/bin/sh /etc/init.d/${service_prefix}${sanitised_title} stop":
               onlyif  => join($transition_onlyif, ' '),
               require => [],
@@ -515,11 +512,13 @@ define docker::run(
         if $docker_service {
           if $docker_service == true {
             Service['docker'] -> Service["${service_prefix}${sanitised_title}"]
+
             if $restart_service_on_docker_refresh == true {
               Service['docker'] ~> Service["${service_prefix}${sanitised_title}"]
             }
           } else {
             Service[$docker_service] -> Service["${service_prefix}${sanitised_title}"]
+
             if $restart_service_on_docker_refresh == true {
               Service[$docker_service] ~> Service["${service_prefix}${sanitised_title}"]
             }
@@ -531,26 +530,35 @@ define docker::run(
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',
           refreshonly => true,
-          require     => [File[$initscript],File[$startscript],File[$stopscript]],
-          subscribe   => [File[$initscript],File[$startscript],File[$stopscript]]
+          require     => [
+            File[$initscript],
+            File[$startscript],
+            File[$stopscript],
+          ],
+          subscribe   => [
+            File[$initscript],
+            File[$startscript],
+            File[$stopscript],
+          ],
         }
-        Exec["docker-${sanitised_title}-systemd-reload"] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+
+        Exec["docker-${sanitised_title}-systemd-reload"] -> Service <| title == "${service_prefix}${sanitised_title}" |>
       }
 
       if $restart_service {
         if $startscript or $stopscript {
-          [File[$initscript],File[$startscript],File[$stopscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+          [ File[$initscript], File[$startscript], File[$stopscript], ] ~> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
         else {
-          [File[$initscript]] ~> Service<| title == "${service_prefix}${sanitised_title}" |>
+          [ File[$initscript], ] ~> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
       }
       else {
         if $startscript or $stopscript {
-          [File[$initscript],File[$startscript],File[$stopscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+          [ File[$initscript], File[$startscript], File[$stopscript], ] -> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
         else {
-          [File[$initscript]] -> Service<| title == "${service_prefix}${sanitised_title}" |>
+          [ File[$initscript], ] -> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
       }
     }

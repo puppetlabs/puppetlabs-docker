@@ -28,7 +28,7 @@ class docker::install(
 ) {
   $docker_start_command = $docker::docker_start_command
 
-  if $::osfamily and !::docker::acknowledge_unsupported_os {
+  if $::osfamily and ! $docker::acknowledge_unsupported_os {
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
       fail(translate('This module only works on Debian, RedHat or Windows.'))
     }
@@ -88,6 +88,7 @@ class docker::install(
           ensure => $ensure,
           name   => $docker::docker_package_name,
         }))
+
         if $ensure == 'absent' {
           ensure_resource('package', $dependent_packages, {
             ensure => $ensure,
@@ -119,6 +120,7 @@ class docker::install(
               notify    => Exec['service-restart-on-failure'],
             }
           }
+
           exec { 'service-restart-on-failure':
             command     => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
             refreshonly => true,

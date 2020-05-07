@@ -51,24 +51,22 @@ class docker::compose(
   Optional[String]               $raw_url      = undef,
   Optional[Boolean]              $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
-
   if $proxy != undef {
     validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
   if $::osfamily == 'windows' {
     $file_extension = '.exe'
-    $file_owner = 'Administrator'
+    $file_owner     = 'Administrator'
   } else {
     $file_extension = ''
-    $file_owner = 'root'
+    $file_owner     = 'root'
   }
 
-  $docker_compose_location = "${install_path}/${symlink_name}${file_extension}"
+  $docker_compose_location           = "${install_path}/${symlink_name}${file_extension}"
   $docker_compose_location_versioned = "${install_path}/docker-compose-${version}${file_extension}"
 
   if $ensure == 'present' {
-
     if $raw_url != undef {
       $docker_compose_url = $raw_url
     } else {
@@ -82,9 +80,7 @@ class docker::compose(
     }
 
     if $::osfamily == 'windows' {
-# lint:ignore:140chars
-      $docker_download_command = "if (Invoke-WebRequest ${docker_compose_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}"
-# lint:endignore
+      $docker_download_command = "if (Invoke-WebRequest ${docker_compose_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
 
       exec { "Install Docker Compose ${version}":
         command  => template('docker/windows/download_docker_compose.ps1.erb'),
@@ -95,12 +91,13 @@ class docker::compose(
       file { $docker_compose_location:
         ensure  => 'link',
         target  => $docker_compose_location_versioned,
-        require => Exec["Install Docker Compose ${version}"]
+        require => Exec["Install Docker Compose ${version}"],
       }
     } else {
       if $curl_ensure {
         ensure_packages(['curl'])
       }
+
       exec { "Install Docker Compose ${version}":
         path    => '/usr/bin/',
         cwd     => '/tmp',
@@ -112,20 +109,21 @@ class docker::compose(
       file { $docker_compose_location_versioned:
         owner   => $file_owner,
         mode    => '0755',
-        require => Exec["Install Docker Compose ${version}"]
+        require => Exec["Install Docker Compose ${version}"],
       }
 
       file { $docker_compose_location:
         ensure  => 'link',
         target  => $docker_compose_location_versioned,
-        require => File[$docker_compose_location_versioned]
+        require => File[$docker_compose_location_versioned],
       }
     }
   } else {
-    file { [
-      $docker_compose_location_versioned,
-      $docker_compose_location
-      ]:
+    file { $docker_compose_location_versioned:
+      ensure => absent,
+    }
+
+    file { $docker_compose_location:
       ensure => absent,
     }
   }
