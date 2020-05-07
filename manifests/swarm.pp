@@ -77,22 +77,22 @@
 #  Defaults to undef
 #
 define docker::swarm(
-  Optional[Pattern[/^present$|^absent$/]] $ensure                        = 'present',
-  Optional[Boolean]                       $init                          = false,
-  Optional[Boolean]                       $join                          = false,
-  Optional[String]                        $advertise_addr                = undef,
-  Optional[Boolean]                       $autolock                      = false,
-  Optional[String]                        $cert_expiry                   = undef,
-  Optional[Array]                         $default_addr_pool             = undef,
-  Optional[String]                        $default_addr_pool_mask_length = undef,
-  Optional[String]                        $dispatcher_heartbeat          = undef,
-  Optional[String]                        $external_ca                   = undef,
-  Optional[Boolean]                       $force_new_cluster             = false,
-  Optional[String]                        $listen_addr                   = undef,
-  Optional[String]                        $max_snapshots                 = undef,
-  Optional[String]                        $snapshot_interval             = undef,
-  Optional[String]                        $token                         = undef,
-  Optional[String]                        $manager_ip                    = undef,
+  Optional[Enum[present,absent]] $ensure                        = 'present',
+  Optional[Boolean]              $init                          = false,
+  Optional[Boolean]              $join                          = false,
+  Optional[String]               $advertise_addr                = undef,
+  Optional[Boolean]              $autolock                      = false,
+  Optional[String]               $cert_expiry                   = undef,
+  Optional[Array]                $default_addr_pool             = undef,
+  Optional[String]               $default_addr_pool_mask_length = undef,
+  Optional[String]               $dispatcher_heartbeat          = undef,
+  Optional[String]               $external_ca                   = undef,
+  Optional[Boolean]              $force_new_cluster             = false,
+  Optional[String]               $listen_addr                   = undef,
+  Optional[String]               $max_snapshots                 = undef,
+  Optional[String]               $snapshot_interval             = undef,
+  Optional[String]               $token                         = undef,
+  Optional[String]               $manager_ip                    = undef,
 ) {
   include docker::params
 

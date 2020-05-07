@@ -33,15 +33,15 @@
 #   Required to be true for idempotency
 #
 define docker::registry(
-  Optional[String]                        $server     = $title,
-  Optional[Pattern[/^present$|^absent$/]] $ensure     = 'present',
-  Optional[String]                        $username   = undef,
-  Optional[String]                        $password   = undef,
-  Optional[String]                        $pass_hash  = undef,
-  Optional[String]                        $email      = undef,
-  Optional[String]                        $local_user = 'root',
-  Optional[String]                        $version    = $docker::version,
-  Optional[Boolean]                       $receipt    = true,
+  Optional[String]               $server     = $title,
+  Optional[Enum[present,absent]] $ensure     = 'present',
+  Optional[String]               $username   = undef,
+  Optional[String]               $password   = undef,
+  Optional[String]               $pass_hash  = undef,
+  Optional[String]               $email      = undef,
+  Optional[String]               $local_user = 'root',
+  Optional[String]               $version    = $docker::version,
+  Optional[Boolean]              $receipt    = true,
 ) {
   include docker::params
 

@@ -23,12 +23,12 @@
 # [*url*]
 #   The URL from which the docker machine binary should be fetched
 #   Defaults to a auto determined value based on version, kernel and OS.
-# 
+#
 # [*curl_ensure*]
 #   Whether or not the curl package is ensured by this module.
 #   Defaults to true
 class docker::machine(
-  Optional[Pattern[/^present$|^absent$/]]              $ensure       = 'present',
+  Optional[Enum[present,absent]]                       $ensure       = 'present',
   Optional[String]                                     $version      = $docker::params::machine_version,
   Optional[String]                                     $install_path = $docker::params::machine_install_path,
   Optional[String]                                     $proxy        = undef,
