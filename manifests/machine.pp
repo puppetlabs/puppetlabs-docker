@@ -39,7 +39,7 @@ class docker::machine(
     validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
   }
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $file_extension = '.exe'
     $file_owner     = 'Administrator'
   } else {
@@ -62,7 +62,7 @@ class docker::machine(
       $proxy_opt = ''
     }
 
-    if $::osfamily == 'windows' {
+    if $facts['os']['family'] == 'windows' {
       $docker_download_command = "if (Invoke-WebRequest ${docker_machine_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
 
       exec { "Install Docker Machine ${version}":

@@ -235,7 +235,7 @@ define docker::run(
       health_check_cmd      => $health_check_cmd,
       restart_on_unhealthy  => $restart_on_unhealthy,
       health_check_interval => $health_check_interval,
-      osfamily              => $::osfamily,
+      osfamily              => $facts['os']['family'],
     }
   )
 
@@ -253,7 +253,7 @@ define docker::run(
     $sanitised_after_array = docker::sanitised_name($after_array)
   }
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $exec_environment        = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
     $exec_timeout            = 3000
     $exec_path               = ["${::docker_program_files_path}/Docker/"]
@@ -373,7 +373,7 @@ define docker::run(
         $hasstatus          = true
       }
       default: {
-        if $::osfamily != 'windows' {
+        if $facts['os']['family'] != 'windows' {
           fail(translate('Docker needs a Debian or RedHat based system.'))
         }
         elsif $ensure == 'present' {
@@ -391,7 +391,7 @@ define docker::run(
     }
 
     if $ensure == 'absent' {
-      if $::osfamily == 'windows'{
+      if $facts['os']['family'] == 'windows'{
         exec { "stop container ${service_prefix}${sanitised_title}":
           command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
           onlyif      => "${docker_command} inspect ${sanitised_title}",
@@ -420,7 +420,7 @@ define docker::run(
         timeout     => $exec_timeout,
       }
 
-      if $::osfamily != 'windows' {
+      if $facts['os']['family'] != 'windows' {
         file { "/etc/systemd/system/${service_prefix}${sanitised_title}.service":
           ensure => absent,
         }

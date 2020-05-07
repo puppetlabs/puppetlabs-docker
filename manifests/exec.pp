@@ -18,7 +18,7 @@ define docker::exec(
 
   $docker_command = $docker::params::docker_command
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
     $exec_timeout     = 3000
     $exec_path        = [ "${::docker_program_files_path}/Docker/", ]

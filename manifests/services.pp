@@ -115,7 +115,7 @@ define docker::services(
     }
   }
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $exec_timeout  = 3000
     $exec_path     = [ "${::docker_program_files_path}/Docker/", ]
     $exec_provider = 'powershell'

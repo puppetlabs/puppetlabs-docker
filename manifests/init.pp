@@ -508,13 +508,13 @@ class docker(
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,
   Optional[String]                        $nuget_package_provider_version    = $docker::params::nuget_package_provider_version,
 ) inherits docker::params {
-  if $facts['osfamily'] and !$acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['osfamily']) |$a, $b| {
+  if $facts['os']['family'] and ! $acknowledge_unsupported_os {
+    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
       fail(translate('This module only works on Debian, Red Hat or Windows based systems.'))
     }
   }
 
-  if ($facts['operatingsystem'] == 'CentOS') and (versioncmp($facts['operatingsystemmajrelease'], '7') < 0) {
+  if ($facts['os']['name'] == 'CentOS') and (versioncmp($facts['os']['release']['full'], '7') < 0) {
     fail(translate('This module only works on CentOS version 7 and higher based systems.'))
   }
 
@@ -529,7 +529,7 @@ class docker(
   }
 
   if $log_driver {
-    if $facts['osfamily'] == 'windows' {
+    if $facts['os']['family'] == 'windows' {
       assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|awslogs|etwlogs)$/], $log_driver) |$a, $b| {
         fail(translate('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs'))
       }
@@ -541,7 +541,7 @@ class docker(
   }
 
   if $storage_driver {
-    if $facts['osfamily'] == 'windows' {
+    if $facts['os']['family'] == 'windows' {
       assert_type(Pattern[/^(windowsfilter)$/], $storage_driver) |$a, $b| {
         fail(translate('Valid values for storage_driver on windows are windowsfilter'))
       }
@@ -552,7 +552,7 @@ class docker(
     }
   }
 
-  if ($bridge) and ($facts['osfamily'] == 'windows') {
+  if ($bridge) and ($facts['os']['family'] == 'windows') {
       assert_type(Pattern[/^(none|nat|transparent|overlay|l2bridge|l2tunnel)$/], $bridge) |$a, $b| {
         fail(translate('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.'))
     }
@@ -601,7 +601,7 @@ class docker(
       $docker_start_command     = $docker::docker_ee_start_command
       $docker_package_name      = $docker::docker_ee_package_name
     } else {
-      case $facts['osfamily'] {
+      case $facts['os']['family'] {
         'Debian' : {
           $package_location   = $docker_ce_source_location
           $package_key_source = $docker_ce_key_source
@@ -628,7 +628,7 @@ class docker(
       $docker_package_name  = $docker_ce_package_name
     }
   } else {
-    case $facts['osfamily'] {
+    case $facts['os']['family'] {
       'Debian' : {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source

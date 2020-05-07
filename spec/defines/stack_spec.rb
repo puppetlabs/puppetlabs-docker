@@ -13,6 +13,7 @@ require 'spec_helper'
           lsbdistcodename: 'jessie',
           kernelrelease: '3.2.0-4-amd64',
           operatingsystemmajrelease: '8',
+          os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.0' } },
         }
       end
 
@@ -27,6 +28,7 @@ require 'spec_helper'
           docker_program_files_path: 'C:/Program Files',
           docker_systemroot: 'C:/Windows',
           docker_user_temp_path: 'C:/Users/Administrator/AppData/Local/Temp',
+          os: { family: 'windows', name: 'windows', release: { major: '2016', full: '2016' } },
         }
       end
 

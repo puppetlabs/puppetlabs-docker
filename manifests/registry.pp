@@ -47,7 +47,7 @@ define docker::registry(
 
   $docker_command = $docker::params::docker_command
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $exec_environment = ["PATH=${::docker_program_files_path}/Docker/"]
     $exec_timeout     = 3000
     $exec_path        = ["${::docker_program_files_path}/Docker/"]
@@ -89,7 +89,7 @@ define docker::registry(
   }
 
   if $receipt {
-    if $::osfamily != 'windows' {
+    if $facts['os']['family'] != 'windows' {
       # server may be an URI, which can contain /
       $server_strip = regsubst($server, '/', '_', 'G')
 

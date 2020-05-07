@@ -85,11 +85,11 @@ class docker::params {
   $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
   $registry_mirror                   = undef
   $curl_ensure                       = true
-  $os_lc                             = downcase($::operatingsystem)
+  $os_lc                             = downcase($facts['os']['name'])
   $docker_msft_provider_version      = undef
   $nuget_package_provider_version    = undef
 
-  if ($::osfamily == 'windows') {
+  if ($facts['os']['family'] == 'windows') {
     $docker_ee_package_name = 'Docker'
     $tls_cacert             = "${::docker_program_data_path}/docker/certs.d/ca.pem"
     $tls_cert               = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
@@ -109,13 +109,13 @@ class docker::params {
     $docker_command         = 'docker'
   }
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian' : {
-      case $::operatingsystem {
+      case $facts['os']['name'] {
         'Ubuntu' : {
-          $package_release = "ubuntu-${::lsbdistcodename}"
+          $package_release = "ubuntu-${facts['os']['distro']['codename']}"
 
-          if (versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+          if (versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
             $service_provider           = 'systemd'
             $storage_config             = '/etc/default/docker-storage'
             $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -140,7 +140,7 @@ class docker::params {
           }
         }
         default: {
-          $package_release            = "debian-${::lsbdistcodename}"
+          $package_release            = "debian-${facts['os']['distro']['codename']}"
           $service_provider           = 'systemd'
           $storage_config             = '/etc/default/docker-storage'
           $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -168,7 +168,7 @@ class docker::params {
       $package_ce_source_location    = "https://download.docker.com/linux/${os_lc}"
       $package_ce_key_source         = "https://download.docker.com/linux/${os_lc}/gpg"
       $package_ce_key_id             = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
-      $package_ce_release            = $::lsbdistcodename
+      $package_ce_release            = $facts['os']['distro']['codename']
       $package_source_location       = 'http://apt.dockerproject.org/repo'
       $package_key_source            = 'https://apt.dockerproject.org/gpg'
       $package_key_check_source      = undef
@@ -176,7 +176,7 @@ class docker::params {
       $package_ee_source_location    = $docker_ee_source_location
       $package_ee_key_source         = $docker_ee_key_source
       $package_ee_key_id             = $docker_ee_key_id
-      $package_ee_release            = $::lsbdistcodename
+      $package_ee_release            = $facts['os']['distro']['codename']
       $package_ee_repos              = $docker_ee_repos
       $package_ee_package_name       = $docker_ee_package_name
 
@@ -201,13 +201,13 @@ class docker::params {
       $service_after_override      = undef
       $use_upstream_package_source = true
 
-      $package_ce_source_location  = "https://download.docker.com/linux/centos/${::operatingsystemmajrelease}/${::architecture}/${docker_ce_channel}"
+      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['full']}/${facts['os']['architecture']}/${docker_ce_channel}"
       $package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
       $package_ce_key_id           = undef
       $package_ce_release          = undef
       $package_key_id              = undef
       $package_release             = undef
-      $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${::operatingsystemmajrelease}"
+      $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['full']}"
       $package_key_source          = 'https://yum.dockerproject.org/gpg'
       $package_key_check_source    = true
       $package_ee_source_location  = $docker_ee_source_location
@@ -230,7 +230,7 @@ class docker::params {
       }
 
       # repo_opt to specify install_options for docker package
-      if $::operatingsystem == 'RedHat' {
+      if $facts['os']['name'] == 'RedHat' {
         $repo_opt = '--enablerepo=rhel-7-server-extras-rpms'
       } else {
         $repo_opt = undef
@@ -361,8 +361,8 @@ class docker::params {
   # Special extra packages are required on some OSes.
   # Specifically apparmor is needed for Ubuntu:
   # https://github.com/docker/docker/issues/4734
-  $prerequired_packages = $::osfamily ? {
-    'Debian' => $::operatingsystem ? {
+  $prerequired_packages = $facts['os']['family'] ? {
+    'Debian' => $facts['os']['name'] ? {
       'Debian' => [ 'cgroupfs-mount', ],
       'Ubuntu' => [ 'cgroup-lite', 'apparmor', ],
       default  => [],

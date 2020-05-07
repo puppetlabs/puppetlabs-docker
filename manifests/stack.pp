@@ -49,7 +49,7 @@ define docker::stack(
 
   $docker_command = "${docker::params::docker_command} stack"
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $exec_path   = [ 'C:/Program Files/Docker/', ]
     $check_stack = '$info = docker stack ls | select-string -pattern web
                     if ($info -eq $null) { Exit 1 } else { Exit 0 }'

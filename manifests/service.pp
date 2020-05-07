@@ -120,7 +120,7 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
   $root_dir_flag                     = $docker::root_dir_flag,
 ) {
-  unless $::osfamily =~ /(Debian|RedHat|windows)/ or $::docker::acknowledge_unsupported_os {
+  unless $facts['os']['family'] =~ /(Debian|RedHat|windows)/ or $::docker::acknowledge_unsupported_os {
     fail(translate('The docker::service class needs a Debian, Redhat or Windows based system.'))
   }
 
@@ -134,7 +134,7 @@ class docker::service (
   if $service_config != undef {
     $_service_config = $service_config
   } else {
-    if $::osfamily == 'Debian' {
+    if $facts['os']['family'] == 'Debian' {
       $_service_config = "/etc/default/${service_name}"
     } else {
       $_service_config = undef
@@ -146,7 +146,7 @@ class docker::service (
     default => [],
   }
 
-  if $::osfamily == 'RedHat' {
+  if $facts['os']['family'] == 'RedHat' {
     file { $storage_setup_file:
       ensure  => file,
       force   => true,
@@ -156,7 +156,7 @@ class docker::service (
     }
   }
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $dirs = [
       "${::docker_program_data_path}/docker/",
       "${::docker_program_data_path}/docker/config/",
@@ -234,7 +234,7 @@ class docker::service (
   }
 
   if $manage_service {
-    if $::osfamily == 'windows' {
+    if $facts['os']['family'] == 'windows' {
       reboot { 'pending_reboot':
         when    => 'pending',
         onlyif  => 'component_based_servicing',

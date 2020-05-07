@@ -11,6 +11,7 @@ describe 'docker::machine', type: :class do
       kernelrelease: '3.8.0-29-generic',
       operatingsystemrelease: '10.04',
       operatingsystemmajrelease: '10',
+      os: { distro: { codename: 'maverick' }, family: 'Debian', name: 'Ubuntu', release: { major: '10', full: '10.04' } },
     }
   end
 
