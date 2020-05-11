@@ -10,6 +10,7 @@ describe 'docker::secrets', type: :define do
       lsbdistcodename: 'jessie',
       kernelrelease: '3.2.0-4-amd64',
       operatingsystemmajrelease: '8',
+      os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.0' } },
     }
   end
 

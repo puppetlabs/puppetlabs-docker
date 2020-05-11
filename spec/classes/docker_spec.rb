@@ -14,7 +14,7 @@ describe 'docker', type: :class do
             kernelrelease: '4.9.0-3-amd64',
             operatingsystemrelease: '9.0',
             operatingsystemmajrelease: '9',
-            os: { distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
+            os: { architecture: 'amd64', distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '9', full: '9.0' } },
           }
         end
 
@@ -37,7 +37,7 @@ describe 'docker', type: :class do
             kernelrelease: '4.4.0-21-generic',
             operatingsystemrelease: '16.04',
             operatingsystemmajrelease: '16.04',
-            os: { distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
+            os: { architecture: 'amd64', distro: { codename: 'xenial' }, family: 'Debian', name: 'Ubuntu', release: { major: '16.04', full: '16.04' } },
           }
         end
 
@@ -256,6 +256,7 @@ describe 'docker', type: :class do
             operatingsystemrelease: '7.2',
             operatingsystemmajrelease: '7',
             kernelversion: '3.10.0',
+            os: { architecture: 'x86_64', distro: { codename: 'RedHat' }, family: 'RedHat', name: 'RedHat', release: { major: '7', full: '7.2' } },
           }
         end
 
@@ -898,7 +899,7 @@ describe 'docker', type: :class do
           operatingsystemrelease: '7.0',
           operatingsystemmajrelease: '7',
           kernelversion: '3.10.0',
-          os: { distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
+          os: { architecture: 'x86_64', distro: { codename: 'wheezy' }, family: 'RedHat', name: operatingsystem, release: { major: '7', full: '7.0' } },
         }
       end
 
@@ -988,7 +989,7 @@ describe 'docker', type: :class do
         lsbdistcodename: 'trusty',
         operatingsystemrelease: '14.04',
         kernelrelease: '3.8.0-29-generic',
-        os: { distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
+        os: { architecture: 'amd64', distro: { codename: 'trusty' }, family: 'Debian', name: 'Ubuntu', release: { major: '14.04', full: '14.04' } },
       }
     end
 
@@ -1005,10 +1006,10 @@ describe 'docker', type: :class do
           osfamily: 'Debian',
           lsbdistid: 'Ubuntu',
           operatingsystem: 'Ubuntu',
-          lsbdistcodename: 'trusty',
-          operatingsystemrelease: '15.04',
+          lsbdistcodename: 'xenial',
+          operatingsystemrelease: '16.04',
           kernelrelease: '3.8.0-29-generic',
-          os: { distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
+          os: { architecture: 'amd64', distro: { codename: 'xenial' }, family: 'Debian', name: 'Ubuntu', release: { major: '16.04', full: '16.04' } },
         }
       end
 
@@ -1025,7 +1026,7 @@ describe 'docker', type: :class do
           lsbdistcodename: 'jessie',
           kernelrelease: '3.2.0-4-amd64',
           operatingsystemmajrelease: '8',
-          os: { distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
+          os: { architecture: 'amd64', distro: { codename: 'wheezy' }, family: 'Debian', name: 'Debian', release: { major: '7', full: '7.0' } },
         }
       end
 
@@ -1043,7 +1044,7 @@ describe 'docker', type: :class do
         lsbdistcodename: 'Whatever',
         kernelrelease: 'Whatever',
         operatingsystemmajrelease: 'Whatever',
-        os: { distro: { codename: 'Whatever' }, family: 'Whatever', name: 'Whatever', release: { major: 'Whatever', full: 'Whatever' } },
+        os: { architecture: 'Whatever', distro: { codename: 'Whatever' }, family: 'Whatever', name: 'Whatever', release: { major: 'Whatever', full: 'Whatever' } },
       }
     end
 
@@ -1062,7 +1063,7 @@ describe 'docker', type: :class do
         operatingsystem: 'CentOS',
         kernelversion: '3.10.0',
         operatingsystemmajrelease: '6',
-        os: { family: 'RedHat', name: 'CentOS', release: { major: '6', full: '6.0' } },
+        os: { architecture: 'x86_64', family: 'RedHat', name: 'CentOS', release: { major: '6', full: '6.0' } },
       }
     end
 

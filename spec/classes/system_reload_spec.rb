@@ -10,6 +10,7 @@ describe 'docker::systemd_reload', type: :class do
       kernelrelease: '9.3.0-amd64',
       operatingsystemrelease: '9.3',
       operatingsystemmajrelease: '9',
+      os: { distro: { codename: 'stretch' }, family: 'Debian', name: 'Debian', release: { major: '9', full: '9.3' } },
     }
   end
 

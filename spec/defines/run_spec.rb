@@ -53,6 +53,7 @@ require 'spec_helper'
           {
             osfamily: 'Gentoo',
             operatingsystem: 'Generic',
+            os: { distro: { codename: 'Generic' }, family: 'Gentoo', name: 'Generic', release: { major: '8', full: '8.2' } },
           }
         end
 

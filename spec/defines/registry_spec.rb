@@ -13,6 +13,7 @@ describe 'docker::registry', type: :define do
       docker_home_dirs: {
         root: '/root',
       },
+      os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.2' } },
     }
   end
   let(:params) { { 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
