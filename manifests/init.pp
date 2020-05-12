@@ -483,7 +483,7 @@ class docker(
     }
   }
 
-  if ($facts['os']['name'] == 'CentOS') and (versioncmp($facts['os']['release']['full'], '7') < 0) {
+  if ($facts['os']['name'] == 'CentOS') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
     fail(translate('This module only works on CentOS version 7 and higher based systems.'))
   }
 
