@@ -19,7 +19,7 @@ if os[:family] == 'windows'
   bad_server_strip = "#{registry_host}_5001"
   broken = true
 else
-  docker_args = if os[:family] == 'redHat'
+  docker_args = if os[:family] == 'redhat'
                   "repo_opt => '--enablerepo=localmirror-extras'"
                 elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
@@ -216,14 +216,14 @@ describe 'docker' do
       run_shell("grep #{registry_address} #{config_file}", expect_failures: true)
     end
 
-    it 'does not create receipt if registry login fails' do
+    it 'does not create receipt if registry login fails', win_broken: true do
       pp = <<-MANIFEST
         docker::registry { '#{registry_bad_address}':
           username => 'username',
           password => 'password',
         }
       MANIFEST
-      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_failures: false)
       run_shell("grep #{registry_bad_address} #{config_file}", expect_failures: true)
       run_shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{bad_server_strip}_root\"", expect_failures: true)
     end

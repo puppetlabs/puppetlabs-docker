@@ -71,7 +71,7 @@ RSpec.configure do |c|
     run_shell('puppet module install puppetlabs-reboot --version 2.0.0', expect_failures: true)
 
     # net-tools required for netstat utility being used by some tests
-    if os[:family] == 'redhat' && os[:release].to_i == '7'
+    if os[:family] == 'redhat' && os[:release].to_i == 7
       run_shell('yum install -y net-tools device-mapper')
     end
 
