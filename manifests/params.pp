@@ -199,13 +199,13 @@ class docker::params {
       $service_after_override      = undef
       $use_upstream_package_source = true
 
-      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['full']}/${facts['os']['architecture']}/${docker_ce_channel}"
+      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
       $package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
       $package_ce_key_id           = undef
       $package_ce_release          = undef
       $package_key_id              = undef
       $package_release             = undef
-      $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['full']}"
+      $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['major']}"
       $package_key_source          = 'https://yum.dockerproject.org/gpg'
       $package_key_check_source    = true
       $package_ee_source_location  = $docker_ee_source_location
