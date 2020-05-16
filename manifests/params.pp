@@ -86,25 +86,24 @@ class docker::params {
   $os_lc                             = downcase($facts['os']['name'])
   $docker_msft_provider_version      = undef
   $nuget_package_provider_version    = undef
+  $docker_command                    = 'docker'
 
   if ($facts['os']['family'] == 'windows') {
+    $compose_install_path   = "${::docker_program_files_path}/Docker"
+    $compose_version        = '1.21.2'
     $docker_ee_package_name = 'Docker'
+    $machine_install_path   = "${::docker_program_files_path}/Docker"
     $tls_cacert             = "${::docker_program_data_path}/docker/certs.d/ca.pem"
     $tls_cert               = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
     $tls_key                = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
-    $compose_version        = '1.21.2'
-    $compose_install_path   = "${::docker_program_files_path}/Docker"
-    $machine_install_path   = "${::docker_program_files_path}/Docker"
-    $docker_command         = 'docker'
   } else {
+    $compose_install_path   = '/usr/local/bin'
+    $compose_version        = '1.9.0'
     $docker_ee_package_name = 'docker-ee'
+    $machine_install_path   = '/usr/local/bin'
     $tls_cacert             = '/etc/docker/tls/ca.pem'
     $tls_cert               = '/etc/docker/tls/cert.pem'
     $tls_key                = '/etc/docker/tls/key.pem'
-    $compose_version        = '1.9.0'
-    $compose_install_path   = '/usr/local/bin'
-    $machine_install_path   = '/usr/local/bin'
-    $docker_command         = 'docker'
   }
 
   case $facts['os']['family'] {
@@ -114,16 +113,15 @@ class docker::params {
           $package_release = "ubuntu-${facts['os']['distro']['codename']}"
 
           if (versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
-            $service_provider           = 'systemd'
-            $storage_config             = '/etc/default/docker-storage'
-            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
-            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
-            $socket_override            = false
             $service_after_override     = undef
-            $service_hasstatus          = true
+            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
             $service_hasrestart         = true
-
+            $service_hasstatus          = true
+            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+            $service_provider           = 'systemd'
+            $socket_override            = false
+            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+            $storage_config             = '/etc/default/docker-storage'
             include docker::systemd_reload
           } else {
             $service_config_template    = 'docker/etc/default/docker.erb'
@@ -153,15 +151,15 @@ class docker::params {
         }
       }
 
-      $service_name                  = $service_name_default
-      $docker_group                  = $docker_group_default
-      $socket_group                  = $socket_group_default
-      $use_upstream_package_source   = true
-      $pin_upstream_package_source   = true
       $apt_source_pin_level          = 500
+      $docker_group                  = $docker_group_default
+      $pin_upstream_package_source   = true
       $repo_opt                      = undef
       $service_config                = undef
+      $service_name                  = $service_name_default
+      $socket_group                  = $socket_group_default
       $storage_setup_file            = undef
+      $use_upstream_package_source   = true
 
       $package_ce_source_location    = "https://download.docker.com/linux/${os_lc}"
       $package_ce_key_source         = "https://download.docker.com/linux/${os_lc}/gpg"
@@ -185,39 +183,38 @@ class docker::params {
       }
     }
     'RedHat' : {
+      $service_after_override      = undef
       $service_config              = '/etc/sysconfig/docker'
+      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.erb'
+      $service_hasrestart          = true
+      $service_hasstatus           = true
+      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
+      $service_provider            = 'systemd'
+      $socket_override             = false
+      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
       $storage_config              = '/etc/sysconfig/docker-storage'
       $storage_setup_file          = '/etc/sysconfig/docker-storage-setup'
-      $service_hasstatus           = true
-      $service_hasrestart          = true
-
-      $service_provider            = 'systemd'
-      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.erb'
-      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
-      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
-      $socket_override             = false
-      $service_after_override      = undef
       $use_upstream_package_source = true
 
-      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
-      $package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
+      $apt_source_pin_level        = undef
+      $detach_service_in_init      = false
       $package_ce_key_id           = undef
+      $package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
       $package_ce_release          = undef
-      $package_key_id              = undef
-      $package_release             = undef
-      $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['major']}"
-      $package_key_source          = 'https://yum.dockerproject.org/gpg'
-      $package_key_check_source    = true
-      $package_ee_source_location  = $docker_ee_source_location
-      $package_ee_key_source       = $docker_ee_key_source
+      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
       $package_ee_key_id           = $docker_ee_key_id
+      $package_ee_key_source       = $docker_ee_key_source
+      $package_ee_package_name     = $docker_ee_package_name
       $package_ee_release          = undef
       $package_ee_repos            = $docker_ee_repos
-      $package_ee_package_name     = $docker_ee_package_name
+      $package_ee_source_location  = $docker_ee_source_location
+      $package_key_check_source    = true
+      $package_key_id              = undef
+      $package_key_source          = 'https://yum.dockerproject.org/gpg'
+      $package_release             = undef
+      $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['major']}"
       $pin_upstream_package_source = undef
-      $apt_source_pin_level        = undef
       $service_name                = $service_name_default
-      $detach_service_in_init      = false
 
       if $use_upstream_package_source {
         $docker_group = $docker_group_default

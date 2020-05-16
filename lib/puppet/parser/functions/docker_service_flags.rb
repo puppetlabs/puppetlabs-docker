@@ -59,7 +59,7 @@ module Puppet::Parser::Functions
     end
 
     if opts['user'] && opts['user'].to_s != 'undef'
-      flags << "--user '#{opts['publish']}'"
+      flags << "--user '#{opts['user']}'"
     end
 
     if opts['workdir'] && opts['workdir'].to_s != 'undef'
