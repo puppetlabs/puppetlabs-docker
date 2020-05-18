@@ -100,7 +100,7 @@ define docker::registry(
         default => $pass_hash
       }
 
-      $_auth_command = "${auth_cmd} || rm -f \"/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
+      $_auth_command = "${auth_cmd} || (rm -f \"/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\"; exit 1;)"
 
       file { "/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
         ensure  => $ensure,
@@ -113,7 +113,7 @@ define docker::registry(
       # server may be an URI, which can contain /
       $server_strip  = regsubst($server, '[/:]', '_', 'G')
       $passfile      = "${::docker_user_temp_path}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
-      $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }" # lint:ignore:140chars
+      $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 1 } else { exit 0 }" # lint:ignore:140chars
 
       if $ensure == 'absent' {
         file { $passfile:
