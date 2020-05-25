@@ -44,6 +44,7 @@ jobs:
       with:
         platform: ${{ matrix.platform }}
         agent_family: ${{ matrix.agent_family }}
+        bundler_args: "--with=system_tests"
   Spec:
     runs-on: self-hosted
     strategy:
