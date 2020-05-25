@@ -16,7 +16,7 @@ After=<%= @after.uniq.join(" ") %>
 Wants=<%= @wants.uniq.join(" ") %>
 Requires=<%= @requires.uniq.join(" ") %>
 StartLimitIntervalSec=20
-StartLimitBurst=5
+StartLimitBurst=3
 
 [Service]
 Restart=<%= @systemd_restart %>
