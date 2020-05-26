@@ -24,6 +24,7 @@ jobs:
       with:
         platform: ${{ matrix.platform }}
         agent_family: ${{ matrix.agent_family }}
+        bundler_args: "--with=system_tests"
   LitmusAcceptancePuppet6:
     env:
       HONEYCOMB_WRITEKEY: 7f3c63a70eecc61d635917de46bea4e6
