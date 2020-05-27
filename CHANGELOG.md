@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.10.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.1) (2020-05-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.10.0...v3.10.1)
+
+### Fixed
+
+- Fix unreachable StartLimitBurst value in unit template [\#616](https://github.com/puppetlabs/puppetlabs-docker/pull/616) ([omeinderink](https://github.com/omeinderink))
+- \(MODULES-9696\) remove docker\_home\_dirs fact [\#613](https://github.com/puppetlabs/puppetlabs-docker/pull/613) ([carabasdaniel](https://github.com/carabasdaniel))
+- \[MODULES-10629\] Throw error when docker login fails [\#610](https://github.com/puppetlabs/puppetlabs-docker/pull/610) ([carabasdaniel](https://github.com/carabasdaniel))
+- \(maint\) - facts fix for centos [\#608](https://github.com/puppetlabs/puppetlabs-docker/pull/608) ([david22swan](https://github.com/david22swan))
+- major adjustments for current code style [\#607](https://github.com/puppetlabs/puppetlabs-docker/pull/607) ([crazymind1337](https://github.com/crazymind1337))
+
 ## [v3.10.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.0) (2020-04-23)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.9.1...v3.10.0)
