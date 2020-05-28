@@ -2446,6 +2446,14 @@ users home directory
 
 Default value: 'root'
 
+##### `local_user_home`
+
+Data type: `Optional[String]`
+
+The local user home directory.
+
+Default value: `undef`
+
 ##### `receipt`
 
 Data type: `Optional[Boolean]`
