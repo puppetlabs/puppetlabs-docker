@@ -27,7 +27,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       compose_containers.uniq!
       # rubocop:enable Style/StringLiterals
       case compose_file['version']
-      when %r{^2(\.[0-3])?$}, %r{^3(\.[0-6])?$}
+      when %r{^2(\.[0-3])?$}, %r{^3(\.\d+)?$}
         compose_services.deep_merge!(compose_file['services'])
       # in compose v1 "version" parameter is not specified
       when nil
