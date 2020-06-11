@@ -493,6 +493,7 @@ define docker::run(
           enable    => false,
           hasstatus => $hasstatus,
           provider  => $service_provider_real,
+          notify    => Exec["remove container ${service_prefix}${sanitised_title}"],
         }
       }
       exec { "remove container ${service_prefix}${sanitised_title}":
