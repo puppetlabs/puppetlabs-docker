@@ -6,24 +6,24 @@ describe 'Facter::Util::Fact' do
     Facter.clear
     if Facter.value(:kernel) == 'windows'
       docker_command = 'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
-      Facter::Util::Resolution.stubs(:which).with('docker').returns('C:\Program Files\Docker\docker.exe')
+      Facter::Core::Execution.stubs(:which).with('docker').returns('C:\Program Files\Docker\docker.exe')
     else
       docker_command = 'docker'
-      Facter::Util::Resolution.stubs(:which).with('docker').returns('/usr/bin/docker')
+      Facter::Core::Execution.stubs(:which).with('docker').returns('/usr/bin/docker')
     end
     docker_info = File.read(fixtures('facts', 'docker_info'))
-    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} info --format '{{json .}}'").returns(docker_info)
+    Facter::Core::Execution.stubs(:exec).with("#{docker_command} info --format '{{json .}}'", timeout: 90).returns(docker_info)
     processors = File.read(fixtures('facts', 'processors'))
     Facter.fact(:processors).stubs(:value).returns(JSON.parse(processors))
     docker_version = File.read(fixtures('facts', 'docker_version'))
-    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} version --format '{{json .}}'").returns(docker_version)
+    Facter::Core::Execution.stubs(:exec).with("#{docker_command} version --format '{{json .}}'", timeout: 90).returns(docker_version)
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
-    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} network ls | tail -n +2").returns(docker_network_list)
+    Facter::Core::Execution.stubs(:exec).with("#{docker_command} network ls | tail -n +2", timeout: 90).returns(docker_network_list)
     docker_network_names = []
     docker_network_list.each_line { |line| docker_network_names.push line.split[1] }
     docker_network_names.each do |network|
       inspect = File.read(fixtures('facts', "docker_network_inspect_#{network}"))
-      Facter::Util::Resolution.stubs(:exec).with("#{docker_command} network inspect #{network}").returns(inspect)
+      Facter::Core::Execution.stubs(:exec).with("#{docker_command} network inspect #{network}", timeout: 90).returns(inspect)
     end
   end
   after(:each) { Facter.clear }
