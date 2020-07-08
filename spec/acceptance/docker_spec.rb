@@ -35,7 +35,6 @@ else
   root_dir = '/root'
 end
 
-
 describe 'docker' do
   package_name = 'docker-ce'
   service_name = 'docker'
@@ -50,18 +49,18 @@ describe 'docker' do
      "
     end
 
-  context 'Checking root_dir value' do
-    let(:pp) do
-      "class { 'docker': #{docker_args}}"
-    end
+    context 'Checking root_dir value' do
+      let(:pp) do
+        "class { 'docker': #{docker_args}}"
+      end
 
-    it 'is good' do
-      apply_manifest(pp, catch_failures: true)
-      run_shell('cat C:/ProgramData/docker/config/daemon.json') do |r|
-        expect(r.stdout).to match(%r{data-root})
+      it 'is good' do
+        apply_manifest(pp, catch_failures: true)
+        run_shell('cat C:/ProgramData/docker/config/daemon.json') do |r|
+          expect(r.stdout).to match(%r{data-root})
+        end
       end
     end
-  end
 
     it 'the docker daemon' do
       apply_manifest(pp, catch_failures: true) do |r|
