@@ -9,12 +9,12 @@ if os[:family] == 'windows'
   raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
   ip = result.stdout.split("\n")[0].split(':')[1].strip
   @windows_ip = ip
-  docker_arg = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]', root_dir => 'C:/Users/Administrator/AppData/Local/Temp'
+"
   docker_registry_image = 'stefanscherer/registry-windows'
   docker_network = 'nat'
   registry_host = @windows_ip
   config_file = '/cygdrive/c/Users/Administrator/.docker/config.json'
-  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   server_strip = "#{registry_host}_#{registry_port}"
   bad_server_strip = "#{registry_host}_5001"
   broken = true
@@ -35,6 +35,7 @@ else
   root_dir = '/root'
 end
 
+
 describe 'docker' do
   package_name = 'docker-ce'
   service_name = 'docker'
@@ -43,11 +44,24 @@ describe 'docker' do
   context 'When adding system user', win_broken: broken do
     let(:pp) do
       "
-             class { 'docker': #{docker_arg}
+             class { 'docker': #{docker_args}
                docker_users => ['user1']
              }
      "
     end
+
+  context 'Checking root_dir value' do
+    let(:pp) do
+      "class { 'docker': #{docker_args}}"
+    end
+
+    it 'is good' do
+      apply_manifest(pp, catch_failures: true)
+      run_shell('cat C:/ProgramData/docker/config/daemon.json') do |r|
+        expect(r.stdout).to match(%r{data-root})
+      end
+    end
+  end
 
     it 'the docker daemon' do
       apply_manifest(pp, catch_failures: true) do |r|
@@ -177,7 +191,7 @@ describe 'docker' do
 
     it 'is able to run registry' do
       pp = <<-MANIFEST
-        class { 'docker': #{docker_arg}}
+        class { 'docker': #{docker_args}}
         docker::run { 'registry':
           image         => '#{docker_registry_image}',
           pull_on_start => true,
