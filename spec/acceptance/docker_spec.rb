@@ -57,7 +57,7 @@ describe 'docker' do
   end
 
   context 'Checking root_dir value' do
-    docker_args = docker_args + ',root_dir =>' + '"' + root_dir + '"'
+    docker_args = docker_args + 'root_dir =>' + '"' + root_dir + '"'
     let(:pp) do
       "class { 'docker': #{docker_args}}"
     end
