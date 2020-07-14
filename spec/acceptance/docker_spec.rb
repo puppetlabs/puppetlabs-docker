@@ -9,8 +9,8 @@ if os[:family] == 'windows'
   raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
   ip = result.stdout.split("\n")[0].split(':')[1].strip
   @windows_ip = ip
-  docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]', root_dir => 'C:/Users/Administrator/AppData/Local/Temp'
-"
+  docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   docker_registry_image = 'stefanscherer/registry-windows'
   docker_network = 'nat'
   registry_host = @windows_ip
@@ -43,28 +43,41 @@ describe 'docker' do
   context 'When adding system user', win_broken: broken do
     let(:pp) do
       "
-             class { 'docker': #{docker_args}
+             class { 'docker': #{docker_args},
                docker_users => ['user1']
              }
      "
     end
 
-    context 'Checking root_dir value' do
-      let(:pp) do
-        "class { 'docker': #{docker_args}}"
-      end
-
-      it 'is good' do
-        apply_manifest(pp, catch_failures: true)
-        run_shell('cat C:/ProgramData/docker/config/daemon.json') do |r|
-          expect(r.stdout).to match(%r{data-root})
-        end
-      end
-    end
-
     it 'the docker daemon' do
       apply_manifest(pp, catch_failures: true) do |r|
         expect(r.stdout).not_to match(%r{docker-systemd-reload-before-service})
+      end
+    end
+  end
+
+  context 'Checking root_dir value' do
+    docker_args = docker_args + ',root_dir =>' + '"' + root_dir + '"'
+    let(:pp) do
+      "class { 'docker': #{docker_args}}"
+    end
+
+    it 'is good' do
+      file_path = if os[:family] == 'windows'
+                    'C:/ProgramData/docker/config/daemon.json'
+                  else
+                    '/etc/docker/daemon.json'
+                  end
+
+      apply_manifest(pp, catch_failures: true)
+      if os[:family] == 'windows'
+        run_shell("cat #{file_path}") do |r|
+          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
+        end
+      else
+        run_shell('systemctl status docker') do |r|
+          expect(r.stdout).to match(%r{--data-root #{root_dir}})
+        end
       end
     end
   end
