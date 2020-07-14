@@ -46,7 +46,7 @@ describe 'docker' do
              class { 'docker': #{docker_args},
                docker_users => ['user1']
              }
-     "
+      "
     end
 
     it 'the docker daemon' do
@@ -56,26 +56,25 @@ describe 'docker' do
     end
   end
 
-  context 'Checking root_dir value' do
-    docker_args = docker_args + 'root_dir =>' + '"' + root_dir + '"'
+  context 'When root_dir is set' do
     let(:pp) do
-      "class { 'docker': #{docker_args}}"
+      "class { 'docker': #{docker_args}, root_dir => \"#{root_dir}\"}"
     end
 
-    it 'is good' do
-      file_path = if os[:family] == 'windows'
-                    'C:/ProgramData/docker/config/daemon.json'
-                  else
-                    '/etc/docker/daemon.json'
-                  end
-
-      apply_manifest(pp, catch_failures: true)
+    let(:shell_command) do
       if os[:family] == 'windows'
-        run_shell("cat #{file_path}") do |r|
-          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
-        end
+        'cat C:/ProgramData/docker/config/daemon.json'
       else
-        run_shell('systemctl status docker') do |r|
+        'systemctl status docker'
+      end
+    end
+
+    it 'works' do
+      apply_manifest(pp, catch_failures: true)
+      run_shell(shell_command) do |r|
+        if os[:family] == 'windows'
+          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
+        else
           expect(r.stdout).to match(%r{--data-root #{root_dir}})
         end
       end
