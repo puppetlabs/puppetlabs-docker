@@ -9,12 +9,12 @@ if os[:family] == 'windows'
   raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
   ip = result.stdout.split("\n")[0].split(':')[1].strip
   @windows_ip = ip
-  docker_arg = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   docker_registry_image = 'stefanscherer/registry-windows'
   docker_network = 'nat'
   registry_host = @windows_ip
   config_file = '/cygdrive/c/Users/Administrator/.docker/config.json'
-  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   server_strip = "#{registry_host}_#{registry_port}"
   bad_server_strip = "#{registry_host}_5001"
   broken = true
@@ -43,15 +43,40 @@ describe 'docker' do
   context 'When adding system user', win_broken: broken do
     let(:pp) do
       "
-             class { 'docker': #{docker_arg}
+             class { 'docker': #{docker_args},
                docker_users => ['user1']
              }
-     "
+      "
     end
 
     it 'the docker daemon' do
       apply_manifest(pp, catch_failures: true) do |r|
         expect(r.stdout).not_to match(%r{docker-systemd-reload-before-service})
+      end
+    end
+  end
+
+  context 'When root_dir is set' do
+    let(:pp) do
+      "class { 'docker': #{docker_args}, root_dir => \"#{root_dir}\"}"
+    end
+
+    let(:shell_command) do
+      if os[:family] == 'windows'
+        'cat C:/ProgramData/docker/config/daemon.json'
+      else
+        'systemctl status docker'
+      end
+    end
+
+    it 'works' do
+      apply_manifest(pp, catch_failures: true)
+      run_shell(shell_command) do |r|
+        if os[:family] == 'windows'
+          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
+        else
+          expect(r.stdout).to match(%r{--data-root #{root_dir}})
+        end
       end
     end
   end
@@ -177,7 +202,7 @@ describe 'docker' do
 
     it 'is able to run registry' do
       pp = <<-MANIFEST
-        class { 'docker': #{docker_arg}}
+        class { 'docker': #{docker_args}}
         docker::run { 'registry':
           image         => '#{docker_registry_image}',
           pull_on_start => true,

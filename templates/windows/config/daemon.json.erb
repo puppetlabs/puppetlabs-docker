@@ -17,5 +17,6 @@
     <% if @extra_parameters %><% @extra_parameters_array.each do |param| %>
     <%= param %> ,<% end %>
     <% end -%>
+    <% if @root_dir %>"data-root": "<%= @root_dir %>",<% end -%>
     "labels": <%= @labels_array.to_json %>
 }
