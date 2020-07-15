@@ -89,6 +89,12 @@
 # configuration.
 # Default: Not included in unit file
 #
+# @param prepare_service_only
+# (optional) Prepare the service and enable it as usual but do not run it right away.
+# Useful when building VM images using masterless Puppet and then letting the Docker images
+# to be downloaded when a new VM is created.
+# Default: false
+#
 # @param image
 #
 # @param ensure
@@ -237,6 +243,7 @@ define docker::run(
   Optional[Integer]                       $health_check_interval             = undef,
   Optional[Variant[String,Array]]         $custom_unless                     = [],
   Optional[String]                        $remain_after_exit                 = undef,
+  Optional[Boolean]                       $prepare_service_only              = false,
 ) {
   include docker::params
 
@@ -643,7 +650,7 @@ define docker::run(
           }
 
           service { "${service_prefix}${sanitised_title}":
-            ensure    => $running,
+            ensure    => $running and !$prepare_service_only,
             enable    => true,
             provider  => $service_provider_real,
             hasstatus => $hasstatus,
@@ -667,7 +674,7 @@ define docker::run(
           }
         }
       }
-      if $service_provider_real == 'systemd' {
+      if $service_provider_real == 'systemd' and !$prepare_service_only {
         exec { "docker-${sanitised_title}-systemd-reload":
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',
