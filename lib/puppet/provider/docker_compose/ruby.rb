@@ -78,24 +78,24 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     return unless resource[:scale]
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
     Puppet.info("Scaling compose project #{name}: #{instructions.join(' ')}")
-    args = [compose_files, '-p', name, 'scale'].insert(2, resource[:options]).compact + instructions
+    args = [compose_files, '-p', name, 'scale'].insert(3, resource[:options]).compact + instructions
     dockercompose(args)
   end
 
   def destroy
     Puppet.info("Removing all containers for compose project #{name}")
-    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
+    kill_args = [compose_files, '-p', name, 'kill'].insert(3, resource[:options]).compact
     dockercompose(kill_args)
-    rm_args = [compose_files, '-p', name, 'rm', '--force', '-v'].insert(2, resource[:options]).compact
+    rm_args = [compose_files, '-p', name, 'rm', '--force', '-v'].insert(3, resource[:options]).compact
     dockercompose(rm_args)
   end
 
   def restart
     return unless exists?
     Puppet.info("Rebuilding and Restarting all containers for compose project #{name}")
-    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
+    kill_args = [compose_files, '-p', name, 'kill'].insert(3, resource[:options]).compact
     dockercompose(kill_args)
-    build_args = [compose_files, '-p', name, 'build'].insert(2, resource[:options]).compact
+    build_args = [compose_files, '-p', name, 'build'].insert(3, resource[:options]).compact
     dockercompose(build_args)
     create
   end
