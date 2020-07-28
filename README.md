@@ -1009,6 +1009,7 @@ This module supports:
 * Centos 7.0
 * Debian 8.0
 * Debian 9.0
+* Debian 10
 * RedHat 7.0
 * Ubuntu 14.04
 * Ubuntu 16.04
