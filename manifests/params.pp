@@ -101,7 +101,7 @@ class docker::params {
     $tls_cacert             = '/etc/docker/tls/ca.pem'
     $tls_cert               = '/etc/docker/tls/cert.pem'
     $tls_key                = '/etc/docker/tls/key.pem'
-    $compose_version        = '1.9.0'
+    $compose_version        = '1.21.2'
     $compose_install_path   = '/usr/local/bin'
     $machine_install_path   = '/usr/local/bin'
     $docker_command         = 'docker'
