@@ -1,52 +1,58 @@
 require 'spec_helper'
 
+tests = {
+  'with ensure present' => {
+    'secret_name' => 'test_secret',
+    'secret_path' => '/root/secret.txt',
+    'label'       => ['test'],
+  },
+  'with ensure absent' => {
+    'ensure'      => 'absent',
+    'secret_name' => 'test_secret',
+  },
+}
+
 describe 'docker::secrets', type: :define do
-  let(:title) { 'test_secret' }
-  let(:facts) do
-    {
-      osfamily: 'Debian',
-      operatingsystem: 'Debian',
-      lsbdistid: 'Debian',
-      lsbdistcodename: 'jessie',
-      kernelrelease: '3.2.0-4-amd64',
-      operatingsystemmajrelease: '8',
-      os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.0' } },
-    }
-  end
+  on_supported_os.each do |os, os_facts|
+    ##
+    ## set some needed facts
+    ##
+    facts = if os =~ %r{windows}
+              windows_facts.merge(os_facts)
+            else
+              os_facts
+            end
 
-  context 'with secret_name => test_secret and secret_path => /root/secret.txt and label => test' do
-    let(:params) do
-      {
-        'secret_name' => 'test_secret',
-        'secret_path' => '/root/secret.txt',
-        'label' => ['test'],
-      }
-    end
+    ##
+    ## get defaults values from params
+    ##
+    defaults = get_defaults(facts)
 
-    it { is_expected.to contain_exec('test_secret docker secret create').with_command(%r{docker secret create}) }
-    context 'multiple secrets declaration' do
-      let(:pre_condition) do
-        "
-        docker::secrets{'test_secret_2':
-          secret_name => 'test_secret_2',
-          secret_path => '/root/secret_2.txt',
-        }
-        "
+    context "on #{os}" do
+      tests.each do |title, local_params|
+        context title do
+          params = {
+            'ensure'      => 'present',
+            'label'       => [],
+            'secret_name' => :undef,
+            'secret_path' => :undef,
+          }.merge(local_params)
+
+          let(:facts) do
+            facts
+          end
+
+          let(:params) do
+            params
+          end
+
+          let(:title) do
+            title
+          end
+
+          include_examples 'secrets', title, params, facts, defaults
+        end
       end
-
-      it { is_expected.to contain_exec('test_secret docker secret create').with_command(%r{docker secret create}) }
-      it { is_expected.to contain_exec('test_secret_2 docker secret create').with_command(%r{docker secret create}) }
     end
-  end
-
-  context 'with ensure => absent and secret_name => test_secret' do
-    let(:params) do
-      {
-        'ensure' => 'absent',
-        'secret_name' => 'test_secret',
-      }
-    end
-
-    it { is_expected.to contain_exec('test_secret docker secret rm').with_command(%r{docker secret rm}) }
   end
 end
