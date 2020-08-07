@@ -23,7 +23,7 @@ module Puppet::Parser::Functions
     end
 
     if opts['net'].is_a? String
-      flags << "--net #{opts['net']}"
+      flags << "--net #{opts['net'].shellescape}"
     end
 
     if opts['memory_limit']
