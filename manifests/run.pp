@@ -400,18 +400,74 @@ define docker::run(
       $inspect = [ "${docker_command} inspect ${sanitised_title}", ]
 
       if $custom_unless {
-        $exec_unless = concat($custom_unless, $inspect)
+        $exec_unless = $custom_unless
       } else {
         $exec_unless = $inspect
       }
 
-      exec { "run ${title} with docker":
-        command     => join($run_with_docker_command, ' '),
-        unless      => $exec_unless,
-        environment => $exec_environment,
-        path        => $exec_path,
-        provider    => $exec_provider,
-        timeout     => $exec_timeout,
+      $detect_changes = docker_params_changed(
+        {
+          sanitised_title => $sanitised_title,
+          osfamily        => $facts['os']['family'],
+          image           => $image,
+          volumes         => $volumes,
+          ports           => $ports,
+        }
+      )
+
+      case $detect_changes {
+        'CONTAINER_NOT_FOUND': {
+          exec { "run ${title} with docker":
+            command     => join($run_with_docker_command, ' '),
+            unless      => $exec_unless,
+            environment => $exec_environment,
+            path        => $exec_path,
+            provider    => $exec_provider,
+            timeout     => $exec_timeout,
+          }
+        }
+        'PARAM_CHANGED': {
+          exec { "stop ${title} with docker":
+            command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
+            onlyif      => "${docker_command} inspect ${sanitised_title}",
+            environment => $exec_environment,
+            path        => $exec_path,
+            provider    => $exec_provider,
+            timeout     => $exec_timeout,
+          }
+
+          exec { "remove ${title} with docker":
+            command     => "${docker_command} rm -v ${sanitised_title}",
+            onlyif      => "${docker_command} inspect ${sanitised_title}",
+            environment => $exec_environment,
+            path        => $exec_path,
+            provider    => $exec_provider,
+            timeout     => $exec_timeout,
+          }
+
+          file { $cidfile:
+            ensure => absent,
+          }
+
+          exec { "run ${title} with docker":
+            command     => join($run_with_docker_command, ' '),
+            unless      => $exec_unless,
+            environment => $exec_environment,
+            path        => $exec_path,
+            provider    => $exec_provider,
+            timeout     => $exec_timeout,
+          }
+        }
+        'ARG_REQUIRED_MISSING': {
+          fail(translate('sanitised_title and osfamily are required for docker_params_changed function'))
+        }
+        default: {
+          # Use ONLY on debugging - DO NOT UNCOMMENT OTHERWISE
+          # notify { 'this case should not be executed':
+          #   message  => "detect_changes: ${detect_changes}",
+          #   withpath => true,
+          # }
+        }
       }
 
       if $running == false {
