@@ -23,9 +23,9 @@ module Puppet::Parser::Functions
     end
 
     if opts['net'].is_a? String
-      flags << "--net #{opts['net']}"
+      flags << "--net #{opts['net'].shellescape}"
     elsif opts['net'].is_a? Array
-      flags << "--net #{opts['net'].join(' --net ')}"
+      flags << "--net #{opts['net'].join(' --net ').shellescape}"
     end
 
     if opts['memory_limit']
