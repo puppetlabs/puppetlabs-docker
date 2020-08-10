@@ -98,7 +98,7 @@ class docker::params {
     $tls_key                = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
   } else {
     $compose_install_path   = '/usr/local/bin'
-    $compose_version        = '1.9.0'
+    $compose_version        = '1.21.2'
     $docker_ee_package_name = 'docker-ee'
     $machine_install_path   = '/usr/local/bin'
     $tls_cacert             = '/etc/docker/tls/ca.pem'
