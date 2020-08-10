@@ -1,45 +1,76 @@
 require 'spec_helper'
 
+tests = {
+  'foo/setting:latest' => {
+    'settings' => [
+      'VAR1=test',
+      'VAR2=value',
+    ],
+  },
+  'foo/disabled:latest' => {
+    'enabled' => false,
+  },
+  'foo/force_remove:latest' => {
+    'ensure'       => 'absent',
+    'force_remove' => true,
+  },
+}
+
 describe 'docker::plugin', type: :define do
-  let(:title) { 'foo/plugin:latest' }
-  let(:facts) do
-    {
-      osfamily: 'Debian',
-      operatingsystem: 'Debian',
-      lsbdistid: 'Debian',
-      lsbdistcodename: 'jessie',
-      kernelrelease: '3.2.0-4-amd64',
-      operatingsystemmajrelease: '8',
-      os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.2' } },
-    }
-  end
+  on_supported_os.each do |os, os_facts|
+    ##
+    ## set some needed facts
+    ##
+    facts = if os =~ %r{windows}
+              windows_facts.merge(os_facts)
+            else
+              os_facts
+            end
 
-  context 'with defaults for all parameters' do
-    it { is_expected.to compile.with_all_deps }
-    it { is_expected.to contain_exec('plugin install foo/plugin:latest').with_command(%r{docker plugin install}) }
-    it { is_expected.to contain_exec('plugin install foo/plugin:latest').with_unless(%r{docker ls --format='{{.PluginReference}}' | grep -w foo/plugin:latest}) }
-  end
+    ##
+    ## get defaults values from params
+    ##
+    defaults = get_defaults(facts)
 
-  context 'with enabled => false' do
-    let(:params) { { 'enabled' => false } }
+    context "on #{os}" do
+      tests.each do |title, local_params|
+        context title do
+          params = {
+            'ensure'                => 'present',
+            'plugin_name'           => title,
+            'enabled'               => true,
+            'timeout'               => :undef,
+            'plugin_alias'          => :undef,
+            'disable_on_install'    => false,
+            'disable_content_trust' => true,
+            'grant_all_permissions' => true,
+            'force_remove'          => true,
+            'settings'              => [],
+          }.merge(local_params)
 
-    it { is_expected.to compile.with_all_deps }
-    it { is_expected.to contain_exec('disable foo/plugin:latest').with_command(%r{docker plugin disable}) }
-    it { is_expected.to contain_exec('disable foo/plugin:latest').with_unless(%r{docker ls --format='{{.PluginReference}}' | grep -w foo/plugin:latest}) }
-  end
+          let(:facts) do
+            facts
+          end
 
-  context 'with ensure => absent' do
-    let(:params) { { 'ensure' => 'absent' } }
+          let(:params) do
+            params
+          end
 
-    it { is_expected.to compile.with_all_deps }
-    it { is_expected.to contain_exec('plugin remove foo/plugin:latest').with_command(%r{docker plugin rm}) }
-    it { is_expected.to contain_exec('plugin remove foo/plugin:latest').with_onlyif(%r{docker ls --format='{{.PluginReference}}' | grep -w foo/plugin:latest}) }
-  end
+          let(:title) do
+            title
+          end
 
-  context 'with alias => foo-plugin' do
-    let(:params) { { 'plugin_alias' => 'foo-plugin' } }
+          if facts[:os]['family'] == 'windows'
+            it {
+              is_expected.to compile.and_raise_error(%r{Feature not implemented on windows.})
+            }
 
-    it { is_expected.to contain_exec('plugin install foo/plugin:latest').with_command(%r{docker plugin install}) }
-    it { is_expected.to contain_exec('plugin install foo/plugin:latest').with_unless(%r{docker ls --format='{{.PluginReference}}' | grep -w foo/plugin:latest}) }
+            next
+          end
+
+          include_examples 'plugin', params, facts, defaults
+        end
+      end
+    end
   end
 end

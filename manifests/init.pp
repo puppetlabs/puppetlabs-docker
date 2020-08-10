@@ -578,7 +578,7 @@ class docker(
           $package_repos      = $docker_ce_channel
           $release            = $docker_ce_release
         }
-        'Redhat' : {
+        'RedHat' : {
           $package_location         = $docker_ce_source_location
           $package_key_source       = $docker_ce_key_source
           $package_key_check_source = true
@@ -598,7 +598,7 @@ class docker(
     }
   } else {
     case $facts['os']['family'] {
-      'Debian' : {
+      'Debian': {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
@@ -606,17 +606,18 @@ class docker(
         $package_repos            = 'main'
         $release                  = $docker_package_release
       }
-      'Redhat' : {
+      'RedHat': {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
-      default : {
+      default: {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
     }
+
     $docker_start_command = $docker_engine_start_command
     $docker_package_name  = $docker_engine_package_name
   }

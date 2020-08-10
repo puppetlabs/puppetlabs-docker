@@ -1,5 +1,7 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
+require 'shared_examples'
+require 'rspec-puppet'
 
 require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spec_helper_local.rb'))
 
@@ -71,5 +73,7 @@ RSpec::Matchers.define :require_hash_for do |property|
     "#{type_class} should require #{property} to be a Hash"
   end
 end
+
+at_exit { RSpec::Puppet::Coverage.report! }
 
 # 'spec_overrides' from sync.yml will appear below this line
