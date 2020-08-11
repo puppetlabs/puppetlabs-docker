@@ -50,6 +50,7 @@ from the registry
 
 * [`docker::sanitised_name`](#dockersanitised_name): == Function: docker::sanitised_name  Function to sanitise container name.  === Parameters  [*name*]   Name to sanitise
 * [`docker_exec_flags`](#docker_exec_flags): Transforms a hash into a string of docker exec flags
+* [`docker_params_changed`](#docker_params_changed): Checks if at least one parammeter is changed
 * [`docker_plugin_enable_flags`](#docker_plugin_enable_flags): Transforms a hash into a string of docker plugin remove flags
 * [`docker_plugin_install_flags`](#docker_plugin_install_flags): Transforms a hash into a string of docker plugin install flags
 * [`docker_plugin_remove_flags`](#docker_plugin_remove_flags): Transforms a hash into a string of docker plugin remove flags
@@ -3697,6 +3698,18 @@ Transforms a hash into a string of docker exec flags
 #### `docker_exec_flags()`
 
 Transforms a hash into a string of docker exec flags
+
+Returns: `Any`
+
+### `docker_params_changed`
+
+Type: Ruby 3.x API
+
+Checks if at least one parammeter is changed
+
+#### `docker_params_changed()`
+
+Checks if at least one parammeter is changed
 
 Returns: `Any`
 
