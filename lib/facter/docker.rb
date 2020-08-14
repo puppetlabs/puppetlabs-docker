@@ -77,6 +77,28 @@ Facter.add(:docker_version) do
   end
 end
 
+Facter.add(:docker_worker_join_token) do
+  setcode do
+    if Facter::Util::Resolution.which('docker')
+      val = Facter::Util::Resolution.exec(
+        "#{docker_command} swarm join-token worker -q",
+      )
+    end
+    val
+  end
+end
+
+Facter.add(:docker_manager_join_token) do
+  setcode do
+    if Facter::Util::Resolution.which('docker')
+      val = Facter::Util::Resolution.exec(
+        "#{docker_command} swarm join-token manager -q",
+      )
+    end
+    val
+  end
+end
+
 Facter.add(:docker) do
   setcode do
     docker_version = Facter.value(:docker_client_version)

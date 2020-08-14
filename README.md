@@ -759,21 +759,21 @@ To configure the swarm worker, add the following code to the manifest file:
 
 ```puppet
 docker::swarm {'cluster_worker':
-join           => true,
-advertise_addr => '192.168.1.2',
-listen_addr    => '192.168.1.2',
-manager_ip     => '192.168.1.1',
-token          => 'your_join_token'
+  join           => true,
+  advertise_addr => '192.168.1.2',
+  listen_addr    => '192.168.1.2',
+  manager_ip     => '192.168.1.1',
+  token          => 'your_join_token'
 }
 ```
 
-To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating an additional swarm manager and a worker node, separate tokens are required.
+To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating an additional swarm manager and a worker node, separate tokens are required. These tokens (i.e. `docker_worker_join_token` and `docker_manager_join_token`) can be retrieved from Facter.
 
 To remove a node from a cluster, add the following code to the manifest file:
 
 ```puppet
 docker::swarm {'cluster_worker':
-ensure => absent
+  ensure => absent
 }
 ```
 
