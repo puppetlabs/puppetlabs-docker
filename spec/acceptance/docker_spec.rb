@@ -56,6 +56,49 @@ describe 'docker' do
     end
   end
 
+  context 'When prepare_service_only param is set(prepare_service_only => true)', win_broken: broken do
+    let(:pp) do
+      "
+        class { 'docker': #{docker_args} }
+        docker::run { 'servercore':
+          image                => 'hello-world:latest',
+          prepare_service_only => true,
+        }
+      "
+    end
+
+    it 'creates the service without starting it' do
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'not start the service' do
+      run_shell('systemctl status docker-servercore', expect_failures: true) do |r|
+        expect(r.stdout.include?('Main PID')).to be false
+      end
+    end
+  end
+
+  context 'When prepare_service_only param is not set(prepare_service_only => false)', win_broken: broken do
+    let(:pp) do
+      "
+        class { 'docker': #{docker_args} }
+        docker::run { 'servercore':
+          image => 'hello-world:latest',
+        }
+      "
+    end
+
+    it 'creates the service and start it' do
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'start the service' do
+      run_shell('systemctl status docker-servercore', expect_failures: true) do |r|
+        expect(r.stdout.include?('Main PID')).to be true
+      end
+    end
+  end
+
   context 'When root_dir is set' do
     let(:pp) do
       "class { 'docker': #{docker_args}, root_dir => \"#{root_dir}\"}"
