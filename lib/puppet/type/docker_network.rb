@@ -18,7 +18,7 @@ Puppet::Type.newtype(:docker_network) do
   end
 
   newparam(:gateway) do
-    desc 'An ipv4 or ipv6 gateway for the master subnet'
+    desc 'An ipv4 or ipv6 gateway for the server subnet'
   end
 
   newparam(:ip_range) do

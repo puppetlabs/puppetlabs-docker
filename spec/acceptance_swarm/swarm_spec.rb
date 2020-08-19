@@ -72,7 +72,7 @@ describe 'docker swarm', skip: skip_tests do
     end
   end
 
-  context 'Creating a swarm master' do
+  context 'Creating a swarm server' do
     let(:token) { shell('docker swarm join-token -q worker').stdout.strip }
 
     it 'is idempotent' do

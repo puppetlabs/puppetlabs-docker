@@ -1,5 +1,5 @@
 {
-  "description": "Gets the swarm token from the master",
+  "description": "Gets the swarm token from the server",
   "input_method": "stdin",
   "parameters": {
     "node_role": {
