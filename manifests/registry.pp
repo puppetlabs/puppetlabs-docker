@@ -68,7 +68,7 @@ define docker::registry(
       $_local_user_home = $local_user_home
     } else {
       # set sensible default
-      $_local_user_home = $local_user == 'root' ? {
+      $_local_user_home = ($local_user == 'root') ? {
         true    => '/root',
         default => "/home/${local_user}",
       }
