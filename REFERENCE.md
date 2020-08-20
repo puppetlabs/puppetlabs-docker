@@ -73,7 +73,7 @@ from the registry
 * [`swarm_init`](#swarm_init): Initializes a swarm
 * [`swarm_join`](#swarm_join): Join a swarm
 * [`swarm_leave`](#swarm_leave): Leave a swarm
-* [`swarm_token`](#swarm_token): Gets the swarm token from the master
+* [`swarm_token`](#swarm_token): Gets the swarm token from the server
 * [`swarm_update`](#swarm_update): Updates an existing service.
 
 ## Classes
@@ -3544,7 +3544,7 @@ Auxiliary ipv4 or ipv6 addresses used by the Network driver
 
 ##### `gateway`
 
-An ipv4 or ipv6 gateway for the master subnet
+An ipv4 or ipv6 gateway for the server subnet
 
 ##### `ip_range`
 
@@ -4139,7 +4139,7 @@ Force this node to leave the swarm, ignoring warnings
 
 ### `swarm_token`
 
-Gets the swarm token from the master
+Gets the swarm token from the server
 
 **Supports noop?** false
 
