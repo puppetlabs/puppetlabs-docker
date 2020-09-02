@@ -25,6 +25,10 @@ describe 'Facter::Util::Fact' do
       inspect = File.read(fixtures('facts', "docker_network_inspect_#{network}"))
       Facter::Util::Resolution.stubs(:exec).with("#{docker_command} network inspect #{network}").returns(inspect)
     end
+    docker_worker_token = File.read(fixtures('facts', 'docker_swarm_worker_token'))
+    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} swarm join-token worker -q").returns(docker_worker_token.chomp)
+    docker_manager_token = File.read(fixtures('facts', 'docker_swarm_manager_token'))
+    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} swarm join-token manager -q").returns(docker_manager_token.chomp)
   end
   after(:each) { Facter.clear }
 
@@ -91,6 +95,28 @@ describe 'Facter::Util::Fact' do
     it 'has valid entries' do
       expect(Facter.fact(:docker).value).to include(
         'Architecture' => 'x86_64',
+      )
+    end
+  end
+
+  describe 'docker swarm worker join-token' do
+    before :each do
+      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+    end
+    it do
+      expect(Facter.fact(:docker_worker_join_token).value).to eq(
+        'SWMTKN-1-2m7ekt7511j5kgrc6seyrewpdxv47ksz1sdg7iybzhuug6nmws-0jh0syqeoj3tlr81p165ydfkm',
+      )
+    end
+  end
+
+  describe 'docker swarm manager join-token' do
+    before :each do
+      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+    end
+    it do
+      expect(Facter.fact(:docker_manager_join_token).value).to eq(
+        'SWMTKN-1-2m7ekt7511j5kgrc6seyrewpdxv47ksz1sdg7iybzhuug6nmws-8gh1ns1lcavgau8k9p6ou7xj3',
       )
     end
   end
