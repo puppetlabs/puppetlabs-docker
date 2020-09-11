@@ -61,6 +61,15 @@ define docker::stack(
     )
 
     $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
+    $unless_stack = "${docker_command} ls | grep ${stack_name}"
+
+    # If you need to redeploy a stack, you can notify Docker::Stack[$stack_name]
+    exec { "docker stack refresh ${stack_name}":
+      refreshonly => true,
+      command     => $exec_stack,
+      path        => $exec_path,
+      before      => Exec["docker stack create ${stack_name}"],
+    }
 
     exec { "docker stack create ${stack_name}":
       command  => $exec_stack,
