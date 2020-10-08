@@ -25,7 +25,7 @@ Puppet::Type.newtype(:docker_compose) do
   newparam(:options) do
     desc 'Additional options to be passed directly to docker-compose.'
     validate do |value|
-      raise _('options should be a String') unless value.is_a? String
+      raise _('options should be an Array') unless value.is_a? Array
     end
   end
 
