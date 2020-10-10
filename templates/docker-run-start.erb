@@ -12,7 +12,8 @@
 /usr/bin/<%= @docker_command %> create \
 <%= @docker_run_flags %> \
 --name <%= @sanitised_title %> \
-<%= @image %> <% if @command %> \ <%= @command %><% end %>
+<%= @image %> <% if @command %> \
+<%= @command %><% end %>
 
 <% if @after_create %><%= @after_create %><% end %>
 <% if @net.is_a? Array%>
