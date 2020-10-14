@@ -2,9 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v3.12.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.11.0) (2020-09-24)
+## [v3.12.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.12.0) (2020-10-13)
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.11.0...v3.11.0)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.12.0...v3.12.0)
+
+### Fixed
+
+- Fix misplaced backslash in start template [\#666](https://github.com/puppetlabs/puppetlabs-docker/pull/666) ([optiz0r](https://github.com/optiz0r))
+
+## [v3.12.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.12.0) (2020-09-24)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.11.0...v3.12.0)
 
 ### Added
 
@@ -59,6 +67,7 @@ All notable changes to this project will be documented in this file. The format 
 - \[IAC-291\] Convert acceptance tests to Litmus [\#585](https://github.com/puppetlabs/puppetlabs-docker/pull/585) ([carabasdaniel](https://github.com/carabasdaniel))
 - Updated: Add Docker service \(create, remote, scale\) tasks [\#582](https://github.com/puppetlabs/puppetlabs-docker/pull/582) ([Flask](https://github.com/Flask))
 - Add after\_start and after\_stop options to docker::run define [\#580](https://github.com/puppetlabs/puppetlabs-docker/pull/580) ([jantman](https://github.com/jantman))
+- Make docker::machine::url configurable [\#569](https://github.com/puppetlabs/puppetlabs-docker/pull/569) ([baurmatt](https://github.com/baurmatt))
 - Let docker.service start docker services managed by puppetlabs/docker… [\#563](https://github.com/puppetlabs/puppetlabs-docker/pull/563) ([jhejl](https://github.com/jhejl))
 - Allow bypassing curl package ensure if needed [\#477](https://github.com/puppetlabs/puppetlabs-docker/pull/477) ([esalberg](https://github.com/esalberg))
 
@@ -86,7 +95,6 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
-- Make docker::machine::url configurable [\#569](https://github.com/puppetlabs/puppetlabs-docker/pull/569) ([baurmatt](https://github.com/baurmatt))
 - Add option for RemainAfterExit [\#549](https://github.com/puppetlabs/puppetlabs-docker/pull/549) ([vdavidoff](https://github.com/vdavidoff))
 
 ### Fixed
@@ -114,7 +122,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [v3.7.0-bna](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.7.0-bna) (2019-08-08)
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.7.0...v3.7.0-bna)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/e2.6...v3.7.0-bna)
+
+## [e2.6](https://github.com/puppetlabs/puppetlabs-docker/tree/e2.6) (2019-07-26)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.7.0...e2.6)
 
 ## [v3.7.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.7.0) (2019-07-18)
 
