@@ -470,7 +470,7 @@ class docker(
   Optional[Variant[String,Boolean]]       $service_after_override            = $docker::params::service_after_override,
   Optional[Boolean]                       $service_hasstatus                 = $docker::params::service_hasstatus,
   Optional[Boolean]                       $service_hasrestart                = $docker::params::service_hasrestart,
-  Optional[String]                        $registry_mirror                   = $docker::params::registry_mirror,
+  Optional[Variant[String,Array]]         $registry_mirror                   = $docker::params::registry_mirror,
   Boolean                                 $acknowledge_unsupported_os        = false,
 
   # Windows specific parameters

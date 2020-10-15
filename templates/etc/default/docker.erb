@@ -40,7 +40,8 @@ DOCKER_OPTS="\
 <% if @execdriver %> -e <%= @execdriver %> <% end -%>
 <% if @bip %> --bip=<%= @bip %> <% end -%>
 <% if @mtu %> --mtu=<%= @mtu %> <% end -%>
-<% if @registry_mirror %> --registry-mirror=<%= @registry_mirror %><% end -%>
+<% if @registry_mirror.is_a? String %> --registry-mirror=<%= @registry_mirror %><% end -%>
+<% if @registry_mirror.is_a? Array %><% @registry_mirror.each do |param| %> --registry-mirror=<%= param %><% end %><% end -%>
 <% if @storage_driver %> --storage-driver=<%= @storage_driver %><% end -%>
 <% if @storage_driver == 'devicemapper' -%>
   <%- if @dm_basesize %> --storage-opt dm.basesize=<%= @dm_basesize %><% end -%>
