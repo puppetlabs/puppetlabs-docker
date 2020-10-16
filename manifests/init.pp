@@ -483,8 +483,8 @@ class docker(
     }
   }
 
-  if ($facts['os']['name'] == 'CentOS') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
-    fail(translate('This module only works on CentOS version 7 and higher based systems.'))
+  if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
+    fail(translate('This module only works on Red Hat based systems version 7 and higher.'))
   }
 
   if ($default_gateway) and (!$bridge) {
