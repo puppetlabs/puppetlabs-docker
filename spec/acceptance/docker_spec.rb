@@ -234,6 +234,27 @@ describe 'docker' do
     end
   end
 
+  context 'When registry_mirror is array', win_broken: broken do
+    let(:pp) do
+      "
+      class { 'docker':
+        registry_mirror => ['http://testmirror1.io', 'http://testmirror2.io']
+      }
+    "
+    end
+
+    it 'applies with no errors' do
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'has all registry mirrors set' do
+      run_shell('ps -aux | grep docker') do |r|
+        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror1.io})
+        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror2.io})
+      end
+    end
+  end
+
   context 'registry' do
     let(:registry_address) do
       "#{registry_host}:#{registry_port}"

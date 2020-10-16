@@ -769,7 +769,7 @@ Default value: `$docker::params::tmp_dir`
 
 ##### `registry_mirror`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[String,Array]]`
 
 Sets the prefered container registry mirror.
 

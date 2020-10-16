@@ -9,7 +9,8 @@ OPTIONS="<% if @root_dir %><%= @root_dir_flag %> <%= @root_dir %><% end -%>
  --iptables=<%= @iptables -%>
  --ip-masq=<%= @ip_masq -%>
 <% unless @icc == nil %> --icc=<%= @icc %><% end -%>
-<% if @registry_mirror %> --registry-mirror=<%= @registry_mirror %><% end -%>
+<% if @registry_mirror.is_a? String %> --registry-mirror=<%= @registry_mirror %><% end -%>
+<% if @registry_mirror.is_a? Array %><% @registry_mirror.each do |param| %> --registry-mirror=<%= param %><% end %><% end -%>
 <% if @fixed_cidr %> --fixed-cidr <%= @fixed_cidr %><% end -%>
 <% if @default_gateway %> --default-gateway <%= @default_gateway %><% end -%>
 <% if @ipv6 %> --ipv6<% end -%>

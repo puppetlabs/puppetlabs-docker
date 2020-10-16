@@ -69,8 +69,14 @@ def get_docker_service_flags(args)
     flags << "-H '#{args['host_socket']}'"
   end
 
-  if args['registry_mirror'] && args['registry_mirror'].to_s != 'undef'
-    flags << "--registry-mirror='#{args['registry_mirror']}'"
+  if args['registry_mirror'].is_a? Array
+    args['registry_mirror'].each do |param|
+      flags << "--registry-mirror='#{param}'"
+    end
+  else
+    if args['registry_mirror'] && args['registry_mirror'].to_s != 'undef'
+      flags << "--registry-mirror='#{args['registry_mirror']}'"
+    end
   end
 
   if args['image'] && args['image'].to_s != 'undef'
