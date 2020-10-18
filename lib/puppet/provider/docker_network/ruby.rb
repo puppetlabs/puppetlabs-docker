@@ -34,6 +34,8 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
         additional_flags = resource[:additional_flags].split
       elsif resource[:additional_flags].is_a?(Array)
         additional_flags = resource[:additional_flags]
+      else
+        additional_flags = [nil]
       end
       additional_flags.each do |additional_flag|
         flags << additional_flag
