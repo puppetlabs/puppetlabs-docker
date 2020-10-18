@@ -39,7 +39,7 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
         flags << additional_flag
       end
     end
-    
+
     flags << resource[:name]
   end
 
