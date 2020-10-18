@@ -30,7 +30,7 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
     end
 
     if defined?(resource[:additional_flags])
-      additional_flags = Array.new
+      additional_flags = []
       if resource[:additional_flags].is_a?(String)
         additional_flags = resource[:additional_flags].split
       elsif resource[:additional_flags].is_a?(Array)
