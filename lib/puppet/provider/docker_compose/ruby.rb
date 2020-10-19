@@ -6,6 +6,8 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   desc 'Support for Puppet running Docker Compose'
 
   mk_resource_methods
+  #commands dockercompose: 'docker-compose', options => {:combine => false}
+  #commands dockercompose: 'docker-compose', :options => {:combine => false}
   commands dockercompose: 'docker-compose'
   commands docker: 'docker'
 
@@ -16,7 +18,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
     # get merged config using docker-compose config
     args = [compose_files, '-p', name, 'config'].insert(3, resource[:options]).compact
-    compose_output = YAML.safe_load(dockercompose(args))
+    compose_output = YAML.safe_load(execute([command(:dockercompose)] + args, combine: false))
 
     # rubocop:disable Style/StringLiterals
     containers = docker([
