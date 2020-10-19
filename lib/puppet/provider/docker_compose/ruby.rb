@@ -6,8 +6,6 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   desc 'Support for Puppet running Docker Compose'
 
   mk_resource_methods
-  #commands dockercompose: 'docker-compose', options => {:combine => false}
-  #commands dockercompose: 'docker-compose', :options => {:combine => false}
   commands dockercompose: 'docker-compose'
   commands docker: 'docker'
 
