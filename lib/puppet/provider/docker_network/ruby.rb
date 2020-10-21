@@ -28,12 +28,19 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
       new_flags = multi_flags.call(values, format)
       flags.concat(new_flags)
     end
-    if resource[:additional_flags].is_a?(String)
-      additional_flags = resource[:additional_flags].split
+
+    if defined?(resource[:additional_flags])
+      additional_flags = []
+      if resource[:additional_flags].is_a?(String)
+        additional_flags = resource[:additional_flags].split
+      elsif resource[:additional_flags].is_a?(Array)
+        additional_flags = resource[:additional_flags]
+      end
       additional_flags.each do |additional_flag|
         flags << additional_flag
       end
     end
+
     flags << resource[:name]
   end
 
