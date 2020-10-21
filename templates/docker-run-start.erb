@@ -9,6 +9,14 @@
     /usr/bin/<%= @docker_command %> pull <%= @image %>
 <% end -%>
 
+<% if @digest -%>
+    digest=$(docker image inspect <%= @image %> --format='{{index .RepoDigests 0}}')
+    if [ "$checksum" != "<%= @digest %>" ]; then
+      echo "Digest checksum mismatch!"
+      exit 2
+    fi
+<% end -%>
+
 /usr/bin/<%= @docker_command %> create \
 <%= @docker_run_flags %> \
 --name <%= @sanitised_title %> \
