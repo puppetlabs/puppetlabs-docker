@@ -10,8 +10,9 @@
 <% end -%>
 
 <% if @verify_digest -%>
-    digest=$(docker image inspect <%= @image %> --format='{{index .RepoDigests 0}}')
-    if [ "$checksum" != "<%= @verify_digest %>" ]; then
+    digest_local=$(docker image inspect <%= @image %> --format='{{index .RepoDigests 0}}')
+    digest_verify="<%= @verify_digest %>"
+    if [ "${digest_local##*:}" != "${digest_verify##*:}" ]; then
       echo "Digest checksum mismatch!"
       exit 2
     fi
