@@ -20,7 +20,7 @@
 # This will allow the docker container to be restarted if it dies, without
 # puppet help.
 #
-# @param digest
+# @param verify_digest
 #   (optional) Make sure, that the image has not modified. Compares the digest 
 #   checksum before starting the docker image.
 #
@@ -189,8 +189,8 @@
 #
 define docker::run(
   Optional[Pattern[/^[\S]*$/]]            $image,
-  Optional[String]                        $digest                            = undef,
   Optional[Enum[present,absent]]          $ensure                            = 'present',
+  Optional[String]                        $verify_digest                     = undef,
   Optional[String]                        $command                           = undef,
   Optional[Pattern[/^[\d]*(b|k|m|g)$/]]   $memory_limit                      = '0b',
   Variant[String,Array,Undef]             $cpuset                            = [],
