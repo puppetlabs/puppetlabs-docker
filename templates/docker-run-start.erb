@@ -9,9 +9,9 @@
     /usr/bin/<%= @docker_command %> pull <%= @image %>
 <% end -%>
 
-<% if @digest -%>
+<% if @verify_digest -%>
     digest=$(docker image inspect <%= @image %> --format='{{index .RepoDigests 0}}')
-    if [ "$checksum" != "<%= @digest %>" ]; then
+    if [ "$checksum" != "<%= @verify_digest %>" ]; then
       echo "Digest checksum mismatch!"
       exit 2
     fi
