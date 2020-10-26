@@ -53,10 +53,15 @@ class docker::repos (
         if $docker::manage_package {
           include apt
 
-          if $facts['os']['name'] == 'Debian' and $facts['os']['distro']['codename'] == 'wheezy' {
-            include apt::backports
+          if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
+            if $facts['os']['name'] == 'Debian' and $facts['os']['lsb']['distcodename'] == 'wheezy' {
+              include apt::backports
+            }
+          } else {
+            if $facts['os']['name'] == 'Debian' and $facts['os']['distro']['codename'] == 'wheezy' {
+              include apt::backports
+            }
           }
-
           Exec['apt_update']    -> Package[$docker::prerequired_packages]
           Apt::Source['docker'] -> Package['docker']
         }

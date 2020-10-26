@@ -136,7 +136,11 @@ class docker::params {
           }
         }
         default: {
-          $package_release            = "debian-${facts['os']['distro']['codename']}"
+          if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
+            $package_release            = "debian-${facts['os']['lsb']['distcodename']}"
+          } else {
+            $package_release            = "debian-${facts['os']['distro']['codename']}"
+          }
           $service_provider           = 'systemd'
           $storage_config             = '/etc/default/docker-storage'
           $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -164,7 +168,11 @@ class docker::params {
       $package_ce_source_location    = "https://download.docker.com/linux/${os_lc}"
       $package_ce_key_source         = "https://download.docker.com/linux/${os_lc}/gpg"
       $package_ce_key_id             = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
-      $package_ce_release            = $facts['os']['distro']['codename']
+      if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
+        $package_ce_release            = $facts['os']['lsb']['distcodename']
+      } else {
+        $package_ce_release            = $facts['os']['distro']['codename']
+      }
       $package_source_location       = 'http://apt.dockerproject.org/repo'
       $package_key_source            = 'https://apt.dockerproject.org/gpg'
       $package_key_check_source      = undef
@@ -172,7 +180,11 @@ class docker::params {
       $package_ee_source_location    = $docker_ee_source_location
       $package_ee_key_source         = $docker_ee_key_source
       $package_ee_key_id             = $docker_ee_key_id
-      $package_ee_release            = $facts['os']['distro']['codename']
+      if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
+        $package_ee_release            = $facts['os']['lsb']['distcodename']
+      } else {
+        $package_ee_release            = $facts['os']['distro']['codename']
+      }
       $package_ee_repos              = $docker_ee_repos
       $package_ee_package_name       = $docker_ee_package_name
 
