@@ -991,14 +991,14 @@ describe 'the Puppet Docker module' do
 
     it 'run with valid verify_digest' do
       apply_manifest(pp_valid_digest, catch_failures: true)
-      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: false) do |r| 
+      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: false) do |r|
         expect(r.stdout.include?('Digest verify failed!')).to be false
       end
     end
 
     it 'run with invalid verify_digest' do
       apply_manifest(pp_invalid_digest, catch_failures: true)
-      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: true) do |r| 
+      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: true) do |r|
         expect(r.stdout.include?('Digest verify failed!')).to be true
       end
     end
