@@ -13,7 +13,7 @@
     digest_local=$(docker image inspect <%= @image %> --format='{{index .RepoDigests 0}}')
     digest_verify="<%= @verify_digest %>"
     if [ "${digest_local##*:}" != "${digest_verify##*:}" ]; then
-      echo "Digest verify failed! Expected dhecksum 'sha256:$digest_verify' does not match with local checksum 'sha256:$digest_local'!"
+      echo "Digest verify failed! Expected checksum 'sha256:$digest_verify' does not match with local checksum 'sha256:$digest_local'!"
       exit 2
     fi
 <% end -%>
