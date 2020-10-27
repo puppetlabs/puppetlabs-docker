@@ -835,6 +835,35 @@ describe 'the Puppet Docker module' do
         apply_manifest(pp_delete, catch_failures: true)
       end
     end
+
+    it 'run with verify_digest' do
+      pp = <<-EOS
+        class { 'docker': #{docker_args} }
+        docker::image { '#{default_image}:#{default_image_tag}':
+            require => Class['docker'],
+        }
+        docker::run { '#{default_image}':
+          image         => '#{default_image}:#{default_image_tag}',
+          verify_digest => '#{default_local_digest}',
+        }
+        EOS
+      pp_invalid = <<-EOS
+        docker::run { '#{default_image}':
+          image         => '#{default_image}:#{default_image_tag}',
+          verify_digest => 'sha256:90659bf80b44ce6be8234e6ff90a1ac34acbeb826903b02cfa0da11c82cbc000',
+        }
+        EOS
+
+      apply_manifest(pp, catch_failures: true)
+      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: false) do |r|
+        expect(r.stdout.include?('Digest verify failed!')).to be false
+      end
+
+      apply_manifest(pp_invalid, catch_failures: true)
+      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: true) do |r|
+        expect(r.stdout.include?('Digest verify failed!')).to be true
+      end
+    end
   end
 
   describe 'docker::exec', win_broken: true do
@@ -964,43 +993,6 @@ describe 'the Puppet Docker module' do
         end
       end
       apply_manifest(pp_delete, catch_failures: true)
-    end
-  end
-
-  context 'When verify_digest is set', win_broken: true do
-    let(:pp_valid_digest) do
-      "
-        class { 'docker': #{docker_args} }
-        docker::image { '#{default_image}:#{default_image_tag}':
-            require => Class['docker'],
-        }
-        docker::run { '#{default_image}':
-          image         => '#{default_image}:#{default_image_tag}',
-          verify_digest => '#{default_local_digest}',
-        }
-    "
-    end
-    let(:pp_invalid_digest) do
-      "
-        docker::run { '#{default_image}':
-          image         => '#{default_image}:#{default_image_tag}',
-          verify_digest => 'sha256:90659bf80b44ce6be8234e6ff90a1ac34acbeb826903b02cfa0da11c82cbc000',
-        }
-    "
-    end
-
-    it 'run with valid verify_digest' do
-      apply_manifest(pp_valid_digest, catch_failures: true)
-      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: false) do |r|
-        expect(r.stdout.include?('Digest verify failed!')).to be false
-      end
-    end
-
-    it 'run with invalid verify_digest' do
-      apply_manifest(pp_invalid_digest, catch_failures: true)
-      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: true) do |r|
-        expect(r.stdout.include?('Digest verify failed!')).to be true
-      end
     end
   end
 end
