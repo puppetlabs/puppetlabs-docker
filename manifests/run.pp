@@ -23,6 +23,8 @@
 # @param verify_digest
 #   (optional) Make sure, that the image has not modified. Compares the digest 
 #   checksum before starting the docker image.
+#   To get the digest of an image, run the following command: 
+#     docker image inspect <<image>> --format='{{index .RepoDigests 0}}
 #
 # @param service_prefix
 #   (optional) The name to prefix the startup script with and the Puppet
