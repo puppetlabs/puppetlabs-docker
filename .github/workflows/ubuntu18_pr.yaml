@@ -14,6 +14,10 @@ jobs:
           - puppet5
           - puppet6
           - puppet7-nightly
+        exclude:
+          # newer OS not supported on older agent
+          - platform: ubuntu-20.04
+            collection: puppet5
 
     runs-on: ${{ matrix.platform }}
 
