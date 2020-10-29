@@ -1,10 +1,21 @@
-name: "Test on Ubuntu 18.04"
+name: "Test on Ubuntu Github Runners"
 
 on: [push, pull_request]
 
 jobs:
   Acceptance:
-    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-16.04
+          - ubuntu-18.04
+          - ubuntu-20.04
+        collection:
+          - puppet5
+          - puppet6
+          - puppet7-nightly
+
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - name: Checkout Source
@@ -44,7 +55,7 @@ jobs:
       - name: Install gems and puppet agent
         run: |
           bundle install
-          sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent'
+          sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
       - name: Install module
         run: bundle exec rake 'litmus:install_module'
