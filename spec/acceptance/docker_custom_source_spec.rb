@@ -23,9 +23,7 @@ end
 describe 'the Puppet Docker module' do
   context 'with download location', skip: skip do
     let(:pp) do
-      "
-      class { 'docker': #{docker_args} }
-  "
+      "class { 'docker': #{docker_args} }"
     end
 
     it 'runs successfully' do
