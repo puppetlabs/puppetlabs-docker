@@ -1,7 +1,5 @@
 require 'spec_helper_acceptance'
 
-skip = false
-
 if os[:family] == 'windows'
   docker_args = 'docker_ee => true, docker_ee_source_location => "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-14.zip"'
   default_image = 'winamd64/hello-seattle'
@@ -17,7 +15,7 @@ elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
   skip = true
 else
   docker_args = ''
-  skip = true
+  skip = false
 end
 
 describe 'the Puppet Docker module' do
