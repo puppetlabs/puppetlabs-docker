@@ -1,4 +1,4 @@
-name: "ubuntu1604"
+name: "Test on Ubuntu 16.04"
 
 on: [push, pull_request]
 
