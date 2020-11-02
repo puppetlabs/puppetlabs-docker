@@ -9,6 +9,7 @@ if os[:kernel] == 'windows'
                         'nanoserver-sac2016'
                       end
   default_digest = 'sha256:dcba85354678b50608b8c40ec6d17cce063a224aa0e12b6a55dc47b67f039e75'
+  default_local_digest = 'sha256:8421d9a84432575381bfabd248f1eb56f3aa21d9d7cd2511583c68c9b7511d10'
   second_image = 'winamd64/hola-mundo'
   default_dockerfile = 'C:/Users/Administrator/AppData/Local/Temp/Dockerfile'
   dockerfile_test = 'C:/Windows/Dockerfile_test.txt'
@@ -34,6 +35,7 @@ else
   second_image = 'busybox'
   default_image_tag = '3.7'
   default_digest = 'sha256:3dcdb92d7432d56604d4545cbd324b14e647b313626d99b889d0626de158f73a'
+  default_local_digest = 'sha256:8421d9a84432575381bfabd248f1eb56f3aa21d9d7cd2511583c68c9b7511d10'
   default_dockerfile = '/root/Dockerfile'
   dockerfile_test = "#{default_dockerfile}_test.txt"
   docker_command = 'docker'
@@ -831,6 +833,35 @@ describe 'the Puppet Docker module' do
           end
         end
         apply_manifest(pp_delete, catch_failures: true)
+      end
+    end
+
+    it 'run with verify_digest' do
+      pp = <<-EOS
+        class { 'docker': #{docker_args} }
+        docker::image { '#{default_image}:#{default_image_tag}':
+            require => Class['docker'],
+        }
+        docker::run { '#{default_image}':
+          image         => '#{default_image}:#{default_image_tag}',
+          verify_digest => '#{default_local_digest}',
+        }
+        EOS
+      pp_invalid = <<-EOS
+        docker::run { '#{default_image}':
+          image         => '#{default_image}:#{default_image_tag}',
+          verify_digest => 'sha256:90659bf80b44ce6be8234e6ff90a1ac34acbeb826903b02cfa0da11c82cbc000',
+        }
+        EOS
+
+      apply_manifest(pp, catch_failures: true)
+      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: false) do |r|
+        expect(r.stdout.include?('Digest verify failed!')).to be false
+      end
+
+      apply_manifest(pp_invalid, catch_failures: true)
+      run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: true) do |r|
+        expect(r.stdout.include?('Digest verify failed!')).to be true
       end
     end
   end

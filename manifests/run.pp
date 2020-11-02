@@ -20,6 +20,12 @@
 # This will allow the docker container to be restarted if it dies, without
 # puppet help.
 #
+# @param verify_digest
+#   (optional) Make sure, that the image has not modified. Compares the digest 
+#   checksum before starting the docker image.
+#   To get the digest of an image, run the following command: 
+#     docker image inspect <<image>> --format='{{index .RepoDigests 0}}
+#
 # @param service_prefix
 #   (optional) The name to prefix the startup script with and the Puppet
 #   service resource title with.  Default: 'docker-'
@@ -186,6 +192,7 @@
 define docker::run(
   Optional[Pattern[/^[\S]*$/]]            $image,
   Optional[Enum[present,absent]]          $ensure                            = 'present',
+  Optional[String]                        $verify_digest                     = undef,
   Optional[String]                        $command                           = undef,
   Optional[Pattern[/^[\d]*(b|k|m|g)$/]]   $memory_limit                      = '0b',
   Variant[String,Array,Undef]             $cpuset                            = [],
