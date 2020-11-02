@@ -1,7 +1,5 @@
 require 'spec_helper_acceptance'
 
-skip = false
-
 if os[:family] == 'windows'
   docker_args = 'docker_ee => true, docker_ee_source_location => "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-14.zip"'
   default_image = 'winamd64/hello-seattle'
@@ -14,10 +12,12 @@ if os[:family] == 'windows'
   skip = false
 elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
   docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
+  default_image = 'busybox'
   skip = true
 else
   docker_args = ''
-  skip = true
+  default_image = 'busybox'
+  skip = false
 end
 
 describe 'the Puppet Docker module' do
@@ -83,7 +83,7 @@ describe 'the Puppet Docker module' do
     EOS
 
       apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true) unless selinux == 'true'
+      apply_manifest(pp) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 15
