@@ -5,10 +5,7 @@ volume_name = 'test-volume'
 if os[:family] == 'windows'
   docker_args = 'docker_ee => true'
   command = '"/cygdrive/c/Program Files/Docker/docker"'
-elsif 'osfamily' == 'RedHat'
-  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
-  command = 'docker'
-elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
+elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
   docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
   command = 'docker'
 else

@@ -235,13 +235,7 @@ class docker::params {
         $docker_group = 'dockerroot'
         $socket_group = 'dockerroot'
       }
-
-      # repo_opt to specify install_options for docker package
-      if $facts['os']['name'] == 'RedHat' {
-        $repo_opt = '--enablerepo=rhel-7-server-extras-rpms'
-      } else {
-        $repo_opt = undef
-      }
+      $repo_opt = undef
     }
     'windows' : {
       $msft_nuget_package_provider_version = $nuget_package_provider_version
