@@ -13,29 +13,23 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     Puppet.info("Checking for compose project #{name}")
     compose_services = {}
     compose_containers = []
-    resource[:compose_files].each do |file|
-      compose_file = YAML.safe_load(File.read(file), [], [], true)
-      # rubocop:disable Style/StringLiterals
-      containers = docker([
-                            'ps',
-                            '--format',
-                            "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
-                            '--filter',
-                            "label=com.docker.compose.project=#{name}",
-                          ]).split("\n")
-      compose_containers.push(*containers)
-      compose_containers.uniq!
-      # rubocop:enable Style/StringLiterals
-      case compose_file['version']
-      when %r{^2(\.[0-3])?$}, %r{^3(\.\d+)?$}
-        compose_services.deep_merge!(compose_file['services'])
-      # in compose v1 "version" parameter is not specified
-      when nil
-        compose_services.deep_merge!(compose_file)
-      else
-        raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-      end
-    end
+
+    # get merged config using docker-compose config
+    args = [compose_files, '-p', name, 'config'].insert(3, resource[:options]).compact
+    compose_output = YAML.safe_load(execute([command(:dockercompose)] + args, combine: false))
+
+    # rubocop:disable Style/StringLiterals
+    containers = docker([
+                          'ps',
+                          '--format',
+                          "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
+                          '--filter',
+                          "label=com.docker.compose.project=#{name}",
+                        ]).split("\n")
+    compose_containers.push(*containers)
+    compose_containers.uniq!
+
+    compose_services = compose_output['services']
 
     if compose_services.count != compose_containers.count
       return false
