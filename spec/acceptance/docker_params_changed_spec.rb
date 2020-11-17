@@ -13,11 +13,7 @@ if os[:family] == 'windows'
                    'stefanscherer/nanoserver:10.0.17763.1040'
                  end
 else
-  docker_args = if os[:family] == 'redhat'
-                  "repo_opt => '--enablerepo=localmirror-extras'"
-                else
-                  ''
-                end
+  docker_args = ''
   docker_network = 'bridge'
   volume_location = '/opt'
   docker_image = 'hello-world:linux'

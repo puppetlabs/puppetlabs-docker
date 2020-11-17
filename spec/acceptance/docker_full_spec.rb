@@ -24,9 +24,7 @@ if os[:kernel] == 'windows'
   docker_mount_path = 'C:/Users/Public/DockerVolume'
   storage_driver = 'windowsfilter'
 else
-  docker_args = if os[:family] == 'redhat'
-                  "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
+  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
