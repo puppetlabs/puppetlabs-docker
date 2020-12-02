@@ -645,7 +645,7 @@ docker_compose { 'test':
   scale   => {
     'compose_test' => 2,
   },
-  options => '--x-networking'
+  options => ['--x-networking']
 }
 ```
 
