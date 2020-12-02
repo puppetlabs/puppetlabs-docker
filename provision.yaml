@@ -1,0 +1,19 @@
+---
+  default:
+    provisioner: vagrant
+    images: [ 'ubuntu/xenial64', 'ubuntu/bionic64']
+  centos:
+    provisioner: vagrant
+    images: ['centos/7']
+  debian:
+    provisioner: vagrant
+    images: ['debian/stretch64', 'debian/buster64']
+  win:
+    provisioner: vagrant
+    images: ['gusztavvargadr/windows-server']
+  release_checks_5:
+    provisioner: abs
+    images: ['redhat-7-x86_64','centos-7-x86_64', 'ubuntu-1604-x86_64', 'ubuntu-1804-x86_64',  'debian-9-x86_64', 'debian-10-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
+  release_checks_6:
+    provisioner: abs
+    images: ['redhat-7-x86_64','centos-7-x86_64', 'ubuntu-1604-x86_64', 'ubuntu-1804-x86_64',  'ubuntu-2004-x86_64', 'debian-9-x86_64', 'debian-10-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']

@@ -1,19 +1,18 @@
-# == Define: docker::system_user
+# @summary manage docker group users
 #
-# Define to manage docker group users
-#
-# === Parameters
-# [*create_user*]
+# @param create_user
 #   Boolean to cotrol whether the user should be created
 #
-define docker::system_user (
-  $create_user = true) {
-
+define docker::system_user(
+  $create_user = true
+) {
   include docker
+
   $docker_group = $docker::docker_group
 
   if $create_user {
     ensure_resource('user', $name, {'ensure' => 'present' })
+
     User[$name] -> Exec["docker-system-user-${name}"]
   }
 

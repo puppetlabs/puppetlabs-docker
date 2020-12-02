@@ -13,7 +13,7 @@ Puppet::Type.newtype(:docker_volume) do
     desc 'The volume driver used by the volume'
   end
 
-  newproperty(:options) do
+  newparam(:options) do
     desc 'Additional options for the volume driver'
   end
 

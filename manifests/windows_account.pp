@@ -1,7 +1,7 @@
-# == Define: docker::windows_account
+# @summary
+#   Windows account that owns the docker services
 #
-# Define the Windows account that owns the docker services
-#
-define docker::windows_account () {
-    notice('Not implemented')
+define docker::windows_account(
+) {
+  notice('Not implemented')
 }

@@ -1,37 +1,35 @@
-# == Class: docker
+# @summary
+#  Module to install an up-to-date version of Docker from a package repository.
+#  Only for Debian, Red Hat and Windows
 #
-# Module to install an up-to-date version of Docker from a package repository.
-# This module works only on Debian Red Hat and Windows based distributions.
-#
-# === Parameters
-# [*version*]
+# @param version
 #   The package version to install, used to set the package name.
 #
-# [*nuget_package_provider_version*]
+# @param nuget_package_provider_version
 #   The version of the NuGet Package provider
-#   Default: undef
 #
-# [*docker_msft_provider_version*]
+# @param docker_msft_provider_version
 #   The version of the Microsoft Docker Provider Module
-#   Default: undef
 #
-# [*docker_ee_package_name*]
+# @param docker_ee_package_name
 #   The name of the Docker Enterprise Edition package
-#   Default: Docker
-
-
-class docker::install (
+#
+# @param docker_download_url
+#
+# @param dependent_packages
+#
+class docker::install(
   $version                        = $docker::version,
   $nuget_package_provider_version = $docker::nuget_package_provider_version,
   $docker_msft_provider_version   = $docker::docker_msft_provider_version,
   $docker_ee_package_name         = $docker::docker_ee_package_name,
   $docker_download_url            = $docker::package_location,
   $dependent_packages             = $docker::dependent_packages,
-
 ) {
   $docker_start_command = $docker::docker_start_command
-  if $::osfamily and !::docker::acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $::osfamily) |$a, $b| {
+
+  if $facts['os']['family'] and ! $docker::acknowledge_unsupported_os {
+    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
       fail(translate('This module only works on Debian, RedHat or Windows.'))
     }
   }
@@ -49,7 +47,7 @@ class docker::install (
     }
 
     if $docker::package_source {
-      case $::osfamily {
+      case $facts['os']['family'] {
         'Debian' : {
           $pk_provider = 'dpkg'
         }
@@ -85,11 +83,12 @@ class docker::install (
 
 
     } else {
-      if $::osfamily != 'windows' {
+      if $facts['os']['family'] != 'windows' {
         ensure_resource('package', 'docker', merge($docker_hash, {
           ensure => $ensure,
           name   => $docker::docker_package_name,
         }))
+
         if $ensure == 'absent' {
           ensure_resource('package', $dependent_packages, {
             ensure => $ensure,
@@ -121,6 +120,7 @@ class docker::install (
               notify    => Exec['service-restart-on-failure'],
             }
           }
+
           exec { 'service-restart-on-failure':
             command     => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
             refreshonly => true,

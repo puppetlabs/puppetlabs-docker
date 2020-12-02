@@ -4,12 +4,12 @@ broken = false
 command = 'docker'
 network_name = 'test-network'
 
-if fact('osfamily') == 'windows'
+if os[:family] == 'windows'
   puts 'Not implemented on Windows'
   broken = true
-elsif fact('osfamily') == 'RedHat'
+elsif os[:family] == 'RedHat'
   docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
-elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
   docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
 else
   docker_args = ''
@@ -21,13 +21,13 @@ describe 'docker network', win_broken: broken do
     apply_manifest(install_pp, catch_failures: true)
   end
 
-  describe command("#{command} network --help") do
-    its(:exit_status) { is_expected.to eq 0 }
+  it "#{command} network --help" do
+    run_shell("#{command} network --help", expect_failures: false)
   end
 
   context 'with a local bridge network described in Puppet' do
     after(:all) do
-      shell("#{command} network rm #{network_name}")
+      run_shell("#{command} network rm #{network_name}")
     end
 
     it 'is idempotent' do
@@ -36,11 +36,11 @@ describe 'docker network', win_broken: broken do
           ensure => present,
         }
       MANIFEST
-      idempotent_apply(default, pp, {})
+      idempotent_apply(pp)
     end
 
     it 'has created a network' do
-      shell("#{command} network inspect #{network_name}", acceptable_exit_codes: [0])
+      run_shell("#{command} network inspect #{network_name}", expect_failures: false)
     end
   end
 end

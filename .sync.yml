@@ -1,43 +1,49 @@
 ---
-.gitlab-ci.yml:
+".gitlab-ci.yml":
   delete: true
-
-.rubocop.yml:
-   default_configs:
-    inherit_from: .rubocop_todo.yml
+".rubocop.yml":
+  default_configs:
+    inherit_from: ".rubocop_todo.yml"
     require:
-      - rubocop-rspec
-
-.travis.yml:
+    - rubocop-rspec
+".travis.yml":
+  deploy_to_forge:
+    enabled: false
   docker_sets:
-    - set: docker/debian-8
-    - set: docker/ubuntu-14.04
+  - set: docker/debian-8
+  - set: docker/ubuntu-14.04
   docker_defaults:
-    bundler_args: ""
-  secure: ""
+    bundler_args: ''
+  secure: ''
   branches:
-    - release
-
+  - release
+  simplecov: true
+  notifications:
+    slack:
+      secure: >-
+        hvYQAWaLeSyzyWeryph15CXqYFmy/jszkW13fhsteTwQjiVpuW950Z+hO0us7z1+G34wLvUC8uMrQw7F64h8qq6o2GR98r5HS4XvhkkuIymXdQoFWwsuMzh6EkKsLqYbw8Th+b1Wy8jQprZulAssfiV+r1FlSuyj4uvxkge/oheENgfs77tQOK0yCdvOyNtZeBS+hfbd26eAHZCkzPaJQJ0brZIg73B86w4Lu5+JtD5bys7NDq69jmXWzYHDGx4A0d7uI880L0tjDdcZxxlsLFYm0sESpWPHitWx/XaQwCbif6OOM59c0/W7yBwMTim3++C2BpVjD0pq0cRVgqNvqRpe0xSQ8rZ4RNZdkmdjZdz+ZX7HADJh1nKwmlzv0YYpUQNZoWcyTikkYKeHQjgwxPutxMFSioMcZFXYjo49Y5601VlKOkWI+afyrbh0s4nJnHinmk0cvyIK8svlltrUO/oXpONODJv5AJvGVp7/EeeGlYWz4yfV11+nwIbSpLM+VZdLCoULC08N1jCAoLVmSiGkZDdjuC1+jNuDjnaPKFKgTOjf6FWGN6mElrtyitYvvrw23LAvHBs49uVKOYEhUlCIM4dTqg5kapMLcJg8CTTjBXaWIzJHwlCUMwTh3CLBkOf5WFi5/gzKVFFvbamaqIFpv2K4Cf8DqB6mOgGAlrI=
 appveyor.yml:
   delete: true
-
 Gemfile:
   optional:
-    ':development':
-      - gem: 'github_changelog_generator'
-        git: 'https://github.com/skywinder/github-changelog-generator'
-        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
-        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
+    ":development":
+    - gem: ruby-pwsh
+    - gem: github_changelog_generator
+      git: https://github.com/skywinder/github-changelog-generator
+      ref: 20ee04ba1234e9e83eb2ffb5056e23d641c7a018
+      condition: Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')
   required:
-    ':system_tests':
-      - gem: 'puppet-module-posix-system-r#{minor_version}'
-        platforms: ruby
-      - gem: 'puppet-module-win-system-r#{minor_version}'
-        platforms:
-          - mswin
-          - mingw
-          - x64_mingw
-      - gem: 'rspec-retry'
-
+    ":system_tests":
+    - gem: puppet-module-posix-system-r#{minor_version}
+      platforms: ruby
+    - gem: puppet-module-win-system-r#{minor_version}
+      platforms:
+      - mswin
+      - mingw
+      - x64_mingw
+    - gem: rspec-retry
+Rakefile:
+  changelog_since_tag: 3.5.0
 spec/spec_helper.rb:
   unmanaged: true
+  coverage_report: true

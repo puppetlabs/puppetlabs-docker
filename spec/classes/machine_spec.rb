@@ -11,6 +11,7 @@ describe 'docker::machine', type: :class do
       kernelrelease: '3.8.0-29-generic',
       operatingsystemrelease: '10.04',
       operatingsystemmajrelease: '10',
+      os: { distro: { codename: 'maverick' }, family: 'Debian', name: 'Ubuntu', release: { major: '10', full: '10.04' } },
     }
   end
 
@@ -110,6 +111,22 @@ describe 'docker::machine', type: :class do
     it {
       is_expected.to contain_exec('Install Docker Machine 0.16.0').with_command(
         'curl -s -S -L --proxy http://10.10.10.10:3128/ https://github.com/docker/machine/releases/download/v0.16.0/docker-machine-Linux-x86_64 -o /usr/local/bin/docker-machine-0.16.0',
+      )
+    }
+  end
+
+  context 'with docker_machine_url is provided' do
+    let(:params) do
+      {
+        version: '0.16.2',
+        url: 'https://gitlab-docker-machine-downloads.s3.amazonaws.com/v0.16.2-gitlab.3/docker-machine',
+      }
+    end
+
+    it { is_expected.to compile }
+    it {
+      is_expected.to contain_exec('Install Docker Machine 0.16.2').with_command(
+        'curl -s -S -L  https://gitlab-docker-machine-downloads.s3.amazonaws.com/v0.16.2-gitlab.3/docker-machine -o /usr/local/bin/docker-machine-0.16.2',
       )
     }
   end

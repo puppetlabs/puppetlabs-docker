@@ -7,13 +7,13 @@ describe volume do
     [
       :name,
       :provider,
+      :options,
     ]
   end
 
   let :properties do
     [
       :driver,
-      :options,
       :mountpoint,
     ]
   end

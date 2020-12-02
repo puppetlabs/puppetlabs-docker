@@ -53,6 +53,7 @@ require 'spec_helper'
           {
             osfamily: 'Gentoo',
             operatingsystem: 'Generic',
+            os: { distro: { codename: 'Generic' }, family: 'Gentoo', name: 'Generic', release: { major: '8', full: '8.2' } },
           }
         end
 
@@ -74,6 +75,7 @@ require 'spec_helper'
 
         if systemd
           it { is_expected.to contain_file(initscript).with_content(%r{^SyslogIdentifier=docker-sample$}) }
+          it { is_expected.to contain_file(initscript).with_content(%r{^WantedBy=docker.service$}) }
         end
       end
 
@@ -104,6 +106,7 @@ require 'spec_helper'
           it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?docker-foo.service}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?docker-bar.service}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?docker-foo_bar-baz.service}) }
+          it { is_expected.to contain_file(initscript).with_content(%r{WantedBy=docker.service}) }
         else
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+docker-foo}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+docker-bar}) }
@@ -132,12 +135,24 @@ require 'spec_helper'
             it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?foo.service(\s+|$)}) }
             it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?bar.service(\s+|$)}) }
             it { is_expected.to contain_file(initscript).with_content(%r{Requires=(.*\s+)?baz.target(\s+|$)}) }
+            it { is_expected.to contain_file(initscript).with_content(%r{WantedBy=docker.service}) }
           end
         else
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+foo}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Start:.*\s+bar}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Stop:.*\s+foo}) }
           it { is_expected.to contain_file(initscript).with_content(%r{Required-Stop:.*\s+bar}) }
+        end
+      end
+
+      context 'with different docker service name' do
+        # let(:pre_condition) { ["class { 'docker': docker_group => 'docker', service_name => 'dockerd', service_provider => systemd, acknowledge_unsupported_os => true }"] }
+        let(:pre_condition) { pre_condition.gsub("service_name => 'docker'", "service_name => 'dockerd'") }
+
+        let(:params) { params }
+
+        if systemd
+          it { is_expected.to contain_file(initscript).with_content(%r{^WantedBy=dockerd.service$}) }
         end
       end
 
@@ -534,6 +549,30 @@ require 'spec_helper'
         let(:params) { params.merge('before_stop' => false) }
 
         it { is_expected.not_to contain_file(stopscript_or_init).with_content(%r{before_stop}) }
+      end
+
+      context 'when `after_start` is set' do
+        let(:params) { params.merge('after_start' => 'echo after_start') }
+
+        it { is_expected.to contain_file(startscript_or_init).with_content(%r{after_start}) }
+      end
+
+      context 'when `after_start` is not set' do
+        let(:params) { params.merge('after_start' => false) }
+
+        it { is_expected.not_to contain_file(startscript_or_init).with_content(%r{after_start}) }
+      end
+
+      context 'when `after_stop` is set' do
+        let(:params) { params.merge('after_stop' => 'echo after_stop') }
+
+        it { is_expected.to contain_file(stopscript_or_init).with_content(%r{after_stop}) }
+      end
+
+      context 'when `after_stop` is not set' do
+        let(:params) { params.merge('after_stop' => false) }
+
+        it { is_expected.not_to contain_file(stopscript_or_init).with_content(%r{after_stop}) }
       end
 
       context 'when `after_create` is set' do

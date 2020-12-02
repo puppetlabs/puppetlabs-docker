@@ -4,22 +4,24 @@ broken = false
 
 registry_port = 5000
 
-if fact('osfamily') == 'windows'
-  win_host = only_host_with_role(hosts, 'default')
-  @windows_ip = win_host.ip
-  docker_arg = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+if os[:family] == 'windows'
+  result = run_shell("ipconfig | findstr /i 'ipv4'")
+  raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
+  ip = result.stdout.split("\n")[0].split(':')[1].strip
+  @windows_ip = ip
+  docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   docker_registry_image = 'stefanscherer/registry-windows'
   docker_network = 'nat'
   registry_host = @windows_ip
   config_file = '/cygdrive/c/Users/Administrator/.docker/config.json'
-  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   server_strip = "#{registry_host}_#{registry_port}"
   bad_server_strip = "#{registry_host}_5001"
   broken = true
 else
-  docker_args = if fact('osfamily') == 'RedHat'
+  docker_args = if os[:family] == 'redhat'
                   "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif fact('os.name') == 'Ubuntu' && fact('os.release.full') == '14.04'
+                elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
@@ -41,15 +43,40 @@ describe 'docker' do
   context 'When adding system user', win_broken: broken do
     let(:pp) do
       "
-             class { 'docker': #{docker_arg}
+             class { 'docker': #{docker_args},
                docker_users => ['user1']
              }
-     "
+      "
     end
 
     it 'the docker daemon' do
       apply_manifest(pp, catch_failures: true) do |r|
         expect(r.stdout).not_to match(%r{docker-systemd-reload-before-service})
+      end
+    end
+  end
+
+  context 'When root_dir is set' do
+    let(:pp) do
+      "class { 'docker': #{docker_args}, root_dir => \"#{root_dir}\"}"
+    end
+
+    let(:shell_command) do
+      if os[:family] == 'windows'
+        'cat C:/ProgramData/docker/config/daemon.json'
+      else
+        'systemctl status docker'
+      end
+    end
+
+    it 'works' do
+      apply_manifest(pp, catch_failures: true)
+      run_shell(shell_command) do |r|
+        if os[:family] == 'windows'
+          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
+        else
+          expect(r.stdout).to match(%r{--data-root #{root_dir}})
+        end
       end
     end
   end
@@ -92,36 +119,40 @@ describe 'docker' do
       it { is_expected.to be_running }
     end
 
-    describe command("#{command} version") do
-      its(:exit_status) { is_expected.to eq 0 }
+    it "#{command} version" do
+      run_shell("#{command} version", expect_failures: false)
     end
 
-    describe command("#{command} images"), sudo: true do
-      its(:exit_status) { is_expected.to eq 0 }
-      its(:stdout) { is_expected.to match %r{nginx} }
+    it "#{command} images" do
+      result = run_shell("sudo #{command} images", expect_failures: false)
+      expect(result[:exit_code]).to eq 0
+      expect(result[:stdout]).to match %r{nginx}
     end
 
-    describe command("#{command} inspect nginx"), sudo: true do
-      its(:exit_status) { is_expected.to eq 0 }
+    it "#{command} inspect nginx" do
+      run_shell("sudo #{command} inspect nginx", expect_failures: false)
     end
 
-    describe command("#{command} inspect nginx2"), sudo: true do
-      its(:exit_status) { is_expected.to eq 0 }
+    it "#{command} inspect nginx2" do
+      run_shell("sudo #{command} inspect nginx2", expect_failures: false)
     end
 
-    describe command("#{command} ps --no-trunc | grep `cat /var/run/docker-nginx2.cid`"), sudo: true do
-      its(:exit_status) { is_expected.to eq 0 }
-      its(:stdout) { is_expected.to match %r{nginx -g 'daemon off;'} }
+    it "#{command} ps --no-trunc | grep `cat /var/run/docker-nginx2.cid`" do
+      result = run_shell("sudo #{command} ps --no-trunc | grep `cat /var/run/docker-nginx2.cid`", expect_failures: false)
+      expect(result[:exit_code]).to eq 0
+      expect(result[:stdout]).to match %r{nginx -g 'daemon off;'}
     end
 
-    describe command('netstat -tlndp') do
-      its(:exit_status) { is_expected.to eq 0 }
-      its(:stdout) { is_expected.to match %r{0\.0\.0\.0\:80} }
+    it 'netstat -tlndp' do
+      result = run_shell('netstat -tlndp')
+      expect(result[:exit_code]).to eq 0
+      expect(result[:stdout]).to match %r{0\.0\.0\.0\:80}
     end
 
-    describe command('id testuser | grep docker') do
-      its(:exit_status) { is_expected.to eq 0 }
-      its(:stdout) { is_expected.to match %r{docker} }
+    it 'id testuser | grep docker' do
+      result = run_shell('id testuser | grep docker')
+      expect(result[:exit_code]).to eq 0
+      expect(result[:stdout]).to match %r{docker}
     end
   end
 
@@ -154,7 +185,7 @@ describe 'docker' do
     end
 
     it 'has a registry mirror set' do
-      shell('ps -aux | grep docker') do |r|
+      run_shell('ps -aux | grep docker') do |r|
         expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror.io})
       end
     end
@@ -171,7 +202,7 @@ describe 'docker' do
 
     it 'is able to run registry' do
       pp = <<-MANIFEST
-        class { 'docker': #{docker_arg}}
+        class { 'docker': #{docker_args}}
         docker::run { 'registry':
           image         => '#{docker_registry_image}',
           pull_on_start => true,
@@ -188,7 +219,7 @@ describe 'docker' do
       sleep 10
     end
 
-    it 'is able to login to the registry', retry: 3, retry_wait: 10 do
+    it 'is able to login to the registry', retry: 3, retry_wait: 10, win_broken: true do
       pp = <<-MANIFEST
         docker::registry { '#{registry_address}':
           username => 'username',
@@ -196,30 +227,30 @@ describe 'docker' do
         }
       MANIFEST
       apply_manifest(pp, catch_failures: true)
-      shell("grep #{registry_address} #{config_file}", acceptable_exit_codes: [0])
-      shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{server_strip}_root\"", acceptable_exit_codes: [0])
+      run_shell("grep #{registry_address} #{config_file}", expect_failures: false)
+      run_shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{server_strip}_root\"", expect_failures: false)
     end
 
-    it 'is able to logout from the registry' do
+    it 'is able to logout from the registry', win_broken: true do
       pp = <<-MANIFEST
         docker::registry { '#{registry_address}':
           ensure=> absent,
         }
       MANIFEST
       apply_manifest(pp, catch_failures: true)
-      shell("grep #{registry_address} #{config_file}", acceptable_exit_codes: [1, 2])
+      run_shell("grep #{registry_address} #{config_file}", expect_failures: true)
     end
 
-    it 'does not create receipt if registry login fails' do
+    it 'does not create receipt if registry login fails', win_broken: true do
       pp = <<-MANIFEST
         docker::registry { '#{registry_bad_address}':
           username => 'username',
           password => 'password',
         }
       MANIFEST
-      apply_manifest(pp, catch_failures: true)
-      shell("grep #{registry_bad_address} #{config_file}", acceptable_exit_codes: [1, 2])
-      shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{bad_server_strip}_root\"", acceptable_exit_codes: [1])
+      apply_manifest(pp, catch_failures: false)
+      run_shell("grep #{registry_bad_address} #{config_file}", expect_failures: true)
+      run_shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{bad_server_strip}_root\"", expect_failures: true)
     end
   end
 end

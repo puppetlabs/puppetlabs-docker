@@ -2,7 +2,6 @@
 
 require 'facter'
 require 'json'
-require 'etc'
 
 Facter.add(:docker_systemroot) do
   confine osfamily: :windows
@@ -32,17 +31,6 @@ Facter.add(:docker_user_temp_path) do
   end
 end
 
-Facter.add(:docker_home_dirs) do
-  confine kernel: 'Linux'
-  setcode do
-    home_dirs = {}
-    Etc.passwd do |user|
-      home_dirs[user.name] = user.dir
-    end
-    home_dirs
-  end
-end
-
 docker_command = if Facter.value(:kernel) == 'windows'
                    'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
                  else
@@ -56,7 +44,13 @@ end
 Facter.add(:docker_client_version) do
   setcode do
     docker_version = Facter.value(:docker_version)
-    docker_version['Client']['Version'] if docker_version
+    if docker_version
+      if !docker_version['Client'].nil?
+        docker_version['Client']['Version']
+      else
+        docker_version['Version']
+      end
+    end
   end
 end
 
@@ -74,7 +68,7 @@ end
 Facter.add(:docker_version) do
   setcode do
     if Facter::Util::Resolution.which('docker')
-      value = Facter::Core::Execution.execute(
+      value = Facter::Util::Resolution.exec(
         "#{docker_command} version --format '{{json .}}'",
       )
       val = JSON.parse(value)

@@ -27,6 +27,7 @@
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
+7. [Acceptance](#acceptance)
 
 
 ## Description
@@ -235,6 +236,14 @@ class { 'docker':
 }
 ```
 
+If the curl package is being managed elsewhere and the curl ensure in this module is conflicting,
+ it can be disabled by setting the following parameter globally or in compose / machine resources:
+```puppet
+class { 'docker':
+  curl_ensure => false
+}
+```
+
 ### Proxy on Windows
 
 To use docker through a proxy on Windows, a System Environment Variable HTTP_PROXY/HTTPS_PROXY must be set. See [Docker Engine on Windows](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/configure-docker-daemon#proxy-configuration)
@@ -392,6 +401,8 @@ docker::run { 'helloworld':
   pull_on_start    => false,
   before_stop      => 'echo "So Long, and Thanks for All the Fish"',
   before_start     => 'echo "Run this on the host before starting the Docker container"',
+  after_stop       => 'echo "container has stopped"',
+  after_start      => 'echo "container has started"',
   after            => [ 'container_b', 'mysql' ],
   depends          => [ 'container_a', 'postgres' ],
   stop_wait_time   => 0,
@@ -406,7 +417,7 @@ To pull the image before it starts, specify the `pull_on_start` parameter.
 
 Use the `detach` param to run container a container without the `-a` flag. This is only required on systems without `systemd`. This default is set in the params.pp based on the OS. Only override if you understand the consuquences and have a specific use case.
 
-To execute a command before the container stops, specify the `before_stop` parameter.
+To execute a command before the container starts or stops, specify the `before_start` or `before_stop` parameters, respectively. Similarly, you can specify the `after_start` or `after_stop` parameters to run a command after the container starts or stops.
 
 Adding the container name to the `after` parameter to specify which containers start first, affects the generation of the `init.d/systemd` script.
 
@@ -541,12 +552,9 @@ You can pass additional mount options to the `local` driver. For mounting an NFS
 docker_volume { 'nfs-volume':
   ensure  => present,
   driver  => 'local',
-  options => {
-    type   => 'nfs4',
-    o      => 'addr=10.10.10.10,rw',
-    device => ':/exports/data'
-  },
+  options => ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
 }
+
 ```
 
 The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default `local` is used.
@@ -563,9 +571,7 @@ docker::volumes:
     ensure: present
     driver: local
     options:
-      type: "nfs"
-      o: "addr=%{custom_manager},rw",
-      device: ":/srv/blueocean"
+      - ['type=nfs','o=addr=%{custom_manager},rw','device=:/srv/blueocean']
 ```
 
 Available parameters for `options` depend on the used volume driver. For details, see
@@ -657,7 +663,7 @@ Please note you should supply your master docker-compose file as the first eleme
 
 If you are using a v3.2 compose file or above on a Docker Swarm cluster, use the `docker::stack` class. Include the file resource before you run the stack command.
 
-NOTE: this define will be deprecated in a future release in favor of the [docker stack type](#types)
+NOTE: this define will be deprecated in a future release in favor of the [docker stack type](REFERENCE.md#docker_stack)
 
 To deploy the stack, add the following code to the manifest file:
 
@@ -681,15 +687,17 @@ docker::stack { 'yourapp':
   ensure  => present,
   stack_name => 'yourapp',
   compose_files => ['/tmp/docker-compose.yaml'],
+  with_registry_auth => true,
   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
 
-To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the documentation for [here](#Types)
+To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the [docker_stack type documentation](REFERENCE.md#docker_stack).
 ```puppet
 docker_stack { 'test':
   compose_files => ['/tmp/docker-compose.yml'],
   ensure  => present,
+  up_args => '--with-registry-auth',
 }
 ```
 
@@ -1001,6 +1009,7 @@ This module supports:
 * Centos 7.0
 * Debian 8.0
 * Debian 9.0
+* Debian 10
 * RedHat 7.0
 * Ubuntu 14.04
 * Ubuntu 16.04
@@ -1010,3 +1019,8 @@ This module supports:
 ## Development
 
 If you would like to contribute to this module, see the guidelines in [CONTRIBUTING.MD](https://github.com/puppetlabs/puppetlabs-docker/blob/master/CONTRIBUTING.md).
+
+## Acceptance
+
+Acceptance tests for this module leverage [puppet_litmus](https://github.com/puppetlabs/puppet_litmus).
+To run the acceptance tests follow the instructions [here](https://github.com/puppetlabs/puppet_litmus/wiki/Tutorial:-use-Litmus-to-execute-acceptance-tests-with-a-sample-module-(MoTD)#install-the-necessary-gems-for-the-module).

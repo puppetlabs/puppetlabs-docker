@@ -1,0 +1,10 @@
+{
+  "description": "Remove one replicated service",
+  "input_method": "stdin",
+  "parameters": {
+    "service": {
+      "description": "Name or ID of the service",
+      "type": "String[1]"
+    }
+  }
+}

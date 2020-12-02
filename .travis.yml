@@ -1,32 +1,34 @@
 ---
+os: linux
+dist: xenial
 language: ruby
 cache: bundler
 before_install:
   - bundle -v
   - rm -f Gemfile.lock
-  - gem update --system $RUBYGEMS_VERSION
+  - "# Update system gems if requested. This is useful to temporarily workaround troubles in the test runner"
+  - "# See https://github.com/puppetlabs/pdk-templates/commit/705154d5c437796b821691b707156e1b056d244f for an example of how this was used"
+  - "# Ignore exit code of SIGPIPE'd yes to not fail with shell's pipefail set"
+  - '[ -z "$RUBYGEMS_VERSION" ] || (yes || true) | gem update --system $RUBYGEMS_VERSION'
   - gem --version
   - bundle -v
 script:
-  - 'bundle exec rake $CHECK'
+  - 'SIMPLECOV=yes bundle exec rake $CHECK'
 bundler_args: --without system_tests
 rvm:
-  - 2.5.3
+  - 2.5.7
 stages:
   - static
   - spec
   - acceptance
-  -
-    if: tag =~ ^v\d
-    name: deploy
-matrix:
+jobs:
   fast_finish: true
   include:
     -
       bundler_args: 
       dist: trusty
       env: PUPPET_INSTALL_TYPE=agent BEAKER_debug=true BEAKER_PUPPET_COLLECTION=puppet6 BEAKER_set=docker/debian-8 BEAKER_TESTMODE=apply
-      rvm: 2.5.3
+      rvm: 2.5.7
       script: bundle exec rake beaker
       services: docker
       stage: acceptance
@@ -35,7 +37,7 @@ matrix:
       bundler_args: 
       dist: trusty
       env: PUPPET_INSTALL_TYPE=agent BEAKER_debug=true BEAKER_PUPPET_COLLECTION=puppet6 BEAKER_set=docker/ubuntu-14.04 BEAKER_TESTMODE=apply
-      rvm: 2.5.3
+      rvm: 2.5.7
       script: bundle exec rake beaker
       services: docker
       stage: acceptance
@@ -49,11 +51,8 @@ matrix:
       stage: spec
     -
       env: PUPPET_GEM_VERSION="~> 6.0" CHECK=parallel_spec
-      rvm: 2.5.3
+      rvm: 2.5.7
       stage: spec
-    -
-      env: DEPLOY_TO_FORGE=yes
-      stage: deploy
 branches:
   only:
     - master
@@ -61,3 +60,5 @@ branches:
     - release
 notifications:
   email: false
+  slack:
+    secure: hvYQAWaLeSyzyWeryph15CXqYFmy/jszkW13fhsteTwQjiVpuW950Z+hO0us7z1+G34wLvUC8uMrQw7F64h8qq6o2GR98r5HS4XvhkkuIymXdQoFWwsuMzh6EkKsLqYbw8Th+b1Wy8jQprZulAssfiV+r1FlSuyj4uvxkge/oheENgfs77tQOK0yCdvOyNtZeBS+hfbd26eAHZCkzPaJQJ0brZIg73B86w4Lu5+JtD5bys7NDq69jmXWzYHDGx4A0d7uI880L0tjDdcZxxlsLFYm0sESpWPHitWx/XaQwCbif6OOM59c0/W7yBwMTim3++C2BpVjD0pq0cRVgqNvqRpe0xSQ8rZ4RNZdkmdjZdz+ZX7HADJh1nKwmlzv0YYpUQNZoWcyTikkYKeHQjgwxPutxMFSioMcZFXYjo49Y5601VlKOkWI+afyrbh0s4nJnHinmk0cvyIK8svlltrUO/oXpONODJv5AJvGVp7/EeeGlYWz4yfV11+nwIbSpLM+VZdLCoULC08N1jCAoLVmSiGkZDdjuC1+jNuDjnaPKFKgTOjf6FWGN6mElrtyitYvvrw23LAvHBs49uVKOYEhUlCIM4dTqg5kapMLcJg8CTTjBXaWIzJHwlCUMwTh3CLBkOf5WFi5/gzKVFFvbamaqIFpv2K4Cf8DqB6mOgGAlrI=

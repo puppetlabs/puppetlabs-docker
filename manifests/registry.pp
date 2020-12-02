@@ -1,84 +1,92 @@
-# == Class: docker
+# @summary
+#   Module to configure private docker registries from which to pull Docker images
 #
-# Module to configure private docker registries from which to pull Docker images
-# If the registry does not require authentication, this module is not required.
-#
-# === Parameters
-# [*server*]
+# @param server
 #   The hostname and port of the private Docker registry. Ex: dockerreg:5000
 #
-# [*ensure*]
+# @param ensure
 #   Whether or not you want to login or logout of a repository
 #
-# [*username*]
+# @param username
 #   Username for authentication to private Docker registry.
 #   auth is not required.
 #
-# [*password*]
+# @param password
 #   Password for authentication to private Docker registry. Leave undef if
 #   auth is not required.
 #
-# [*pass_hash*]
+# @param pass_hash
 #   The hash to be used for receipt. If left as undef, a hash will be generated
 #
-# [*email*]
+# @param email
 #   Email for registration to private Docker registry. Leave undef if
 #   auth is not required.
 #
-# [*local_user*]
+# @param local_user
 #   The local user to log in as. Docker will store credentials in this
 #   users home directory
 #
-# [*receipt*]
+# @param local_user_home
+#   The local user home directory.
+#   
+# @param receipt
 #   Required to be true for idempotency
 #
+# @param version
+#
 define docker::registry(
-  Optional[String] $server                             = $title,
-  Optional[Pattern[/^present$|^absent$/]] $ensure      = 'present',
-  Optional[String] $username                           = undef,
-  Optional[String] $password                           = undef,
-  Optional[String] $pass_hash                          = undef,
-  Optional[String] $email                              = undef,
-  Optional[String] $local_user                         = 'root',
-  Optional[String] $version                            = $docker::version,
-  Optional[Boolean] $receipt                           = true,
+  Optional[String]               $server          = $title,
+  Optional[Enum[present,absent]] $ensure          = 'present',
+  Optional[String]               $username        = undef,
+  Optional[String]               $password        = undef,
+  Optional[String]               $pass_hash       = undef,
+  Optional[String]               $email           = undef,
+  Optional[String]               $local_user      = 'root',
+  Optional[String]               $local_user_home = undef,
+  Optional[String]               $version         = $docker::version,
+  Optional[Boolean]              $receipt         = true,
 ) {
   include docker::params
 
   $docker_command = $docker::params::docker_command
 
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $exec_environment = ["PATH=${::docker_program_files_path}/Docker/"]
-    $exec_timeout = 3000
-    $exec_path = ["${::docker_program_files_path}/Docker/"]
-    $exec_provider = 'powershell'
-    $password_env = '$env:password'
-    $exec_user = undef
+    $exec_timeout     = 3000
+    $exec_path        = ["${::docker_program_files_path}/Docker/"]
+    $exec_provider    = 'powershell'
+    $password_env     = '$env:password'
+    $exec_user        = undef
   } else {
     $exec_environment = []
-    $exec_path = ['/bin', '/usr/bin']
-    $exec_timeout = 0
-    $exec_provider = undef
-    $password_env = "\${password}"
-    $exec_user = $local_user
-    $local_user_home = $facts['docker_home_dirs'][$local_user]
+    $exec_path        = ['/bin', '/usr/bin']
+    $exec_timeout     = 0
+    $exec_provider    = undef
+    $password_env     = "\${password}"
+    $exec_user        = $local_user
+    if $local_user_home {
+      $_local_user_home = $local_user_home
+    } else {
+      # set sensible default
+      $_local_user_home = $local_user == 'root' ? {
+        true    => '/root',
+        default => "/home/${local_user}",
+      }
+    }
   }
 
   if $ensure == 'present' {
     if $username != undef and $password != undef and $email != undef and $version != undef and $version =~ /1[.][1-9]0?/ {
-      $auth_cmd = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
+      $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
       $auth_environment = "password=${password}"
-    }
-    elsif $username != undef and $password != undef {
-      $auth_cmd = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
+    } elsif $username != undef and $password != undef {
+      $auth_cmd        = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
       $auth_environment = "password=${password}"
-    }
-    else {
+    } else {
       $auth_cmd = "${docker_command} login ${server}"
       $auth_environment = ''
     }
-  }
-  else {
+  }  else {
     $auth_cmd = "${docker_command} logout ${server}"
     $auth_environment = ''
   }
@@ -92,8 +100,7 @@ define docker::registry(
   }
 
   if $receipt {
-
-    if $::osfamily != 'windows' {
+    if $facts['os']['family'] != 'windows' {
       # server may be an URI, which can contain /
       $server_strip = regsubst($server, '/', '_', 'G')
 
@@ -104,9 +111,10 @@ define docker::registry(
         Undef   => pw_hash($docker_auth, 'SHA-512', $local_user_strip),
         default => $pass_hash
       }
-      $_auth_command = "${auth_cmd} || rm -f \"/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\""
 
-      file { "/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
+      $_auth_command = "${auth_cmd} || (rm -f \"/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}\"; exit 1;)"
+
+      file { "/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
         ensure  => $ensure,
         content => $_pass_hash,
         owner   => $local_user,
@@ -115,11 +123,9 @@ define docker::registry(
       }
     } else {
       # server may be an URI, which can contain /
-      $server_strip = regsubst($server, '[/:]', '_', 'G')
-      $passfile = "${::docker_user_temp_path}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
-# lint:ignore:140chars
-      $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
-# lint:endignore
+      $server_strip  = regsubst($server, '[/:]', '_', 'G')
+      $passfile      = "${::docker_user_temp_path}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
+      $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 1 } else { exit 0 }" # lint:ignore:140chars
 
       if $ensure == 'absent' {
         file { $passfile:
@@ -137,8 +143,7 @@ define docker::registry(
         }
       }
     }
-  }
-  else {
+  } else {
     $_auth_command = $auth_cmd
   }
 
