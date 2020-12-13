@@ -6,7 +6,11 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
   desc 'Support for Docker Networking'
 
   mk_resource_methods
-  commands docker: 'docker'
+  commands dockercmd: 'docker'
+
+  has_command(:docker, command(:dockercmd)) do
+    environment(:HOME => '/var/tmp')
+  end
 
   def network_conf
     flags = ['network', 'create']

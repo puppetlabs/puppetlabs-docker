@@ -7,7 +7,11 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   mk_resource_methods
   commands dockercompose: 'docker-compose'
-  commands docker: 'docker'
+  commands dockercmd: 'docker'
+
+  has_command(:docker, command(:dockercmd)) do
+    environment(:HOME => '/var/tmp')
+  end
 
   def exists?
     Puppet.info("Checking for compose project #{name}")
