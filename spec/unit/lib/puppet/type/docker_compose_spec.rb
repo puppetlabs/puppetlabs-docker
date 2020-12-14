@@ -31,8 +31,8 @@ describe compose do
     end
   end
 
-  it 'requires options to be a string' do
-    expect(compose).to require_string_for('options')
+  it 'requires options to be an array' do
+    expect(compose).to require_array_for('options')
   end
 
   it 'requires up_args to be a string' do
