@@ -14,7 +14,9 @@ describe Puppet::Type.type(:docker_network).provider(:ruby) do
 
   before :each do
     # need to reach deep into puppet to unhook the confinement call, so the provider gets properly loaded
-    Puppet::Confine::Exists.any_instance.stubs(:which).with('docker').returns('/usr/local/bin/docker') # rubocop:disable RSpec/AnyInstance
+    ['docker', '/usr/local/bin/docker'].each do |docker_path|
+      allow(Puppet::Confine::Exists).to receive(:which).with(docker_path).and_return('/usr/local/bin/docker')
+    end
   end
 
   describe 'create' do
