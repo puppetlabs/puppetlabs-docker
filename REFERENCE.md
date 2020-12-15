@@ -2526,6 +2526,11 @@ RemainAfterExit option on the unit file.  Can be any valid value for this system
 configuration.
 Default: Not included in unit file
 
+(optional) Prepare the service and enable it as usual but do not run it right away.
+Useful when building VM images using masterless Puppet and then letting the Docker images
+to be downloaded when a new VM is created.
+Default: false
+
 #### Parameters
 
 The following parameters are available in the `docker::run` defined type.
@@ -2535,6 +2540,17 @@ The following parameters are available in the `docker::run` defined type.
 Data type: `Optional[String]`
 
 
+
+Default value: ``undef``
+
+##### `verify_digest`
+
+Data type: `Optional[String]`
+
+(optional) Make sure, that the image has not modified. Compares the digest
+checksum before starting the docker image.
+To get the digest of an image, run the following command:
+  docker image inspect <<image>> --format='{{index .RepoDigests 0}}
 
 Default value: ``undef``
 
@@ -2659,6 +2675,14 @@ Data type: `Optional[String]`
 
 
 Default value: ``undef``
+
+##### `prepare_service_only`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: ``false``
 
 ##### `image`
 
