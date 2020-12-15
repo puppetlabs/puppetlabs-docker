@@ -9,7 +9,7 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
   commands dockercmd: 'docker'
 
   has_command(:docker, command(:dockercmd)) do
-    environment(HOME: '/var/tmp')
+    environment(HOME: '/root')
   end
 
   def network_conf
