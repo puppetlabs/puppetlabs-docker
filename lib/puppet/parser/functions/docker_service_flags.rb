@@ -80,10 +80,8 @@ module Puppet::Parser::Functions
       opts['registry_mirror'].each do |param|
         flags << "--registry-mirror='#{param}'"
       end
-    else
-      if opts['registry_mirror'] && opts['registry_mirror'].to_s != 'undef'
-        flags << "--registry-mirror='#{opts['registry_mirror']}'"
-      end
+    elsif opts['registry_mirror'] && opts['registry_mirror'].to_s != 'undef'
+      flags << "--registry-mirror='#{opts['registry_mirror']}'"
     end
 
     if opts['image'] && opts['image'].to_s != 'undef'
