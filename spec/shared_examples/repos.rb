@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'repos' do |_params, _facts|
   it {
     is_expected.to contain_class('docker::repos')

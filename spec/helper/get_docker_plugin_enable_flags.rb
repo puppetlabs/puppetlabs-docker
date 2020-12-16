@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def get_docker_plugin_enable_flags(args)
   flags = []
 

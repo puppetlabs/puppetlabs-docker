@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'system_user' do |user, group|
   _create_user = true
 

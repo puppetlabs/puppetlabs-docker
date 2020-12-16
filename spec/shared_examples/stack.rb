@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'stack' do |_title, _params, _facts, _defaults|
   ensure_value       = _params['ensure']
   stack_name         = _params['stack_name']

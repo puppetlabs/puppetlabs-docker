@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'compose' do |_params, _facts|
   ensure_value = _params['ensure']
   version      = _params['version']

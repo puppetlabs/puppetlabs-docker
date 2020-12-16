@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet_litmus'
 require 'rspec/retry'
 require 'tempfile'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'registry' do |_title, _params, _facts, _defaults|
   server       = _params['server']
   ensure_value = _params['ensure']

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'image' do |_params, _facts, _defaults|
   docker_command = _defaults['docker_command']
   docker_dir     = _params['docker_dir']

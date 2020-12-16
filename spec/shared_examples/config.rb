@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'config' do |_params, _facts|
   docker_users = _params['docker_users']
 

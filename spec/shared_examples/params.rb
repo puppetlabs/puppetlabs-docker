@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'params' do |_facts|
   case _facts[:os]['family']
   when 'Debian'

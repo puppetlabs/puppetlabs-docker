@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 compose = Puppet::Type.type(:docker_compose)

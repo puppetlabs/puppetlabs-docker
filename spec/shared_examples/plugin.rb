@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'plugin' do |_params, _facts, _defaults|
   ensure_value          = _params['ensure']
   plugin_name           = _params['plugin_name']

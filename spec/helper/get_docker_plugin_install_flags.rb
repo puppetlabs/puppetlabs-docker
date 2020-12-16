@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def get_docker_plugin_install_flags(args)
   flags = []
   flags << "--alias #{args['plugin_alias']}" if args['plugin_alias'] && args['plugin_alias'].to_s != 'undef'

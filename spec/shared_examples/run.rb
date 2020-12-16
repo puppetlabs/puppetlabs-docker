@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'run' do |_title, _params, _facts, _defaults|
   after                             = _params['after']
   after_create                      = _params['after_create']

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'services' do |_title, _params, _facts, _defaults|
   command         = _params['command']
   create          = _params['create']

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'service' do |_params, _facts|
   dns_array              = [_params['dns']]
   dns_search_array       = [_params['dns_search']]

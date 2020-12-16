@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'secrets' do |_title, _params, _facts, _defaults|
   ensure_value = _params['ensure']
   label        = _params['label']

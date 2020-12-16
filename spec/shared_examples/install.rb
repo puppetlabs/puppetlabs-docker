@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'install' do |_params, _facts|
   values = get_values_init(_params, _facts)
 
