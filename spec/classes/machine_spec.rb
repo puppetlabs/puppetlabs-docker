@@ -12,7 +12,7 @@ describe 'docker::machine', type: :class do
     ##
     ## set some needed facts
     ##
-    facts = if os =~ %r{windows}
+    facts = if %r{windows}.match?(os)
               windows_facts.merge(os_facts)
             else
               os_facts
@@ -44,7 +44,7 @@ describe 'docker::machine', type: :class do
           end
 
           if params['proxy'] != :undef
-            if params['proxy'] !~ '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'
+            unless '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
               it {
                 is_expected.to compile.and_raise_error(%r{})
               }

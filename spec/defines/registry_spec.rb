@@ -77,7 +77,7 @@ describe 'docker::registry', type: :define do
     ##
     ## set some needed facts
     ##
-    if os =~ %r{windows}
+    if %r{windows}.match?(os)
       facts = windows_facts.merge(
         'docker_home_dirs' => {
           'user' => '/home/user',

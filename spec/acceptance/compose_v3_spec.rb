@@ -7,7 +7,7 @@ if os[:family] == 'windows'
   file_extension = '.exe'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
-  test_container = if os[:release] =~ %r{2019}
+  test_container = if %r{2019}.match?(os[:release])
                      'nanoserver'
                    else
                      'nanoserver-sac2016'
@@ -72,7 +72,7 @@ describe 'docker compose' do
       apply_manifest(install_pp, catch_failures: true)
     end
 
-    it "should find container with #{test_container} tag" do
+    it "finds container with #{test_container} tag" do
       run_shell("docker inspect web1_compose_test_1 | grep #{test_container}", acceptable_exit_codes: [0])
     end
   end

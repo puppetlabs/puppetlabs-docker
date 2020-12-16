@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-shared_examples 'stack' do |_title, _params, _facts, _defaults|
-  ensure_value       = _params['ensure']
-  stack_name         = _params['stack_name']
-  bundle_file        = _params['bundle_file']
-  compose_files      = _params['compose_files']
-  prune              = _params['prune']
-  with_registry_auth = _params['with_registry_auth']
-  resolve_image      = _params['resolve_image']
+shared_examples 'stack' do |_title, params, facts, defaults|
+  ensure_value       = params['ensure']
+  stack_name         = params['stack_name']
+  bundle_file        = params['bundle_file']
+  compose_files      = params['compose_files']
+  prune              = params['prune']
+  with_registry_auth = params['with_registry_auth']
+  resolve_image      = params['resolve_image']
 
   # deprecation('docker::stack','The docker stack define type will be deprecated in a future release. Please migrate to the docker_stack type/provider.')
 
-  docker_command = "#{_defaults['docker_command']} stack"
+  docker_command = "#{defaults['docker_command']} stack"
 
-  if _facts[:os]['family'] == 'windows'
+  if facts[:os]['family'] == 'windows'
     exec_path   = ['C:/Program Files/Docker/']
     check_stack = '$info = docker stack ls | select-string -pattern web
                     if ($info -eq $null) { Exit 1 } else { Exit 0 }'

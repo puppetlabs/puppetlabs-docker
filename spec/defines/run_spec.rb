@@ -204,7 +204,7 @@ describe 'docker::run', type: :define do
     ##
     ## set some needed facts
     ##
-    if os =~ %r{windows}
+    if %r{windows}.match?(os)
       facts = windows_facts.merge(os_facts)
 
       os_params = {

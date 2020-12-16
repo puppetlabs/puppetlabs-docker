@@ -23,7 +23,7 @@ describe 'docker::plugin', type: :define do
     ##
     ## set some needed facts
     ##
-    facts = if os =~ %r{windows}
+    facts = if %r{windows}.match?(os)
               windows_facts.merge(os_facts)
             else
               os_facts
