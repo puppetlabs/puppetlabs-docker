@@ -48,8 +48,8 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "8.0",
-        "9.0",
+        "8",
+        "9",
         "10"
       ]
     },
