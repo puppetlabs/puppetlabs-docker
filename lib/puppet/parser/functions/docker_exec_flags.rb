@@ -22,10 +22,8 @@ module Puppet::Parser::Functions
       flags << '--tty=true'
     end
 
-    if opts['env']
-      opts['env'].each do |namevaluepair|
-        flags << "--env #{namevaluepair}"
-      end
+    opts['env']&.each do |namevaluepair|
+      flags << "--env #{namevaluepair}"
     end
 
     flags.flatten.join(' ')

@@ -1,30 +1,32 @@
-shared_examples 'repos' do |_params, _facts|
+# frozen_string_literal: true
+
+shared_examples 'repos' do |params, facts|
   it {
     is_expected.to contain_class('docker::repos')
   }
 
-  values = get_values_init(_params, _facts)
+  values = get_values_init(params, facts)
 
   location         = values['package_location']
   key_source       = values['package_key_source']
   key_check_source = values['package_key_check_source']
-  architecture     = _facts[:os]['architecture']
+  architecture     = facts[:os]['architecture']
 
-  unless _params['prerequired_packages'].empty?
-    _params['prerequired_packages'].each do |package|
+  unless params['prerequired_packages'].empty?
+    params['prerequired_packages'].each do |package|
       it {
         is_expected.to contain_package(package)
       }
     end
   end
 
-  case _facts[:os]['family']
+  case facts[:os]['family']
   when 'Debian'
     release       = values['release']
     package_key   = values['package_key']
     package_repos = values['package_repos']
 
-    if _params['use_upstream_package_source']
+    if params['use_upstream_package_source']
       it {
         is_expected.to contain_apt__source('docker').with(
           'location'     => location,
@@ -43,7 +45,7 @@ shared_examples 'repos' do |_params, _facts|
 
       url_split  = location.split('/')
       repo_host  = url_split[2]
-      pin_ensure =  case _params['pin_upstream_package_source']
+      pin_ensure =  case params['pin_upstream_package_source']
                     when true
                       'present'
                     else
@@ -54,23 +56,23 @@ shared_examples 'repos' do |_params, _facts|
         is_expected.to contain_apt__pin('docker').with(
           'ensure'   => pin_ensure,
           'origin'   => repo_host,
-          'priority' => _params['apt_source_pin_level'],
+          'priority' => params['apt_source_pin_level'],
         )
       }
 
-      if _params['manage_package']
+      if params['manage_package']
         it {
           is_expected.to contain_class('apt')
         }
 
-        if _facts[:os]['name'] == 'Debian' && _facts[:os]['distro']['codename'] == 'wheezy'
+        if facts[:os]['name'] == 'Debian' && facts[:os]['distro']['codename'] == 'wheezy'
           it {
             is_expected.to contain_class('apt::backports')
           }
         end
 
         it {
-          _params['prerequired_packages'].each do |package|
+          params['prerequired_packages'].each do |package|
             is_expected.to contain_exec('apt_update').that_comes_before("package[#{package}]")
           end
 
@@ -79,7 +81,7 @@ shared_examples 'repos' do |_params, _facts|
       end
     end
   when 'RedHat'
-    if _params['manage_package']
+    if params['manage_package']
       baseurl      = case location
                      when :undef
                        nil
@@ -94,7 +96,7 @@ shared_examples 'repos' do |_params, _facts|
                      end
       gpgkey_check = key_check_source
 
-      if _params['use_upstream_package_source']
+      if params['use_upstream_package_source']
         it {
           is_expected.to contain_yumrepo('docker').with(
             'descr'    => 'Docker',

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 tests = {
@@ -35,7 +37,7 @@ describe 'docker', type: :class do
     ##
     ## set some needed facts
     ##
-    if os =~ %r{windows}
+    if %r{windows}.match?(os)
       facts = windows_facts.merge(os_facts)
 
       default_params = {

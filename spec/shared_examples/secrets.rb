@@ -1,10 +1,12 @@
-shared_examples 'secrets' do |_title, _params, _facts, _defaults|
-  ensure_value = _params['ensure']
-  label        = _params['label']
-  secret_name  = _params['secret_name']
-  secret_path  = _params['secret_path']
+# frozen_string_literal: true
 
-  docker_command = "#{_defaults['docker_command']} secret"
+shared_examples 'secrets' do |title, params, _facts, defaults|
+  ensure_value = params['ensure']
+  label        = params['label']
+  secret_name  = params['secret_name']
+  secret_path  = params['secret_path']
+
+  docker_command = "#{defaults['docker_command']} secret"
 
   if ensure_value == 'present'
     docker_secrets_flags = get_docker_secrets_flags(
@@ -18,7 +20,7 @@ shared_examples 'secrets' do |_title, _params, _facts, _defaults|
     unless_secret = "#{docker_command} inspect #{secret_name}"
 
     it {
-      is_expected.to contain_exec("#{_title} docker secret create").with(
+      is_expected.to contain_exec("#{title} docker secret create").with(
         'command' => exec_secret,
         'unless'  => unless_secret,
         'path'    => ['/bin', '/usr/bin'],
@@ -28,7 +30,7 @@ shared_examples 'secrets' do |_title, _params, _facts, _defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec("#{_title} docker secret rm").with(
+      is_expected.to contain_exec("#{title} docker secret rm").with(
         'command' => "#{docker_command} rm #{secret_name}",
         'onlyif'  => "#{docker_command} inspect #{secret_name}",
         'path'    => ['/bin', '/usr/bin'],

@@ -1,20 +1,22 @@
-shared_examples 'registry' do |_title, _params, _facts, _defaults|
-  server       = _params['server']
-  ensure_value = _params['ensure']
-  username     = _params['username']
-  password     = _params['password']
-  pass_hash    = _params['pass_hash']
-  email        = _params['email']
-  local_user   = _params['local_user']
-  version      = _params['version']
-  receipt      = _params['receipt']
+# frozen_string_literal: true
 
-  docker_command = _defaults['docker_command']
+shared_examples 'registry' do |title, params, facts, defaults|
+  server       = params['server']
+  ensure_value = params['ensure']
+  username     = params['username']
+  password     = params['password']
+  pass_hash    = params['pass_hash']
+  email        = params['email']
+  local_user   = params['local_user']
+  version      = params['version']
+  receipt      = params['receipt']
 
-  if _facts[:os]['family'] == 'windows'
-    exec_environment = ["PATH=#{_facts['docker_program_files_path']}/Docker/"]
+  docker_command = defaults['docker_command']
+
+  if facts[:os]['family'] == 'windows'
+    exec_environment = ["PATH=#{facts['docker_program_files_path']}/Docker/"]
     exec_timeout     = 3000
-    exec_path        = ["#{_facts['docker_program_files_path']}/Docker/"]
+    exec_path        = ["#{facts['docker_program_files_path']}/Docker/"]
     exec_provider    = 'powershell'
     password_env     = '$env:password'
     exec_user        = nil
@@ -25,7 +27,7 @@ shared_examples 'registry' do |_title, _params, _facts, _defaults|
     exec_provider    = nil
     password_env     = "\${password}"
     exec_user        = local_user
-    local_user_home  = _facts[:docker_home_dirs][local_user]
+    local_user_home  = facts[:docker_home_dirs][local_user]
   end
 
   if ensure_value == 'present'
@@ -44,7 +46,7 @@ shared_examples 'registry' do |_title, _params, _facts, _defaults|
     auth_environment = ''
   end
 
-  docker_auth = "#{_title}#{auth_environment}#{auth_cmd}#{local_user}"
+  docker_auth = "#{title}#{auth_environment}#{auth_cmd}#{local_user}"
 
   exec_env = if auth_environment != ''
                exec_environment << auth_environment << "docker_auth=#{docker_auth}"
@@ -53,7 +55,7 @@ shared_examples 'registry' do |_title, _params, _facts, _defaults|
              end
 
   if receipt
-    if _facts[:os]['family'] != 'windows'
+    if facts[:os]['family'] != 'windows'
       server_strip     = server.tr('/', '_')
       local_user_strip = local_user.gsub('[-_]', '')
 
@@ -64,7 +66,7 @@ shared_examples 'registry' do |_title, _params, _facts, _defaults|
                      pass_hash
                    end
 
-      _auth_command = "#{auth_cmd} || rm -f \"/#{local_user_home}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}\""
+      auth_command = "#{auth_cmd} || rm -f \"/#{local_user_home}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}\""
 
       it {
         is_expected.to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
@@ -73,20 +75,20 @@ shared_examples 'registry' do |_title, _params, _facts, _defaults|
           'owner'   => local_user,
           'group'   => local_user,
         ).that_notifies(
-          "Exec[#{_title} auth]",
+          "Exec[#{title} auth]",
         )
       }
     else
       server_strip  = server.gsub('[/:]', '_')
-      passfile      = "#{_facts['docker_user_temp_path']}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}"
-      _auth_command = "if (-not (#{auth_cmd})) { Remove-Item -Path #{passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
+      passfile      = "#{facts['docker_user_temp_path']}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}"
+      auth_command = "if (-not (#{auth_cmd})) { Remove-Item -Path #{passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
 
       if ensure_value == 'absent'
         it {
           is_expected.to contain_file(passfile).with(
             'ensure' => ensure_value,
           ).that_notifies(
-            "Exec[#{_title} auth]",
+            "Exec[#{title} auth]",
           )
         }
       elsif ensure_value == 'present'
@@ -98,19 +100,19 @@ shared_examples 'registry' do |_title, _params, _facts, _defaults|
             'logoutput'   => true,
             # 'unless'      => template('docker/windows/check_hash.ps1.erb'),
           ).that_notifies(
-            "Exec[#{_title} auth]",
+            "Exec[#{title} auth]",
           )
         }
       end
     end
   else
-    _auth_command = auth_cmd
+    auth_command = auth_cmd
   end
 
   it {
-    is_expected.to contain_exec("#{_title} auth").with(
+    is_expected.to contain_exec("#{title} auth").with(
       'environment' => exec_env,
-      'command'     => _auth_command,
+      'command'     => auth_command,
       'user'        => exec_user,
       'path'        => exec_path,
       'timeout'     => exec_timeout,

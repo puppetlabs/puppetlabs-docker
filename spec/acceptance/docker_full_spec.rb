@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 if os[:kernel] == 'windows'
@@ -64,11 +66,11 @@ describe 'the Puppet Docker module' do
         run_shell("#{docker_command} rmi -f $(#{docker_command} images -q) || true")
         # Check to make sure no images are present
         run_shell("#{docker_command} images | wc -l") do |r|
-          expect(r.stdout).to match(%r{^0|1$}) # rubocop:disable RSpec/ExpectInHook:
+          expect(r.stdout).to match(%r{^0|1$})
         end
         # Check to make sure no running containers are present
         run_shell("#{docker_command} ps | wc -l") do |r|
-          expect(r.stdout).to match(%r{^0|1$}) # rubocop:disable RSpec/ExpectInHook:
+          expect(r.stdout).to match(%r{^0|1$})
         end
       end
     end
@@ -821,7 +823,7 @@ describe 'the Puppet Docker module' do
 
         if os[:family] == 'windows'
           apply_manifest(pp5, catch_failures: true)
-        elsif os[:release] =~ %r{14.04|^8$}
+        elsif %r{14.04|^8$}.match?(os[:release])
           apply_manifest(pp5, catch_failures: true) do |r|
             expect(r.stdout).to match(%r{container_3_7_3})
           end

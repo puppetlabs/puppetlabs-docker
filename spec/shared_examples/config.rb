@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'config' do |_params, _facts|
   docker_users = _params['docker_users']
 
@@ -7,7 +9,7 @@ shared_examples 'config' do |_params, _facts|
 
   unless docker_users.empty?
     docker_users.each do |user|
-      if _facts[:os]['family'] =~ %r{windows}
+      if %r{windows}.match?(_facts[:os]['family'])
         it {
           is_expected.to contain_docker__windows_account(user)
         }

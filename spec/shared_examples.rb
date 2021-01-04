@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'helper/get_defaults'
 require 'helper/get_docker_exec_flags'
 require 'helper/get_docker_plugin_enable_flags'

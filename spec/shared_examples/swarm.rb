@@ -1,24 +1,26 @@
-shared_examples 'swarm' do |_title, _params, _facts, _defaults|
-  ensure_value                  = _params['ensure']
-  init                          = _params['init']
-  join                          = _params['join']
-  advertise_addr                = _params['advertise_addr']
-  autolock                      = _params['autolock']
-  cert_expiry                   = _params['cert_expiry']
-  default_addr_pool             = _params['default_addr_pool']
-  default_addr_pool_mask_length = _params['default_addr_pool_mask_length']
-  dispatcher_heartbeat          = _params['dispatcher_heartbeat']
-  external_ca                   = _params['external_ca']
-  force_new_cluster             = _params['force_new_cluster']
-  listen_addr                   = _params['listen_addr']
-  max_snapshots                 = _params['max_snapshots']
-  snapshot_interval             = _params['snapshot_interval']
-  token                         = _params['token']
-  manager_ip                    = _params['manager_ip']
+# frozen_string_literal: true
 
-  if _facts[:os]['family'] == 'windows'
-    exec_environment = "PATH=#{_facts['docker_program_files_path']}/Docker/"
-    exec_path        = ["#{_facts['docker_program_files_path']}/Docker/"]
+shared_examples 'swarm' do |_title, params, facts, defaults|
+  ensure_value                  = params['ensure']
+  init                          = params['init']
+  join                          = params['join']
+  advertise_addr                = params['advertise_addr']
+  autolock                      = params['autolock']
+  cert_expiry                   = params['cert_expiry']
+  default_addr_pool             = params['default_addr_pool']
+  default_addr_pool_mask_length = params['default_addr_pool_mask_length']
+  dispatcher_heartbeat          = params['dispatcher_heartbeat']
+  external_ca                   = params['external_ca']
+  force_new_cluster             = params['force_new_cluster']
+  listen_addr                   = params['listen_addr']
+  max_snapshots                 = params['max_snapshots']
+  snapshot_interval             = params['snapshot_interval']
+  token                         = params['token']
+  manager_ip                    = params['manager_ip']
+
+  if facts[:os]['family'] == 'windows'
+    exec_environment = "PATH=#{facts['docker_program_files_path']}/Docker/"
+    exec_path        = ["#{facts['docker_program_files_path']}/Docker/"]
     exec_timeout     = 3000
     exec_provider    = 'powershell'
     unless_init      = '$info = docker info | select-string -pattern "Swarm: active"
@@ -37,7 +39,7 @@ shared_examples 'swarm' do |_title, _params, _facts, _defaults|
     onlyif_leave     = 'docker info | grep -w "Swarm: active"'
   end
 
-  docker_command = "#{_defaults['docker_command']} swarm"
+  docker_command = "#{defaults['docker_command']} swarm"
 
   if init
     docker_swarm_init_flags = get_docker_swarm_init_flags(

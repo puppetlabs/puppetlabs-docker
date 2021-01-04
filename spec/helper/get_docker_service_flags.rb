@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'shellwords'
 
 def get_docker_service_flags(args)
@@ -73,10 +75,8 @@ def get_docker_service_flags(args)
     args['registry_mirror'].each do |param|
       flags << "--registry-mirror='#{param}'"
     end
-  else
-    if args['registry_mirror'] && args['registry_mirror'].to_s != 'undef'
-      flags << "--registry-mirror='#{args['registry_mirror']}'"
-    end
+  elsif args['registry_mirror'] && args['registry_mirror'].to_s != 'undef'
+    flags << "--registry-mirror='#{args['registry_mirror']}'"
   end
 
   if args['image'] && args['image'].to_s != 'undef'

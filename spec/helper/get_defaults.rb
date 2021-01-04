@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def get_defaults(_facts)
   bip                               = :undef
   bridge                            = :undef

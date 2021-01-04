@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def windows_facts
   {
     'docker_program_data_path'  => 'C:/ProgramData',

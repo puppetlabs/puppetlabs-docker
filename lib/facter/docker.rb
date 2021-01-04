@@ -102,7 +102,7 @@ end
 Facter.add(:docker) do
   setcode do
     docker_version = Facter.value(:docker_client_version)
-    if docker_version !~ %r{1[.][0-9][0-2]?[.]\w+}
+    unless %r{1[.][0-9][0-2]?[.]\w+}.match?(docker_version)
       if Facter::Util::Resolution.which('docker')
         docker_json_str = Facter::Util::Resolution.exec(
           "#{docker_command} info --format '{{json .}}'",
@@ -122,7 +122,7 @@ Facter.add(:docker) do
             docker['network'][network] = inspect[0]
             network_id = docker['network'][network]['Id'][0..11]
             interfaces.each do |iface|
-              docker['network']['managed_interfaces'][iface] = network if iface =~ %r{#{network_id}}
+              docker['network']['managed_interfaces'][iface] = network if %r{#{network_id}}.match?(iface)
             end
           end
           docker

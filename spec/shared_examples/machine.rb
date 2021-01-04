@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'machine' do |_params, _facts, _defaults|
   ensure_value = _params['ensure']
   version      = _params['version']

@@ -101,6 +101,4 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   def compose_files
     resource[:compose_files].map { |x| ['-f', x] }.flatten
   end
-
-  private
 end

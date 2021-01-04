@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'exec' do |_params, _facts, _defaults|
   command        = _params['command']
   container      = _params['container']

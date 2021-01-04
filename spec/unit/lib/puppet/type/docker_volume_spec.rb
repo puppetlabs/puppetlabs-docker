@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 volume = Puppet::Type.type(:docker_volume)

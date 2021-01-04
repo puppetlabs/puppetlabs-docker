@@ -1,43 +1,43 @@
-shared_examples 'service' do |_params, _facts|
-  dns_array              = [_params['dns']]
-  dns_search_array       = [_params['dns_search']]
-  extra_parameters_array = [_params['extra_parameters']]
-  labels_array           = [_params['labels']]
-  shell_values_array     = [_params['shell_values']]
-  tcp_bind_array         = [_params['tcp_bind']]
+# frozen_string_literal: true
 
-  _service_config = if _params['service_config'] != :undef
-                      _params['service_config']
-                    else
-                      if _facts[:os]['family'] == 'Debian'
-                        "/etc/default/#{_params['service_name']}"
-                      else
-                        nil
-                      end
-                    end
+shared_examples 'service' do |params, facts|
+  # dns_array              = [params['dns']]
+  # dns_search_array       = [params['dns_search']]
+  # extra_parameters_array = [params['extra_parameters']]
+  # labels_array           = [params['labels']]
+  # shell_values_array     = [params['shell_values']]
+  # tcp_bind_array         = [params['tcp_bind']]
 
-  _manage_service = case _params['manage_service']
-                    when true
-                      'Service[docker]'
-                    else
-                      []
-                    end
+  service_config = if params['service_config'] != :undef
+                     params['service_config']
+                   elsif facts[:os]['family'] == 'Debian'
+                     "/etc/default/#{params['service_name']}"
+                   else
+                     nil
+                   end
 
-  if _facts[:os]['family'] == 'RedHat'
+  manage_service = case params['manage_service']
+                   when true
+                     'Service[docker]'
+                   else
+                     []
+                   end
+
+  if facts[:os]['family'] == 'RedHat'
     it {
-      is_expected.to contain_file(_params['storage_setup_file']).with(
+      is_expected.to contain_file(params['storage_setup_file']).with(
         'ensure'  => 'file',
         'force'   => true,
-        'before'  => _manage_service,
-        'notify'  => _manage_service,
+        'before'  => manage_service,
+        'notify'  => manage_service,
       )
     }
   end
 
-  if _facts[:os]['family'] == 'windows'
+  if facts[:os]['family'] == 'windows'
     [
-      "#{_facts['docker_program_data_path']}/docker/",
-      "#{_facts['docker_program_data_path']}/docker/config/",
+      "#{facts['docker_program_data_path']}/docker/",
+      "#{facts['docker_program_data_path']}/docker/config/",
     ].each do |dir|
       it {
         is_expected.to contain_file(dir).with_ensure('directory')
@@ -45,25 +45,25 @@ shared_examples 'service' do |_params, _facts|
     end
   end
 
-  case _params['service_provider']
+  case params['service_provider']
   when 'systemd'
     it {
       is_expected.to contain_file('/etc/systemd/system/docker.service.d').with_ensure('directory')
     }
 
-    if _params['service_overrides_template']
+    if params['service_overrides_template']
       it {
         is_expected.to contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with(
           'ensure'  => 'file',
           # 'content' => template($service_overrides_template),
-          'before'  => _manage_service,
+          'before'  => manage_service,
         ).that_notifies(
           'Exec[docker-systemd-reload-before-service]',
         )
       }
     end
 
-    if _params['socket_override']
+    if params['socket_override']
       it {
         is_expected.to contain_file('/etc/systemd/system/docker.socket.d').with_ensure('directory')
       }
@@ -73,7 +73,7 @@ shared_examples 'service' do |_params, _facts|
           'ensure' => 'file',
           # 'content' => template($socket_overrides_template),
         ).that_comes_before(
-          _manage_service,
+          manage_service,
         ).that_notifies(
           'Exec[docker-systemd-reload-before-service]',
         )
@@ -86,7 +86,7 @@ shared_examples 'service' do |_params, _facts|
         'command'     => 'systemctl daemon-reload > /dev/null',
         'refreshonly' => true,
       ).that_notifies(
-        _manage_service,
+        manage_service,
       )
     }
   when 'upstart'
@@ -96,35 +96,35 @@ shared_examples 'service' do |_params, _facts|
         'target' => '/lib/init/upstart-job',
         'force'  => true,
       ).that_notifies(
-        _manage_service,
+        manage_service,
       )
     }
   end
 
-  if _params['storage_config'] != :undef
+  if params['storage_config'] != :undef
     it {
-      is_expected.to contain_file(_params['storage_config']).with(
+      is_expected.to contain_file(params['storage_config']).with(
         'ensure'  => 'file',
         'force'   => true,
       ).that_notifies(
-        _manage_service,
+        manage_service,
       )
     }
   end
 
-  if _service_config
+  if service_config
     it {
-      is_expected.to contain_file(_service_config).with(
+      is_expected.to contain_file(service_config).with(
         'ensure'  => 'file',
         'force'   => true,
       ).that_notifies(
-        _manage_service,
+        manage_service,
       )
     }
   end
 
-  if _params['manage_service']
-    if _facts[:os]['family'] == 'windows'
+  if params['manage_service']
+    if facts[:os]['family'] == 'windows'
       it {
         is_expected.to contain_reboot('pending_reboot').with(
           'when'    => 'pending',
@@ -135,31 +135,31 @@ shared_examples 'service' do |_params, _facts|
     end
 
     it {
-      _hasstatus = if _params['service_hasstatus'] == :undef
-                     nil
-                   else
-                     _params['service_hasstatus']
-                   end
-
-      _hasrestart = if _params['service_hasrestart'] == :undef
-                      nil
-                    else
-                      _params['service_hasrestart']
-                    end
-
-      _provider = if _params['service_provider'] == :undef
+      hasstatus = if params['service_hasstatus'] == :undef
                     nil
                   else
-                    _params['service_provider']
+                    params['service_hasstatus']
                   end
 
+      hasrestart = if params['service_hasrestart'] == :undef
+                     nil
+                   else
+                     params['service_hasrestart']
+                   end
+
+      provider = if params['service_provider'] == :undef
+                   nil
+                 else
+                   params['service_provider']
+                 end
+
       is_expected.to contain_service('docker').with(
-        'ensure'     => _params['service_state'],
-        'name'       => _params['service_name'],
-        'enable'     => _params['service_enable'],
-        'hasstatus'  => _hasstatus,
-        'hasrestart' => _hasrestart,
-        'provider'   => _provider,
+        'ensure'     => params['service_state'],
+        'name'       => params['service_name'],
+        'enable'     => params['service_enable'],
+        'hasstatus'  => hasstatus,
+        'hasrestart' => hasrestart,
+        'provider'   => provider,
       )
     }
   end

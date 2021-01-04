@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 tests = {
@@ -14,7 +16,7 @@ describe 'docker::images', type: :class do
     ##
     ## set some needed facts
     ##
-    facts = if os =~ %r{windows}
+    facts = if %r{windows}.match?(os)
               windows_facts.merge(os_facts)
             else
               os_facts

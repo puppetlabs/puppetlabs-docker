@@ -1,30 +1,32 @@
-shared_examples 'services' do |_title, _params, _facts, _defaults|
-  command         = _params['command']
-  create          = _params['create']
-  detach          = _params['detach']
-  ensure_value    = _params['ensure']
-  env             = _params['env']
-  extra_params    = _params['extra_params']
-  host_socket     = _params['host_socket']
-  image           = _params['image']
-  label           = _params['label']
-  mounts          = _params['mounts']
-  networks        = _params['networks']
-  publish         = _params['publish']
-  registry_mirror = _params['registry_mirror']
-  replicas        = _params['replicas']
-  scale           = _params['scale']
-  service_name    = _params['service_name']
-  tty             = _params['tty']
-  update          = _params['update']
-  user            = _params['user']
-  workdir         = _params['workdir']
+# frozen_string_literal: true
 
-  docker_command = "#{_defaults['docker_command']} service"
+shared_examples 'services' do |title, params, facts, defaults|
+  command         = params['command']
+  create          = params['create']
+  detach          = params['detach']
+  ensure_value    = params['ensure']
+  env             = params['env']
+  extra_params    = params['extra_params']
+  host_socket     = params['host_socket']
+  image           = params['image']
+  label           = params['label']
+  mounts          = params['mounts']
+  networks        = params['networks']
+  publish         = params['publish']
+  registry_mirror = params['registry_mirror']
+  replicas        = params['replicas']
+  scale           = params['scale']
+  service_name    = params['service_name']
+  tty             = params['tty']
+  update          = params['update']
+  user            = params['user']
+  workdir         = params['workdir']
 
-  if _facts[:os]['family'] == 'windows'
-    exec_environment = "PATH=#{_facts['docker_program_files_path']}/Docker/;#{_facts['docker_systemroot']}/System32/"
-    exec_path        = ["#{_facts['docker_program_files_path']}/Docker/"]
+  docker_command = "#{defaults['docker_command']} service"
+
+  if facts[:os]['family'] == 'windows'
+    exec_environment = "PATH=#{facts['docker_program_files_path']}/Docker/;#{facts['docker_systemroot']}/System32/"
+    exec_path        = ["#{facts['docker_program_files_path']}/Docker/"]
     exec_provider    = 'powershell'
     exec_timeout     = 3000
   else
@@ -54,17 +56,11 @@ shared_examples 'services' do |_title, _params, _facts, _defaults|
       'command'         => command,
     )
 
-    _service_name = if service_name == :undef
-                      ''
-                    else
-                      service_name
-                    end
-
     exec_create   = "#{docker_command} create --name #{docker_service_create_flags}"
-    unless_create = "docker service ps #{_service_name}"
+    unless_create = "docker service ps #{service_name == :undef ? '' : service_name}"
 
     it {
-      is_expected.to contain_exec("#{_title} docker service create").with(
+      is_expected.to contain_exec("#{title} docker service create").with(
         'command'     => exec_create,
         'environment' => exec_environment,
         'path'        => exec_path,
@@ -95,7 +91,7 @@ shared_examples 'services' do |_title, _params, _facts, _defaults|
     exec_update = "#{docker_command} update #{docker_service_flags}"
 
     it {
-      is_expected.to contain_exec("#{_title} docker service update").with(
+      is_expected.to contain_exec("#{title} docker service update").with(
         'command'     => exec_update,
         'environment' => exec_environment,
         'path'        => exec_path,
@@ -106,16 +102,16 @@ shared_examples 'services' do |_title, _params, _facts, _defaults|
   end
 
   if scale
-    docker_service_flags = get_docker_service_flags(
-      'service_name' => service_name,
-      'replicas'     => replicas,
-      'extra_params' => Array(extra_params),
-    )
+    # docker_service_flags = get_docker_service_flags(
+    #   'service_name' => service_name,
+    #   'replicas'     => replicas,
+    #   'extra_params' => Array(extra_params),
+    # )
 
     exec_scale = "#{docker_command} scale #{service_name}=#{replicas}"
 
     it {
-      is_expected.to contain_exec("#{_title} docker service scale").with(
+      is_expected.to contain_exec("#{title} docker service scale").with(
         'command'     => exec_scale,
         'environment' => exec_environment,
         'path'        => exec_path,
@@ -127,7 +123,7 @@ shared_examples 'services' do |_title, _params, _facts, _defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec("#{_title} docker service remove").with(
+      is_expected.to contain_exec("#{title} docker service remove").with(
         'command'  => "docker service rm #{service_name}",
         'onlyif'   => "docker service ps #{service_name}",
         'path'     => exec_path,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'image' do |_params, _facts, _defaults|
   docker_command = _defaults['docker_command']
   docker_dir     = _params['docker_dir']
@@ -75,12 +77,10 @@ shared_examples 'image' do |_params, _facts, _defaults|
                     end
                   elsif docker_tar != :undef
                     "#{docker_command} load -i #{docker_tar}"
+                  elsif _facts[:os]['family'] == 'windows'
+                    "& #{update_docker_image_path} -DockerImage #{image_arg}"
                   else
-                    if _facts[:os]['family'] == 'windows'
-                      "& #{update_docker_image_path} -DockerImage #{image_arg}"
-                    else
-                      "#{update_docker_image_path} #{image_arg}"
-                    end
+                    "#{update_docker_image_path} #{image_arg}"
                   end
 
   if ensure_value == 'absent'

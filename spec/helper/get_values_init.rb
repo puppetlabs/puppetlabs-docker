@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def get_values_init(_params, _facts)
   if _params['version'] == :undef || _params['version'] !~ %r{^(17[.][0-1][0-9][.][0-1](~|-|\.)ce|1.\d+)}
     if _params['docker_ee']
