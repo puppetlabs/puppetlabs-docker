@@ -93,7 +93,7 @@ shared_examples 'run' do |title, params, facts, defaults|
     'env_file'              => [env_file],
     'env'                   => [env],
     'expose'                => [expose],
-    'xtra_params' => [extra_parameters],
+    'extra_params' => [extra_parameters],
     'health_check_cmd'      => health_check_cmd,
     'health_check_interval' => health_check_interval,
     'hostentries'           => [hostentries],
