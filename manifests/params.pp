@@ -373,4 +373,19 @@ class docker::params {
   }
 
   $dependent_packages = [ 'docker-ce-cli', 'containerd.io', ]
+
+  if($service_provider == 'systemd') {
+    # systemd v230 adds new StartLimitIntervalSec, StartLimitBurst
+    if($::osfamily == 'RedHat' and versioncmp($::operatingsystemrelease, '8') < 0) {
+      $have_systemd_v230 = false
+    } elsif($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '18.04') < 0) {
+      $have_systemd_v230 = false
+    } elsif($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '9') < 0) {
+      $have_systemd_v230 = false
+    } else {
+      $have_systemd_v230 = true
+    }
+  } else {
+    $have_systemd_v230 = false
+  }
 }
