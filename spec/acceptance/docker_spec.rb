@@ -40,6 +40,11 @@ describe 'docker' do
   service_name = 'docker'
   command = 'docker'
 
+  before(:all) do
+    install_pp = "class { 'docker': #{docker_args}}"
+    apply_manifest(install_pp)
+  end
+
   context 'When adding system user', win_broken: broken do
     let(:pp) do
       "
@@ -150,7 +155,11 @@ describe 'docker' do
     end
 
     it 'is idempotent' do
-      apply_manifest(pp, catch_changes: true)
+      if fetch_puppet_version > 5
+        docker_run_idempotent_apply(pp)
+      else
+        apply_manifest(pp, catch_changes: true)
+      end
     end
 
     describe package(package_name) do

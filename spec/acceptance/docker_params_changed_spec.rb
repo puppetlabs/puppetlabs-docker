@@ -21,7 +21,7 @@ else
   docker_image = 'hello-world:linux'
 end
 
-describe 'docker trigger parammeters change' do
+describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
   before(:all) do
     if os[:family] != 'windows'
       install_pp = "class { 'docker': #{docker_args}}"
@@ -56,7 +56,7 @@ describe 'docker trigger parammeters change' do
     end
 
     it 'creates servercore with first image' do
-      idempotent_apply(pp1)
+      docker_run_idempotent_apply(pp1)
     end
 
     it 'detect image change and apply the change' do
@@ -91,7 +91,7 @@ describe 'docker trigger parammeters change' do
     end
 
     it "creates servercore with #{volumes1}" do
-      idempotent_apply(pp1)
+      docker_run_idempotent_apply(pp1)
     end
 
     it "creates servercore with #{volumes2}" do
@@ -123,7 +123,7 @@ describe 'docker trigger parammeters change' do
     end
 
     it 'creates servercore with ports => ["4444"]' do
-      idempotent_apply(pp1)
+      docker_run_idempotent_apply(pp1)
     end
 
     it 'creates servercore with ports => ["4444", "4445"]' do

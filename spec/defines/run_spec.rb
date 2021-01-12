@@ -206,6 +206,7 @@ describe 'docker::run', type: :define do
     ##
     if %r{windows}.match?(os)
       facts = windows_facts.merge(os_facts)
+      facts = facts.merge({ puppetversion: Puppet.version })
 
       os_params = {
         'restart' => 'no',
@@ -216,7 +217,7 @@ describe 'docker::run', type: :define do
         'docker_ee' => true,
       }
     else
-      facts = {}.merge(os_facts)
+      facts = { puppetversion: Puppet.version }.merge(os_facts)
 
       os_params = {}
 
