@@ -15,7 +15,7 @@ def get_docker_service_flags(args)
 
   if args['env'].is_a? Array
     args['env'].each do |env|
-      flags << "--env #{env}"
+      flags << "--env '#{env}'"
     end
   end
 
