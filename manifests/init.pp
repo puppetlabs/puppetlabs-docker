@@ -267,7 +267,7 @@
 #   service-overrides.conf
 #
 # @param repo_opt
-#   Specify a string to pass as repository options (RedHat only)
+#   Specify an array or string to pass as repository options (RedHat only)
 #
 # @param storage_devs
 #   A quoted, space-separated list of devices to be used.
@@ -446,7 +446,7 @@ class docker(
   Array                                   $docker_users                      = [],
   String                                  $docker_group                      = $docker::params::docker_group,
   Array                                   $daemon_environment_files          = [],
-  Optional[Variant[String,Hash]]          $repo_opt                          = $docker::params::repo_opt,
+  Optional[Variant[String,Array]]         $repo_opt                          = $docker::params::repo_opt,
   Optional[String]                        $os_lc                             = $docker::params::os_lc,
   Optional[String]                        $storage_devs                      = $docker::params::storage_devs,
   Optional[String]                        $storage_vg                        = $docker::params::storage_vg,
