@@ -1,6 +1,8 @@
 ---
 ".gitlab-ci.yml":
   delete: true
+".rubocop.yml":
+  include_todos: true
 ".travis.yml":
   deploy_to_forge:
     enabled: false
