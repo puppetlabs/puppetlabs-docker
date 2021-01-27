@@ -189,7 +189,7 @@ describe 'docker', type: :class do
           end
 
           if params['ensure'] != 'absent'
-            if params['package_source'] != :undef && facts[:os]['family'] =~ %r{windows}
+            if params['package_source'] != :undef && facts[:os]['family'].include?('windows')
               it {
                 is_expected.to compile.and_raise_error(%r{Custom package source is currently not implemented on windows.})
               }
