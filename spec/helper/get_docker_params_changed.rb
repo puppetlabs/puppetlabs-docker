@@ -3,7 +3,7 @@
 def get_docker_params_changed(opts) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
   require 'open3'
   require 'json'
-  return_value = 'NO_CHANGE_DETECTED'
+  return_value = 'No changes detected'
 
   # log = File.open("#{opts['logfile_path']}/docker_params.txt", 'a')
   # log.puts("### BEGIN detect_changes\n\n")
