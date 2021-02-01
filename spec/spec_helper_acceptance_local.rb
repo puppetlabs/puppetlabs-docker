@@ -38,7 +38,7 @@ end
 
 def docker_run_idempotent_apply(pp)
   apply_manifest(pp)
-  apply_manifest(pp).stdout =~ %r{Notice: NO_CHANGE_DETECTED}
+  apply_manifest(pp).stdout =~ %r{Notice: No changes detected}
 end
 
 def fetch_puppet_version

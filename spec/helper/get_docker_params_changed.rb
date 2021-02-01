@@ -64,7 +64,7 @@ def get_docker_params_changed(opts) # rubocop:disable Metrics/CyclomaticComplexi
       if param_changed
         remove_container(opts['sanitised_title'], opts['osfamily'], opts['stop_wait_time'], opts['cidfile'], log)
         create_container(opts['command'], opts['osfamily'], opts['image'], log)
-        return_value = 'PARAM_CHANGED'
+        return_value = 'Param changed'
         # log.puts(return_value)
       end
     else
