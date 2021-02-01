@@ -79,7 +79,7 @@ def get_docker_params_changed(opts) # rubocop:disable Metrics/CyclomaticComplexi
       # log.puts(return_value)
     end
   else
-    return_value = 'ARG_REQUIRED_MISSING'
+      return_value = 'Arg required missing'
     # log.puts(return_value)
   end
 
