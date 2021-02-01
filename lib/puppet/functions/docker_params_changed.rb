@@ -1,13 +1,80 @@
 # frozen_string_literal: true
 
-require 'open3'
-require 'json'
+Puppet::Functions.create_function(:docker_params_changed) do
+  dispatch :detect_changes do
+    param 'Hash', :opts
+    return_type 'String'
+  end
 
-module Puppet::Parser::Functions
-  # Checks if at least one parammeter is changed
-  newfunction(:docker_params_changed, type: :rvalue) do |args|
-    opts = args[0] || {}
-    return_value = []
+  def run_with_powershell(cmd)
+    "powershell.exe -Command \"& {#{cmd}}\" "
+  end
+
+  def remove_cidfile(cidfile, osfamily)
+    delete_command = if osfamily == 'windows'
+                       run_with_powershell("del #{cidfile}")
+                     else
+                       "rm -f #{cidfile}"
+                     end
+    _stdout, _stderr, _status = Open3.capture3(delete_command)
+  end
+
+  def start_container(name, osfamily)
+    start_command = if osfamily == 'windows'
+                      run_with_powershell("docker start #{name}")
+                    else
+                      "docker start #{name}"
+                    end
+    _stdout, _stderr, _status = Open3.capture3(start_command)
+  end
+
+  def stop_container(name, osfamily)
+    stop_command = if osfamily == 'windows'
+                     run_with_powershell("docker stop #{name}")
+                   else
+                     "docker stop #{name}"
+                   end
+    _stdout, _stderr, _status = Open3.capture3(stop_command)
+  end
+
+  def remove_container(name, osfamily, stop_wait_time, cidfile)
+    stop_command = if osfamily == 'windows'
+                     run_with_powershell("docker stop --time=#{stop_wait_time} #{name}")
+                   else
+                     "docker stop --time=#{stop_wait_time} #{name}"
+                   end
+    _stdout, _stderr, _status = Open3.capture3(stop_command)
+
+    remove_command = if osfamily == 'windows'
+                       run_with_powershell("docker rm -v #{name}")
+                     else
+                       "docker rm -v #{name}"
+                     end
+    _stdout, _stderr, _status = Open3.capture3(remove_command)
+
+    remove_cidfile(cidfile, osfamily)
+  end
+
+  def create_container(cmd, osfamily, image)
+    pull_command = if osfamily == 'windows'
+                     run_with_powershell("docker pull #{image} -q")
+                   else
+                     "docker pull #{image} -q"
+                   end
+    _stdout, _stderr, _status = Open3.capture3(pull_command)
+
+    create_command = if osfamily == 'windows'
+                       run_with_powershell(cmd)
+                     else
+                       cmd
+                     end
+    _stdout, _stderr, _status = Open3.capture3(create_command)
+  end
+
+  def detect_changes(opts)
+    require 'open3'
+    require 'json'
+    return_value = 'No changes detected'
 
     if opts['sanitised_title'] && opts['osfamily']
       stdout, stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
@@ -61,18 +128,30 @@ module Puppet::Parser::Functions
 
         param_changed = true if pp_ports && pp_ports != ports
 
-        return_value << if param_changed
-                          'PARAM_CHANGED'
-                        else
-                          'NO_CHANGE'
-                        end
+        if param_changed
+          remove_container(opts['sanitised_title'], opts['osfamily'], opts['stop_wait_time'], opts['cidfile'])
+          create_container(opts['command'], opts['osfamily'], opts['image'])
+          return_value = 'Param changed'
+        end
       else
-        return_value << 'CONTAINER_NOT_FOUND'
+        create_container(opts['command'], opts['osfamily'], opts['image']) unless File.exist?(opts['cidfile'])
+        _stdout, _stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
+        unless status.to_s.include?('exit 0')
+          remove_cidfile(opts['cidfile'], opts['osfamily'])
+          create_container(opts['command'], opts['osfamily'], opts['image'])
+        end
+        return_value = 'No changes detected'
       end
     else
-      return_value << 'ARG_REQUIRED_MISSING'
+      return_value = 'Arg required missing'
     end
 
-    return_value.flatten.join(' ')
+    if opts['container_running']
+      start_container(opts['sanitised_title'], opts['osfamily'])
+    else
+      stop_container(opts['sanitised_title'], opts['osfamily'])
+    end
+
+    return_value
   end
 end

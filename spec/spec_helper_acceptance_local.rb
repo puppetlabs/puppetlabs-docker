@@ -36,6 +36,15 @@ def create_remote_file(name, full_name, file_content)
   end
 end
 
+def docker_run_idempotent_apply(pp)
+  apply_manifest(pp)
+  apply_manifest(pp).stdout.include?('Notice: No changes detected')
+end
+
+def fetch_puppet_version
+  @fetch_puppet_version ||= run_shell('puppet --version').stdout.to_i
+end
+
 RSpec.configure do |c|
   # Add exclusive filter for Windows untill all the windows functionality is implemented
   c.filter_run_excluding win_broken: true

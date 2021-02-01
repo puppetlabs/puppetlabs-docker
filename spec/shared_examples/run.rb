@@ -190,41 +190,64 @@ shared_examples 'run' do |title, params, facts, defaults|
       #                 inspect
       #               end
 
-      it {
-        is_expected.to contain_exec("run #{title} with docker").with(
-          'command'     => run_with_docker_command.join(' '),
-          ## todo:
-          ## fix the following strange behavior:
-          ## expected that the catalogue would contain Exec[run command with docker] with unless set to [["docker inspect command"]]
-          ## but it is set to [["docker inspect command"], "docker inspect command"]
-          # 'unless'      => exec_unless,
-          'environment' => exec_environment,
-          'path'        => exec_path,
-          'provider'    => exec_provider,
-          'timeout'     => exec_timeout,
-        )
-      }
-
-      if !running
+      if facts[:puppetversion].to_i < 6
         it {
-          is_expected.to contain_exec("stop #{title} with docker").with(
-            'command'     => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
-            'onlyif'      => container_running_check,
+          is_expected.to contain_exec("run #{title} with docker").with(
+            'command'     => run_with_docker_command.join(' '),
+            ## todo:
+            ## fix the following strange behavior:
+            ## expected that the catalogue would contain Exec[run command with docker] with unless set to [["docker inspect command"]]
+            ## but it is set to [["docker inspect command"], "docker inspect command"]
+            # 'unless'      => exec_unless,
             'environment' => exec_environment,
             'path'        => exec_path,
             'provider'    => exec_provider,
             'timeout'     => exec_timeout,
           )
         }
+
+        if !running
+          it {
+            is_expected.to contain_exec("stop #{title} with docker").with(
+              'command'     => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+              'onlyif'      => container_running_check,
+              'environment' => exec_environment,
+              'path'        => exec_path,
+              'provider'    => exec_provider,
+              'timeout'     => exec_timeout,
+            )
+          }
+        else
+          it {
+            is_expected.to contain_exec("start #{title} with docker").with(
+              'command'     => "#{docker_command} start #{sanitised_title}",
+              'unless'      => container_running_check,
+              'environment' => exec_environment,
+              'path'        => exec_path,
+              'provider'    => exec_provider,
+              'timeout'     => exec_timeout,
+            )
+          }
+        end
       else
+        docker_params_changed_args = {
+          'sanitised_title'   => sanitised_title,
+          'osfamily'          => facts[:os]['family'],
+          'command'           => run_with_docker_command.join(' '),
+          'cidfile'           => cidfile,
+          'image'             => image,
+          'volumes'           => volumes,
+          'ports'             => ports,
+          'stop_wait_time'    => stop_wait_time,
+          'container_running' => running,
+          'logfile_path'      => facts[:os]['family'] == 'windows' ? facts['docker_user_temp_path'] : '/tmp',
+        }
+
+        detect_changes = get_docker_params_changed(docker_params_changed_args)
+
         it {
-          is_expected.to contain_exec("start #{title} with docker").with(
-            'command'     => "#{docker_command} start #{sanitised_title}",
-            'unless'      => container_running_check,
-            'environment' => exec_environment,
-            'path'        => exec_path,
-            'provider'    => exec_provider,
-            'timeout'     => exec_timeout,
+          is_expected.to contain_notify('docker_params_changed').with(
+            'message' => detect_changes,
           )
         }
       end
