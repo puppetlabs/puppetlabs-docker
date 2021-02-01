@@ -10,51 +10,40 @@ Puppet::Functions.create_function(:docker_params_changed) do
     "powershell.exe -Command \"& {#{cmd}}\" "
   end
 
-  def remove_cidfile(cidfile, osfamily, _logger = nil)
+  def remove_cidfile(cidfile, osfamily)
     delete_command = if osfamily == 'windows'
                        run_with_powershell("del #{cidfile}")
                      else
                        "rm -f #{cidfile}"
                      end
     _stdout, _stderr, _status = Open3.capture3(delete_command)
-    # logger.puts("### BEGIN remove_cidfile\n\n")
-    # logger.puts("command: #{delete_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
-    # logger.puts("### END remove_cidfile\n\n")
   end
 
-  def start_container(name, osfamily, _logger = nil)
+  def start_container(name, osfamily)
     start_command = if osfamily == 'windows'
                       run_with_powershell("docker start #{name}")
                     else
                       "docker start #{name}"
                     end
     _stdout, _stderr, _status = Open3.capture3(start_command)
-    # logger.puts("### BEGIN start_container\n\n")
-    # logger.puts("command: #{start_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
-    # logger.puts("### END start_container\n\n")
   end
 
-  def stop_container(name, osfamily, _logger = nil)
+  def stop_container(name, osfamily)
     stop_command = if osfamily == 'windows'
                      run_with_powershell("docker stop #{name}")
                    else
                      "docker stop #{name}"
                    end
     _stdout, _stderr, _status = Open3.capture3(stop_command)
-    # logger.puts("### BEGIN stop_container\n\n")
-    # logger.puts("command: #{stop_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
-    # logger.puts("### END stop_container\n\n")
   end
 
-  def remove_container(name, osfamily, stop_wait_time, cidfile, logger = nil)
+  def remove_container(name, osfamily, stop_wait_time, cidfile)
     stop_command = if osfamily == 'windows'
                      run_with_powershell("docker stop --time=#{stop_wait_time} #{name}")
                    else
                      "docker stop --time=#{stop_wait_time} #{name}"
                    end
     _stdout, _stderr, _status = Open3.capture3(stop_command)
-    # logger.puts("### BEGIN remove_container\n\n")
-    # logger.puts("command: #{stop_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
 
     remove_command = if osfamily == 'windows'
                        run_with_powershell("docker rm -v #{name}")
@@ -62,29 +51,24 @@ Puppet::Functions.create_function(:docker_params_changed) do
                        "docker rm -v #{name}"
                      end
     _stdout, _stderr, _status = Open3.capture3(remove_command)
-    # logger.puts("command: #{remove_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
 
     remove_cidfile(cidfile, osfamily, logger)
-    # logger.puts("### END remove_container\n\n")
   end
 
-  def create_container(cmd, osfamily, image, _logger = nil)
-    # logger.puts("### BEGIN create_container\n\n")
+  def create_container(cmd, osfamily, image)
     pull_command = if osfamily == 'windows'
                      run_with_powershell("docker pull #{image} -q")
                    else
                      "docker pull #{image} -q"
                    end
     _stdout, _stderr, _status = Open3.capture3(pull_command)
-    # logger.puts("command: #{pull_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
+
     create_command = if osfamily == 'windows'
                        run_with_powershell(cmd)
                      else
                        cmd
                      end
     _stdout, _stderr, _status = Open3.capture3(create_command)
-    # logger.puts("command: #{create_command}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
-    # logger.puts("### END create_container\n\n")
   end
 
   def detect_changes(opts)
@@ -92,12 +76,8 @@ Puppet::Functions.create_function(:docker_params_changed) do
     require 'json'
     return_value = 'No changes detected'
 
-    # log = File.open("#{opts['logfile_path']}/docker_params.txt", 'a')
-    # log.puts("### BEGIN detect_changes\n\n")
     if opts['sanitised_title'] && opts['osfamily']
       stdout, stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
-      # log.puts("command: #{"docker inspect #{opts['sanitised_title']}"}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
-      # log.puts("#{opts['sanitised_title']}\n\n")
       if stderr.to_s == '' && status.to_s.include?('exit 0')
         param_changed = false
         inspect_hash = JSON.parse(stdout)[0]
@@ -152,22 +132,18 @@ Puppet::Functions.create_function(:docker_params_changed) do
           remove_container(opts['sanitised_title'], opts['osfamily'], opts['stop_wait_time'], opts['cidfile'])
           create_container(opts['command'], opts['osfamily'], opts['image'])
           return_value = 'Param changed'
-          # log.puts(return_value)
         end
       else
         create_container(opts['command'], opts['osfamily'], opts['image']) unless File.exist?(opts['cidfile'])
         _stdout, _stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
-        # log.puts("command: #{"docker inspect #{opts['sanitised_title']}"}\nstdout: #{stdout}\nstderr: #{stderr}\nstatus: #{status}\n\n")
         unless status.to_s.include?('exit 0')
           remove_cidfile(opts['cidfile'], opts['osfamily'])
           create_container(opts['command'], opts['osfamily'], opts['image'])
         end
         return_value = 'No changes detected'
-        # log.puts(return_value)
       end
     else
       return_value = 'Arg required missing'
-      # log.puts(return_value)
     end
 
     if opts['container_running']
@@ -176,9 +152,6 @@ Puppet::Functions.create_function(:docker_params_changed) do
       stop_container(opts['sanitised_title'], opts['osfamily'])
     end
 
-    # log.puts(return_value)
-    # log.puts("### END detect_changes\n\n")
-    # log.close
     return_value
   end
 end
