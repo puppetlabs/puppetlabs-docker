@@ -90,7 +90,7 @@ Puppet::Functions.create_function(:docker_params_changed) do
   def detect_changes(opts)
     require 'open3'
     require 'json'
-    return_value = 'NO_CHANGE_DETECTED'
+    return_value = 'No changes detected'
 
     # log = File.open("#{opts['logfile_path']}/docker_params.txt", 'a')
     # log.puts("### BEGIN detect_changes\n\n")
@@ -151,7 +151,7 @@ Puppet::Functions.create_function(:docker_params_changed) do
         if param_changed
           remove_container(opts['sanitised_title'], opts['osfamily'], opts['stop_wait_time'], opts['cidfile'])
           create_container(opts['command'], opts['osfamily'], opts['image'])
-          return_value = 'PARAM_CHANGED'
+          return_value = 'Param changed'
           # log.puts(return_value)
         end
       else
@@ -162,11 +162,11 @@ Puppet::Functions.create_function(:docker_params_changed) do
           remove_cidfile(opts['cidfile'], opts['osfamily'])
           create_container(opts['command'], opts['osfamily'], opts['image'])
         end
-        return_value = 'NO_CHANGE_DETECTED'
+        return_value = 'No changes detected'
         # log.puts(return_value)
       end
     else
-      return_value = 'ARG_REQUIRED_MISSING'
+      return_value = 'Arg required missing'
       # log.puts(return_value)
     end
 
