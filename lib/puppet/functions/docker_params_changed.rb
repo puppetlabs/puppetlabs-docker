@@ -52,7 +52,7 @@ Puppet::Functions.create_function(:docker_params_changed) do
                      end
     _stdout, _stderr, _status = Open3.capture3(remove_command)
 
-    remove_cidfile(cidfile, osfamily, logger)
+    remove_cidfile(cidfile, osfamily)
   end
 
   def create_container(cmd, osfamily, image)
