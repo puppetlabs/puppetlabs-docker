@@ -91,7 +91,7 @@ class { 'docker':
 }
 ```
 
-For CentOS distributions, the docker module requires packages from the extras repository which is enabled by default on CentOS. For more information, see the official [CentOS documentation](https://wiki.centos.org/AdditionalResources/Repositories) and the official [Docker documentation](https://docs.docker.com/install/linux/docker-ce/centos/).
+For CentOS distributions, the docker module requires packages from the extras repository, which is enabled by default on CentOS. For more information, see the official [CentOS documentation](https://wiki.centos.org/AdditionalResources/Repositories) and the official [Docker documentation](https://docs.docker.com/install/linux/docker-ce/centos/).
 
 For Red Hat Enterprise Linux (RHEL) based distributions, the docker module uses the upstream repositories. To continue using the legacy distribution packages in the CentOS extras repository, add the following code to the manifest file:
 
@@ -189,7 +189,7 @@ class { 'docker':
 }
 ```
 
-To allocate a dns server to the Docker daemon, add the following code to the manifest file:
+To allocate a DNS server to the Docker daemon, add the following code to the manifest file:
 
 ```puppet
 class { 'docker':
@@ -228,7 +228,7 @@ class { 'docker':
 }
 ```
 
-Only Docker EE is supported on Windows. To install docker on Windows 2016 and above the `docker_ee` parameter must be specified:
+Only Docker EE is supported on Windows. To install docker on Windows 2016 and above, the `docker_ee` parameter must be specified:
 
 ```puppet
 class { 'docker':
@@ -238,6 +238,7 @@ class { 'docker':
 
 If the curl package is being managed elsewhere and the curl ensure in this module is conflicting,
  it can be disabled by setting the following parameter globally or in compose / machine resources:
+
 ```puppet
 class { 'docker':
   curl_ensure => false
@@ -247,7 +248,7 @@ class { 'docker':
 ### Proxy on Windows
 
 To use docker through a proxy on Windows, a System Environment Variable HTTP_PROXY/HTTPS_PROXY must be set. See [Docker Engine on Windows](https://docs.microsoft.com/en-us/virtualization/windowscontainers/manage-docker/configure-docker-daemon#proxy-configuration)
-This can be done using a different puppet module such as the puppet-windows_env module. After setting the variable, the docker service must be restarted.
+This can be done using a different puppet module, such as the puppet-windows_env module. After setting the variable, the docker service must be restarted.
 
 ```puppet
 windows_env { 'HTTP_PROXY'
@@ -265,11 +266,11 @@ service { 'docker'
 
 ### Validating and unit testing the module
 
-This module is compliant with the Puppet Development Kit [(PDK)](https://puppet.com/docs/pdk/1.x/pdk.html), which provides tools to help run unit tests on the module and validate the modules's metadata, syntax, and style.
+This module is compliant with the Puppet Development Kit [(PDK)](https://puppet.com/docs/pdk/1.x/pdk.html), which provides tools to help run unit tests on the module and validate the modules' metadata, syntax, and style.
 
 To run all validations against this module, run the following command:
 
-```
+```sh
 pdk validate
 ```
 
@@ -277,7 +278,7 @@ To change validation behavior, add options flags to the command. For a complete 
 
 To unit test the module, run the following command:
 
-```
+```sh
 pdk test unit
 ```
 
@@ -415,13 +416,13 @@ You can specify the `ports`, `expose`, `env`, `dns`, and `volumes` values with a
 
 To pull the image before it starts, specify the `pull_on_start` parameter.
 
-Use the `detach` param to run container a container without the `-a` flag. This is only required on systems without `systemd`. This default is set in the params.pp based on the OS. Only override if you understand the consuquences and have a specific use case.
+Use the `detach` param to run a container without the `-a` flag. This is only required on systems without `systemd`. This default is set in the params.pp based on the OS. Only override if you understand the consequences and have a specific use case.
 
-To execute a command before the container starts or stops, specify the `before_start` or `before_stop` parameters, respectively. Similarly, you can specify the `after_start` or `after_stop` parameters to run a command after the container starts or stops.
+To execute a command before the container starts or stops, specify the `before_start` or `before_stop` parameters, respectively. Similarly, you can set the `after_start` or `after_stop` parameters to run a command after the container starts or stops.
 
-Adding the container name to the `after` parameter to specify which containers start first, affects the generation of the `init.d/systemd` script.
+Adding the container name to the `after` parameter to specify which containers start first affects the generation of the `init.d/systemd` script.
 
-Add container dependencies to the `depends` parameter. The container starts before this container and stops before the depended container. This affects the generation of the `init.d/systemd` script. Use the `depend_services` parameter to specify dependencies for general services, which are not Docker related, that start before this container.
+Add container dependencies to the `depends` parameter. The container starts before this container and stops before the dependent container. This affects the generation of the `init.d/systemd` script. Use the `depend_services` parameter to specify dependencies for general services, which are not Docker related, that start before this container.
 
 The `extra_parameters` parameter, which contains an array of command line arguments to pass to the `docker run` command, is useful for adding additional or experimental options that the docker module currently does not support.
 
@@ -472,7 +473,7 @@ docker::run { 'helloworld':
 }
 ```
 
-To enable the restart of an unhealthy container, add the following code to the manifest file. In order to set the health check interval time set the optional health_check_interval parameter, the default health check interval is 30 seconds.
+To enable the restart of an unhealthy container, add the following code to the manifest file. To set the health check interval time, set the optional health_check_interval parameter. The default health check interval is 30 seconds.
 
 ```puppet
 docker::run { 'helloworld':
@@ -506,7 +507,7 @@ docker_network { 'my-net':
 }
 ```
 
-The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks and configuring the cluster store for the overlay network would be an example.
+The name value and the `ensure` parameter are required. If you do not include the `driver` value, the default bridge is used. The Docker daemon must be configured for some networks, and configuring the cluster store for the overlay network would be an example.
 
 To configure the cluster store, update the `docker` class in the manifest file:
 
@@ -532,7 +533,7 @@ A defined network can be used on a `docker::run` resource with the `net` paramet
 
 #### Windows
 
-On windows, only one NAT network is supported. To support multiple networks, Windows Server 2016 with KB4015217 is required. See [Windows Container Network Drivers](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/network-drivers-topologies) and [Windows Container Networking](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/architecture).
+On Windows, only one NAT network is supported. To support multiple networks, Windows Server 2016 with KB4015217 is required. See [Windows Container Network Drivers](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/network-drivers-topologies) and [Windows Container Networking](https://docs.microsoft.com/en-us/virtualization/windowscontainers/container-networking/architecture).
 
 The Docker daemon will create a default NAT network on the first start unless specified otherwise. To disable the network creation, use the parameter `bridge => 'none'` when installing docker.
 
@@ -588,7 +589,7 @@ Some of the key advantages for using `volumes` over `bind mounts` are:
 * Add other functionality
 * New volume's contents can be pre-populated by a container.
 
-When using the `volumes` array with `docker::run`, the command on the backend will know if it needs to use `bind mounts` or `volumes` based off the data passed to the `-v` option.
+When using the `volumes` array with `docker::run`, the command on the backend will know if it needs to use `bind mounts` or `volumes` based on the data passed to the `-v` option.
 
 Running `docker::run` with native volumes:
 
@@ -634,7 +635,7 @@ docker_compose { 'test':
 }
 ```
 
-Puppet automatically runs Compose, because the relevant Compose services aren't running. If required, include additional options such as enabling experimental features and scaling rules.
+Puppet automatically runs Compose because the relevant Compose services aren't running. If required, include additional options such as enabling experimental features and scaling rules.
 
 In the example below, Puppet runs Compose when the number of containers specified for a service doesn't match the scale values.
 
@@ -692,7 +693,8 @@ docker::stack { 'yourapp':
 }
 ```
 
-To use use the equivalent type and provier, use the following in your manfiest file. For more information on specific parameters see the [docker_stack type documentation](REFERENCE.md#docker_stack).
+To use the equivalent type and provider, use the following in your manifest file. For more information on specific parameters see the [docker_stack type documentation](REFERENCE.md#docker_stack).
+
 ```puppet
 docker_stack { 'test':
   compose_files => ['/tmp/docker-compose.yml'],
@@ -705,7 +707,7 @@ To remove the stack, set `ensure  => absent`.
 
 ### Machine
 
-You can use Docker Machine to install Docker Engine on virtual hosts, and manage the hosts with docker-machine commands. You can also use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
+You can use Docker Machine to install Docker Engine on virtual hosts and manage the hosts with docker-machine commands. You can also use Machine to create Docker hosts on your local Mac or Windows box, on your company network, in your data center, or on cloud providers like Azure, AWS, or Digital Ocean.
 
 For more information on machines, see the [Docker Machines](https://docs.docker.com/machine/) documentation.
 
@@ -767,7 +769,7 @@ docker::swarm {'cluster_worker':
 }
 ```
 
-To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, include the `token` parameter. When creating an additional swarm manager and a worker node, separate tokens are required. These tokens (i.e. `docker_worker_join_token` and `docker_manager_join_token`) can be retrieved from Facter.
+To configure a worker node or a second manager, include the swarm manager IP address in the `manager_ip` parameter. To define the role of the node in the cluster, provide the `token` parameter. When creating an additional swarm manager and a worker node, separate tokens are required. These tokens (i.e. `docker_worker_join_token` and `docker_manager_join_token`) can be retrieved from Facter.
 
 To remove a node from a cluster, add the following code to the manifest file:
 
@@ -843,7 +845,7 @@ docker::services {'redis':
   }
 ```
 
-To base the service off an image, include the `image` parameter and include the `publish` parameter to expose the service port (use an array to specify multiple published ports). To set the amount of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`. The `command` parameter can either be specified as an array or a string.
+To base the service off an image, include the `image` parameter and set the `publish` parameter to expose the service port (use an array to specify multiple published ports). To set the number of containers running in the service, include the `replicas` parameter. To attach one or multiple filesystems to the service, use the `mounts` parameter. For information regarding the `extra_params` parameter, see `docker service create --help`. The `command` parameter can either be specified as an array or a string.
 
 To update the service, add the following code to the manifest file:
 
@@ -856,7 +858,7 @@ docker::services {'redis_update':
 }
 ```
 
-To update a service without creating a new one, include the the `update => true` parameter and the `create => false` parameter.
+To update a service without creating a new one, include the the `update => true` and `create => false` parameters.
 
 To scale a service, add the following code to the manifest file:
 
@@ -869,7 +871,7 @@ docker::services {'redis_scale':
 }
 ```
 
-To scale the service without creating a new one, include the the `scale => true` parameter and the `create => false` parameter. In the example above, the service is scaled to 10.
+To scale the service without creating a new one, provide the `scale => true` parameter and the `create => false` parameters. In the example above, the service is scaled to 10.
 
 To remove a service, add the following code to the manifest file:
 
@@ -898,7 +900,7 @@ docker::registry { 'example.docker.io:5000':
 }
 ```
 
-To pull images from the docker store, use the following as the registry definition with your own docker hub credentials
+To pull images from the docker store, use the following as the registry definition with your docker hub credentials.
 
 ```puppet
   docker::registry {'https://index.docker.io/v1/':
@@ -1000,7 +1002,7 @@ docker::plugin {'foo/fooplugin:latest'
 
 ## Reference
 
-For information on classes, types and functions see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-docker/blob/main/REFERENCE.md).
+For information on classes, types, and functions, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-docker/blob/main/REFERENCE.md).
 
 ## Limitations
 
