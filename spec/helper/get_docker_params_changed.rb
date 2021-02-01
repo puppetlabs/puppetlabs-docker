@@ -75,7 +75,7 @@ def get_docker_params_changed(opts) # rubocop:disable Metrics/CyclomaticComplexi
         remove_cidfile(opts['cidfile'], opts['osfamily'])
         create_container(opts['command'], opts['osfamily'], opts['image'])
       end
-      return_value = 'NO_CHANGE_DETECTED'
+      return_value = 'No changes detected'
       # log.puts(return_value)
     end
   else
