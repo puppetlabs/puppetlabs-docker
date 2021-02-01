@@ -156,7 +156,7 @@ describe 'docker' do
 
     it 'is idempotent' do
       if fetch_puppet_version > 5
-        docker_run_idempotent_apply(pp)
+        expect(docker_run_idempotent_apply(pp)).to be true
       else
         apply_manifest(pp, catch_changes: true)
       end

@@ -87,7 +87,7 @@ Puppet::Functions.create_function(:docker_params_changed) do
     # logger.puts("### END create_container\n\n")
   end
 
-  def detect_changes(opts) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def detect_changes(opts)
     require 'open3'
     require 'json'
     return_value = 'NO_CHANGE_DETECTED'

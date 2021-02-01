@@ -56,7 +56,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
 
     it 'creates servercore with first image' do
-      docker_run_idempotent_apply(pp1)
+      expect(docker_run_idempotent_apply(pp1)).to be true
     end
 
     it 'detect image change and apply the change' do
@@ -91,7 +91,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
 
     it "creates servercore with #{volumes1}" do
-      docker_run_idempotent_apply(pp1)
+      expect(docker_run_idempotent_apply(pp1)).to be true
     end
 
     it "creates servercore with #{volumes2}" do
@@ -123,7 +123,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
 
     it 'creates servercore with ports => ["4444"]' do
-      docker_run_idempotent_apply(pp1)
+      expect(docker_run_idempotent_apply(pp1)).to be true
     end
 
     it 'creates servercore with ports => ["4444", "4445"]' do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-def get_docker_params_changed(opts) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+def get_docker_params_changed(opts)
   require 'open3'
   require 'json'
   return_value = 'No changes detected'
@@ -79,7 +79,7 @@ def get_docker_params_changed(opts) # rubocop:disable Metrics/CyclomaticComplexi
       # log.puts(return_value)
     end
   else
-      return_value = 'Arg required missing'
+    return_value = 'Arg required missing'
     # log.puts(return_value)
   end
 
