@@ -22,11 +22,11 @@
     },
     {
       "name": "puppetlabs/powershell",
-      "version_requirement": ">= 2.1.4 < 4.0.0"
+      "version_requirement": ">= 2.1.4 < 5.0.0"
     },
     {
       "name": "puppetlabs/reboot",
-      "version_requirement": ">=2.0.0 < 3.0.0"
+      "version_requirement": ">=2.0.0 < 4.0.0"
     }
   ],
   "operatingsystem_support": [
