@@ -33,7 +33,9 @@
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "7"
+        "6",
+        "7",
+        "8"
       ]
     },
     {
@@ -56,8 +58,15 @@
     {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
+        "2008",
+        "2008 R2",
+        "2012",
+        "2012 R2",
         "2016",
-        "2019"
+        "2019",
+        "7",
+        "8",
+        "10"
       ]
     }
   ],
