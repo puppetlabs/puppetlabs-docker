@@ -26,7 +26,7 @@
     },
     {
       "name": "puppetlabs/reboot",
-      "version_requirement": ">=2.0.0 < 3.0.0"
+      "version_requirement": ">=2.0.0 < 5.0.0"
     }
   ],
   "operatingsystem_support": [
