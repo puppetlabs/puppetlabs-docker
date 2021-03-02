@@ -356,12 +356,14 @@ class docker::service (
     default: {}
   }
 
-  if $storage_config {
-    file { $storage_config:
-      ensure  => file,
-      force   => true,
-      content => template($storage_config_template),
-      notify  => $_manage_service,
+  unless $facts['os']['family'] == 'RedHat' and $facts['docker_server_version'] =~ /1\.13.+/ {
+    if $storage_config {
+      file { $storage_config:
+        ensure  => file,
+        force   => true, #force rewrite storage configuration 
+        content => template($storage_config_template),
+        notify  => $_manage_service, #the force notify here causes the idempotency failure when using storage-> driver on redhat
+      }
     }
   }
 
