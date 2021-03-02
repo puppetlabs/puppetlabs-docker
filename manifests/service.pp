@@ -356,12 +356,25 @@ class docker::service (
     default: {}
   }
 
+  #workaround for docker 1.13 on RedHat 7
+  if $facts['docker_server_version']{
+    if $facts['os']['family'] == 'RedHat' and $facts['docker_server_version'] =~ /1\.13.+/{
+      $_skip_storage_config = true
+    } else {
+      $_skip_storage_config = false
+    }
+  } else {
+    $_skip_storage_config = false
+  }
+
   if $storage_config {
-    file { $storage_config:
-      ensure  => file,
-      force   => true,
-      content => template($storage_config_template),
-      notify  => $_manage_service,
+    unless $_skip_storage_config {
+      file { $storage_config:
+        ensure  => file,
+        force   => true, #force rewrite storage configuration 
+        content => template($storage_config_template),
+        notify  => $_manage_service,
+      }
     }
   }
 
