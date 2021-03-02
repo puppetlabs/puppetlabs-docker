@@ -2988,11 +2988,11 @@ Default value: ``false``
 
 ##### <a name="net"></a>`net`
 
-Data type: `Variant[String,Array]`
+Data type: `Variant[String,Array,Undef]`
 
 
 
-Default value: `'bridge'`
+Default value: ``undef``
 
 ##### <a name="extra_parameters"></a>`extra_parameters`
 
