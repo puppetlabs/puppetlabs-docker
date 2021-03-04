@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.0.0) (2021-03-04)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.14.0...v4.0.0)
+
+### Changed
+
+- pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [\#718](https://github.com/puppetlabs/puppetlabs-docker/pull/718) ([carabasdaniel](https://github.com/carabasdaniel))
+
+### Fixed
+
+- Make it possible to use pod's network [\#725](https://github.com/puppetlabs/puppetlabs-docker/pull/725) ([seriv](https://github.com/seriv))
+
 ## [v3.14.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.14.0) (2021-03-04)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.13.1...v3.14.0)
