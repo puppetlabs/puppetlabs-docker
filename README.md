@@ -1012,11 +1012,13 @@ This module supports:
 * Debian 8.0
 * Debian 9.0
 * Debian 10
-* RedHat 7.0
+* RedHat 7.0 - limited support available
 * Ubuntu 14.04
 * Ubuntu 16.04
 * Ubuntu 18.04
 * Windows Server 2016 (Docker Enterprise Edition only)
+
+On RedHat 7 the default docker package installs docker server version 1.13.1. The default docker.service uses the docker-storage-service in this version and creates /etc/sysconfig/docker-storage based on the container-storage-setup configuration and /etc/sysconfig/docker-storage-setup file. As the puppetlabs-docker module manages both the docker-storage and docker-storage-setup files it causes a conflict with the container-storage-setup forcing a docker service restart, therefore a workaround was included in the service manifest that disables the service restart on storage configuration changes for this version of docker on RedHat 7. As a side effect of these changes, storage configuration changes with this docker version on RedHat 7 are not picked up by default by the docker.service. 
 
 ## Development
 

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.14.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.14.0) (2021-03-04)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.13.1...v3.14.0)
+
+### Fixed
+
+- \[MODULES-10898\] Disable forced docker service restart for RedHat 7 and docker server 1.13 [\#730](https://github.com/puppetlabs/puppetlabs-docker/pull/730) ([carabasdaniel](https://github.com/carabasdaniel))
+
 ## [v3.13.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.13.1) (2021-02-02)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.13.0...v3.13.1)
@@ -72,6 +80,7 @@ All notable changes to this project will be documented in this file. The format 
 - \(MODULES-10691\) - Add root\_dir in daemon.json [\#632](https://github.com/puppetlabs/puppetlabs-docker/pull/632) ([daianamezdrea](https://github.com/daianamezdrea))
 - Fixing the fix 'Fix the docker\_compose options parameter position \#378' [\#631](https://github.com/puppetlabs/puppetlabs-docker/pull/631) ([awegmann](https://github.com/awegmann))
 - Blocking ordering between non-Windows service stops [\#622](https://github.com/puppetlabs/puppetlabs-docker/pull/622) ([ALTinners](https://github.com/ALTinners))
+- Allow all 3.x docker-compose minor versions [\#620](https://github.com/puppetlabs/puppetlabs-docker/pull/620) ([runejuhl](https://github.com/runejuhl))
 
 ## [v3.10.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.1) (2020-05-27)
 
@@ -100,7 +109,6 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Fixed
 
-- Allow all 3.x docker-compose minor versions [\#620](https://github.com/puppetlabs/puppetlabs-docker/pull/620) ([runejuhl](https://github.com/runejuhl))
 - Enforce TLS1.2 on Windows; minor fixes for RH-based testing [\#603](https://github.com/puppetlabs/puppetlabs-docker/pull/603) ([carabasdaniel](https://github.com/carabasdaniel))
 - \[MODULES-10628\] Update documentation for docker volume and set options as parameter [\#599](https://github.com/puppetlabs/puppetlabs-docker/pull/599) ([carabasdaniel](https://github.com/carabasdaniel))
 - Allow module to work on SLES [\#591](https://github.com/puppetlabs/puppetlabs-docker/pull/591) ([npwalker](https://github.com/npwalker))
