@@ -2,7 +2,6 @@ fixtures:
   forge_modules:
     stdlib: 'puppetlabs-stdlib'
     apt: 'puppetlabs-apt'
-    translate: 'puppetlabs-translate'
     powershell: 'puppetlabs-powershell'
     reboot: 'puppetlabs-reboot'
   repositories:

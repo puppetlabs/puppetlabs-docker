@@ -269,11 +269,11 @@ define docker::run(
   }
 
   if ($remove_volume_on_start and !$remove_container_on_start) {
-    fail(translate("In order to remove the volume on start for ${title} you need to also remove the container"))
+    fail("In order to remove the volume on start for ${title} you need to also remove the container")
   }
 
   if ($remove_volume_on_stop and !$remove_container_on_stop) {
-    fail(translate("In order to remove the volume on stop for ${title} you need to also remove the container"))
+    fail("In order to remove the volume on stop for ${title} you need to also remove the container")
   }
 
   if $use_name {
@@ -497,10 +497,10 @@ define docker::run(
       }
       default: {
         if $facts['os']['family'] != 'windows' {
-          fail(translate('Docker needs a Debian or RedHat based system.'))
+          fail('Docker needs a Debian or RedHat based system.')
         }
         elsif $ensure == 'present' {
-          fail(translate('Restart parameter is required for Windows'))
+          fail('Restart parameter is required for Windows')
         }
 
         $hasstatus = $::docker::params::service_hasstatus
