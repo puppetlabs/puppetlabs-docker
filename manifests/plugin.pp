@@ -54,7 +54,7 @@ define docker::plugin(
   $docker_command = "${docker::params::docker_command} plugin"
 
   if ($facts['os']['family'] == 'windows') {
-    fail(translate('Feature not implemented on windows.'))
+    fail('Feature not implemented on windows.')
   }
 
   if $ensure == 'present' {

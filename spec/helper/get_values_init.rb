@@ -24,7 +24,7 @@ def get_values_init(_params, _facts)
         package_key_source       = _params['docker_ce_key_source']
         package_key_check_source = true
       # when 'windows'
-      #   fail(translate('This module only work for Docker Enterprise Edition on Windows.'))
+      #   fail('This module only work for Docker Enterprise Edition on Windows.')
       else
         package_location         = _params['docker_package_location']
         package_key_source       = _params['docker_package_key_source']
