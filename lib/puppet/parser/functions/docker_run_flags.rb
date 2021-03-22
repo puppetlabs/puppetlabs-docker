@@ -22,14 +22,6 @@ module Puppet::Parser::Functions
       flags << "--restart '#{opts['restart']}'"
     end
 
-    if opts['net']
-      if opts['net'].is_a? String
-        flags << "--net #{opts['net'].shellescape}"
-      elsif opts['net'].is_a? Array
-        flags << "--net #{opts['net'].join(' --net ').shellescape}"
-      end
-    end
-
     if opts['memory_limit']
       flags << "-m #{opts['memory_limit']}"
     end
