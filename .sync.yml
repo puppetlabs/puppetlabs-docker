@@ -23,9 +23,9 @@ spec/spec_helper.rb:
 .gitpod.yml:
   unmanaged: false
 .github/workflows/nightly.yml:
-  unmanaged: false
+  unmanaged: true
 .github/workflows/pr_test.yml:
-  unmanaged: false
+  unmanaged: true
 .github/workflows/spec.yml:
   checks: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
   unmanaged: false
