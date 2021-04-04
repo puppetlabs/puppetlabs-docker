@@ -166,6 +166,7 @@ The following parameters are available in the `docker` class:
 * [`docker_msft_provider_version`](#docker_msft_provider_version)
 * [`docker_ce_start_command`](#docker_ce_start_command)
 * [`docker_ce_package_name`](#docker_ce_package_name)
+* [`docker_ce_cli_package_name`](#docker_ce_cli_package_name)
 * [`docker_ce_source_location`](#docker_ce_source_location)
 * [`docker_ce_key_source`](#docker_ce_key_source)
 * [`docker_ce_key_id`](#docker_ce_key_id)
@@ -925,6 +926,14 @@ Data type: `Optional[String]`
 
 
 Default value: `$docker::params::docker_ce_package_name`
+
+##### <a name="docker_ce_cli_package_name"></a>`docker_ce_cli_package_name`
+
+Data type: `String[1]`
+
+
+
+Default value: `$docker::params::docker_ce_cli_package_name`
 
 ##### <a name="docker_ce_source_location"></a>`docker_ce_source_location`
 

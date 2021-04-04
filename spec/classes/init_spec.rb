@@ -89,6 +89,7 @@ describe 'docker', type: :class do
             'docker_ce_key_id'                  => defaults['package_ce_key_id'],
             'docker_ce_key_source'              => defaults['package_ce_key_source'],
             'docker_ce_package_name'            => defaults['docker_ce_package_name'],
+            'docker_ce_cli_package_name'        => defaults['docker_ce_cli_package_name'],
             'docker_ce_release'                 => defaults['package_ce_release'],
             'docker_ce_source_location'         => defaults['package_ce_source_location'],
             'docker_ce_start_command'           => defaults['docker_ce_start_command'],

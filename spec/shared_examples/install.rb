@@ -21,22 +21,12 @@ shared_examples 'install' do |_params, _facts|
         is_expected.to contain_class('docker::install')
       }
 
-      provider_value = case _facts[:os]['family']
-                       when 'Debian'
-                         'dpkg'
-                       when 'RedHat'
-                         'yum'
-                       else
-                         :undef
-                       end
-
       case _params['package_source']
       when 'docker-engine'
         it {
           is_expected.to contain_package('docker').with(
             {
               'ensure'   => ensure_value,
-              'provider' => provider_value,
               'source'   => _params['package_source'],
               'name'     => _params['docker_engine_package_name'],
             }.merge(docker_hash),
@@ -47,9 +37,17 @@ shared_examples 'install' do |_params, _facts|
           is_expected.to contain_package('docker').with(
             {
               'ensure'   => ensure_value,
-              'provider' => provider_value,
               'source'   => _params['package_source'],
               'name'     => _params['docker_ce_package_name'],
+            }.merge(docker_hash),
+          )
+        }
+        it {
+          is_expected.to contain_package('docker-ce-cli').with(
+            {
+              'ensure'   => ensure_value,
+              'source'   => _params['package_source'],
+              'name'     => _params['docker_ce_cli_package_name'],
             }.merge(docker_hash),
           )
         }
@@ -59,6 +57,12 @@ shared_examples 'install' do |_params, _facts|
         is_expected.to contain_package('docker').with(
           'ensure' => ensure_value,
           'name'   => values['docker_package_name'],
+        )
+      }
+      it {
+        is_expected.to contain_package('docker-ce-cli').with(
+          'ensure' => ensure_value,
+          'name'   => _params['docker_ce_cli_package_name'],
         )
       }
 

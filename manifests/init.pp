@@ -318,6 +318,7 @@
 #
 # @param docker_ce_start_command
 # @param docker_ce_package_name
+# @param docker_ce_cli_package_name
 # @param docker_ce_source_location
 # @param docker_ce_key_source
 # @param docker_ce_key_id
@@ -363,6 +364,7 @@ class docker(
   Array                                   $dependent_packages                = $docker::params::dependent_packages,
   String                                  $docker_ce_start_command           = $docker::params::docker_ce_start_command,
   Optional[String]                        $docker_ce_package_name            = $docker::params::docker_ce_package_name,
+  String[1]                               $docker_ce_cli_package_name        = $docker::params::docker_ce_cli_package_name,
   Optional[String]                        $docker_ce_source_location         = $docker::params::package_ce_source_location,
   Optional[String]                        $docker_ce_key_source              = $docker::params::package_ce_key_source,
   Optional[String]                        $docker_ce_key_id                  = $docker::params::package_ce_key_id,
