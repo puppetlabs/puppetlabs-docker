@@ -22,7 +22,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
       containers = docker([
                             'ps',
                             '--format',
-                            "{{.Label \"com.docker.swarm.service.name\"}}-{{.Image}}",
+                            "'{{.Label \"com.docker.swarm.service.name\"}}-{{.Image}}'",
                             '--filter',
                             "label=com.docker.stack.namespace=#{name}",
                           ]).split("\n").each do |c|
