@@ -158,8 +158,9 @@ jobs:
           ${{ runner.os }}-
 
     - name: Prepare inventory file
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
-        cat > spec/fixtures/litmus_inventory.yaml <<EOF
+        cat <<EOF >> spec/fixtures/litmus_inventory.yaml
         ---
         version: 2
         groups:
@@ -173,6 +174,26 @@ jobs:
         - name: winrm_nodes
           targets: []
         EOF
+  
+    - name: Prepare inventory file
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == true }}
+      shell: pwsh
+      run: |
+        $Content = @'
+        ---
+        version: 2
+        groups:
+        - name: local
+          targets:
+          - uri: litmus_localhost
+            config:
+              transport: local
+        - name: ssh_nodes
+          targets: []
+        - name: winrm_nodes
+          targets: []
+        '@
+        $Content | Set-Content -Path spec/fixtures/litmus_inventory.yaml
 
     - name: Install gems and puppet agent
       run: |
