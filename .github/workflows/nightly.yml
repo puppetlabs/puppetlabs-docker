@@ -240,6 +240,19 @@ jobs:
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
         echo ::endgroup::
 
+    - name: Set up Cygwin
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
+      uses: egor-tensin/setup-cygwin@v3
+      with:
+        platform: x64
+        packages: cmake python3
+    
+    - name: blah
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
+      run: |
+        ls.exe -Al
+        pwd.exe
+
     - name: Create /tmp directory
       if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
       shell: pwsh
