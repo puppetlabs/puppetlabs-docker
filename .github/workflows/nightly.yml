@@ -71,15 +71,14 @@ jobs:
     needs:
       - setup_matrix
 
-    runs-on: ${{ matrix.platforms.image }} # ubuntu-20.04
+    runs-on: ${{ matrix.platforms.label }} # ubuntu-20.04
+    if: ${{ startsWith(matrix.platforms.label, 'Ubuntu') || startsWith(matrix.platforms.label, 'Windows') }}
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
 
     env:
       BUILDEVENT_FILE: '../buildevents.txt'
-
-    if: ${{ startsWith(matrix.platforms.image.label, 'Ubuntu') || startsWith(matrix.platforms.image.label, 'Windows') }}
 
     steps:
     - run: |
