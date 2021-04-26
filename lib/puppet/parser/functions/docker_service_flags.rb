@@ -20,7 +20,7 @@ module Puppet::Parser::Functions
 
     if opts['env'].is_a? Array
       opts['env'].each do |env|
-        flags << "--env #{env}"
+        flags << "--env '#{env}'"
       end
     end
 
