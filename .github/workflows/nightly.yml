@@ -67,11 +67,11 @@ jobs:
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Test Matrix'
 
   Acceptance:
-    name: "${{matrix.platforms.label}}, ${{matrix.collection}}"
+    name: "${{ fromJson(needs.setup_matrix.outputs.matrix).platforms.label }}, ${{fromJson(needs.setup_matrix.outputs.matrix).collection}}"
     needs:
       - setup_matrix
 
-    runs-on: ${{ matrix.platforms.label }} # ubuntu-20.04
+    runs-on: ${{ fromJson(needs.setup_matrix.outputs.matrix).platforms.label }}
     if: ${{ startsWith(fromJson(needs.setup_matrix.outputs.matrix).platforms.label, 'Ubuntu') || startsWith(fromJson(needs.setup_matrix.outputs.matrix).platforms.label, 'Windows') }}
     strategy:
       fail-fast: false
