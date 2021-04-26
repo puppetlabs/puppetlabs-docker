@@ -1,6 +1,12 @@
 name: "Test on Ubuntu Github Runners"
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - notfound-branch
+  pull_request:
+    branches:
+    - notfound-branch
 
 jobs:
   Acceptance:
