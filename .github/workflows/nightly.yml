@@ -2,9 +2,9 @@ name: "nightly"
 
 on: [push, pull_request]
 
-# env:
-#   HONEYCOMB_WRITEKEY: 7f3c63a70eecc61d635917de46bea4e6
-#   HONEYCOMB_DATASET: litmus tests
+env:
+  HONEYCOMB_WRITEKEY: 7f3c63a70eecc61d635917de46bea4e6
+  HONEYCOMB_DATASET: litmus tests
 
 jobs:
   setup_matrix:
