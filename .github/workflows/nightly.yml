@@ -246,6 +246,11 @@ jobs:
       shell: pwsh
       run: |
         New-Item -Path "c:\" -Name "tmp" -ItemType "directory"
+        $sharepath = "C:\tmp"
+        $Acl = Get-ACL $SharePath
+        $AccessRule= New-Object System.Security.AccessControl.FileSystemAccessRule("everyone","FullControl","ContainerInherit,Objectinherit","none","Allow")
+        $Acl.AddAccessRule($AccessRule)
+        Set-Acl $SharePath $Acl
         bundle exec rake 'litmus:acceptance:localhost'
     
     - name: Run acceptance tests
