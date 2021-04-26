@@ -79,7 +79,7 @@ jobs:
     needs:
       - setup_matrix
 
-    runs-on: ${{ matrix.platforms.label }}
+    runs-on: ${{ matrix.platforms.image }}
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
@@ -95,7 +95,7 @@ jobs:
 
 
     - name: "Honeycomb: Start recording"
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
       with:
         apikey: ${{ env.HONEYCOMB_WRITEKEY }}
@@ -104,7 +104,7 @@ jobs:
         matrix-key: ${{ matrix.platforms.label }}-${{ matrix.collection }}
 
     - name: "Honeycomb: start first step"
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
       run: |
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-1 >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
@@ -119,14 +119,14 @@ jobs:
         bundler-cache: true
 
     - name: Print bundle environment
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
       run: |
         echo ::group::bundler environment
         buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
         echo ::endgroup::
 
     - name: "Honeycomb: Record Setup Environment time"
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-2 >> $GITHUB_ENV
@@ -156,6 +156,7 @@ jobs:
     #     echo ::endgroup::
 
     - name: Cache gems
+      if: ${{ startsWith(matrix.platforms.image, 'macos') == false }}
       uses: actions/cache@v2
       with:
         path: vendor/gems
@@ -165,7 +166,7 @@ jobs:
           ${{ runner.os }}-
 
     - name: Prepare inventory file
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
       run: |
         cat <<EOF >> spec/fixtures/litmus_inventory.yaml
         ---
@@ -214,9 +215,10 @@ jobs:
         bundle install
         sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
-    # - name: Install agent
-    #   run: |
-    #     buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+    - name: Install agent
+      if: ${{ startsWith(matrix.platforms.image, 'macos') == true }}
+      run: |
+        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
     - name: Install module
       run: |
@@ -249,7 +251,7 @@ jobs:
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
 
     - name: Remove test environment
-      if: if: ${{ startsWith(matrix.platforms.label, 'macos') == true }}
+      if: ${{ startsWith(matrix.platforms.label, 'macos') == true }}
       continue-on-error: true
       run: |
         if [[ -f inventory.yaml || -f spec/fixtures/litmus_inventory.yaml ]]; then
