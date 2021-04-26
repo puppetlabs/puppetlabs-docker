@@ -95,7 +95,7 @@ jobs:
 
 
     - name: "Honeycomb: Start recording"
-      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
       with:
         apikey: ${{ env.HONEYCOMB_WRITEKEY }}
@@ -104,7 +104,7 @@ jobs:
         matrix-key: ${{ matrix.platforms.label }}-${{ matrix.collection }}
 
     - name: "Honeycomb: start first step"
-      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-1 >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
@@ -119,41 +119,51 @@ jobs:
         bundler-cache: true
 
     - name: Print bundle environment
-      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == false }}
       run: |
         echo ::group::bundler environment
         buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
         echo ::endgroup::
 
     - name: "Honeycomb: Record Setup Environment time"
-      if: ${{ startsWith(matrix.platforms.image, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-2 >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
 
-    # - name: Provision test environment
-    #   run: |
-    #     if [[ "${{matrix.platforms.provider}}" == "provision::docker" ]]; then
-    #       DOCKER_RUN_OPTS="docker_run_opts: {'--volume': '/lib/modules/$(uname -r):/lib/modules/$(uname -r)'}"
-    #     else
-    #       DOCKER_RUN_OPTS=''
-    #     fi
-    #     buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:provision ${{ matrix.platforms.image }}' -- bundle exec rake "litmus:provision[${{matrix.platforms.provider}},${{ matrix.platforms.image }},$DOCKER_RUN_OPTS]"
-    #     echo ::group::=== REQUEST ===
-    #     cat request.json || true
-    #     echo
-    #     echo ::endgroup::
-    #     echo ::group::=== INVENTORY ===
-    #     if [ -f 'spec/fixtures/litmus_inventory.yaml' ];
-    #     then
-    #       FILE='spec/fixtures/litmus_inventory.yaml'
-    #     elif [ -f 'inventory.yaml' ];
-    #     then
-    #       FILE='inventory.yaml'
-    #     fi
-    #     sed -e 's/password: .*/password: "[redacted]"/' < $FILE || true
-    #     echo ::endgroup::
+    - name: Provision test environment
+      if: ${{ startsWith(matrix.platforms.image, 'macos') == true }}
+      run: |
+        image="${{ matrix.platforms.label }}"
+        image=$(echo "$image" | tr '[:upper:]' '[:lower:]')
+        data=()
+        for x in $(echo $image | tr '-' "\n"); do
+          data+=("$x")
+        done
+        re_debian="(^debian)"
+        re_centos="(^centos)"
+        if [[ $image =~ $re_debian ]]; then
+          VAGRANT_IMAGE="generic/${data[0]}${data[1]}"
+        fi
+        if [[ $image =~ $re_centos ]]; then
+          VAGRANT_IMAGE="${data[0]}/${data[1]}"
+        fi
+        bundle exec rake "litmus:provision[vagrant,$VAGRANT_IMAGE]"
+        echo ::group::=== REQUEST ===
+        cat request.json || true
+        echo
+        echo ::endgroup::
+        echo ::group::=== INVENTORY ===
+        if [ -f 'spec/fixtures/litmus_inventory.yaml' ];
+        then
+          FILE='spec/fixtures/litmus_inventory.yaml'
+        elif [ -f 'inventory.yaml' ];
+        then
+          FILE='inventory.yaml'
+        fi
+        sed -e 's/password: .*/password: "[redacted]"/' < $FILE || true
+        echo ::endgroup::
 
     - name: Cache gems
       if: ${{ startsWith(matrix.platforms.image, 'macos') == false }}
@@ -218,14 +228,14 @@ jobs:
     - name: Install agent
       if: ${{ startsWith(matrix.platforms.image, 'macos') == true }}
       run: |
-        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+        bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
     - name: Install module
       run: |
         bundle exec rake 'litmus:install_module'
 
     - name: "Honeycomb: Record deployment times"
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
       run: |
         echo ::group::honeycomb step
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Deploy test system'
@@ -241,10 +251,15 @@ jobs:
     - name: Run acceptance tests
       if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
       run: |
-        bundle exec rake 'litmus:acceptance:localhost'
+        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:acceptance:localhost'
+    
+    - name: Run acceptance tests
+      if: ${{ startsWith(matrix.platforms.label, 'macos') == true }}
+      run: |
+        bundle exec rake 'litmus:acceptance:parallel'
 
     - name: "Honeycomb: Record acceptance testing times"
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Run acceptance tests'
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-4 >> $GITHUB_ENV
@@ -263,7 +278,7 @@ jobs:
         fi
 
     - name: "Honeycomb: Record removal times"
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
+      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Remove test environment'
 
