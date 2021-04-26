@@ -198,14 +198,14 @@ jobs:
     - name: Install gems and puppet agent
       run: |
         bundle install
-        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+        bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
     # - name: Install agent
     #   run: |
     #     buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
     - name: Install module
       run: |
-        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_module'
+        bundle exec rake 'litmus:install_module'
 
     - name: "Honeycomb: Record deployment times"
       if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
@@ -218,7 +218,7 @@ jobs:
 
     - name: Run acceptance tests
       run: |
-        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:acceptance:localhost'
+        bundle exec rake 'litmus:acceptance:localhost'
 
     - name: "Honeycomb: Record acceptance testing times"
       if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
@@ -232,7 +232,7 @@ jobs:
       continue-on-error: true
       run: |
         if [[ -f inventory.yaml || -f spec/fixtures/litmus_inventory.yaml ]]; then
-          sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:tear_down'
+          bundle exec rake 'litmus:tear_down'
           echo ::group::=== REQUEST ===
           cat request.json || true
           echo
