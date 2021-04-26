@@ -1,0 +1,7 @@
+::warning::Cannot find image for Debian-8
+::warning::Cannot find image for Ubuntu-14.04
+::set-output name=matrix::{"platforms":[{"label":"CentOS-7","provider":"provision::docker","image":"litmusimage/centos:7"},{"label":"Debian-10","provider":"provision::docker","image":"litmusimage/debian:10"},{"label":"Debian-9","provider":"provision::docker","image":"litmusimage/debian:9"},{"label":"Ubuntu-16.04","provider":"provision::docker","image":"litmusimage/ubuntu:16.04"},{"label":"Ubuntu-18.04","provider":"provision::docker","image":"litmusimage/ubuntu:18.04"},{"label":"Ubuntu-20.04","provider":"provision::docker","image":"litmusimage/ubuntu:20.04"},{"label":"Windows-2016","provider":"provision::provision_service","image":"windows-2016"},{"label":"Windows-2019","provider":"provision::provision_service","image":"windows-2019-core"}],"collection":["puppet6-nightly","puppet7-nightly"]}
+::set-output name=spec_matrix::{"include":[{"puppet_version":"~> 6.0","ruby_version":2.5},{"puppet_version":"~> 7.0","ruby_version":2.7}]}
+Created matrix with 18 cells:
+  - Acceptance Test Cells: 16
+  - Spec Test Cells: 2
