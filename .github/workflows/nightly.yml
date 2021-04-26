@@ -72,7 +72,7 @@ jobs:
       - setup_matrix
 
     runs-on: ${{ matrix.platforms.label }} # ubuntu-20.04
-    if: ${{ startsWith(matrix.platforms.label, 'Ubuntu') || startsWith(matrix.platforms.label, 'Windows') }}
+    if: ${{ startsWith(fromJson(needs.setup_matrix.outputs.matrix).platforms.label, 'Ubuntu') || startsWith(fromJson(needs.setup_matrix.outputs.matrix).platforms.label, 'Windows') }}
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
