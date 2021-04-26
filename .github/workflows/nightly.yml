@@ -228,12 +228,10 @@ jobs:
     - name: Install agent
       if: ${{ startsWith(matrix.platforms.image, 'macos') == true }}
       run: |
-        re_debian="(^Debian|Ubuntu)"
+        re_debian="(^Debian)"
         osname="${{ matrix.platforms.label }}"
         if [[ $osname =~ $re_debian ]]; then
-          pupt_path="/opt/puppetlabs/bin"
-          sed -i -r -e "/^\s*Defaults\s*secure_path\s*/ s#=+\"([^\"]+)\".*#=\"\1:${pupt_path}\"#" /etc/sudoers
-          sed -i -r -e "/^\s*Defaults\s+secure_path/ s#=([^\"].*)#=\1:${pupt_path}#" /etc/sudoers
+          bundle exec bolt task run provision::fix_secure_path --modulepath ./spec/fixtures/modules --targets '*' -i ./spec/fixtures/litmus_inventory.yaml
         fi
         bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
