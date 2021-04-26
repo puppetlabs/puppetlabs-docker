@@ -250,7 +250,6 @@ jobs:
         $AccessRule= New-Object System.Security.AccessControl.FileSystemAccessRule("everyone","FullControl","ContainerInherit,Objectinherit","none","Allow")
         $Acl.AddAccessRule($AccessRule)
         Set-Acl $SharePath $Acl
-        bundle exec rake 'litmus:acceptance:localhost'
     
     - name: Start SSH session
       if: ${{ matrix.platforms.label == 'Windows-2016' && matrix.collection == 'puppet6-nightly' }}
