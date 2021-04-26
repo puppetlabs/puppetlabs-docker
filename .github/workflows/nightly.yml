@@ -56,7 +56,15 @@ jobs:
       if: ${{ github.repository_owner == 'puppetlabs' }}
       run: |
         if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2
+          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2 > "${{ matrix.platforms.label }}, ${{ matrix.collection }}"
+          sed -i 's/litmusimage\/centos:7/macos-10.15/g' matrix.txt
+          sed -i 's/litmusimage\/debian:10/macos-10.15/g' matrix.txt
+          sed -i 's/litmusimage\/debian:9/macos-10.15/g' matrix.txt
+          sed -i 's/litmusimage\/ubuntu:16.04/ubuntu-16.04/g' matrix.txt
+          sed -i 's/litmusimage\/ubuntu:18.04/ubuntu-18.04/g' matrix.txt
+          sed -i 's/litmusimage\/ubuntu:20.04/ubuntu-20.04/g' matrix.txt
+          sed -i 's/windows-2019-core/windows-2019/g' matrix.txt
+          cat matrix.txt
         else
           echo  "::set-output name=matrix::{}"
         fi
@@ -72,7 +80,6 @@ jobs:
       - setup_matrix
 
     runs-on: ${{ matrix.platforms.label }}
-    # if: ${{ startsWith(fromJson(needs.setup_matrix.outputs.matrix).platforms.label, 'Ubuntu') || startsWith(fromJson(needs.setup_matrix.outputs.matrix).platforms.label, 'Windows') }}
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
@@ -196,9 +203,17 @@ jobs:
         $Content | Set-Content -Path spec/fixtures/litmus_inventory.yaml
 
     - name: Install gems and puppet agent
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == true }}
       run: |
         bundle install
         bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+
+    - name: Install gems and puppet agent
+      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
+      run: |
+        bundle install
+        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+
     # - name: Install agent
     #   run: |
     #     buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_agent ${{ matrix.collection }}' -- bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
@@ -217,6 +232,12 @@ jobs:
         echo ::endgroup::
 
     - name: Run acceptance tests
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == true }}
+      run: |
+        bundle exec rake 'litmus:acceptance:localhost'
+    
+    - name: Run acceptance tests
+      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
       run: |
         bundle exec rake 'litmus:acceptance:localhost'
 
@@ -228,7 +249,7 @@ jobs:
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
 
     - name: Remove test environment
-      if: ${{ always() }}
+      if: if: ${{ startsWith(matrix.platforms.label, 'macos') == true }}
       continue-on-error: true
       run: |
         if [[ -f inventory.yaml || -f spec/fixtures/litmus_inventory.yaml ]]; then
