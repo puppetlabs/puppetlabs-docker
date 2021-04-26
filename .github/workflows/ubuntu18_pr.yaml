@@ -12,13 +12,8 @@ jobs:
           - ubuntu-18.04
           - ubuntu-20.04
         collection:
-          - puppet5
-          - puppet6
+          - puppet6-nightly
           - puppet7-nightly
-        exclude:
-          # newer OS not supported on older agent
-          - platform: ubuntu-20.04
-            collection: puppet5
 
     runs-on: ${{ matrix.platform }}
 
@@ -42,7 +37,7 @@ jobs:
 
       - name: Prepare inventory file
         run: |
-          cat <<EOF >> inventory.yaml
+          cat <<EOF >> spec/fixtures/litmus_inventory.yaml
           ---
           version: 2
           groups:
