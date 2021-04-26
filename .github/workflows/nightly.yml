@@ -119,10 +119,10 @@ jobs:
         bundler-cache: true
 
     - name: Print bundle environment
-      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == false }}
+      # if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         echo ::group::bundler environment
-        buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
+        bundle env
         echo ::endgroup::
 
     - name: "Honeycomb: Record Setup Environment time"
