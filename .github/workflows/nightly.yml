@@ -141,14 +141,7 @@ jobs:
         for x in $(echo $image | tr '-' "\n"); do
           data+=("$x")
         done
-        re_debian="(^debian)"
-        re_centos="(^centos)"
-        if [[ $image =~ $re_debian ]]; then
-          VAGRANT_IMAGE="generic/${data[0]}${data[1]}"
-        fi
-        if [[ $image =~ $re_centos ]]; then
-          VAGRANT_IMAGE="${data[0]}/${data[1]}"
-        fi
+        VAGRANT_IMAGE="generic/${data[0]}${data[1]}"
         bundle exec rake "litmus:provision[vagrant,$VAGRANT_IMAGE]"
         echo ::group::=== REQUEST ===
         cat request.json || true
@@ -252,7 +245,7 @@ jobs:
       if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
       shell: pwsh
       run: |
-        New-Item -ItemType "directory" -Path "c:\tmp"
+        New-Item -Path "c:\" -Name "tmp" -ItemType "directory"
         bundle exec rake 'litmus:acceptance:localhost'
     
     - name: Run acceptance tests
