@@ -67,7 +67,7 @@ jobs:
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Test Matrix'
 
   Acceptance:
-    name: ${{ matrix.platforms.label }}, ${{ matrix.collection }}
+    name: "${{ matrix.platforms.label }}, ${{ matrix.collection }}"
     needs:
       - setup_matrix
 
@@ -194,7 +194,7 @@ jobs:
 
     - name: Run acceptance tests
       run: |
-        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:acceptance:parallel' -- bundle exec rake 'litmus:acceptance:parallel'
+        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:acceptance:localhost' -- bundle exec rake 'litmus:acceptance:localhost'
 
     - name: "Honeycomb: Record acceptance testing times"
       if: ${{ always() }}
