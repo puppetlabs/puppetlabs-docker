@@ -88,6 +88,7 @@ jobs:
 
 
     - name: "Honeycomb: Start recording"
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
       with:
         apikey: ${{ env.HONEYCOMB_WRITEKEY }}
@@ -96,6 +97,7 @@ jobs:
         matrix-key: ${{ matrix.platforms.label }}-${{ matrix.collection }}
 
     - name: "Honeycomb: start first step"
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-1 >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
@@ -110,13 +112,14 @@ jobs:
         bundler-cache: true
 
     - name: Print bundle environment
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
         echo ::group::bundler environment
         buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
         echo ::endgroup::
 
     - name: "Honeycomb: Record Setup Environment time"
-      if: ${{ always() }}
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-2 >> $GITHUB_ENV
@@ -181,10 +184,10 @@ jobs:
 
     - name: Install module
       run: |
-        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
+        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_module'
 
     - name: "Honeycomb: Record deployment times"
-      if: ${{ always() }}
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
         echo ::group::honeycomb step
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Deploy test system'
@@ -194,10 +197,10 @@ jobs:
 
     - name: Run acceptance tests
       run: |
-        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:acceptance:localhost' -- bundle exec rake 'litmus:acceptance:localhost'
+        sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:acceptance:localhost'
 
     - name: "Honeycomb: Record acceptance testing times"
-      if: ${{ always() }}
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Run acceptance tests'
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-4 >> $GITHUB_ENV
@@ -208,7 +211,7 @@ jobs:
       continue-on-error: true
       run: |
         if [[ -f inventory.yaml || -f spec/fixtures/litmus_inventory.yaml ]]; then
-          buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:tear_down' -- bundle exec rake 'litmus:tear_down'
+          sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:tear_down'
           echo ::group::=== REQUEST ===
           cat request.json || true
           echo
@@ -216,7 +219,7 @@ jobs:
         fi
 
     - name: "Honeycomb: Record removal times"
-      if: ${{ always() }}
+      if: ${{ startsWith(matrix.platforms.label, 'windows') == false }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Remove test environment'
 
