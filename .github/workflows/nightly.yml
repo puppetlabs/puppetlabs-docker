@@ -76,11 +76,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
-      exclude:
-        platforms:
-          - 'CentOS-7'
-          - 'Debian-9'
-          - 'Debian-10'
 
     env:
       BUILDEVENT_FILE: '../buildevents.txt'
