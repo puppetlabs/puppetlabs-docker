@@ -176,7 +176,7 @@ jobs:
           ${{ runner.os }}-
 
     - name: Prepare inventory file
-      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         cat <<EOF >> spec/fixtures/litmus_inventory.yaml
         ---
@@ -194,7 +194,7 @@ jobs:
         EOF
   
     - name: Prepare inventory file
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
       shell: pwsh
       run: |
         $Content = @'
@@ -214,13 +214,13 @@ jobs:
         $Content | Set-Content -Path spec/fixtures/litmus_inventory.yaml
 
     - name: Install gems and puppet agent
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
       run: |
         bundle install
         bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
     - name: Install gems and puppet agent
-      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         bundle install
         sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
@@ -228,6 +228,13 @@ jobs:
     - name: Install agent
       if: ${{ startsWith(matrix.platforms.image, 'macos') == true }}
       run: |
+        re_debian="(^Debian|Ubuntu)"
+        osname="${{ matrix.platforms.label }}"
+        if [[ $osname =~ $re_debian ]]; then
+          pupt_path="/opt/puppetlabs/bin"
+          sed -i -r -e "/^\s*Defaults\s*secure_path\s*/ s#=+\"([^\"]+)\".*#=\"\1:${pupt_path}\"#" /etc/sudoers
+          sed -i -r -e "/^\s*Defaults\s+secure_path/ s#=([^\"].*)#=\1:${pupt_path}#" /etc/sudoers
+        fi
         bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
 
     - name: Install module
@@ -235,7 +242,7 @@ jobs:
         bundle exec rake 'litmus:install_module'
 
     - name: "Honeycomb: Record deployment times"
-      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         echo ::group::honeycomb step
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Deploy test system'
@@ -244,17 +251,19 @@ jobs:
         echo ::endgroup::
 
     - name: Run acceptance tests
-      if: ${{ startsWith(matrix.platforms.label, 'windows') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
+      shell: pwsh
       run: |
+        New-Item -ItemType "directory" -Path "c:\tmp"
         bundle exec rake 'litmus:acceptance:localhost'
     
     - name: Run acceptance tests
-      if: ${{ startsWith(matrix.platforms.label, 'ubuntu') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'ubuntu') == true }}
       run: |
         sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:acceptance:localhost'
     
     - name: Run acceptance tests
-      if: ${{ startsWith(matrix.platforms.label, 'macos') == true }}
+      if: ${{ startsWith(matrix.platforms.image, 'macos') == true }}
       run: |
         bundle exec rake 'litmus:acceptance:parallel'
 
