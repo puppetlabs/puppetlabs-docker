@@ -56,7 +56,7 @@ jobs:
       if: ${{ github.repository_owner == 'puppetlabs' }}
       run: |
         if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2 > "${{ matrix.platforms.label }}, ${{ matrix.collection }}"
+          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2 > matrix.txt
           sed -i 's/litmusimage\/centos:7/macos-10.15/g' matrix.txt
           sed -i 's/litmusimage\/debian:10/macos-10.15/g' matrix.txt
           sed -i 's/litmusimage\/debian:9/macos-10.15/g' matrix.txt
