@@ -37,7 +37,7 @@ jobs:
 
       - name: Prepare inventory file
         run: |
-          cat <<EOF >> inventory.yaml
+          cat <<EOF >> spec/fixtures/litmus_inventory.yaml
           ---
           version: 2
           groups:
