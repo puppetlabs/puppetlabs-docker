@@ -67,7 +67,7 @@ jobs:
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Test Matrix'
 
   Acceptance:
-    name: "${{ fromJson(needs.setup_matrix.outputs.matrix).platforms.label }}, ${{fromJson(needs.setup_matrix.outputs.matrix).collection}}"
+    name: ${{ fromJson(needs.setup_matrix.outputs.matrix).platforms.label }}, ${{fromJson(needs.setup_matrix.outputs.matrix).collection}}
     needs:
       - setup_matrix
 
