@@ -245,18 +245,11 @@ jobs:
       shell: pwsh
       run: |
         New-Item -Path "C:\" -Name "tmp" -ItemType "directory"
-        $sharepath = "C:\tmp"
-        $Acl = Get-ACL $SharePath
-        $AccessRule= New-Object System.Security.AccessControl.FileSystemAccessRule("everyone","FullControl","ContainerInherit,Objectinherit","none","Allow")
+        $TmpDirectory = "C:\tmp"
+        $Acl = Get-ACL $TmpDirectory
+        $AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule("everyone","FullControl","ContainerInherit,Objectinherit","none","Allow")
         $Acl.AddAccessRule($AccessRule)
-        Set-Acl $SharePath $Acl
-    
-    - name: Start SSH session
-      if: ${{ matrix.platforms.label == 'Windows-2016' && matrix.collection == 'puppet6-nightly' }}
-      uses: luchihoratiu/debug-via-ssh@main
-      with:
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        SSH_PASS: ${{ secrets.SSH_PASS }}
+        Set-Acl $TmpDirectory $Acl
 
     - name: Run acceptance tests
       if: ${{ startsWith(matrix.platforms.image, 'windows') == true }}
