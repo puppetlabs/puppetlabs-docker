@@ -51,15 +51,15 @@ define docker::registry(
   $docker_command = $docker::params::docker_command
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment = ["PATH=${::docker_program_files_path}/Docker/"]
+    $exec_environment = [ "PATH=${::docker_program_files_path}/Docker/", ]
     $exec_timeout     = 3000
-    $exec_path        = ["${::docker_program_files_path}/Docker/"]
+    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
     $exec_provider    = 'powershell'
     $password_env     = '$env:password'
     $exec_user        = undef
   } else {
     $exec_environment = []
-    $exec_path        = ['/bin', '/usr/bin']
+    $exec_path        = [ '/bin', '/usr/bin', ]
     $exec_timeout     = 0
     $exec_provider    = undef
     $password_env     = "\${password}"
@@ -68,7 +68,7 @@ define docker::registry(
       $_local_user_home = $local_user_home
     } else {
       # set sensible default
-      $_local_user_home = $local_user == 'root' ? {
+      $_local_user_home = ($local_user == 'root') ? {
         true    => '/root',
         default => "/home/${local_user}",
       }
@@ -80,14 +80,14 @@ define docker::registry(
       $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
       $auth_environment = "password=${password}"
     } elsif $username != undef and $password != undef {
-      $auth_cmd        = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
+      $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
       $auth_environment = "password=${password}"
     } else {
-      $auth_cmd = "${docker_command} login ${server}"
+      $auth_cmd         = "${docker_command} login ${server}"
       $auth_environment = ''
     }
   }  else {
-    $auth_cmd = "${docker_command} logout ${server}"
+    $auth_cmd         = "${docker_command} logout ${server}"
     $auth_environment = ''
   }
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 broken = false
@@ -9,19 +11,17 @@ if os[:family] == 'windows'
   raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
   ip = result.stdout.split("\n")[0].split(':')[1].strip
   @windows_ip = ip
-  docker_arg = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"
+  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   docker_registry_image = 'stefanscherer/registry-windows'
   docker_network = 'nat'
   registry_host = @windows_ip
   config_file = '/cygdrive/c/Users/Administrator/.docker/config.json'
-  root_dir = 'C:/Users/Administrator/AppData/Local/Temp'
   server_strip = "#{registry_host}_#{registry_port}"
   bad_server_strip = "#{registry_host}_5001"
   broken = true
 else
-  docker_args = if os[:family] == 'redhat'
-                  "repo_opt => '--enablerepo=localmirror-extras'"
-                elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
+  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
                   "version => '18.06.1~ce~3-0~ubuntu'"
                 else
                   ''
@@ -40,18 +40,91 @@ describe 'docker' do
   service_name = 'docker'
   command = 'docker'
 
+  before(:all) do
+    install_pp = "class { 'docker': #{docker_args}}"
+    apply_manifest(install_pp)
+  end
+
   context 'When adding system user', win_broken: broken do
     let(:pp) do
       "
-             class { 'docker': #{docker_arg}
+             class { 'docker': #{docker_args},
                docker_users => ['user1']
              }
-     "
+      "
     end
 
     it 'the docker daemon' do
       apply_manifest(pp, catch_failures: true) do |r|
         expect(r.stdout).not_to match(%r{docker-systemd-reload-before-service})
+      end
+    end
+  end
+
+  context 'When prepare_service_only param is set(prepare_service_only => true)', win_broken: broken do
+    let(:pp) do
+      "
+        class { 'docker': #{docker_args} }
+        docker::run { 'servercore':
+          image                => 'hello-world:latest',
+          prepare_service_only => true,
+        }
+      "
+    end
+
+    it 'creates the service without starting it' do
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'not start the service' do
+      run_shell('systemctl status docker-servercore', expect_failures: true) do |r|
+        expect(r.stdout.include?('Main PID')).to be false
+      end
+    end
+  end
+
+  context 'When prepare_service_only param is not set(prepare_service_only => false)', win_broken: broken do
+    let(:pp) do
+      "
+        class { 'docker': #{docker_args} }
+        docker::run { 'servercore':
+          image => 'hello-world:latest',
+        }
+      "
+    end
+
+    it 'creates the service and start it' do
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'start the service' do
+      run_shell('systemctl status docker-servercore', expect_failures: true) do |r|
+        expect(r.stdout.include?('Main PID')).to be true
+      end
+    end
+  end
+
+  context 'When root_dir is set' do
+    let(:pp) do
+      "class { 'docker': #{docker_args}, root_dir => \"#{root_dir}\"}"
+    end
+
+    let(:shell_command) do
+      if os[:family] == 'windows'
+        'cat C:/ProgramData/docker/config/daemon.json'
+      else
+        'systemctl status docker'
+      end
+    end
+
+    it 'works' do
+      apply_manifest(pp, catch_failures: true)
+      run_shell(shell_command) do |r|
+        if os[:family] == 'windows'
+          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
+        else
+          expect(r.stdout).to match(%r{--data-root #{root_dir}})
+        end
       end
     end
   end
@@ -82,7 +155,11 @@ describe 'docker' do
     end
 
     it 'is idempotent' do
-      apply_manifest(pp, catch_changes: true)
+      if fetch_puppet_version > 5
+        expect(docker_run_idempotent_apply(pp)).to be true
+      else
+        apply_manifest(pp, catch_changes: true)
+      end
     end
 
     describe package(package_name) do
@@ -166,6 +243,27 @@ describe 'docker' do
     end
   end
 
+  context 'When registry_mirror is array', win_broken: broken do
+    let(:pp) do
+      "
+      class { 'docker':
+        registry_mirror => ['http://testmirror1.io', 'http://testmirror2.io']
+      }
+    "
+    end
+
+    it 'applies with no errors' do
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'has all registry mirrors set' do
+      run_shell('ps -aux | grep docker') do |r|
+        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror1.io})
+        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror2.io})
+      end
+    end
+  end
+
   context 'registry' do
     let(:registry_address) do
       "#{registry_host}:#{registry_port}"
@@ -177,7 +275,7 @@ describe 'docker' do
 
     it 'is able to run registry' do
       pp = <<-MANIFEST
-        class { 'docker': #{docker_arg}}
+        class { 'docker': #{docker_args}}
         docker::run { 'registry':
           image         => '#{docker_registry_image}',
           pull_on_start => true,

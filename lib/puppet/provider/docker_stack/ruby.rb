@@ -6,7 +6,11 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
   desc 'Support for Puppet running Docker Stacks'
 
   mk_resource_methods
-  commands docker: 'docker'
+  commands dockercmd: 'docker'
+
+  has_command(:docker, command(:dockercmd)) do
+    environment(HOME: '/root')
+  end
 
   def exists?
     Puppet.info("Checking for stack #{name}")
@@ -85,6 +89,4 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
   def compose_files
     resource[:compose_files].map { |x| ['-c', x] }.flatten
   end
-
-  private
 end

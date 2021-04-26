@@ -20,7 +20,7 @@ module Puppet::Parser::Functions
 
     if opts['env'].is_a? Array
       opts['env'].each do |env|
-        flags << "--env #{env}"
+        flags << "--env '#{env}'"
       end
     end
 
@@ -59,7 +59,7 @@ module Puppet::Parser::Functions
     end
 
     if opts['user'] && opts['user'].to_s != 'undef'
-      flags << "--user '#{opts['publish']}'"
+      flags << "--user '#{opts['user']}'"
     end
 
     if opts['workdir'] && opts['workdir'].to_s != 'undef'
@@ -76,7 +76,11 @@ module Puppet::Parser::Functions
       flags << "-H '#{opts['host_socket']}'"
     end
 
-    if opts['registry_mirror'] && opts['registry_mirror'].to_s != 'undef'
+    if opts['registry_mirror'].is_a? Array
+      opts['registry_mirror'].each do |param|
+        flags << "--registry-mirror='#{param}'"
+      end
+    elsif opts['registry_mirror'] && opts['registry_mirror'].to_s != 'undef'
       flags << "--registry-mirror='#{opts['registry_mirror']}'"
     end
 

@@ -20,6 +20,12 @@
 # This will allow the docker container to be restarted if it dies, without
 # puppet help.
 #
+# @param verify_digest
+#   (optional) Make sure, that the image has not modified. Compares the digest 
+#   checksum before starting the docker image.
+#   To get the digest of an image, run the following command: 
+#     docker image inspect <<image>> --format='{{index .RepoDigests 0}}
+#
 # @param service_prefix
 #   (optional) The name to prefix the startup script with and the Puppet
 #   service resource title with.  Default: 'docker-'
@@ -88,6 +94,12 @@
 # RemainAfterExit option on the unit file.  Can be any valid value for this systemd
 # configuration.
 # Default: Not included in unit file
+#
+# @param prepare_service_only
+# (optional) Prepare the service and enable it as usual but do not run it right away.
+# Useful when building VM images using masterless Puppet and then letting the Docker images
+# to be downloaded when a new VM is created.
+# Default: false
 #
 # @param image
 #
@@ -180,6 +192,7 @@
 define docker::run(
   Optional[Pattern[/^[\S]*$/]]            $image,
   Optional[Enum[present,absent]]          $ensure                            = 'present',
+  Optional[String]                        $verify_digest                     = undef,
   Optional[String]                        $command                           = undef,
   Optional[Pattern[/^[\d]*(b|k|m|g)$/]]   $memory_limit                      = '0b',
   Variant[String,Array,Undef]             $cpuset                            = [],
@@ -191,7 +204,7 @@ define docker::run(
   Optional[Boolean]                       $use_name                          = false,
   Optional[Boolean]                       $running                           = true,
   Optional[Variant[String,Array]]         $volumes_from                      = [],
-  Variant[String,Array]                   $net                               = 'bridge',
+  Variant[String,Array,Undef]             $net                               = undef,
   Variant[String,Boolean]                 $username                          = false,
   Variant[String,Boolean]                 $hostname                          = false,
   Optional[Variant[String,Array]]         $env                               = [],
@@ -237,6 +250,7 @@ define docker::run(
   Optional[Integer]                       $health_check_interval             = undef,
   Optional[Variant[String,Array]]         $custom_unless                     = [],
   Optional[String]                        $remain_after_exit                 = undef,
+  Optional[Boolean]                       $prepare_service_only              = false,
 ) {
   include docker::params
 
@@ -255,11 +269,11 @@ define docker::run(
   }
 
   if ($remove_volume_on_start and !$remove_container_on_start) {
-    fail(translate("In order to remove the volume on start for ${title} you need to also remove the container"))
+    fail("In order to remove the volume on start for ${title} you need to also remove the container")
   }
 
   if ($remove_volume_on_stop and !$remove_container_on_stop) {
-    fail(translate("In order to remove the volume on stop for ${title} you need to also remove the container"))
+    fail("In order to remove the volume on stop for ${title} you need to also remove the container")
   }
 
   if $use_name {
@@ -405,32 +419,56 @@ define docker::run(
         $exec_unless = $inspect
       }
 
-      exec { "run ${title} with docker":
-        command     => join($run_with_docker_command, ' '),
-        unless      => $exec_unless,
-        environment => $exec_environment,
-        path        => $exec_path,
-        provider    => $exec_provider,
-        timeout     => $exec_timeout,
-      }
+      if versioncmp($facts['puppetversion'], '6') < 0 {
+        exec { "run ${title} with docker":
+          command     => join($run_with_docker_command, ' '),
+          unless      => $exec_unless,
+          environment => $exec_environment,
+          path        => $exec_path,
+          provider    => $exec_provider,
+          timeout     => $exec_timeout,
+        }
 
-      if $running == false {
-        exec { "stop ${title} with docker":
-          command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-          onlyif      => $container_running_check,
-          environment => $exec_environment,
-          path        => $exec_path,
-          provider    => $exec_provider,
-          timeout     => $exec_timeout,
+        if $running == false {
+          exec { "stop ${title} with docker":
+            command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
+            onlyif      => $container_running_check,
+            environment => $exec_environment,
+            path        => $exec_path,
+            provider    => $exec_provider,
+            timeout     => $exec_timeout,
           }
+        } else {
+          exec { "start ${title} with docker":
+            command     => "${docker_command} start ${sanitised_title}",
+            unless      => $container_running_check,
+            environment => $exec_environment,
+            path        => $exec_path,
+            provider    => $exec_provider,
+            timeout     => $exec_timeout,
+          }
+        }
       } else {
-        exec { "start ${title} with docker":
-          command     => "${docker_command} start ${sanitised_title}",
-          unless      => $container_running_check,
-          environment => $exec_environment,
-          path        => $exec_path,
-          provider    => $exec_provider,
-          timeout     => $exec_timeout,
+        $docker_params_changed_args = {
+          sanitised_title   => $sanitised_title,
+          osfamily          => $facts['os']['family'],
+          command           => join($run_with_docker_command, ' '),
+          cidfile           => $cidfile,
+          image             => $image,
+          volumes           => $volumes,
+          ports             => $ports,
+          stop_wait_time    => $stop_wait_time,
+          container_running => $running,
+          # logfile_path      => ($facts['os']['family'] == 'windows') ? {
+          # true    => ::docker_user_temp_path,
+          # default => '/tmp',
+          # },
+        }
+
+        $detect_changes = Deferred('docker_params_changed', [$docker_params_changed_args])
+
+        notify { 'docker_params_changed':
+          message  => $detect_changes,
         }
       }
     }
@@ -459,10 +497,10 @@ define docker::run(
       }
       default: {
         if $facts['os']['family'] != 'windows' {
-          fail(translate('Docker needs a Debian or RedHat based system.'))
+          fail('Docker needs a Debian or RedHat based system.')
         }
         elsif $ensure == 'present' {
-          fail(translate('Restart parameter is required for Windows'))
+          fail('Restart parameter is required for Windows')
         }
 
         $hasstatus = $::docker::params::service_hasstatus
@@ -587,7 +625,7 @@ define docker::run(
           }
 
           service { "${service_prefix}${sanitised_title}":
-            ensure    => $running,
+            ensure    => $running and !$prepare_service_only,
             enable    => true,
             provider  => $service_provider_real,
             hasstatus => $hasstatus,
@@ -611,7 +649,7 @@ define docker::run(
           }
         }
       }
-      if $service_provider_real == 'systemd' {
+      if $service_provider_real == 'systemd' and !$prepare_service_only {
         exec { "docker-${sanitised_title}-systemd-reload":
           path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
           command     => 'systemctl daemon-reload',

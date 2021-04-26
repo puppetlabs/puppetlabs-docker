@@ -69,23 +69,23 @@ define docker::image(
   )
 
   if ($docker_file) and ($docker_tar) {
-    fail(translate('docker::image must not have both $docker_file and $docker_tar set'))
+    fail('docker::image must not have both $docker_file and $docker_tar set')
   }
 
   if ($docker_dir) and ($docker_tar) {
-    fail(translate('docker::image must not have both $docker_dir and $docker_tar set'))
+    fail('docker::image must not have both $docker_dir and $docker_tar set')
   }
 
   if ($image_digest) and ($docker_file) {
-    fail(translate('docker::image must not have both $image_digest and $docker_file set'))
+    fail('docker::image must not have both $image_digest and $docker_file set')
   }
 
   if ($image_digest) and ($docker_dir) {
-    fail(translate('docker::image must not have both $image_digest and $docker_dir set'))
+    fail('docker::image must not have both $image_digest and $docker_dir set')
   }
 
   if ($image_digest) and ($docker_tar) {
-    fail(translate('docker::image must not have both $image_digest and $docker_tar set'))
+    fail('docker::image must not have both $image_digest and $docker_tar set')
   }
 
   if $force {

@@ -13,9 +13,11 @@
     <% if @socket_group %>"group": "<%= @socket_group %>",<% end -%>
     <% if @bridge %>"bridge": "<%= @bridge %>",<% end -%>
     <% if @fixed_cidr %>"fixed-cidr": "<%= @fixed_cidr %>",<% end -%>
-    <% if @registry_mirror %>"registry-mirrors": ["<%= @registry_mirror%>"], <% end -%>
+    <% if @registry_mirror.is_a? String %>"registry-mirrors": ["<%= @registry_mirror %>"], <% end -%>
+    <% if @registry_mirror.is_a? Array %>"registry-mirrors": ["<%= @registry_mirror.join('", "') %>"], <% end -%>
     <% if @extra_parameters %><% @extra_parameters_array.each do |param| %>
     <%= param %> ,<% end %>
     <% end -%>
+    <% if @root_dir %>"data-root": "<%= @root_dir %>",<% end -%>
     "labels": <%= @labels_array.to_json %>
 }

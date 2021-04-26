@@ -7,35 +7,33 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   mk_resource_methods
   commands dockercompose: 'docker-compose'
-  commands docker: 'docker'
+  commands dockercmd: 'docker'
+
+  has_command(:docker, command(:dockercmd)) do
+    environment(HOME: '/root')
+  end
 
   def exists?
     Puppet.info("Checking for compose project #{name}")
     compose_services = {}
     compose_containers = []
-    resource[:compose_files].each do |file|
-      compose_file = YAML.safe_load(File.read(file), [], [], true)
-      # rubocop:disable Style/StringLiterals
-      containers = docker([
-                            'ps',
-                            '--format',
-                            "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
-                            '--filter',
-                            "label=com.docker.compose.project=#{name}",
-                          ]).split("\n")
-      compose_containers.push(*containers)
-      compose_containers.uniq!
-      # rubocop:enable Style/StringLiterals
-      case compose_file['version']
-      when %r{^2(\.[0-3])?$}, %r{^3(\.\d+)?$}
-        compose_services.deep_merge!(compose_file['services'])
-      # in compose v1 "version" parameter is not specified
-      when nil
-        compose_services.deep_merge!(compose_file)
-      else
-        raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-      end
-    end
+
+    # get merged config using docker-compose config
+    args = [compose_files, '-p', name, 'config'].insert(3, resource[:options]).compact
+    compose_output = YAML.safe_load(execute([command(:dockercompose)] + args, combine: false))
+
+    # rubocop:disable Style/StringLiterals
+    containers = docker([
+                          'ps',
+                          '--format',
+                          "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
+                          '--filter',
+                          "label=com.docker.compose.project=#{name}",
+                        ]).split("\n")
+    compose_containers.push(*containers)
+    compose_containers.uniq!
+
+    compose_services = compose_output['services']
 
     if compose_services.count != compose_containers.count
       return false
@@ -78,24 +76,24 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     return unless resource[:scale]
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
     Puppet.info("Scaling compose project #{name}: #{instructions.join(' ')}")
-    args = [compose_files, '-p', name, 'scale'].insert(2, resource[:options]).compact + instructions
+    args = [compose_files, '-p', name, 'scale'].insert(3, resource[:options]).compact + instructions
     dockercompose(args)
   end
 
   def destroy
     Puppet.info("Removing all containers for compose project #{name}")
-    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
+    kill_args = [compose_files, '-p', name, 'kill'].insert(3, resource[:options]).compact
     dockercompose(kill_args)
-    rm_args = [compose_files, '-p', name, 'rm', '--force', '-v'].insert(2, resource[:options]).compact
+    rm_args = [compose_files, '-p', name, 'rm', '--force', '-v'].insert(3, resource[:options]).compact
     dockercompose(rm_args)
   end
 
   def restart
     return unless exists?
     Puppet.info("Rebuilding and Restarting all containers for compose project #{name}")
-    kill_args = [compose_files, '-p', name, 'kill'].insert(2, resource[:options]).compact
+    kill_args = [compose_files, '-p', name, 'kill'].insert(3, resource[:options]).compact
     dockercompose(kill_args)
-    build_args = [compose_files, '-p', name, 'build'].insert(2, resource[:options]).compact
+    build_args = [compose_files, '-p', name, 'build'].insert(3, resource[:options]).compact
     dockercompose(build_args)
     create
   end
@@ -103,6 +101,4 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   def compose_files
     resource[:compose_files].map { |x| ['-f', x] }.flatten
   end
-
-  private
 end

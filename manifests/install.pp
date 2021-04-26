@@ -30,7 +30,7 @@ class docker::install(
 
   if $facts['os']['family'] and ! $docker::acknowledge_unsupported_os {
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
-      fail(translate('This module only works on Debian, RedHat or Windows.'))
+      fail('This module only works on Debian, RedHat or Windows.')
     }
   }
   if $docker::version and $docker::ensure != 'absent' {
@@ -55,7 +55,7 @@ class docker::install(
           $pk_provider = 'yum'
         }
         'windows' : {
-          fail(translate('Custom package source is currently not implemented on windows.'))
+          fail('Custom package source is currently not implemented on windows.')
         }
         default : {
           $pk_provider = undef

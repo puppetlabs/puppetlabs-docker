@@ -470,41 +470,43 @@ class docker(
   Optional[Variant[String,Boolean]]       $service_after_override            = $docker::params::service_after_override,
   Optional[Boolean]                       $service_hasstatus                 = $docker::params::service_hasstatus,
   Optional[Boolean]                       $service_hasrestart                = $docker::params::service_hasrestart,
-  Optional[String]                        $registry_mirror                   = $docker::params::registry_mirror,
+  Optional[Variant[String,Array]]         $registry_mirror                   = $docker::params::registry_mirror,
   Boolean                                 $acknowledge_unsupported_os        = false,
 
   # Windows specific parameters
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,
   Optional[String]                        $nuget_package_provider_version    = $docker::params::nuget_package_provider_version,
+
+  Boolean                                 $have_systemd_v230                 = $docker::params::have_systemd_v230,
 ) inherits docker::params {
   if $facts['os']['family'] and ! $acknowledge_unsupported_os {
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
-      fail(translate('This module only works on Debian, Red Hat or Windows based systems.'))
+      fail('This module only works on Debian, Red Hat or Windows based systems.')
     }
   }
 
-  if ($facts['os']['name'] == 'CentOS') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
-    fail(translate('This module only works on CentOS version 7 and higher based systems.'))
+  if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
+    fail('This module only works on Red Hat based systems version 7 and higher.')
   }
 
   if ($default_gateway) and (!$bridge) {
-    fail(translate('You must provide the $bridge parameter.'))
+    fail('You must provide the $bridge parameter.')
   }
 
   if $log_level {
     assert_type(Pattern[/^(debug|info|warn|error|fatal)$/], $log_level) |$a, $b| {
-      fail(translate('log_level must be one of debug, info, warn, error or fatal'))
+      fail('log_level must be one of debug, info, warn, error or fatal')
     }
   }
 
   if $log_driver {
     if $facts['os']['family'] == 'windows' {
       assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|awslogs|etwlogs)$/], $log_driver) |$a, $b| {
-        fail(translate('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs'))
+        fail('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs')
       }
     } else {
       assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk|awslogs)$/], $log_driver) |$a, $b| {
-        fail(translate('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd, splunk or awslogs'))
+        fail('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd, splunk or awslogs')
       }
     }
   }
@@ -512,33 +514,33 @@ class docker(
   if $storage_driver {
     if $facts['os']['family'] == 'windows' {
       assert_type(Pattern[/^(windowsfilter)$/], $storage_driver) |$a, $b| {
-        fail(translate('Valid values for storage_driver on windows are windowsfilter'))
+        fail('Valid values for storage_driver on windows are windowsfilter')
       }
     } else {
       assert_type(Pattern[/^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$/], $storage_driver) |$a, $b| {
-        fail(translate('Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.'))
+        fail('Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.')
       }
     }
   }
 
   if ($bridge) and ($facts['os']['family'] == 'windows') {
       assert_type(Pattern[/^(none|nat|transparent|overlay|l2bridge|l2tunnel)$/], $bridge) |$a, $b| {
-        fail(translate('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.'))
+        fail('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.')
     }
   }
 
   if $dm_fs {
     assert_type(Pattern[/^(ext4|xfs)$/], $dm_fs) |$a, $b| {
-      fail(translate('Only ext4 and xfs are supported currently for dm_fs.'))
+      fail('Only ext4 and xfs are supported currently for dm_fs.')
     }
   }
 
   if ($dm_loopdatasize or $dm_loopmetadatasize) and ($dm_datadev or $dm_metadatadev) {
-    fail(translate('You should provide parameters only for loop lvm or direct lvm, not both.'))
+    fail('You should provide parameters only for loop lvm or direct lvm, not both.')
   }
 
   if ($dm_datadev or $dm_metadatadev) and $dm_thinpooldev {
-    fail(translate('You can use the $dm_thinpooldev parameter, or the $dm_datadev and $dm_metadatadev parameter pair, but you cannot use both.')) # lint:ignore:140chars
+    fail('You can use the $dm_thinpooldev parameter, or the $dm_datadev and $dm_metadatadev parameter pair, but you cannot use both.') # lint:ignore:140chars
   }
 
   if ($dm_datadev or $dm_metadatadev) {
@@ -546,16 +548,16 @@ class docker(
   }
 
   if ($dm_datadev and !$dm_metadatadev) or (!$dm_datadev and $dm_metadatadev) {
-    fail(translate('You need to provide both $dm_datadev and $dm_metadatadev parameters for direct lvm.'))
+    fail('You need to provide both $dm_datadev and $dm_metadatadev parameters for direct lvm.')
   }
 
   if ($dm_basesize or $dm_fs or $dm_mkfsarg or $dm_mountopt or $dm_blocksize or $dm_loopdatasize or $dm_loopmetadatasize or $dm_datadev or $dm_metadatadev) and ($storage_driver != 'devicemapper') {
-    fail(translate('Values for dm_ variables will be ignored unless storage_driver is set to devicemapper.'))
+    fail('Values for dm_ variables will be ignored unless storage_driver is set to devicemapper.')
   }
 
   if($tls_enable) {
     if(! $tcp_bind) {
-      fail(translate('You need to provide tcp bind parameter for TLS.'))
+      fail('You need to provide tcp bind parameter for TLS.')
     }
   }
 
@@ -578,13 +580,13 @@ class docker(
           $package_repos      = $docker_ce_channel
           $release            = $docker_ce_release
         }
-        'Redhat' : {
+        'RedHat' : {
           $package_location         = $docker_ce_source_location
           $package_key_source       = $docker_ce_key_source
           $package_key_check_source = true
         }
         'windows': {
-          fail(translate('This module only work for Docker Enterprise Edition on Windows.'))
+          fail('This module only work for Docker Enterprise Edition on Windows.')
         }
         default: {
           $package_location         = $docker_package_location
@@ -598,7 +600,7 @@ class docker(
     }
   } else {
     case $facts['os']['family'] {
-      'Debian' : {
+      'Debian': {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
@@ -606,17 +608,18 @@ class docker(
         $package_repos            = 'main'
         $release                  = $docker_package_release
       }
-      'Redhat' : {
+      'RedHat': {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
-      default : {
+      default: {
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
       }
     }
+
     $docker_start_command = $docker_engine_start_command
     $docker_package_name  = $docker_engine_package_name
   }

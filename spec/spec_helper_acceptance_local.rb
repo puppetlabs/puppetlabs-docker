@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet_litmus'
 require 'rspec/retry'
 require 'tempfile'
@@ -32,6 +34,15 @@ def create_remote_file(name, full_name, file_content)
     File.open(tempfile.path, 'w') { |file| file.puts file_content }
     bolt_upload_file(tempfile.path, full_name)
   end
+end
+
+def docker_run_idempotent_apply(pp)
+  apply_manifest(pp)
+  apply_manifest(pp).stdout.include?('Notice: No changes detected')
+end
+
+def fetch_puppet_version
+  @fetch_puppet_version ||= run_shell('puppet --version').stdout.to_i
 end
 
 RSpec.configure do |c|
@@ -72,7 +83,10 @@ RSpec.configure do |c|
 
     # net-tools required for netstat utility being used by some tests
     if os[:family] == 'redhat' && os[:release].to_i == 7
-      run_shell('yum install -y net-tools device-mapper')
+      run_shell('yum -y install lvm2 device-mapper device-mapper-persistent-data device-mapper-event device-mapper-libs device-mapper-event-libs')
+      run_shell('yum install -y yum-utils net-tools')
+      run_shell('yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo')
+      run_shell('yum-config-manager --enable docker\*')
     end
 
     docker_compose_content_v3 = <<-EOS
@@ -160,7 +174,7 @@ services:
     if os[:family] == 'windows'
       create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3_windows)
       create_remote_file(host, '/tmp/docker-stack.yml', docker_stack_content_windows)
-      if os[:release] =~ %r{2019}
+      if %r{2019}.match?(os[:release])
         create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows)
         create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows)
       else

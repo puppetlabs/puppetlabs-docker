@@ -1,76 +1,96 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
+tests = {
+  'with default values' => {
+  },
+  'when running detached' => {
+    'detach' => true,
+  },
+  'when running with tty' => {
+    'tty' => true,
+  },
+  'when running with interactive' => {
+    'interactive' => true,
+  },
+  'when running with onlyif "running"' => {
+    'interactive' => true,
+    'onlyif'      => 'running',
+  },
+  'when running without onlyif custom command' => {
+    'interactive' => true,
+    'onlyif'      => 'custom',
+  },
+  'when running without onlyif' => {
+    'interactive' => true,
+  },
+  'when running with unless' => {
+    'interactive' => true,
+    'unless'      => 'some_command arg1',
+  },
+  'when running without unless' => {
+    'interactive' => true,
+  },
+  'with title that need sanitisation' => {
+    'detach'        => true,
+    'sanitise_name' => true,
+  },
+  'with environment variables passed to exec' => {
+    'env' => [
+      'FOO=BAR',
+      'FOO2=BAR2',
+    ],
+  },
+}
+
 describe 'docker::exec', type: :define do
-  let(:title) { 'sample' }
-  let(:facts) do
-    {
-      osfamily: 'Debian',
-      operatingsystem: 'Debian',
-      lsbdistid: 'Debian',
-      lsbdistcodename: 'jessie',
-      kernelrelease: '3.2.0-4-amd64',
-      operatingsystemmajrelease: '8',
-      os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.2' } },
-    }
-  end
+  on_supported_os.each do |os, os_facts|
+    ##
+    ## set some needed facts
+    ##
+    facts = if %r{windows}.match?(os)
+              windows_facts.merge(os_facts)
+            else
+              os_facts
+            end
 
-  context 'when running detached' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'detach' => true } }
+    ##
+    ## get defaults values from params
+    ##
+    defaults = get_defaults(facts)
 
-    it { is_expected.to contain_exec('docker exec --detach=true container command') }
-  end
+    context "on #{os}" do
+      tests.each do |title, local_params|
+        context title do
+          params = {
+            'command'       => '/bin/echo foo',
+            'container'     => 'some_conainer_name',
+            'detach'        => false,
+            'env'           => [],
+            'interactive'   => false,
+            'onlyif'        => :undef,
+            'refreshonly'   => false,
+            'sanitise_name' => true,
+            'tty'           => false,
+            'unless'        => :undef,
+          }.merge(local_params)
 
-  context 'when running with tty' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'tty' => true } }
+          let(:facts) do
+            facts
+          end
 
-    it { is_expected.to contain_exec('docker exec --tty=true container command') }
-  end
+          let(:params) do
+            params
+          end
 
-  context 'when running with interactive' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'interactive' => true } }
+          let(:title) do
+            title
+          end
 
-    it { is_expected.to contain_exec('docker exec --interactive=true container command') }
-  end
-
-  context 'when running with onlyif "running"' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'interactive' => true, 'onlyif' => 'running' } }
-
-    it { is_expected.to contain_exec('docker exec --interactive=true container command').with_onlyif 'docker ps --no-trunc --format=\'table {{.Names}}\' | grep \'^container$\'' }
-  end
-
-  context 'when running without onlyif custom command' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'interactive' => true, 'onlyif' => 'custom' } }
-
-    it { is_expected.to contain_exec('docker exec --interactive=true container command').with_onlyif 'custom' }
-  end
-
-  context 'when running without onlyif' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'interactive' => true } }
-
-    it { is_expected.to contain_exec('docker exec --interactive=true container command').with_onlyif nil }
-  end
-
-  context 'when running with unless' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'interactive' => true, 'unless' => 'some_command arg1' } }
-
-    it { is_expected.to contain_exec('docker exec --interactive=true container command').with_unless 'docker exec --interactive=true container some_command arg1' }
-  end
-
-  context 'when running without unless' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'interactive' => true } }
-
-    it { is_expected.to contain_exec('docker exec --interactive=true container command').with_unless nil }
-  end
-
-  context 'with title that need sanitisation' do
-    let(:params) { { 'command' => 'command', 'container' => 'container_sample/1', 'detach' => true, 'sanitise_name' => true } }
-
-    it { is_expected.to contain_exec('docker exec --detach=true container_sample-1 command') }
-  end
-
-  context 'with environment variables passed to exec' do
-    let(:params) { { 'command' => 'command', 'container' => 'container', 'env' => ['FOO=BAR', 'FOO2=BAR2'] } }
-
-    it { is_expected.to contain_exec('docker exec --env FOO=BAR --env FOO2=BAR2 container command') }
+          include_examples 'exec', params, facts, defaults
+        end
+      end
+    end
   end
 end

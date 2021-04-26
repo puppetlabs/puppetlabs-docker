@@ -2,6 +2,98 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.0.0) (2021-03-04)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.14.0...v4.0.0)
+
+### Changed
+
+- pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [\#718](https://github.com/puppetlabs/puppetlabs-docker/pull/718) ([carabasdaniel](https://github.com/carabasdaniel))
+
+### Fixed
+
+- Make it possible to use pod's network [\#725](https://github.com/puppetlabs/puppetlabs-docker/pull/725) ([seriv](https://github.com/seriv))
+
+## [v3.14.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.14.0) (2021-03-04)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.13.1...v3.14.0)
+
+### Fixed
+
+- \[MODULES-10898\] Disable forced docker service restart for RedHat 7 and docker server 1.13 [\#730](https://github.com/puppetlabs/puppetlabs-docker/pull/730) ([carabasdaniel](https://github.com/carabasdaniel))
+
+## [v3.13.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.13.1) (2021-02-02)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.13.0...v3.13.1)
+
+### Fixed
+
+- \(IAC-1218\) - docker\_params\_changed should be run by agent [\#705](https://github.com/puppetlabs/puppetlabs-docker/pull/705) ([adrianiurca](https://github.com/adrianiurca))
+- Fix systemd units for systemd versions \< v230 [\#704](https://github.com/puppetlabs/puppetlabs-docker/pull/704) ([benningm](https://github.com/benningm))
+- setting HOME environment to /root [\#698](https://github.com/puppetlabs/puppetlabs-docker/pull/698) ([adrianiurca](https://github.com/adrianiurca))
+
+## [v3.13.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.13.0) (2020-12-14)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.12.1...v3.13.0)
+
+### Added
+
+- pdksync - \(feat\) - Bump Puppet boundary [\#687](https://github.com/puppetlabs/puppetlabs-docker/pull/687) ([daianamezdrea](https://github.com/daianamezdrea))
+- Ensure image digest checksum before starting [\#673](https://github.com/puppetlabs/puppetlabs-docker/pull/673) ([tmanninger](https://github.com/tmanninger))
+- Support multiple mirrors \#659 [\#669](https://github.com/puppetlabs/puppetlabs-docker/pull/669) ([TheLocehiliosan](https://github.com/TheLocehiliosan))
+
+### Fixed
+
+- Options to docker-compose should be an Array, not a String [\#695](https://github.com/puppetlabs/puppetlabs-docker/pull/695) ([adrianiurca](https://github.com/adrianiurca))
+- fixing issue \#689 by setting HOME in docker command [\#692](https://github.com/puppetlabs/puppetlabs-docker/pull/692) ([sdinten](https://github.com/sdinten))
+- \(MAINT\) Use docker-compose config instead file parsing [\#672](https://github.com/puppetlabs/puppetlabs-docker/pull/672) ([rbelnap](https://github.com/rbelnap))
+- Fix array of additional flags [\#671](https://github.com/puppetlabs/puppetlabs-docker/pull/671) ([CAPSLOCK2000](https://github.com/CAPSLOCK2000))
+- Test against OS family rather than name [\#667](https://github.com/puppetlabs/puppetlabs-docker/pull/667) ([bodgit](https://github.com/bodgit))
+
+## [v3.12.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.12.1) (2020-10-13)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.12.0...v3.12.1)
+
+### Fixed
+
+- Fix misplaced backslash in start template [\#666](https://github.com/puppetlabs/puppetlabs-docker/pull/666) ([optiz0r](https://github.com/optiz0r))
+
+## [v3.12.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.12.0) (2020-09-24)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.11.0...v3.12.0)
+
+### Added
+
+- Add docker swarm join-tokens as facts [\#651](https://github.com/puppetlabs/puppetlabs-docker/pull/651) ([oschusler](https://github.com/oschusler))
+
+### Fixed
+
+- \(IAC-982\) - Remove inappropriate terminology [\#654](https://github.com/puppetlabs/puppetlabs-docker/pull/654) ([david22swan](https://github.com/david22swan))
+
+## [v3.11.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.11.0) (2020-08-11)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.10.2...v3.11.0)
+
+### Added
+
+- Fix \#584: Deal with Arrays for the net list [\#647](https://github.com/puppetlabs/puppetlabs-docker/pull/647) ([MG2R](https://github.com/MG2R))
+- pdksync - \(IAC-973\) - Update travis/appveyor to run on new default branch main [\#643](https://github.com/puppetlabs/puppetlabs-docker/pull/643) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- \[MODULES-10734\] - improve params detection on docker::run [\#648](https://github.com/puppetlabs/puppetlabs-docker/pull/648) ([adrianiurca](https://github.com/adrianiurca))
+
+## [v3.10.2](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.2) (2020-07-16)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.10.1...v3.10.2)
+
+### Fixed
+
+- \(MODULES-10691\) - Add root\_dir in daemon.json [\#632](https://github.com/puppetlabs/puppetlabs-docker/pull/632) ([daianamezdrea](https://github.com/daianamezdrea))
+- Fixing the fix 'Fix the docker\_compose options parameter position \#378' [\#631](https://github.com/puppetlabs/puppetlabs-docker/pull/631) ([awegmann](https://github.com/awegmann))
+- Blocking ordering between non-Windows service stops [\#622](https://github.com/puppetlabs/puppetlabs-docker/pull/622) ([ALTinners](https://github.com/ALTinners))
+- Allow all 3.x docker-compose minor versions [\#620](https://github.com/puppetlabs/puppetlabs-docker/pull/620) ([runejuhl](https://github.com/runejuhl))
+
 ## [v3.10.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.1) (2020-05-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.10.0...v3.10.1)
@@ -62,7 +154,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [v3.8.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.8.0) (2019-10-01)
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.7.0...v3.8.0)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.7.0-bna...v3.8.0)
 
 ### Added
 
@@ -75,6 +167,14 @@ All notable changes to this project will be documented in this file. The format 
 - :bug: Fix wrong service detach handling [\#520](https://github.com/puppetlabs/puppetlabs-docker/pull/520) ([khaefeli](https://github.com/khaefeli))
 - Fixing error: [\#516](https://github.com/puppetlabs/puppetlabs-docker/pull/516) ([darshannnn](https://github.com/darshannnn))
 - Fix aliased plugin names [\#514](https://github.com/puppetlabs/puppetlabs-docker/pull/514) ([koshatul](https://github.com/koshatul))
+
+## [v3.7.0-bna](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.7.0-bna) (2019-08-08)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/e2.6...v3.7.0-bna)
+
+## [e2.6](https://github.com/puppetlabs/puppetlabs-docker/tree/e2.6) (2019-07-26)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.7.0...e2.6)
 
 ## [v3.7.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.7.0) (2019-07-18)
 
@@ -316,4 +416,4 @@ Added support for:
 - Docker secrets
 
 
-\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

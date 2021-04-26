@@ -15,11 +15,17 @@ Description=Daemon for <%= @title %>
 After=<%= @after.uniq.join(" ") %>
 Wants=<%= @wants.uniq.join(" ") %>
 Requires=<%= @requires.uniq.join(" ") %>
+<%- if @have_systemd_v230 -%>
 StartLimitIntervalSec=20
 StartLimitBurst=3
+<%- end -%>
 
 [Service]
 Restart=<%= @systemd_restart %>
+<%- unless @have_systemd_v230 -%>
+StartLimitInterval=20
+StartLimitBurst=3
+<%- end -%>
 TimeoutStartSec=0
 RestartSec=5
 Environment="HOME=/root"

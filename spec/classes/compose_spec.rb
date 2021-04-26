@@ -1,147 +1,92 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
+tests = {
+  'with default valus' => {
+  },
+  'with ensure => absent' => {
+    'ensure' => 'absent',
+  },
+  'with version => 1.7.0' => {
+    'version' => '1.7.0',
+  },
+  'when proxy is provided' => {
+    'version' => '1.7.0',
+    'proxy'   => 'http://proxy.example.org:3128/',
+  },
+  'when proxy is not a http proxy' => {
+    'proxy'   => 'this is not a URL',
+  },
+  'when proxy contains username and password' => {
+    'version' => '1.7.0',
+    'proxy'   => 'http://user:password@proxy.example.org:3128/',
+  },
+  'when proxy IP is provided' => {
+    'version' => '1.7.0',
+    'proxy'   => 'http://10.10.10.10:3128/',
+  },
+  'when base_url is provided' => {
+    'version'  => '1.7.0',
+    'base_url' => 'http://example.org',
+  },
+  'when raw_url is provided' => {
+    'version'  => '1.7.0',
+    'raw_url' => 'http://example.org',
+  },
+}
+
 describe 'docker::compose', type: :class do
-  let(:facts) do
-    {
-      kernel: 'Linux',
-      osfamily: 'Debian',
-      operatingsystem: 'Ubuntu',
-      lsbdistid: 'Ubuntu',
-      lsbdistcodename: 'maverick',
-      kernelrelease: '3.8.0-29-generic',
-      operatingsystemrelease: '10.04',
-      operatingsystemmajrelease: '10',
-      os: { distro: { codename: 'maverick' }, family: 'Debian', name: 'Ubuntu', release: { major: '10', full: '10.04' } },
-    }
-  end
+  on_supported_os.each do |os, os_facts|
+    ##
+    ## set some needed facts
+    ##
+    facts = if %r{windows}.match?(os)
+              windows_facts.merge(os_facts)
+            else
+              os_facts
+            end
 
-  it { is_expected.to compile }
+    ##
+    ## get defaults values from params
+    ##
+    defaults = get_defaults(facts)
 
-  context 'with defaults for all parameters' do
-    it { is_expected.to compile.with_all_deps }
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.9.0').with(
-        'path'    => '/usr/bin/',
-        'cwd'     => '/tmp',
-        'command' => 'curl -s -S -L  https://github.com/docker/compose/releases/download/1.9.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.9.0',
-        'creates' => '/usr/local/bin/docker-compose-1.9.0',
-        'require' => 'Package[curl]',
-      )
-    }
-    it {
-      is_expected.to contain_file('/usr/local/bin/docker-compose-1.9.0').with(
-        'owner'   => 'root',
-        'mode'    => '0755',
-        'require' => 'Exec[Install Docker Compose 1.9.0]',
-      )
-    }
-    it {
-      is_expected.to contain_file('/usr/local/bin/docker-compose').with(
-        'ensure'   => 'link',
-        'target'   => '/usr/local/bin/docker-compose-1.9.0',
-        'require'  => 'File[/usr/local/bin/docker-compose-1.9.0]',
-      )
-    }
-  end
+    context "on #{os}" do
+      tests.each do |title, local_params|
+        context title do
+          params = {
+            'ensure'       => 'present',
+            'version'      => defaults['compose_version'],
+            'install_path' => defaults['compose_install_path'],
+            'symlink_name' => defaults['compose_symlink_name'],
+            'proxy'        => :undef,
+            'base_url'     => defaults['compose_base_url'],
+            'raw_url'      => :undef,
+            'curl_ensure'  => defaults['curl_ensure'],
+          }.merge(local_params)
 
-  context 'with ensure => absent' do
-    let(:params) { { ensure: 'absent' } }
+          let(:facts) do
+            facts
+          end
 
-    it { is_expected.to contain_file('/usr/local/bin/docker-compose-1.9.0').with_ensure('absent') }
-    it { is_expected.to contain_file('/usr/local/bin/docker-compose').with_ensure('absent') }
-  end
+          let(:params) do
+            params
+          end
 
-  context 'when no proxy is provided' do
-    let(:params) { { version: '1.7.0' } }
+          if params['proxy'] != :undef
+            unless %r{^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$}.match?(params['proxy'])
+              it {
+                is_expected.to compile.and_raise_error(%r{does not match})
+              }
 
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-        'curl -s -S -L  https://github.com/docker/compose/releases/download/1.7.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.7.0',
-      )
-    }
-  end
+              next
+            end
+          end
 
-  context 'when proxy is provided' do
-    let(:params) do
-      { proxy: 'http://proxy.example.org:3128/',
-        version: '1.7.0' }
+          include_examples 'compose', params, facts
+        end
+      end
     end
-
-    it { is_expected.to compile }
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-        'curl -s -S -L --proxy http://proxy.example.org:3128/ https://github.com/docker/compose/releases/download/1.7.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.7.0',
-      )
-    }
-  end
-
-  context 'when proxy is not a http proxy' do
-    let(:params) { { proxy: 'this is not a URL' } }
-
-    it do
-      expect {
-        is_expected.to compile
-      }.to raise_error(%r{does not match})
-    end
-  end
-
-  context 'when proxy contains username and password' do
-    let(:params) do
-      {
-        proxy: 'http://user:password@proxy.example.org:3128/',
-        version: '1.7.0',
-      }
-    end
-
-    it { is_expected.to compile }
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-        'curl -s -S -L --proxy http://user:password@proxy.example.org:3128/'\
-        ' https://github.com/docker/compose/releases/download/1.7.0/docker-compose-Linux-x86_64'\
-        ' -o /usr/local/bin/docker-compose-1.7.0',
-      )
-    }
-  end
-
-  context 'when proxy IP is provided' do
-    let(:params) do
-      { proxy: 'http://10.10.10.10:3128/',
-        version: '1.7.0' }
-    end
-
-    it { is_expected.to compile }
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-        'curl -s -S -L --proxy http://10.10.10.10:3128/ https://github.com/docker/compose/releases/download/1.7.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.7.0',
-      )
-    }
-  end
-
-  context 'when base_url is provided' do
-    let(:params) do
-      { base_url: 'http://example.org',
-        version: '1.7.0' }
-    end
-
-    it { is_expected.to compile }
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-        'curl -s -S -L  http://example.org/1.7.0/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose-1.7.0',
-      )
-    }
-  end
-
-  context 'when raw_url is provided' do
-    let(:params) do
-      { raw_url: 'http://example.org',
-        version: '1.7.0' }
-    end
-
-    it { is_expected.to compile }
-    it {
-      is_expected.to contain_exec('Install Docker Compose 1.7.0').with_command(
-        'curl -s -S -L  http://example.org -o /usr/local/bin/docker-compose-1.7.0',
-      )
-    }
   end
 end

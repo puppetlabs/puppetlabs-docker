@@ -77,10 +77,32 @@ Facter.add(:docker_version) do
   end
 end
 
+Facter.add(:docker_worker_join_token) do
+  setcode do
+    if Facter::Util::Resolution.which('docker')
+      val = Facter::Util::Resolution.exec(
+        "#{docker_command} swarm join-token worker -q",
+      )
+    end
+    val
+  end
+end
+
+Facter.add(:docker_manager_join_token) do
+  setcode do
+    if Facter::Util::Resolution.which('docker')
+      val = Facter::Util::Resolution.exec(
+        "#{docker_command} swarm join-token manager -q",
+      )
+    end
+    val
+  end
+end
+
 Facter.add(:docker) do
   setcode do
     docker_version = Facter.value(:docker_client_version)
-    if docker_version !~ %r{1[.][0-9][0-2]?[.]\w+}
+    unless %r{1[.][0-9][0-2]?[.]\w+}.match?(docker_version)
       if Facter::Core::Execution.which('docker')
         docker_json_str = Facter::Core::Execution.exec(
           "#{docker_command} info --format '{{json .}}'", timeout: 90
@@ -100,7 +122,7 @@ Facter.add(:docker) do
             docker['network'][network] = inspect[0]
             network_id = docker['network'][network]['Id'][0..11]
             interfaces.each do |iface|
-              docker['network']['managed_interfaces'][iface] = network if iface =~ %r{#{network_id}}
+              docker['network']['managed_interfaces'][iface] = network if %r{#{network_id}}.match?(iface)
             end
           end
           docker

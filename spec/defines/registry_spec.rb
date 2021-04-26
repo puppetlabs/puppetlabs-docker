@@ -1,83 +1,152 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
+tests = {
+  'with ensure => absent' => {
+    'ensure' => 'absent',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with ensure => present' => {
+    'ensure' => 'present',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with ensure => present and username => user1' => {
+    'ensure' => 'present',
+    'username' => 'user1',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with ensure => present and password => secret' => {
+    'ensure' => 'present',
+    'password' => 'secret',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+
+  'with ensure => present and email => user1@example.io' => {
+    'ensure' => 'present',
+    'email' => 'user1@example.io',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with ensure => present and username => user1, and password => secret and email => user1@example.io' => {
+    'ensure' => 'present',
+    'username' => 'user1',
+    'password' => 'secret',
+    'email' => 'user1@example.io',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with ensure => present and username => user1, and password => secret and email => user1@example.io and version < 1.11.0' => {
+    'ensure' => 'present',
+    'username' => 'user1',
+    'password' => 'secret',
+    'email' => 'user1@example.io',
+    'version' => '1.9.0',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with username => user1, and password => secret' => {
+    'username' => 'user1',
+    'password' => 'secret',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+  'with username => user1, and password => secret and local_user => testuser' => {
+    'username' => 'user1',
+    'password' => 'secret',
+    'local_user' => 'testuser',
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false,
+  },
+}
+
 describe 'docker::registry', type: :define do
-  let(:title) { 'localhost:5000' }
-  let(:facts) do
-    {
-      osfamily: 'Debian',
-      operatingsystem: 'Debian',
-      lsbdistid: 'Debian',
-      lsbdistcodename: 'jessie',
-      kernelrelease: '3.2.0-4-amd64',
-      operatingsystemmajrelease: '8',
-      os: { distro: { codename: 'jessie' }, family: 'Debian', name: 'Debian', release: { major: '8', full: '8.2' } },
-    }
-  end
-  let(:params) { { 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
+  on_supported_os.each do |os, os_facts|
+    ##
+    ## set some needed facts
+    ##
+    if %r{windows}.match?(os)
+      facts = windows_facts.merge(
+        'docker_home_dirs' => {
+          'user' => '/home/user',
+          'root' => '/root',
+        },
+      ).merge(os_facts)
 
-  it { is_expected.to contain_exec('localhost:5000 auth') }
+      docker_params = {
+        'docker_ee' => true,
+      }
+    else
+      facts = {
+        docker_home_dirs: {
+          'user' => '/home/user',
+          'root' => '/root',
+        },
+      }.merge(os_facts)
 
-  context 'with ensure => present' do
-    let(:params) { { 'ensure' => 'absent', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
+      docker_params = {}
+    end
 
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command('docker logout localhost:5000') }
-  end
+    ##
+    ## get defaults values from params
+    ##
+    defaults = get_defaults(facts)
 
-  context 'with ensure => present' do
-    let(:params) { { 'ensure' => 'present', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
+    context "on #{os}" do
+      tests.each do |title, local_params|
+        context title do
+          params = {
+            'server'     => title,
+            'ensure'     => 'present',
+            'username'   => :undef,
+            'password'   => :undef,
+            'pass_hash'  => :undef,
+            'email'      => :undef,
+            'local_user' => 'root',
+            'version'    => defaults['version'],
+            'receipt'    => true,
+          }.merge(local_params)
 
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command('docker login localhost:5000') }
-  end
+          let(:facts) do
+            facts
+          end
 
-  context 'with ensure => present and username => user1' do
-    let(:params) { { 'ensure' => 'present', 'username' => 'user1', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
+          let(:params) do
+            params
+          end
 
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command('docker login localhost:5000') }
-  end
+          let(:title) do
+            title
+          end
 
-  context 'with ensure => present and password => secret' do
-    let(:params) { { 'ensure' => 'present', 'password' => 'secret', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
+          let :pre_condition do
+            <<-MANIFEST
+            function pw_hash($foo, $bar, $asdf) {
+              return '$6$foobar$v8j5roVj0D8t.Ipwvk0RrMHiZfZRoBMeVQDywxUKFtdRI2EFRi2X6tbOigjpOsa9UDVzgIBtcl2ZEGcM.jnZZ.'
+            }
 
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command('docker login localhost:5000') }
-  end
+            class { 'docker':
+              version => "#{params['version']}",
+              *       => #{docker_params},
+            }
+            MANIFEST
+          end
 
-  context 'with ensure => present and email => user1@example.io' do
-    let(:params) { { 'ensure' => 'present', 'email' => 'user1@example.io', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command('docker login localhost:5000') }
-  end
-
-  context 'with ensure => present and username => user1, and password => secret and email => user1@example.io' do
-    let(:params) { { 'ensure' => 'present', 'username' => 'user1', 'password' => 'secret', 'email' => 'user1@example.io', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" localhost:5000").with_environment(%r{password=secret}) }
-  end
-
-  context 'with ensure => present and username => user1, and password => secret and email => user1@example.io and version < 1.11.0' do
-    let(:params) { { 'ensure' => 'present', 'username' => 'user1', 'password' => 'secret', 'email' => 'user1@example.io', 'version' => '1.9.0', 'pass_hash' => 'test1234', 'receipt' => false } }
-
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" -e 'user1@example.io' localhost:5000").with_environment(%r{password=secret}) }
-  end
-
-  context 'with username => user1, and password => secret' do
-    let(:params) { { 'username' => 'user1', 'password' => 'secret', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" localhost:5000").with_environment(%r{password=secret}) }
-  end
-
-  context 'with username => user1, and password => secret and local_user => testuser' do
-    let(:params) { { 'username' => 'user1', 'password' => 'secret', 'local_user' => 'testuser', 'version' => '17.06', 'pass_hash' => 'test1234', 'receipt' => false } }
-
-    it { is_expected.to contain_exec('localhost:5000 auth').with_command("docker login -u 'user1' -p \"${password}\" localhost:5000").with_user('testuser').with_environment(%r{password=secret}) }
-  end
-
-  context 'with an invalid ensure value' do
-    let(:params) { { 'ensure' => 'not present or absent' } }
-
-    it do
-      expect {
-        is_expected.to contain_exec('docker logout localhost:5000')
-      }.to raise_error(Puppet::Error)
+          include_examples 'registry', title, params, facts, defaults
+        end
+      end
     end
   end
 end

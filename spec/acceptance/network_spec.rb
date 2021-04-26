@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 broken = false
@@ -7,9 +9,7 @@ network_name = 'test-network'
 if os[:family] == 'windows'
   puts 'Not implemented on Windows'
   broken = true
-elsif os[:family] == 'RedHat'
-  docker_args = "repo_opt => '--enablerepo=localmirror-extras'"
-elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
+elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
   docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
 else
   docker_args = ''
