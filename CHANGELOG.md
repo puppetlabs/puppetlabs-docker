@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.0.1) (2021-05-26)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.0.0...v4.0.1)
+
+### Fixed
+
+- \(IAC-1497\) - Removal of unsupported `translate` dependency [\#737](https://github.com/puppetlabs/puppetlabs-docker/pull/737) ([david22swan](https://github.com/david22swan))
+- add simple quotes around env service flag [\#706](https://github.com/puppetlabs/puppetlabs-docker/pull/706) ([adrianiurca](https://github.com/adrianiurca))
+
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.0.0) (2021-03-04)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.14.0...v4.0.0)
