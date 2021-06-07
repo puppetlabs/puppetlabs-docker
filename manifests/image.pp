@@ -143,7 +143,7 @@ define docker::image(
       timeout     => $exec_timeout,
       logoutput   => true,
     }
-  } elsif $ensure == 'latest' or $image_tag == 'latest' {
+  } elsif $ensure == 'latest' or $image_tag == 'latest' or $force {
     notify { "Check if image ${image_arg} is in-sync":
       noop => false,
     }
