@@ -187,6 +187,8 @@
 #
 # @param syslog_identifier
 #
+# @param syslog_facility
+#
 # @param read_only
 #
 define docker::run(
@@ -244,6 +246,7 @@ define docker::run(
   Optional[Boolean]                       $remove_volume_on_stop             = false,
   Optional[Integer]                       $stop_wait_time                    = 0,
   Optional[String]                        $syslog_identifier                 = undef,
+  Optional[String]                        $syslog_facility                   = undef,
   Optional[Boolean]                       $read_only                         = false,
   Optional[String]                        $health_check_cmd                  = undef,
   Optional[Boolean]                       $restart_on_unhealthy              = false,
