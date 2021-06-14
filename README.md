@@ -567,7 +567,7 @@ If using Hiera, configure the `docker::volumes` class in the manifest file:
   classes:
     - docker::volumes
 
-docker::volumes:
+docker::volumes::volumes:
   blueocean:
     ensure: present
     driver: local
