@@ -197,6 +197,9 @@ tests = {
     'docker_service' => 'my-docker',
     'restart_service_on_docker_refresh' => false,
   },
+  'when passing syslog_facility' => {
+    'syslog_facility' => 'user',
+  },
 }
 
 describe 'docker::run', type: :define do

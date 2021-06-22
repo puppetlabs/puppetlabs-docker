@@ -32,6 +32,9 @@ Environment="HOME=/root"
 <%- if @_syslog_identifier -%>
 SyslogIdentifier=<%= @_syslog_identifier %>
 <%- end -%>
+<%- if @syslog_facility -%>
+SyslogFacility=<%= @syslog_facility %>
+<%- end -%>
 ExecStart=/usr/local/bin/docker-run-<%= @sanitised_title %>-start.sh
 ExecStop=-/usr/local/bin/docker-run-<%= @sanitised_title %>-stop.sh
 <%- if @remain_after_exit %>
