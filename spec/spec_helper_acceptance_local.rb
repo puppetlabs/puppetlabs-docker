@@ -63,8 +63,10 @@ RSpec.configure do |c|
     # Due to RE-6764, running yum update renders the machine unable to install
     # other software. Thus this workaround.
     if os[:family] == 'redhat'
-      run_shell('mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/internal-mirror.repo', expect_failures: true)
-      run_shell('rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm', expect_failures: true)
+      # run_shell('mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/internal-mirror.repo', expect_failures: true)
+      # run_shell('rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm', expect_failures: true)
+      run_shell('yum install wget -y')
+      run_shell('wget https://download.docker.com/linux/centos/docker-ce.repo')
       run_shell('yum update -y -q')
       # run_shell('yum upgrade -y')
     end
