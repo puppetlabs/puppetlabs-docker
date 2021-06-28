@@ -26,6 +26,7 @@ def get_defaults(_facts)
   dns_search                        = :undef
   docker_ce_channel                 = 'stable'
   docker_ce_package_name            = 'docker-ce'
+  docker_ce_cli_package_name        = 'docker-ce-cli'
   docker_ce_start_command           = 'dockerd'
   docker_command                    = 'docker'
   docker_ee                         = false
@@ -343,7 +344,7 @@ def get_defaults(_facts)
     apt_source_pin_level                = :undef
   end
 
-  dependent_packages = ['docker-ce-cli', 'containerd.io']
+  dependent_packages = [docker_ce_cli_package_name, 'containerd.io']
 
   prerequired_packages = case _facts[:os]['family']
                          when 'Debian'
@@ -392,6 +393,7 @@ def get_defaults(_facts)
     'dns_search' => dns_search,
     'docker_ce_channel' => docker_ce_channel,
     'docker_ce_package_name' => docker_ce_package_name,
+    'docker_ce_cli_package_name' => docker_ce_cli_package_name,
     'docker_ce_start_command' => docker_ce_start_command,
     'docker_command' => docker_command,
     'docker_ee' => docker_ee,

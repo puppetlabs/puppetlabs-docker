@@ -5,6 +5,7 @@ class docker::params {
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
   $docker_ce_package_name            = 'docker-ce'
+  $docker_ce_cli_package_name        = 'docker-ce-cli'
   $docker_engine_start_command       = 'docker daemon'
   $docker_engine_package_name        = 'docker-engine'
   $docker_ce_channel                 = stable
@@ -372,7 +373,7 @@ class docker::params {
     default  => [],
   }
 
-  $dependent_packages = [ 'docker-ce-cli', 'containerd.io', ]
+  $dependent_packages = [ $docker_ce_cli_package_name, 'containerd.io', ]
 
   if($service_provider == 'systemd') {
     # systemd v230 adds new StartLimitIntervalSec, StartLimitBurst

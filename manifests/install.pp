@@ -47,35 +47,27 @@ class docker::install(
     }
 
     if $docker::package_source {
-      case $facts['os']['family'] {
-        'Debian' : {
-          $pk_provider = 'dpkg'
-        }
-        'RedHat' : {
-          $pk_provider = 'yum'
-        }
-        'windows' : {
-          fail('Custom package source is currently not implemented on windows.')
-        }
-        default : {
-          $pk_provider = undef
-        }
+      if $facts['os']['family'] == 'windows' {
+        fail('Custom package source is currently not implemented on windows.')
       }
       case $docker::package_source {
         /docker-engine/ : {
           ensure_resource('package', 'docker', merge($docker_hash, {
-            ensure   => $ensure,
-            provider => $pk_provider,
-            source   => $docker::package_source,
-            name     => $docker::docker_engine_package_name,
+            ensure => $ensure,
+            source => $docker::package_source,
+            name   => $docker::docker_engine_package_name,
           }))
         }
         /docker-ce/ : {
           ensure_resource('package', 'docker', merge($docker_hash, {
-            ensure   => $ensure,
-            provider => $pk_provider,
-            source   => $docker::package_source,
-            name     => $docker::docker_ce_package_name,
+            ensure => $ensure,
+            source => $docker::package_source,
+            name   => $docker::docker_ce_package_name,
+          }))
+          ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
+            ensure => $ensure,
+            source => $docker::package_source,
+            name   => $docker::docker_ce_cli_package_name,
           }))
         }
         default : {}
@@ -87,6 +79,10 @@ class docker::install(
         ensure_resource('package', 'docker', merge($docker_hash, {
           ensure => $ensure,
           name   => $docker::docker_package_name,
+        }))
+        ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
+          ensure => $ensure,
+          name   => $docker::docker_ce_cli_package_name,
         }))
 
         if $ensure == 'absent' {
