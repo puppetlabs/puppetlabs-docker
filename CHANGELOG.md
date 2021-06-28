@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.1.0) (2021-06-28)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.0.1...v4.1.0)
+
+### Added
+
+- Add syslog\_facility parameter to docker::run [\#755](https://github.com/puppetlabs/puppetlabs-docker/pull/755) ([waipeng](https://github.com/waipeng))
+
+### Fixed
+
+- Fix docker::volumes hiera example [\#754](https://github.com/puppetlabs/puppetlabs-docker/pull/754) ([pskopnik](https://github.com/pskopnik))
+- Allow force update non-latest tagged image [\#752](https://github.com/puppetlabs/puppetlabs-docker/pull/752) ([yanjunding](https://github.com/yanjunding))
+- Allow management of the docker-ce-cli package [\#740](https://github.com/puppetlabs/puppetlabs-docker/pull/740) ([kenyon](https://github.com/kenyon))
+
 ## [v4.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.0.1) (2021-05-26)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.0.0...v4.0.1)
