@@ -2900,6 +2900,7 @@ The following parameters are available in the `docker::run` defined type:
 * [`remove_volume_on_stop`](#remove_volume_on_stop)
 * [`stop_wait_time`](#stop_wait_time)
 * [`syslog_identifier`](#syslog_identifier)
+* [`syslog_facility`](#syslog_facility)
 * [`read_only`](#read_only)
 
 ##### <a name="restart"></a>`restart`
@@ -3386,6 +3387,14 @@ Data type: `Optional[Integer]`
 Default value: `0`
 
 ##### <a name="syslog_identifier"></a>`syslog_identifier`
+
+Data type: `Optional[String]`
+
+
+
+Default value: ``undef``
+
+##### <a name="syslog_facility"></a>`syslog_facility`
 
 Data type: `Optional[String]`
 
