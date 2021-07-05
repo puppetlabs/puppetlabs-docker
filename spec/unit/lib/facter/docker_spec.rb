@@ -8,9 +8,13 @@ describe 'Facter::Util::Fact' do
     Facter.clear
     if Facter.value(:kernel) == 'windows'
       docker_command = 'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
+      Facter::Core::Execution.stubs(:which).with('dhcpcd').returns('C:\Windows\dhcpd.exe')
+      Facter::Core::Execution.stubs(:which).with('route').returns('C:\Windows\System32\ROUTE.EXE')
       Facter::Core::Execution.stubs(:which).with('docker').returns('C:\Program Files\Docker\docker.exe')
     else
       docker_command = 'docker'
+      Facter::Core::Execution.stubs(:which).with('route').returns('/usr/bin/route')
+      Facter::Core::Execution.stubs(:which).with('dhcpcd').returns('/usr/bin/dhcpd')
       Facter::Core::Execution.stubs(:which).with('docker').returns('/usr/bin/docker')
     end
     docker_info = File.read(fixtures('facts', 'docker_info'))

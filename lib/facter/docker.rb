@@ -34,7 +34,7 @@ end
 docker_command = if Facter.value(:kernel) == 'windows'
                    'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
                  else
-                   'timeout -k 90 60 docker'
+                   'docker'
                  end
 
 def interfaces
@@ -102,7 +102,7 @@ end
 Facter.add(:docker) do
   setcode do
     docker_version = Facter.value(:docker_client_version)
-    if docker_version.match?(%r{1[.][0-9][0-2]?[.]\w+})
+    if docker_version.match?(%r{1[0-9][0-2]?[.]\w+})
       if Facter::Core::Execution.which('docker')
         docker_json_str = Facter::Core::Execution.exec(
           "#{docker_command} info --format '{{json .}}'", timeout: 90
