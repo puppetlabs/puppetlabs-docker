@@ -6,8 +6,8 @@ def get_docker_params_changed(opts)
   return_value = 'No changes detected'
 
   if opts['sanitised_title'] && opts['osfamily']
-    stdout, stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
-    if stderr.to_s == '' && status.to_s.include?('exit 0')
+    stdout, _stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
+    if status.to_s.include?('exit 0')
       param_changed = false
       inspect_hash = JSON.parse(stdout)[0]
 
