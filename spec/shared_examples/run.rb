@@ -246,7 +246,7 @@ shared_examples 'run' do |title, params, facts, defaults|
         detect_changes = get_docker_params_changed(docker_params_changed_args)
 
         it {
-          is_expected.to contain_notify('docker_params_changed').with(
+          is_expected.to contain_notify("#{title}_docker_params_changed").with(
             'message' => detect_changes,
           )
         }
