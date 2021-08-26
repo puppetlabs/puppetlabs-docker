@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.1.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.1.1) (2021-08-26)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.1.0...v4.1.1)
+
+### Fixed
+
+- \(IAC-1741\) Allow stdlib v8.0.0 [\#767](https://github.com/puppetlabs/puppetlabs-docker/pull/767) ([david22swan](https://github.com/david22swan))
+- Remove stderr empty check to avoid docker\_params\_changed failures when warnings appear [\#764](https://github.com/puppetlabs/puppetlabs-docker/pull/764) ([cedws](https://github.com/cedws))
+- Duplicate declaration statement: docker\_params\_changed is already declared [\#763](https://github.com/puppetlabs/puppetlabs-docker/pull/763) ([basti-nis](https://github.com/basti-nis))
+- Timeout for hangs of the docker\_client in the facts generation [\#759](https://github.com/puppetlabs/puppetlabs-docker/pull/759) ([carabasdaniel](https://github.com/carabasdaniel))
+
 ## [v4.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.1.0) (2021-06-28)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.0.1...v4.1.0)
