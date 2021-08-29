@@ -68,8 +68,8 @@ end
 Facter.add(:docker_version) do
   setcode do
     if Facter::Core::Execution.which('docker')
-      value = Facter::Core::Execution.exec(
-        "#{docker_command} version --format '{{json .}}'", timeout: 90
+      value = Facter::Core::Execution.execute(
+        "#{docker_command} version --format '{{json .}}'", options: {limit: 90}
       )
       val = JSON.parse(value)
     end
@@ -80,7 +80,7 @@ end
 Facter.add(:docker_worker_join_token) do
   setcode do
     if Facter::Util::Resolution.which('docker')
-      val = Facter::Util::Resolution.exec(
+      val = Facter::Util::Resolution.execute(
         "#{docker_command} swarm join-token worker -q",
       )
     end
@@ -91,7 +91,7 @@ end
 Facter.add(:docker_manager_join_token) do
   setcode do
     if Facter::Util::Resolution.which('docker')
-      val = Facter::Util::Resolution.exec(
+      val = Facter::Util::Resolution.execute(
         "#{docker_command} swarm join-token manager -q",
       )
     end
@@ -104,21 +104,21 @@ Facter.add(:docker) do
     docker_version = Facter.value(:docker_client_version)
     if docker_version && docker_version.match?(%r{1[0-9][0-2]?[.]\w+})
       if Facter::Core::Execution.which('docker')
-        docker_json_str = Facter::Core::Execution.exec(
-          "#{docker_command} info --format '{{json .}}'", timeout: 90
+        docker_json_str = Facter::Core::Execution.execute(
+          "#{docker_command} info --format '{{json .}}'", options: {limit: 90}
         )
         begin
           docker = JSON.parse(docker_json_str)
           docker['network'] = {}
 
           docker['network']['managed_interfaces'] = {}
-          network_list = Facter::Core::Execution.exec("#{docker_command} network ls | tail -n +2", timeout: 90)
+          network_list = Facter::Core::Execution.execute("#{docker_command} network ls | tail -n +2", options: {limit: 90})
           docker_network_names = []
           network_list.each_line { |line| docker_network_names.push line.split[1] }
           docker_network_ids = []
           network_list.each_line { |line| docker_network_ids.push line.split[0] }
           docker_network_names.each do |network|
-            inspect = JSON.parse(Facter::Core::Execution.exec("#{docker_command} network inspect #{network}", timeout: 90))
+            inspect = JSON.parse(Facter::Core::Execution.execute("#{docker_command} network inspect #{network}", options: {limit: 90}))
             docker['network'][network] = inspect[0]
             network_id = docker['network'][network]['Id'][0..11]
             interfaces.each do |iface|
