@@ -79,9 +79,9 @@ end
 
 Facter.add(:docker_worker_join_token) do
   setcode do
-    if Facter::Util::Resolution.which('docker')
-      val = Facter::Util::Resolution.execute(
-        "#{docker_command} swarm join-token worker -q",
+    if Facter::Core::Execution.which('docker')
+      val = Facter::Core::Execution.execute(
+        "#{docker_command} swarm join-token worker -q", time_limit: 90
       )
     end
     val
@@ -90,9 +90,9 @@ end
 
 Facter.add(:docker_manager_join_token) do
   setcode do
-    if Facter::Util::Resolution.which('docker')
-      val = Facter::Util::Resolution.execute(
-        "#{docker_command} swarm join-token manager -q",
+    if Facter::Core::Execution.which('docker')
+      val = Facter::Core::Execution.execute(
+        "#{docker_command} swarm join-token manager -q", time_limit: 90
       )
     end
     val

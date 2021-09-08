@@ -32,9 +32,9 @@ describe 'Facter::Util::Fact' do
       Facter::Core::Execution.stubs(:execute).with("#{docker_command} network inspect #{network}", time_limit: 90).returns(inspect)
     end
     docker_worker_token = File.read(fixtures('facts', 'docker_swarm_worker_token'))
-    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} swarm join-token worker -q").returns(docker_worker_token.chomp)
+    Facter::Core::Execution.stubs(:execute).with("#{docker_command} swarm join-token worker -q", time_limit: 90).returns(docker_worker_token.chomp)
     docker_manager_token = File.read(fixtures('facts', 'docker_swarm_manager_token'))
-    Facter::Util::Resolution.stubs(:exec).with("#{docker_command} swarm join-token manager -q").returns(docker_manager_token.chomp)
+    Facter::Core::Execution.stubs(:execute).with("#{docker_command} swarm join-token manager -q", time_limit: 90).returns(docker_manager_token.chomp)
   end
   after(:each) { Facter.clear }
 
