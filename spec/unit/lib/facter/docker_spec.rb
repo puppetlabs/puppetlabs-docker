@@ -6,41 +6,44 @@ require 'json'
 describe 'Facter::Util::Fact' do
   before :each do
     Facter.clear
+    allow(Facter::Core::Execution).to receive(:which).and_call_original
+    allow(Facter::Core::Execution).to receive(:execute).and_call_original
+
     if Facter.value(:kernel) == 'windows'
       docker_command = 'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
-      Facter::Core::Execution.stubs(:which).with('dhcpcd').returns('C:\Windows\dhcpd.exe')
-      Facter::Core::Execution.stubs(:which).with('route').returns('C:\Windows\System32\ROUTE.EXE')
-      Facter::Core::Execution.stubs(:which).with('docker').returns('C:\Program Files\Docker\docker.exe')
+      allow(Facter::Core::Execution).to receive(:which).with('dhcpcd').and_return('C:\Windows\dhcpd.exe')
+      allow(Facter::Core::Execution).to receive(:which).with('route').and_return('C:\Windows\System32\ROUTE.EXE')
+      allow(Facter::Core::Execution).to receive(:which).with('docker').and_return('C:\Program Files\Docker\docker.exe')
     else
       docker_command = 'docker'
-      Facter::Core::Execution.stubs(:which).with('route').returns('/usr/bin/route')
-      Facter::Core::Execution.stubs(:which).with('dhcpcd').returns('/usr/bin/dhcpd')
-      Facter::Core::Execution.stubs(:which).with('docker').returns('/usr/bin/docker')
+      allow(Facter::Core::Execution).to receive(:which).with('route').and_return('/usr/bin/route')
+      allow(Facter::Core::Execution).to receive(:which).with('dhcpcd').and_return('/usr/bin/dhcpd')
+      allow(Facter::Core::Execution).to receive(:which).with('docker').and_return('/usr/bin/docker')
     end
     docker_info = File.read(fixtures('facts', 'docker_info'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} info --format '{{json .}}'", time_limit: 90).returns(docker_info)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", time_limit: 90).and_return(docker_info)
     processors = File.read(fixtures('facts', 'processors'))
-    Facter.fact(:processors).stubs(:value).returns(JSON.parse(processors))
+    allow(Facter.fact(:processors)).to receive(:value).and_return(JSON.parse(processors))
     docker_version = File.read(fixtures('facts', 'docker_version'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} version --format '{{json .}}'", time_limit: 90).returns(docker_version)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} version --format '{{json .}}'", time_limit: 90).and_return(docker_version)
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} network ls | tail -n +2", time_limit: 90).returns(docker_network_list)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} network ls | tail -n +2", time_limit: 90).and_return(docker_network_list)
     docker_network_names = []
     docker_network_list.each_line { |line| docker_network_names.push line.split[1] }
     docker_network_names.each do |network|
       inspect = File.read(fixtures('facts', "docker_network_inspect_#{network}"))
-      Facter::Core::Execution.stubs(:execute).with("#{docker_command} network inspect #{network}", time_limit: 90).returns(inspect)
+      allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} network inspect #{network}", time_limit: 90).and_return(inspect)
     end
     docker_worker_token = File.read(fixtures('facts', 'docker_swarm_worker_token'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} swarm join-token worker -q", time_limit: 90).returns(docker_worker_token.chomp)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token worker -q", time_limit: 90).and_return(docker_worker_token.chomp)
     docker_manager_token = File.read(fixtures('facts', 'docker_swarm_manager_token'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} swarm join-token manager -q", time_limit: 90).returns(docker_manager_token.chomp)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token manager -q", time_limit: 90).and_return(docker_manager_token.chomp)
   end
   after(:each) { Facter.clear }
 
   describe 'docker fact with composer network' do
     before :each do
-      Facter.fact(:interfaces).stubs(:value).returns('br-c5810f1e3113,docker0,eth0,lo')
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-c5810f1e3113,docker0,eth0,lo')
     end
     it do
       fact = File.read(fixtures('facts', 'facts_with_compose'))
@@ -54,7 +57,7 @@ describe 'Facter::Util::Fact' do
 
   describe 'docker fact without composer network' do
     before :each do
-      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it do
       fact = File.read(fixtures('facts', 'facts_without_compose')).chomp
@@ -71,8 +74,8 @@ describe 'Facter::Util::Fact' do
   describe 'docker client version' do
     before(:each) do
       docker_version = File.read(fixtures('facts', 'docker_version'))
-      Facter.fact(:docker_version).stubs(:value).returns(JSON.parse(docker_version))
-      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+      allow(Facter.fact(:docker_version)).to receive(:value).and_return(JSON.parse(docker_version))
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it do
       expect(Facter.fact(:docker_client_version).value).to eq(
@@ -84,8 +87,8 @@ describe 'Facter::Util::Fact' do
   describe 'docker server version' do
     before(:each) do
       docker_version = File.read(fixtures('facts', 'docker_version'))
-      Facter.fact(:docker_version).stubs(:value).returns(JSON.parse(docker_version))
-      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+      allow(Facter.fact(:docker_version)).to receive(:value).and_return(JSON.parse(docker_version))
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it do
       expect(Facter.fact(:docker_server_version).value).to eq(
@@ -96,7 +99,7 @@ describe 'Facter::Util::Fact' do
 
   describe 'docker info' do
     before :each do
-      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it 'has valid entries' do
       expect(Facter.fact(:docker).value).to include(
@@ -107,7 +110,7 @@ describe 'Facter::Util::Fact' do
 
   describe 'docker swarm worker join-token' do
     before :each do
-      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it do
       expect(Facter.fact(:docker_worker_join_token).value).to eq(
@@ -118,7 +121,7 @@ describe 'Facter::Util::Fact' do
 
   describe 'docker swarm manager join-token' do
     before :each do
-      Facter.fact(:interfaces).stubs(:value).returns('br-19a6ebf6f5a5,docker0,eth0,lo')
+      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
     it do
       expect(Facter.fact(:docker_manager_join_token).value).to eq(
