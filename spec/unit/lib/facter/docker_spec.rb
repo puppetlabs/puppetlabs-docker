@@ -18,18 +18,18 @@ describe 'Facter::Util::Fact' do
       Facter::Core::Execution.stubs(:which).with('docker').returns('/usr/bin/docker')
     end
     docker_info = File.read(fixtures('facts', 'docker_info'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} info --format '{{json .}}'", limit: 90).returns(docker_info)
+    Facter::Core::Execution.stubs(:execute).with("#{docker_command} info --format '{{json .}}'", time_limit: 90).returns(docker_info)
     processors = File.read(fixtures('facts', 'processors'))
     Facter.fact(:processors).stubs(:value).returns(JSON.parse(processors))
     docker_version = File.read(fixtures('facts', 'docker_version'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} version --format '{{json .}}'", limit: 90).returns(docker_version)
+    Facter::Core::Execution.stubs(:execute).with("#{docker_command} version --format '{{json .}}'", time_limit: 90).returns(docker_version)
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
-    Facter::Core::Execution.stubs(:execute).with("#{docker_command} network ls | tail -n +2", limit: 90).returns(docker_network_list)
+    Facter::Core::Execution.stubs(:execute).with("#{docker_command} network ls | tail -n +2", time_limit: 90).returns(docker_network_list)
     docker_network_names = []
     docker_network_list.each_line { |line| docker_network_names.push line.split[1] }
     docker_network_names.each do |network|
       inspect = File.read(fixtures('facts', "docker_network_inspect_#{network}"))
-      Facter::Core::Execution.stubs(:execute).with("#{docker_command} network inspect #{network}", limit: 90).returns(inspect)
+      Facter::Core::Execution.stubs(:execute).with("#{docker_command} network inspect #{network}", time_limit: 90).returns(inspect)
     end
     docker_worker_token = File.read(fixtures('facts', 'docker_swarm_worker_token'))
     Facter::Util::Resolution.stubs(:exec).with("#{docker_command} swarm join-token worker -q").returns(docker_worker_token.chomp)
