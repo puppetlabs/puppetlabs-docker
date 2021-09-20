@@ -21,23 +21,23 @@ describe 'Facter::Util::Fact' do
       allow(Facter::Core::Execution).to receive(:which).with('docker').and_return('/usr/bin/docker')
     end
     docker_info = File.read(fixtures('facts', 'docker_info'))
-    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", time_limit: 90).and_return(docker_info)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", timeout: 90).and_return(docker_info)
     processors = File.read(fixtures('facts', 'processors'))
     allow(Facter.fact(:processors)).to receive(:value).and_return(JSON.parse(processors))
     docker_version = File.read(fixtures('facts', 'docker_version'))
-    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} version --format '{{json .}}'", time_limit: 90).and_return(docker_version)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} version --format '{{json .}}'", timeout: 90).and_return(docker_version)
     docker_network_list = File.read(fixtures('facts', 'docker_network_list'))
-    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} network ls | tail -n +2", time_limit: 90).and_return(docker_network_list)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} network ls | tail -n +2", timeout: 90).and_return(docker_network_list)
     docker_network_names = []
     docker_network_list.each_line { |line| docker_network_names.push line.split[1] }
     docker_network_names.each do |network|
       inspect = File.read(fixtures('facts', "docker_network_inspect_#{network}"))
-      allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} network inspect #{network}", time_limit: 90).and_return(inspect)
+      allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} network inspect #{network}", timeout: 90).and_return(inspect)
     end
     docker_worker_token = File.read(fixtures('facts', 'docker_swarm_worker_token'))
-    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token worker -q", time_limit: 90).and_return(docker_worker_token.chomp)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token worker -q", timeout: 90).and_return(docker_worker_token.chomp)
     docker_manager_token = File.read(fixtures('facts', 'docker_swarm_manager_token'))
-    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token manager -q", time_limit: 90).and_return(docker_manager_token.chomp)
+    allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token manager -q", timeout: 90).and_return(docker_manager_token.chomp)
   end
   after(:each) { Facter.clear }
 
