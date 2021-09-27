@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.1.2](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.1.2) (2021-09-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.1.1...v4.1.2)
+
+### Fixed
+
+- pdksync - \(IAC-1598\) - Remove Support for Debian 8 [\#775](https://github.com/puppetlabs/puppetlabs-docker/pull/775) ([david22swan](https://github.com/david22swan))
+- Prefer timeout to time\_limit for Facter::Core::Execution [\#774](https://github.com/puppetlabs/puppetlabs-docker/pull/774) ([smortex](https://github.com/smortex))
+- Fix facts gathering [\#773](https://github.com/puppetlabs/puppetlabs-docker/pull/773) ([smortex](https://github.com/smortex))
+
 ## [v4.1.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.1.1) (2021-08-26)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.1.0...v4.1.1)
