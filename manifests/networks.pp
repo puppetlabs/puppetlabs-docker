@@ -3,7 +3,9 @@
 # @param networks
 #
 class docker::networks (
-  $networks
+  Optional[Hash[String, Hash]] $networks = undef,
 ) {
-  create_resources(docker_network, $networks)
+  if $networks {
+    create_resources(docker_network, $networks)
+  }
 }
