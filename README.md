@@ -326,8 +326,8 @@ To rebuild an image, subscribe to external events such as Dockerfile changes by 
 
 ```puppet
 docker::image { 'ubuntu':
-  docker_file => '/tmp/Dockerfile'
-  subscribe => File['/tmp/Dockerfile'],
+  docker_file => '/tmp/Dockerfile',
+  subscribe   => File['/tmp/Dockerfile'],
 }
 
 file { '/tmp/Dockerfile':
