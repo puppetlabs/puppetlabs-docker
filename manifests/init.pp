@@ -485,10 +485,9 @@ class docker(
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
       fail('This module only works on Debian, Red Hat or Windows based systems.')
     }
-  }
-
-  if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
-    fail('This module only works on Red Hat based systems version 7 and higher.')
+    if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
+      fail('This module only works on Red Hat based systems version 7 and higher.')
+    }
   }
 
   if ($default_gateway) and (!$bridge) {
