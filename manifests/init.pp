@@ -84,29 +84,17 @@
 # @param log_driver
 #   Set the log driver.
 #   Docker default is json-file.
-#   Valid values: none, json-file, syslog, journald, gelf, fluentd
-#   Valid values description:
-#     none     : Disables any logging for the container.
-#                docker logs won't be available with this driver.
-#     json-file: Default logging driver for Docker.
-#                Writes JSON messages to file.
-#     syslog   : Syslog logging driver for Docker.
-#                Writes log messages to syslog.
-#     journald : Journald logging driver for Docker.
-#                Writes log messages to journald.
-#     gelf     : Graylog Extended Log Format (GELF) logging driver for Docker.
-#                Writes log messages to a GELF endpoint: Graylog or Logstash.
-#     fluentd  : Fluentd logging driver for Docker.
-#                Writes log messages to fluentd (forward input).
-#     splunk   : Splunk logging driver for Docker.
-#                Writes log messages to Splunk (HTTP Event Collector).
-#     awslogs  : AWS Cloudwatch Logs logging driver for Docker.
-#                Write log messages to Cloudwatch API
+#   Please verify the value by yourself, before setting it. Valid shipped log drivers can be found here:
+#   https://docs.docker.com/config/containers/logging/configure/#supported-logging-drivers
+#   Since custom log driver plugins are and must be possible, the value can not be verified through code here.
 #
 # @param log_opt
 #   Set the log driver specific options
 #   Valid values per log driver:
 #     none     : undef
+#     local    :
+#                max-size=[0-9+][k|m|g]
+#                max-file=[0-9+]
 #     json-file:
 #                max-size=[0-9+][k|m|g]
 #                max-file=[0-9+]
@@ -498,18 +486,6 @@ class docker(
   if $log_level {
     assert_type(Pattern[/^(debug|info|warn|error|fatal)$/], $log_level) |$a, $b| {
       fail('log_level must be one of debug, info, warn, error or fatal')
-    }
-  }
-
-  if $log_driver {
-    if $facts['os']['family'] == 'windows' {
-      assert_type(Pattern[/^(none|json-file|syslog|gelf|fluentd|splunk|awslogs|etwlogs)$/], $log_driver) |$a, $b| {
-        fail('log_driver must be one of none, json-file, syslog, gelf, fluentd, splunk, awslogs or etwlogs')
-      }
-    } else {
-      assert_type(Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk|awslogs)$/], $log_driver) |$a, $b| {
-        fail('log_driver must be one of none, json-file, syslog, journald, gelf, fluentd, splunk or awslogs')
-      }
     }
   }
 
