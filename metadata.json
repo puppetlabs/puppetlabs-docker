@@ -52,7 +52,8 @@
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
         "2016",
-        "2019"
+        "2019",
+        "2022"
       ]
     }
   ],
