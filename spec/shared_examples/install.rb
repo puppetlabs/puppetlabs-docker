@@ -59,12 +59,6 @@ shared_examples 'install' do |_params, _facts|
           'name'   => values['docker_package_name'],
         )
       }
-      it {
-        is_expected.to contain_package('docker-ce-cli').with(
-          'ensure' => ensure_value,
-          'name'   => _params['docker_ce_cli_package_name'],
-        )
-      }
 
       if ensure_value == 'absent'
         _params['dependent_packages'].each do |dependent_package|
