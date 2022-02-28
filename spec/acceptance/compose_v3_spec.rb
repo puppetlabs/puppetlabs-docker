@@ -7,7 +7,7 @@ if os[:family] == 'windows'
   file_extension = '.exe'
   docker_args = 'docker_ee => true'
   tmp_path = 'C:/cygwin64/tmp'
-  test_container = if %r{2019}.match?(os[:release])
+  test_container = if %r{2019|2022}.match?(os[:release])
                      'nanoserver'
                    else
                      'nanoserver-sac2016'

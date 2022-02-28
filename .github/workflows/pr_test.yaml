@@ -57,7 +57,7 @@ jobs:
         if: ${{ github.repository_owner == 'puppetlabs' }}
         run: |
           if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-            echo  "::set-output name=matrix::{'collection':['puppet6-nightly','puppet7-nightly'],'platforms':[{'label':'Windows 2016','provider':'provision::provision_service','image':'windows-2016'},{'label':'Windows 2019','provider':'provision::provision_service','image':'windows-2019-core'}]}"
+            echo  "::set-output name=matrix::{'collection':['puppet6-nightly','puppet7-nightly'],'platforms':[{'label':'Windows 2016','provider':'provision::provision_service','image':'windows-2016'},{'label':'Windows 2019','provider':'provision::provision_service','image':'windows-2019-core'},{'label':'Windows 2022','provider':'provision::provision_service','image':'windows-2022'}]}"
           fi
 
       - name: "Honeycomb: Record Setup Test Matrix time"
