@@ -5,7 +5,7 @@ require 'spec_helper_acceptance'
 if os[:kernel] == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'winamd64/hello-seattle'
-  default_image_tag = if os[:release][:major] == '2019'
+  default_image_tag = if os[:release][:major] == '2019' || os[:release][:major] == '2022'
                         'nanoserver'
                       else
                         'nanoserver-sac2016'

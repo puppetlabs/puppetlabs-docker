@@ -174,7 +174,7 @@ services:
     if os[:family] == 'windows'
       create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3_windows)
       create_remote_file(host, '/tmp/docker-stack.yml', docker_stack_content_windows)
-      if %r{2019}.match?(os[:release])
+      if %r{2019|2022}.match?(os[:release])
         create_remote_file(host, '/tmp/docker-compose-override-v3.yml', docker_compose_override_v3_windows)
         create_remote_file(host, '/tmp/docker-stack-override.yml', docker_stack_override_windows)
       else
