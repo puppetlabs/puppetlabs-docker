@@ -377,11 +377,11 @@ class docker::params {
 
   if($service_provider == 'systemd') {
     # systemd v230 adds new StartLimitIntervalSec, StartLimitBurst
-    if($::osfamily == 'RedHat' and versioncmp($::operatingsystemrelease, '8') < 0) {
+    if($facts['os']['family'] == 'RedHat' and versioncmp($facts['os']['release']['major'], '8') < 0) {
       $have_systemd_v230 = false
-    } elsif($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '18.04') < 0) {
+    } elsif($facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['major'], '18.04') < 0) {
       $have_systemd_v230 = false
-    } elsif($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '9') < 0) {
+    } elsif($facts['os']['name'] == 'Debian' and versioncmp($facts['os']['release']['major'], '9') < 0) {
       $have_systemd_v230 = false
     } else {
       $have_systemd_v230 = true
