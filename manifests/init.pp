@@ -661,7 +661,7 @@ class docker(
     -> Docker::Image <||>
     -> Docker::Run <||>
     -> Docker_compose <||>
-} else {
+  } else {
     contain 'docker::repos'
     contain 'docker::install'
 
