@@ -31,26 +31,25 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
                           "label=com.docker.compose.project=#{name}",
                         ]).split("\n")
     compose_containers.push(*containers)
-    compose_containers.uniq!
 
     compose_services = compose_output['services']
 
-    if compose_services.count != compose_containers.count
+    if compose_services.count != compose_containers.uniq.count
       return false
     end
 
     counts = Hash[*compose_services.each.map { |key, array|
                     image = (array['image']) ? array['image'] : get_image(key, compose_services)
                     Puppet.info("Checking for compose service #{key} #{image}")
-                    ["#{key}-#{image}", compose_containers.count("#{key}-#{image}")]
+                    ["#{key}", compose_containers.count("#{key}-#{image}")]
                   }.flatten]
 
     # No containers found for the project
     if counts.empty? ||
-       # Containers described in the compose file are not running
-       counts.any? { |_k, v| v.zero? } ||
-       # The scaling factors in the resource do not match the number of running containers
-       resource[:scale] && counts.merge(resource[:scale]) != counts
+      # Containers described in the compose file are not running
+      counts.any? { |_k, v| v.zero? } ||
+      # The scaling factors in the resource do not match the number of running containers
+      resource[:scale] && counts.merge(resource[:scale]) != counts
       false
     else
       true
