@@ -11,16 +11,11 @@ if os[:family] == 'windows'
   default_docker_run_arg = "restart => 'always', net => 'nat',"
   default_run_command = 'ping 127.0.0.1 -t'
   docker_command = '"/cygdrive/c/Program Files/Docker/docker"'
-  skip = false
-elsif os[:name] == 'Ubuntu' && os[:release][:full] == '14.04'
-  docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
-  default_image = 'busybox'
-  skip = true
 else
   docker_args = ''
   default_image = 'busybox'
-  skip = false
 end
+skip = false
 
 describe 'the Puppet Docker module' do
   context 'with download location', skip: skip do
