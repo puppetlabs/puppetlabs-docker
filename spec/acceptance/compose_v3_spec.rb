@@ -13,11 +13,7 @@ if os[:family] == 'windows'
                      'nanoserver-sac2016'
                    end
 else
-  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
-                  "version => '18.06.1~ce~3-0~ubuntu'"
-                else
-                  ''
-                end
+  docker_args = ''
   install_dir = '/usr/local/bin'
   file_extension = ''
   tmp_path = '/tmp'

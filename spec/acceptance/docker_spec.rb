@@ -21,11 +21,7 @@ if os[:family] == 'windows'
   bad_server_strip = "#{registry_host}_5001"
   broken = true
 else
-  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
-                  "version => '18.06.1~ce~3-0~ubuntu'"
-                else
-                  ''
-                end
+  docker_args = ''
   docker_registry_image = 'registry'
   docker_network = 'bridge'
   registry_host = '127.0.0.1'

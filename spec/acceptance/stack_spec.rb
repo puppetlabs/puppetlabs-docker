@@ -7,11 +7,7 @@ if os[:family] == 'windows'
   tmp_path = 'C:\\tmp\\'
   wait_for_container_seconds = 120
 else
-  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
-                  "version => '18.06.1~ce~3-0~ubuntu'"
-                else
-                  ''
-                end
+  docker_args = ''
   tmp_path = '/tmp/'
   wait_for_container_seconds = 10
 end

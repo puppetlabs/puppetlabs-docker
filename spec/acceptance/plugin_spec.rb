@@ -9,8 +9,6 @@ plugin_name = 'vieux/sshfs'
 if os[:family] == 'windows'
   puts 'Not implemented on Windows'
   broken = true
-elsif os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
-  docker_args = "version => '18.06.1~ce~3-0~ubuntu'"
 else
   docker_args = ''
 end

@@ -26,11 +26,7 @@ if os[:kernel] == 'windows'
   docker_mount_path = 'C:/Users/Public/DockerVolume'
   storage_driver = 'windowsfilter'
 else
-  docker_args = if os[:name] == 'ubuntu' && os[:release][:full] == '14.04'
-                  "version => '18.06.1~ce~3-0~ubuntu'"
-                else
-                  ''
-                end
+  docker_args = ''
   default_image = 'alpine'
   second_image = 'busybox'
   default_image_tag = '3.7'
@@ -45,9 +41,7 @@ else
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = '/root'
   storage_driver = 'devicemapper'
-  storage_driver = if os[:family] == 'Debian' && os[:release][:major] =~ %r{14.04|^8$}
-                     'aufs'
-                   elsif os[:family] == 'RedHat'
+  storage_driver = if os[:family] == 'RedHat'
                      'devicemapper'
                    else
                      'overlay2'
@@ -823,7 +817,7 @@ describe 'the Puppet Docker module' do
 
         if os[:family] == 'windows'
           apply_manifest(pp5, catch_failures: true)
-        elsif %r{14.04|^8$}.match?(os[:release])
+        elsif %r{^8$}.match?(os[:release])
           apply_manifest(pp5, catch_failures: true) do |r|
             expect(r.stdout).to match(%r{container_3_7_3})
           end
