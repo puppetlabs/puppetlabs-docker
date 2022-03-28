@@ -72,7 +72,7 @@ module Puppet::Parser::Functions
 
     multi_flags = ->(values, fmt) {
       filtered = [values].flatten.compact
-      filtered.map { |val| (fmt + params_join_char) % val }
+      filtered.map { |val| (fmt + params_join_char) % val.shellescape }
     }
 
     [
@@ -80,9 +80,9 @@ module Puppet::Parser::Functions
       ['--dns-search %s',   'dns_search'],
       ['--expose=%s',       'expose'],
       ['--link %s',         'links'],
-      ['--lxc-conf="%s"',   'lxc_conf'],
+      ['--lxc-conf=%s',     'lxc_conf'],
       ['--volumes-from %s', 'volumes_from'],
-      ['-e "%s"',           'env'],
+      ['-e %s',             'env'],
       ['--env-file %s',     'env_file'],
       ['-p %s',             'ports'],
       ['-l %s',             'labels'],
