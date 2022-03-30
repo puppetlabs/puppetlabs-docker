@@ -41,8 +41,11 @@ describe 'docker compose' do
     let(:install_pp) do
       <<-MANIFEST
         docker_compose { 'web':
-        compose_files => ['#{tmp_path}/docker-compose-v3.yml'],
-        ensure => present,
+          compose_files => ['#{tmp_path}/docker-compose-v3.yml'],
+          ensure => present,
+          scale => {
+            compose_test => 2
+          }
         }
       MANIFEST
     end
@@ -66,6 +69,9 @@ describe 'docker compose' do
         docker_compose { 'web1':
           compose_files => ['#{tmp_path}/docker-compose-v3.yml', '#{tmp_path}/docker-compose-override-v3.yml'],
           ensure => present,
+          scale => {
+            compose_test => 2
+          }
         }
       MANIFEST
 
