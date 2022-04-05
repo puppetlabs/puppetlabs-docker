@@ -131,7 +131,7 @@
     },
     "ControlAvailable": false,
     "Error": "",
-    "LocalNodeState": "active",
+    "LocalNodeState": "inactive",
     "Managers": 0,
     "NodeAddr": "",
     "NodeID": "",
