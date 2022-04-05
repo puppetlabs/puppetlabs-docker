@@ -80,9 +80,20 @@ end
 Facter.add(:docker_worker_join_token) do
   setcode do
     if Facter::Core::Execution.which('docker')
-      val = Facter::Core::Execution.execute(
-        "#{docker_command} swarm join-token worker -q", timeout: 90
+      # only run `docker swarm` commands if this node is in active in a cluster
+      docker_json_str = Facter::Core::Execution.execute(
+        "#{docker_command} info --format '{{json .}}'", timeout: 90
       )
+      begin
+        docker = JSON.parse(docker_json_str)
+        if docker.fetch('Swarm', {})['LocalNodeState'] == 'active'
+          val = Facter::Core::Execution.execute(
+            "#{docker_command} swarm join-token worker -q", timeout: 90
+          )
+        end
+      rescue JSON::ParserError
+        nil
+      end
     end
     val
   end
@@ -91,13 +102,25 @@ end
 Facter.add(:docker_manager_join_token) do
   setcode do
     if Facter::Core::Execution.which('docker')
-      val = Facter::Core::Execution.execute(
-        "#{docker_command} swarm join-token manager -q", timeout: 90
+      # only run `docker swarm` commands if this node is in active in a cluster
+      docker_json_str = Facter::Core::Execution.execute(
+        "#{docker_command} info --format '{{json .}}'", timeout: 90
       )
+      begin
+        docker = JSON.parse(docker_json_str)
+        if docker.fetch('Swarm', {})['LocalNodeState'] == 'active'
+          val = Facter::Core::Execution.execute(
+            "#{docker_command} swarm join-token manager -q", timeout: 90
+          )
+        end
+      rescue JSON::ParserError
+        nil
+      end
     end
     val
   end
 end
+
 
 Facter.add(:docker) do
   setcode do
