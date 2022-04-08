@@ -200,8 +200,8 @@ describe 'docker', type: :class do
                 allow(Dir).to receive(:exist?).and_wrap_original do |original_method, a|
                   original_method.call(a)
                 end
-
                 allow(Dir).to receive(:exist?).with('/tmp_docker').and_return(true)
+
                 is_expected.to contain_class('docker::repos').that_comes_before('Class[docker::install]')
                 is_expected.to contain_class('docker::install').that_comes_before('Class[docker::config]')
                 is_expected.to contain_class('docker::config').that_comes_before('Class[docker::service]')
