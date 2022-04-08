@@ -13,6 +13,11 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     environment(HOME: '/root')
   end
 
+  has_command(:docker_compose, command(:dockercompose)) do
+    Dir.mkdir('/tmp_docker') unless Dir.exist?('/tmp_docker')
+    ENV.store('TMPDIR', '/tmp_docker')
+  end
+
   def exists?
     Puppet.info("Checking for compose project #{name}")
     compose_services = {}
@@ -31,18 +36,17 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
                           "label=com.docker.compose.project=#{name}",
                         ]).split("\n")
     compose_containers.push(*containers)
-    compose_containers.uniq!
 
     compose_services = compose_output['services']
 
-    if compose_services.count != compose_containers.count
+    if compose_services.count != compose_containers.uniq.count
       return false
     end
 
     counts = Hash[*compose_services.each.map { |key, array|
                     image = (array['image']) ? array['image'] : get_image(key, compose_services)
                     Puppet.info("Checking for compose service #{key} #{image}")
-                    ["#{key}-#{image}", compose_containers.count("#{key}-#{image}")]
+                    [key, compose_containers.count("#{key}-#{image}")]
                   }.flatten]
 
     # No containers found for the project

@@ -660,6 +660,7 @@ class docker(
     -> Docker::Registry <||>
     -> Docker::Image <||>
     -> Docker::Run <||>
+    -> Docker_compose <||>
   } else {
     contain 'docker::repos'
     contain 'docker::install'
