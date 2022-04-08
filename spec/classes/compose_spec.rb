@@ -5,13 +5,8 @@ require 'spec_helper'
 # Stub /tmp_docker dir to prevent shelling out during spec test
 class Dir
   class << self
-    alias_method :old_exist, :exist?
-    def exist? (var)
-      if var == '/tmp_docker'
-        return true
-      else
-        old_exist (var)
-      end
+    def exist?(var)
+      return true if var == '/tmp_docker'
     end
   end
 end
