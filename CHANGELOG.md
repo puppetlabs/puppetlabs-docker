@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.2.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.2.0) (2022-04-11)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.1.2...v4.2.0)
+
+### Added
+
+- \(IAC-1729\) Add Support for Debian 11 [\#799](https://github.com/puppetlabs/puppetlabs-docker/pull/799) ([david22swan](https://github.com/david22swan))
+- pdksync - \(FM-8922\) - Add Support for Windows 2022 [\#801](https://github.com/puppetlabs/puppetlabs-docker/pull/801) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- Make RedHat version check respect acknowledge_unsupported_os [\#788](https://github.com/puppetlabs/puppetlabs-docker/pull/788) ([PolaricEntropy](https://github.com/PolaricEntropy))
+- Fix idempotency when using scaling with docker-compose [\#805](https://github.com/puppetlabs/puppetlabs-docker/pull/805) ([canihavethisone](https://github.com/canihavethisone))
+- pdksync - \(GH-iac-334\) Remove Support for Ubuntu 14.04/16.04 [\#807](https://github.com/puppetlabs/puppetlabs-docker/pull/807) ([david22swan](https://github.com/david22swan))
+
 ## [v4.1.2](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.1.2) (2021-09-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.1.1...v4.1.2)
