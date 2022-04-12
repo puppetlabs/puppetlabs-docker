@@ -14,8 +14,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   end
 
   has_command(:docker_compose, command(:dockercompose)) do
-    Dir.mkdir('/tmp_docker') unless Dir.exist?('/tmp_docker')
-    ENV.store('TMPDIR', '/tmp_docker')
+    environment(HOME: '/root')
   end
 
   def exists?
