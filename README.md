@@ -116,13 +116,13 @@ By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. 
 
 ```puppet
 class { 'docker':
-  tcp_bind        => ['tcp://127.0.0.1:2375'],
-  socket_bind     => 'unix:///var/run/docker.sock',
-  ip_forward      => true,
-  iptables        => true,
-  ip_masq         => true,
-  bip             => '192.168.1.1/24',
-  fixed_cidr      => '192.168.1.144/28',
+  tcp_bind    => ['tcp://127.0.0.1:2375'],
+  socket_bind => 'unix:///var/run/docker.sock',
+  ip_forward  => true,
+  iptables    => true,
+  ip_masq     => true,
+  bip         => '192.168.1.1/24',
+  fixed_cidr  => '192.168.1.144/28',
 }
 ```
 
@@ -132,7 +132,7 @@ The default group ownership of the Unix control socket differs based on OS. For 
 
 ```puppet
 class {'docker':
-  socket_group => 'root',
+  socket_group    => 'root',
   socket_override => true,
 }
 ```
@@ -965,14 +965,14 @@ Within the context of a running container, the docker module supports arbitrary 
 
 ```puppet
 docker::exec { 'cron_allow_root':
-  detach       => true,
-  container    => 'mycontainer',
-  command      => '/bin/echo root >> /usr/lib/cron/cron.allow',
-  onlyif       => 'running',
-  tty          => true,
-  env          => ['FOO=BAR', 'FOO2=BAR2'],
-  unless       => 'grep root /usr/lib/cron/cron.allow 2>/dev/null',
-  refreshonly  => true,
+  detach      => true,
+  container   => 'mycontainer',
+  command     => '/bin/echo root >> /usr/lib/cron/cron.allow',
+  onlyif      => 'running',
+  tty         => true,
+  env         => ['FOO=BAR', 'FOO2=BAR2'],
+  unless      => 'grep root /usr/lib/cron/cron.allow 2>/dev/null',
+  refreshonly => true,
 }
 ```
 
