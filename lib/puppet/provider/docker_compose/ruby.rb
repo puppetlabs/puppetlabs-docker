@@ -18,12 +18,11 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   end
 
   def set_tmpdir
-    if resource[:tmpdir]
-      # Check if the the tmpdir target exists
-      Puppet.warning("#{resource[:tmpdir]} (defined as docker_compose tmpdir) does not exist") unless Dir.exist?(resource[:tmpdir])
-      # Set TMPDIR environment variable only if defined among resources and exists
-      ENV['TMPDIR'] = resource[:tmpdir] unless !Dir.exist?(resource[:tmpdir])
-    end
+    return unless resource[:tmpdir]
+    # Check if the the tmpdir target exists
+    Puppet.warning("#{resource[:tmpdir]} (defined as docker_compose tmpdir) does not exist") unless Dir.exist?(resource[:tmpdir])
+    # Set TMPDIR environment variable only if defined among resources and exists
+    ENV['TMPDIR'] = resource[:tmpdir] if Dir.exist?(resource[:tmpdir])
   end
 
   def exists?
