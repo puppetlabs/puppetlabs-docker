@@ -18,7 +18,7 @@
 #
 # @param dependent_packages
 #
-class docker::install(
+class docker::install (
   $version                        = $docker::version,
   $nuget_package_provider_version = $docker::nuget_package_provider_version,
   $docker_msft_provider_version   = $docker::docker_msft_provider_version,
@@ -53,41 +53,41 @@ class docker::install(
       case $docker::package_source {
         /docker-engine/ : {
           ensure_resource('package', 'docker', merge($docker_hash, {
-            ensure => $ensure,
-            source => $docker::package_source,
-            name   => $docker::docker_engine_package_name,
+                ensure => $ensure,
+                source => $docker::package_source,
+                name   => $docker::docker_engine_package_name,
           }))
         }
         /docker-ce/ : {
           ensure_resource('package', 'docker', merge($docker_hash, {
-            ensure => $ensure,
-            source => $docker::package_source,
-            name   => $docker::docker_ce_package_name,
+                ensure => $ensure,
+                source => $docker::package_source,
+                name   => $docker::docker_ce_package_name,
           }))
           ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
-            ensure => $ensure,
-            source => $docker::package_source,
-            name   => $docker::docker_ce_cli_package_name,
+                ensure => $ensure,
+                source => $docker::package_source,
+                name   => $docker::docker_ce_cli_package_name,
           }))
         }
-        default : {}
+        default : {
+          # Empty
+        }
       }
-
-
     } else {
       if $facts['os']['family'] != 'windows' {
         ensure_resource('package', 'docker', merge($docker_hash, {
-          ensure => $ensure,
-          name   => $docker::docker_package_name,
+              ensure => $ensure,
+              name   => $docker::docker_package_name,
         }))
         ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
-          ensure => $ensure,
-          name   => $docker::docker_ce_cli_package_name,
+              ensure => $ensure,
+              name   => $docker::docker_ce_cli_package_name,
         }))
 
         if $ensure == 'absent' {
           ensure_resource('package', $dependent_packages, {
-            ensure => $ensure,
+              ensure => $ensure,
           })
         }
       } else {

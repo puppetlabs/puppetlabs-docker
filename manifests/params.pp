@@ -365,15 +365,15 @@ class docker::params {
   # https://github.com/docker/docker/issues/4734
   $prerequired_packages = $facts['os']['family'] ? {
     'Debian' => $facts['os']['name'] ? {
-      'Debian' => [ 'cgroupfs-mount', ],
-      'Ubuntu' => [ 'cgroup-lite', 'apparmor', ],
+      'Debian' => ['cgroupfs-mount',],
+      'Ubuntu' => ['cgroup-lite', 'apparmor',],
       default  => [],
     },
     'RedHat' => ['device-mapper'],
     default  => [],
   }
 
-  $dependent_packages = [ $docker_ce_cli_package_name, 'containerd.io', ]
+  $dependent_packages = [$docker_ce_cli_package_name, 'containerd.io',]
 
   if($service_provider == 'systemd') {
     # systemd v230 adds new StartLimitIntervalSec, StartLimitBurst

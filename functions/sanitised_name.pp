@@ -7,6 +7,6 @@
 # [*name*]
 #   Name to sanitise
 #
-function docker::sanitised_name($name){
+function docker::sanitised_name($name) {
   regsubst($name, '[^0-9A-Za-z.\-_]', '-', 'G')
 }

@@ -34,32 +34,32 @@
 #
 # @param version
 #
-define docker::registry(
-  Optional[String]               $server          = $title,
-  Optional[Enum[present,absent]] $ensure          = 'present',
-  Optional[String]               $username        = undef,
-  Optional[String]               $password        = undef,
-  Optional[String]               $pass_hash       = undef,
-  Optional[String]               $email           = undef,
-  Optional[String]               $local_user      = 'root',
-  Optional[String]               $local_user_home = undef,
-  Optional[String]               $version         = $docker::version,
-  Optional[Boolean]              $receipt         = true,
+define docker::registry (
+  Optional[String]      $server          = $title,
+  Enum[present,absent]  $ensure          = 'present',
+  Optional[String]      $username        = undef,
+  Optional[String]      $password        = undef,
+  Optional[String]      $pass_hash       = undef,
+  Optional[String]      $email           = undef,
+  String                $local_user      = 'root',
+  Optional[String]      $local_user_home = undef,
+  Optional[String]      $version         = $docker::version,
+  Boolean               $receipt         = true,
 ) {
   include docker::params
 
   $docker_command = $docker::params::docker_command
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment = [ "PATH=${::docker_program_files_path}/Docker/", ]
+    $exec_environment = ["PATH=${::docker_program_files_path}/Docker/",]
     $exec_timeout     = 3000
-    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_path        = ["${::docker_program_files_path}/Docker/",]
     $exec_provider    = 'powershell'
     $password_env     = '$env:password'
     $exec_user        = undef
   } else {
     $exec_environment = []
-    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_path        = ['/bin', '/usr/bin',]
     $exec_timeout     = 0
     $exec_provider    = undef
     $password_env     = "\${password}"
