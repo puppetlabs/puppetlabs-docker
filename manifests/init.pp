@@ -357,7 +357,7 @@
 # @param service_hasrestart
 # @param acknowledge_unsupported_os
 #
-class docker(
+class docker (
   Optional[String]                        $version                           = $docker::params::version,
   String                                  $ensure                            = $docker::params::ensure,
   Variant[Array[String], Hash]            $prerequired_packages              = $docker::params::prerequired_packages,
@@ -525,8 +525,8 @@ class docker(
   }
 
   if ($bridge) and ($facts['os']['family'] == 'windows') {
-      assert_type(Pattern[/^(none|nat|transparent|overlay|l2bridge|l2tunnel)$/], $bridge) |$a, $b| {
-        fail('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.')
+    assert_type(Pattern[/^(none|nat|transparent|overlay|l2bridge|l2tunnel)$/], $bridge) |$a, $b| {
+      fail('bridge must be one of none, nat, transparent, overlay, l2bridge or l2tunnel on Windows.')
     }
   }
 
@@ -630,7 +630,6 @@ class docker(
   } else {
     $root_dir_flag = '--data-root'
   }
-
 
   if $ensure != 'absent' {
     contain docker::repos

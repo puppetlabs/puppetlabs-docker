@@ -12,17 +12,17 @@
 # @param refreshonly
 # @param onlyif
 #
-define docker::exec(
-  Optional[Boolean] $detach        = false,
-  Optional[Boolean] $interactive   = false,
-  Optional[Array]   $env           = [],
-  Optional[Boolean] $tty           = false,
-  Optional[String]  $container     = undef,
-  Optional[String]  $command       = undef,
-  Optional[String]  $unless        = undef,
-  Optional[Boolean] $sanitise_name = true,
-  Optional[Boolean] $refreshonly   = false,
-  Optional[String]  $onlyif        = undef,
+define docker::exec (
+  Boolean $detach               = false,
+  Boolean $interactive          = false,
+  Array   $env                  = [],
+  Boolean $tty                  = false,
+  Optional[String]  $container  = undef,
+  Optional[String]  $command    = undef,
+  Optional[String]  $unless     = undef,
+  Boolean $sanitise_name        = true,
+  Boolean $refreshonly          = false,
+  Optional[String]  $onlyif     = undef,
 ) {
   include docker::params
 
@@ -31,24 +31,22 @@ define docker::exec(
   if $facts['os']['family'] == 'windows' {
     $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
     $exec_timeout     = 3000
-    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_path        = ["${::docker_program_files_path}/Docker/",]
     $exec_provider    = 'powershell'
   } else {
     $exec_environment = 'HOME=/root'
-    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_path        = ['/bin', '/usr/bin',]
     $exec_timeout     = 0
     $exec_provider    = undef
   }
 
-  $docker_exec_flags = docker_exec_flags(
-    {
+  $docker_exec_flags = docker_exec_flags( {
       detach      => $detach,
       interactive => $interactive,
       tty         => $tty,
       env         => any2array($env),
     }
   )
-
 
   if $sanitise_name {
     $sanitised_container = regsubst($container, '[^0-9A-Za-z.\-_]', '-', 'G')

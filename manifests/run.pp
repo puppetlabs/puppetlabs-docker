@@ -191,69 +191,69 @@
 #
 # @param read_only
 #
-define docker::run(
-  Optional[Pattern[/^[\S]*$/]]            $image,
-  Optional[Enum[present,absent]]          $ensure                            = 'present',
+define docker::run (
+  Optional[Pattern[/^[\S]*$/]]            $image                             = undef,
+  Enum[present,absent]                    $ensure                            = 'present',
   Optional[String]                        $verify_digest                     = undef,
   Optional[String]                        $command                           = undef,
-  Optional[Pattern[/^[\d]*(b|k|m|g)$/]]   $memory_limit                      = '0b',
+  Pattern[/^[\d]*(b|k|m|g)$/]             $memory_limit                      = '0b',
   Variant[String,Array,Undef]             $cpuset                            = [],
   Variant[String,Array,Undef]             $ports                             = [],
   Variant[String,Array,Undef]             $labels                            = [],
   Variant[String,Array,Undef]             $expose                            = [],
   Variant[String,Array,Undef]             $volumes                           = [],
   Variant[String,Array,Undef]             $links                             = [],
-  Optional[Boolean]                       $use_name                          = false,
-  Optional[Boolean]                       $running                           = true,
-  Optional[Variant[String,Array]]         $volumes_from                      = [],
+  Boolean                                 $use_name                          = false,
+  Boolean                                 $running                           = true,
+  Variant[String,Array]                   $volumes_from                      = [],
   Variant[String,Array,Undef]             $net                               = undef,
   Variant[String,Boolean]                 $username                          = false,
   Variant[String,Boolean]                 $hostname                          = false,
-  Optional[Variant[String,Array]]         $env                               = [],
-  Optional[Variant[String,Array]]         $env_file                          = [],
-  Optional[Variant[String,Array]]         $dns                               = [],
-  Optional[Variant[String,Array]]         $dns_search                        = [],
-  Optional[Variant[String,Array]]         $lxc_conf                          = [],
-  Optional[String]                        $service_prefix                    = 'docker-',
+  Variant[String,Array]                   $env                               = [],
+  Variant[String,Array]                   $env_file                          = [],
+  Variant[String,Array]                   $dns                               = [],
+  Variant[String,Array]                   $dns_search                        = [],
+  Variant[String,Array]                   $lxc_conf                          = [],
+  String                                  $service_prefix                    = 'docker-',
   Optional[String]                        $service_provider                  = undef,
-  Optional[Boolean]                       $restart_service                   = true,
-  Optional[Boolean]                       $restart_service_on_docker_refresh = true,
-  Optional[Boolean]                       $manage_service                    = true,
+  Boolean                                 $restart_service                   = true,
+  Boolean                                 $restart_service_on_docker_refresh = true,
+  Boolean                                 $manage_service                    = true,
   Variant[String,Boolean]                 $docker_service                    = false,
-  Optional[Boolean]                       $disable_network                   = false,
-  Optional[Boolean]                       $privileged                        = false,
+  Boolean                                 $disable_network                   = false,
+  Boolean                                 $privileged                        = false,
   Optional[Boolean]                       $detach                            = undef,
   Optional[Variant[String,Array[String]]] $extra_parameters                  = undef,
-  Optional[String]                        $systemd_restart                   = 'on-failure',
-  Optional[Variant[String,Hash]]          $extra_systemd_parameters          = {},
-  Optional[Boolean]                       $pull_on_start                     = false,
-  Optional[Variant[String,Array]]         $after                             = [],
-  Optional[Variant[String,Array]]         $after_service                     = [],
-  Optional[Variant[String,Array]]         $depends                           = [],
-  Optional[Variant[String,Array]]         $depend_services                   = ['docker.service'],
-  Optional[Boolean]                       $tty                               = false,
-  Optional[Variant[String,Array]]         $socket_connect                    = [],
-  Optional[Variant[String,Array]]         $hostentries                       = [],
+  String                                  $systemd_restart                   = 'on-failure',
+  Variant[String,Hash]                    $extra_systemd_parameters          = {},
+  Boolean                                 $pull_on_start                     = false,
+  Variant[String,Array]                   $after                             = [],
+  Variant[String,Array]                   $after_service                     = [],
+  Variant[String,Array]                   $depends                           = [],
+  Variant[String,Array]                   $depend_services                   = ['docker.service'],
+  Boolean                                 $tty                               = false,
+  Variant[String,Array]                   $socket_connect                    = [],
+  Variant[String,Array]                   $hostentries                       = [],
   Optional[String]                        $restart                           = undef,
   Variant[String,Boolean]                 $before_start                      = false,
   Variant[String,Boolean]                 $before_stop                       = false,
   Variant[String,Boolean]                 $after_start                       = false,
   Variant[String,Boolean]                 $after_stop                        = false,
   Optional[String]                        $after_create                      = undef,
-  Optional[Boolean]                       $remove_container_on_start         = true,
-  Optional[Boolean]                       $remove_container_on_stop          = true,
-  Optional[Boolean]                       $remove_volume_on_start            = false,
-  Optional[Boolean]                       $remove_volume_on_stop             = false,
-  Optional[Integer]                       $stop_wait_time                    = 0,
+  Boolean                                 $remove_container_on_start         = true,
+  Boolean                                 $remove_container_on_stop          = true,
+  Boolean                                 $remove_volume_on_start            = false,
+  Boolean                                 $remove_volume_on_stop             = false,
+  Integer                                 $stop_wait_time                    = 0,
   Optional[String]                        $syslog_identifier                 = undef,
   Optional[String]                        $syslog_facility                   = undef,
-  Optional[Boolean]                       $read_only                         = false,
+  Boolean                                 $read_only                         = false,
   Optional[String]                        $health_check_cmd                  = undef,
-  Optional[Boolean]                       $restart_on_unhealthy              = false,
+  Boolean                                 $restart_on_unhealthy              = false,
   Optional[Integer]                       $health_check_interval             = undef,
-  Optional[Variant[String,Array]]         $custom_unless                     = [],
+  Variant[String,Array]                   $custom_unless                     = [],
   Optional[String]                        $remain_after_exit                 = undef,
-  Optional[Boolean]                       $prepare_service_only              = false,
+  Boolean                                 $prepare_service_only              = false,
 ) {
   include docker::params
 
@@ -309,8 +309,7 @@ define docker::run(
   $depends_array          = any2array($depends)
   $depend_services_array  = any2array($depend_services)
 
-  $docker_run_flags = docker_run_flags(
-    {
+  $docker_run_flags = docker_run_flags( {
       cpuset                => any2array($cpuset),
       disable_network       => $disable_network,
       dns                   => any2array($dns),
@@ -414,7 +413,7 @@ define docker::run(
         "--restart=\"${restart}\" ${image} ${command}",
       ]
 
-      $inspect = [ "${docker_command} inspect ${sanitised_title}", ]
+      $inspect = ["${docker_command} inspect ${sanitised_title}",]
 
       if $custom_unless {
         $exec_unless = concat($custom_unless, $inspect)
@@ -517,7 +516,7 @@ define docker::run(
     }
 
     if $ensure == 'absent' {
-      if $facts['os']['family'] == 'windows'{
+      if $facts['os']['family'] == 'windows' {
         exec { "stop container ${service_prefix}${sanitised_title}":
           command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
           onlyif      => "${docker_command} inspect ${sanitised_title}",
@@ -572,7 +571,7 @@ define docker::run(
       if ($startscript) {
         file { $startscript:
           ensure  => file,
-          content => epp($startstop_template, {'script' => $docker_run_inline_start}),
+          content => epp($startstop_template, { 'script' => $docker_run_inline_start }),
           owner   => 'root',
           group   => $docker_group,
           mode    => '0770',
@@ -581,7 +580,7 @@ define docker::run(
       if ($stopscript) {
         file { $stopscript:
           ensure  => file,
-          content => epp($startstop_template, {'script' => $docker_run_inline_stop}),
+          content => epp($startstop_template, { 'script' => $docker_run_inline_stop }),
           owner   => 'root',
           group   => $docker_group,
           mode    => '0770',
@@ -674,18 +673,18 @@ define docker::run(
 
       if $restart_service {
         if $startscript or $stopscript {
-          [ File[$initscript], File[$startscript], File[$stopscript], ] ~> Service <| title == "${service_prefix}${sanitised_title}" |>
+          [File[$initscript], File[$startscript], File[$stopscript],] ~> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
         else {
-          [ File[$initscript], ] ~> Service <| title == "${service_prefix}${sanitised_title}" |>
+          [File[$initscript],] ~> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
       }
       else {
         if $startscript or $stopscript {
-          [ File[$initscript], File[$startscript], File[$stopscript], ] -> Service <| title == "${service_prefix}${sanitised_title}" |>
+          [File[$initscript], File[$startscript], File[$stopscript],] -> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
         else {
-          [ File[$initscript], ] -> Service <| title == "${service_prefix}${sanitised_title}" |>
+          [File[$initscript],] -> Service <| title == "${service_prefix}${sanitised_title}" |>
         }
       }
     }

@@ -66,7 +66,6 @@ class docker::repos (
           Apt::Source['docker'] -> Package['docker']
         }
       }
-
     }
     'RedHat': {
       if ($docker::manage_package) {

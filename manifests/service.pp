@@ -339,7 +339,7 @@ class docker::service (
       }
 
       exec { 'docker-systemd-reload-before-service':
-        path        => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', ],
+        path        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/',],
         command     => 'systemctl daemon-reload > /dev/null',
         notify      => $_manage_service,
         refreshonly => true,
@@ -357,8 +357,8 @@ class docker::service (
   }
 
   #workaround for docker 1.13 on RedHat 7
-  if $facts['docker_server_version']{
-    if $facts['os']['family'] == 'RedHat' and $facts['docker_server_version'] =~ /1\.13.+/{
+  if $facts['docker_server_version'] {
+    if $facts['os']['family'] == 'RedHat' and $facts['docker_server_version'] =~ /1\.13.+/ {
       $_skip_storage_config = true
     } else {
       $_skip_storage_config = false

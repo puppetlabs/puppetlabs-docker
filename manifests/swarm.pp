@@ -57,29 +57,29 @@
 # @param manager_ip
 #  The ip address of a manager node to join the cluster.
 #
-define docker::swarm(
-  Optional[Enum[present,absent]] $ensure                        = 'present',
-  Optional[Boolean]              $init                          = false,
-  Optional[Boolean]              $join                          = false,
-  Optional[String]               $advertise_addr                = undef,
-  Optional[Boolean]              $autolock                      = false,
-  Optional[String]               $cert_expiry                   = undef,
-  Optional[Array]                $default_addr_pool             = undef,
-  Optional[String]               $default_addr_pool_mask_length = undef,
-  Optional[String]               $dispatcher_heartbeat          = undef,
-  Optional[String]               $external_ca                   = undef,
-  Optional[Boolean]              $force_new_cluster             = false,
-  Optional[String]               $listen_addr                   = undef,
-  Optional[String]               $max_snapshots                 = undef,
-  Optional[String]               $snapshot_interval             = undef,
-  Optional[String]               $token                         = undef,
-  Optional[String]               $manager_ip                    = undef,
+define docker::swarm (
+  Enum[present,absent] $ensure                        = 'present',
+  Boolean              $init                          = false,
+  Boolean              $join                          = false,
+  Optional[String]     $advertise_addr                = undef,
+  Boolean              $autolock                      = false,
+  Optional[String]     $cert_expiry                   = undef,
+  Optional[Array]      $default_addr_pool             = undef,
+  Optional[String]     $default_addr_pool_mask_length = undef,
+  Optional[String]     $dispatcher_heartbeat          = undef,
+  Optional[String]     $external_ca                   = undef,
+  Boolean              $force_new_cluster             = false,
+  Optional[String]     $listen_addr                   = undef,
+  Optional[String]     $max_snapshots                 = undef,
+  Optional[String]     $snapshot_interval             = undef,
+  Optional[String]     $token                         = undef,
+  Optional[String]     $manager_ip                    = undef,
 ) {
   include docker::params
 
   if $facts['os']['family'] == 'windows' {
     $exec_environment = "PATH=${::docker_program_files_path}/Docker/"
-    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_path        = ["${::docker_program_files_path}/Docker/",]
     $exec_timeout     = 3000
     $exec_provider    = 'powershell'
     $unless_init      = '$info = docker info | select-string -pattern "Swarm: active"
@@ -90,7 +90,7 @@ define docker::swarm(
                          if ($info -eq $null) { Exit 1 } else { Exit 0 }'
   } else {
     $exec_environment = 'HOME=/root'
-    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_path        = ['/bin', '/usr/bin',]
     $exec_timeout     = 0
     $exec_provider    = undef
     $unless_init      = 'docker info | grep -w "Swarm: active"'
@@ -101,8 +101,7 @@ define docker::swarm(
   $docker_command = "${docker::params::docker_command} swarm"
 
   if $init {
-    $docker_swarm_init_flags = docker_swarm_init_flags(
-      {
+    $docker_swarm_init_flags = docker_swarm_init_flags( {
         init                          => $init,
         advertise_addr                => $advertise_addr,
         autolock                      => $autolock,
@@ -131,8 +130,7 @@ define docker::swarm(
   }
 
   if $join {
-    $docker_swarm_join_flags = docker_swarm_join_flags(
-      {
+    $docker_swarm_join_flags = docker_swarm_join_flags( {
         join           => $join,
         advertise_addr => $advertise_addr,
         listen_addr    => $listen_addr,

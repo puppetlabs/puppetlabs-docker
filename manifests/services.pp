@@ -63,16 +63,16 @@
 #
 # @param service_name
 #
-define docker::services(
-  Optional[Enum[present,absent]]  $ensure          = 'present',
-  Optional[Boolean]               $create          = true,
-  Optional[Boolean]               $update          = false,
-  Optional[Boolean]               $scale           = false,
-  Optional[Boolean]               $detach          = true,
-  Optional[Boolean]               $tty             = false,
-  Optional[Array]                 $env             = [],
-  Optional[Array]                 $label           = [],
-  Optional[Array]                 $extra_params    = [],
+define docker::services (
+  Enum[present,absent]            $ensure          = 'present',
+  Boolean                         $create          = true,
+  Boolean                         $update          = false,
+  Boolean                         $scale           = false,
+  Boolean                         $detach          = true,
+  Boolean                         $tty             = false,
+  Array                           $env             = [],
+  Array                           $label           = [],
+  Array                           $extra_params    = [],
   Optional[Variant[String,Array]] $image           = undef,
   Optional[Variant[String,Array]] $service_name    = undef,
   Optional[Variant[String,Array]] $publish         = undef,
@@ -101,19 +101,18 @@ define docker::services(
 
   if $facts['os']['family'] == 'windows' {
     $exec_environment = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
-    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_path        = ["${::docker_program_files_path}/Docker/",]
     $exec_provider    = 'powershell'
     $exec_timeout     = 3000
   } else {
     $exec_environment = 'HOME=/root'
-    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_path        = ['/bin', '/usr/bin',]
     $exec_provider    = undef
     $exec_timeout     = 0
   }
 
   if $create {
-    $docker_service_create_flags = docker_service_flags(
-      {
+    $docker_service_create_flags = docker_service_flags( {
         detach          => $detach,
         env             => any2array($env),
         service_name    => $service_name,
@@ -147,8 +146,7 @@ define docker::services(
   }
 
   if $update {
-    $docker_service_flags = docker_service_flags(
-      {
+    $docker_service_flags = docker_service_flags( {
         detach          => $detach,
         env             => any2array($env),
         service_name    => $service_name,
@@ -177,8 +175,7 @@ define docker::services(
   }
 
   if $scale {
-    $docker_service_flags = docker_service_flags(
-      {
+    $docker_service_flags = docker_service_flags( {
         service_name => $service_name,
         replicas     => $replicas,
         extra_params => any2array($extra_params),

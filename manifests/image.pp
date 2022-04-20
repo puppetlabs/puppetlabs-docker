@@ -25,15 +25,15 @@
 #
 # @param docker_dir
 #
-define docker::image(
-  Optional[Enum[present,absent,latest]] $ensure       = 'present',
-  Optional[Pattern[/^[\S]*$/]]          $image        = $title,
-  Optional[String]                      $image_tag    = undef,
-  Optional[String]                      $image_digest = undef,
-  Optional[Boolean]                     $force        = false,
-  Optional[String]                      $docker_file  = undef,
-  Optional[String]                      $docker_dir   = undef,
-  Optional[String]                      $docker_tar   = undef,
+define docker::image (
+  Enum[present,absent,latest]   $ensure       = 'present',
+  Optional[Pattern[/^[\S]*$/]]  $image        = $title,
+  Optional[String]              $image_tag    = undef,
+  Optional[String]              $image_digest = undef,
+  Boolean                       $force        = false,
+  Optional[String]              $docker_file  = undef,
+  Optional[String]              $docker_dir   = undef,
+  Optional[String]              $docker_tar   = undef,
 ) {
   include docker::params
 
@@ -45,14 +45,14 @@ define docker::image(
     $exec_environment             = "PATH=${::docker_program_files_path}/Docker/"
     $exec_timeout                 = 3000
     $update_docker_image_owner    = undef
-    $exec_path                    = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_path                    = ["${::docker_program_files_path}/Docker/",]
     $exec_provider                = 'powershell'
   } else {
     $update_docker_image_template = 'docker/update_docker_image.sh.erb'
     $update_docker_image_path     = '/usr/local/bin/update_docker_image.sh'
     $update_docker_image_owner    = 'root'
     $exec_environment             = 'HOME=/root'
-    $exec_path                    = [ '/bin', '/usr/bin', ]
+    $exec_path                    = ['/bin', '/usr/bin',]
     $exec_timeout                 = 0
     $exec_provider                = undef
   }

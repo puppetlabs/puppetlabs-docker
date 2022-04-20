@@ -32,8 +32,8 @@
 # @param curl_ensure
 #   Whether or not the curl package is ensured by this module.
 #
-class docker::compose(
-  Optional[Enum[present,absent]] $ensure       = 'present',
+class docker::compose (
+  Enum[present,absent] $ensure                 = present,
   Optional[String]               $version      = $docker::params::compose_version,
   Optional[String]               $install_path = $docker::params::compose_install_path,
   Optional[String]               $symlink_name = $docker::params::compose_symlink_name,

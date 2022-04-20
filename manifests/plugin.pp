@@ -37,17 +37,17 @@
 #
 # @param grant_all_permissions
 #
-define docker::plugin(
-  Optional[Enum[present,absent]] $ensure                = 'present',
-  String                         $plugin_name           = $title,
-  Optional[Boolean]              $enabled               = true,
-  Optional[String]               $timeout               = undef,
-  Optional[String]               $plugin_alias          = undef,
-  Optional[Boolean]              $disable_on_install    = false,
-  Optional[Boolean]              $disable_content_trust = true,
-  Optional[Boolean]              $grant_all_permissions = true,
-  Optional[Boolean]              $force_remove          = true,
-  Optional[Array]                $settings              = [],
+define docker::plugin (
+  Enum[present,absent] $ensure                = 'present',
+  String               $plugin_name           = $title,
+  Boolean              $enabled               = true,
+  Optional[String]     $timeout               = undef,
+  Optional[String]     $plugin_alias          = undef,
+  Boolean              $disable_on_install    = false,
+  Boolean              $disable_content_trust = true,
+  Boolean              $grant_all_permissions = true,
+  Boolean              $force_remove          = true,
+  Array                $settings              = [],
 ) {
   include docker::params
 
@@ -58,8 +58,7 @@ define docker::plugin(
   }
 
   if $ensure == 'present' {
-    $docker_plugin_install_flags = docker_plugin_install_flags(
-      {
+    $docker_plugin_install_flags = docker_plugin_install_flags( {
         plugin_name           => $plugin_name,
         plugin_alias          => $plugin_alias,
         disable_on_install    => $disable_on_install,
@@ -80,8 +79,7 @@ define docker::plugin(
       unless      => $unless_install,
     }
   } elsif $ensure == 'absent' {
-    $docker_plugin_remove_flags = docker_plugin_remove_flags(
-      {
+    $docker_plugin_remove_flags = docker_plugin_remove_flags( {
         plugin_name => $plugin_name,
         force_remove => $force_remove,
       }
@@ -100,8 +98,7 @@ define docker::plugin(
   }
 
   if $enabled {
-    $docker_plugin_enable_flags = docker_plugin_enable_flags(
-      {
+    $docker_plugin_enable_flags = docker_plugin_enable_flags( {
         plugin_name  => $plugin_name,
         plugin_alias => $plugin_alias,
         timeout      => $timeout,
@@ -118,12 +115,11 @@ define docker::plugin(
       timeout     => 0,
       onlyif      => $onlyif_enable,
     }
-
   } elsif $enabled == false {
     exec { "disable ${plugin_name}":
       command     => "${docker_command} disable ${plugin_name}",
       environment => 'HOME=/root',
-      path        => [ '/bin', '/usr/bin', ],
+      path        => ['/bin', '/usr/bin',],
       timeout     => 0,
       unless      => "${docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w ${plugin_name}",
     }
