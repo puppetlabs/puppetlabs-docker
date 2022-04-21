@@ -3,7 +3,7 @@
 # @param create_user
 #   Boolean to cotrol whether the user should be created
 #
-define docker::system_user(
+define docker::system_user (
   $create_user = true
 ) {
   include docker
@@ -11,7 +11,7 @@ define docker::system_user(
   $docker_group = $docker::docker_group
 
   if $create_user {
-    ensure_resource('user', $name, {'ensure' => 'present' })
+    ensure_resource('user', $name, { 'ensure' => 'present' })
 
     User[$name] -> Exec["docker-system-user-${name}"]
   }

@@ -22,13 +22,13 @@
 #  Send registry authentication details to Swarm agents
 #
 # @param compose_files
-define docker::stack(
-  Optional[Enum[present,absent]]             $ensure             = 'present',
+define docker::stack (
+  Enum[present,absent]                       $ensure             = 'present',
   Optional[String]                           $stack_name         = undef,
   Optional[String]                           $bundle_file        = undef,
   Optional[Array]                            $compose_files      = undef,
-  Optional[Boolean]                          $prune              = false,
-  Optional[Boolean]                          $with_registry_auth = false,
+  Boolean                                    $prune              = false,
+  Boolean                                    $with_registry_auth = false,
   Optional[Enum['always','changed','never']] $resolve_image      = undef,
 ) {
   include docker::params
@@ -38,19 +38,18 @@ define docker::stack(
   $docker_command = "${docker::params::docker_command} stack"
 
   if $facts['os']['family'] == 'windows' {
-    $exec_path   = [ 'C:/Program Files/Docker/', ]
+    $exec_path   = ['C:/Program Files/Docker/',]
     $check_stack = '$info = docker stack ls | select-string -pattern web
                     if ($info -eq $null) { Exit 1 } else { Exit 0 }'
     $provider    = 'powershell'
   } else {
-    $exec_path   = [ '/bin', '/usr/bin', ]
+    $exec_path   = ['/bin', '/usr/bin',]
     $check_stack = "${docker_command} ls | grep ${stack_name}"
     $provider    = undef
   }
 
   if $ensure == 'present' {
-    $docker_stack_flags = docker_stack_flags (
-      {
+    $docker_stack_flags = docker_stack_flags ( {
         stack_name         => $stack_name,
         bundle_file        => $bundle_file,
         compose_files      => $compose_files,
