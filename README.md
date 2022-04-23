@@ -177,7 +177,7 @@ To track the latest version of Docker, add the following code to the manifest fi
 
 ```puppet
 class { 'docker':
-  version => 'latest',
+  version => latest,
 }
 ```
 
