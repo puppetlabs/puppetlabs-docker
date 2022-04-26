@@ -108,7 +108,7 @@ To use the CE packages, add the following code to the manifest file:
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',
+  repo_opt                    => '',
 }
 ```
 
