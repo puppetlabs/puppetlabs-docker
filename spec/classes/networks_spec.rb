@@ -61,7 +61,13 @@ describe 'docker::networks', type: :class do
               'ip_range' => params['ip_range'],
             )
           }
+
+          it { is_expected.to have_docker_network_resource_count(1) }
         end
+      end
+
+      context 'with no params' do
+        it { is_expected.to have_docker_network_resource_count(0) }
       end
     end
   end
