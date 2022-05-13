@@ -47,4 +47,19 @@ Puppet::Type.newtype(:docker_compose) do
     isnamevar
     desc 'The name of the project'
   end
+
+  newparam(:tmpdir) do
+    desc "Override the temporary directory used by docker-compose.
+
+    This property is useful when the /tmp directory has been mounted
+    with the noexec option. Or is otherwise being prevented  It allows the module consumer to redirect
+    docker-composes temporary files to a known directory.
+
+    The directory passed to this property must exist and be accessible
+    by the user that is executing the puppet agent.
+    "
+    validate do |value|
+      raise _('tmpdir should be a String') unless value.is_a? String
+    end
+  end
 end

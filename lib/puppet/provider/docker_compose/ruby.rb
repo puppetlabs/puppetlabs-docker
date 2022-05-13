@@ -17,10 +17,20 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     environment(HOME: '/root')
   end
 
+  def set_tmpdir
+    return unless resource[:tmpdir]
+    # Check if the the tmpdir target exists
+    Puppet.warning("#{resource[:tmpdir]} (defined as docker_compose tmpdir) does not exist") unless Dir.exist?(resource[:tmpdir])
+    # Set TMPDIR environment variable only if defined among resources and exists
+    ENV['TMPDIR'] = resource[:tmpdir] if Dir.exist?(resource[:tmpdir])
+  end
+
   def exists?
     Puppet.info("Checking for compose project #{name}")
     compose_services = {}
     compose_containers = []
+
+    set_tmpdir
 
     # get merged config using docker-compose config
     args = [compose_files, '-p', name, 'config'].insert(3, resource[:options]).compact

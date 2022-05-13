@@ -74,10 +74,10 @@ Docker provides a enterprise addition of the [Docker Engine](https://www.docker.
 
 ```puppet
 class { 'docker':
-  docker_ee => true,
+  docker_ee                 => true,
   docker_ee_source_location => 'https://<docker_ee_repo_url>',
-  docker_ee_key_source => 'https://<docker_ee_key_source_url>',
-  docker_ee_key_id => '<key id>',
+  docker_ee_key_source      => 'https://<docker_ee_key_source_url>',
+  docker_ee_key_id          => '<key id>',
 }
 ```
 
@@ -85,9 +85,9 @@ To install Docker EE on RHEL/CentOS:
 
 ```puppet
 class { 'docker':
-  docker_ee => true,
+  docker_ee                 => true,
   docker_ee_source_location => 'https://<docker_ee_repo_url>',
-  docker_ee_key_source => 'https://<docker_ee_key_source_url>',
+  docker_ee_key_source      => 'https://<docker_ee_key_source_url>',
 }
 ```
 
@@ -108,7 +108,7 @@ To use the CE packages, add the following code to the manifest file:
 ```puppet
 class { 'docker':
   use_upstream_package_source => false,
-  repo_opt => '',
+  repo_opt                    => '',
 }
 ```
 
@@ -116,13 +116,13 @@ By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. 
 
 ```puppet
 class { 'docker':
-  tcp_bind        => ['tcp://127.0.0.1:2375'],
-  socket_bind     => 'unix:///var/run/docker.sock',
-  ip_forward      => true,
-  iptables        => true,
-  ip_masq         => true,
-  bip             => '192.168.1.1/24',
-  fixed_cidr      => '192.168.1.144/28',
+  tcp_bind    => ['tcp://127.0.0.1:2375'],
+  socket_bind => 'unix:///var/run/docker.sock',
+  ip_forward  => true,
+  iptables    => true,
+  ip_masq     => true,
+  bip         => '192.168.1.1/24',
+  fixed_cidr  => '192.168.1.144/28',
 }
 ```
 
@@ -132,7 +132,7 @@ The default group ownership of the Unix control socket differs based on OS. For 
 
 ```puppet
 class {'docker':
-  socket_group => 'root',
+  socket_group    => 'root',
   socket_override => true,
 }
 ```
@@ -153,11 +153,11 @@ When setting up TLS, upload the related files (CA certificate, server certificat
 
 ```puppet
 class { 'docker':
-  tcp_bind        => ['tcp://0.0.0.0:2376'],
-  tls_enable      => true,
-  tls_cacert      => '/etc/docker/tls/ca.pem',
-  tls_cert        => '/etc/docker/tls/cert.pem',
-  tls_key         => '/etc/docker/tls/key.pem',
+  tcp_bind   => ['tcp://0.0.0.0:2376'],
+  tls_enable => true,
+  tls_cacert => '/etc/docker/tls/ca.pem',
+  tls_cert   => '/etc/docker/tls/cert.pem',
+  tls_key    => '/etc/docker/tls/key.pem',
 }
 ```
 
@@ -177,7 +177,7 @@ To track the latest version of Docker, add the following code to the manifest fi
 
 ```puppet
 class { 'docker':
-  version => 'latest',
+  version => latest,
 }
 ```
 
@@ -477,10 +477,10 @@ To enable the restart of an unhealthy container, add the following code to the m
 
 ```puppet
 docker::run { 'helloworld':
-  image => 'base',
-  command => 'command',
-  health_check_cmd => '<command_to_execute_to_check_your_containers_health>',
-  restart_on_unhealthy => true,
+  image                 => 'base',
+  command               => 'command',
+  health_check_cmd      => '<command_to_execute_to_check_your_containers_health>',
+  restart_on_unhealthy  => true,
   health_check_interval => '<time between running docker healthcheck>',
 ```
 
@@ -488,7 +488,7 @@ To run command on Windows 2016 requires the `restart` parameter to be set:
 
 ```puppet
 docker::run { 'helloworld':
-  image => 'microsoft/nanoserver',
+  image   => 'microsoft/nanoserver',
   command => 'ping 127.0.0.1 -t',
   restart => 'always'
 ```
@@ -611,7 +611,7 @@ To install Docker Compose, add the following code to the manifest file:
 
 ```puppet
 class {'docker::compose':
-  ensure => present,
+  ensure  => present,
   version => '1.9.0',
 }
 ```
@@ -631,22 +631,25 @@ Specify the `file` resource to add a Compose file to the machine you have Puppet
 ```puppet
 docker_compose { 'test':
   compose_files => ['/tmp/docker-compose.yml'],
-  ensure  => present,
+  ensure        => present,
 }
 ```
 
 Puppet automatically runs Compose because the relevant Compose services aren't running. If required, include additional options such as enabling experimental features and scaling rules.
 
-In the example below, Puppet runs Compose when the number of containers specified for a service doesn't match the scale values.
+Additionally, the TMPDIR environment variable can optionally be set when docker_compose runs if you want Puppet to manage the environment variable within the scope of the resource. This is effective when noexec is set on the default /tmp dir, however you must ensure that the target directory exists as the resource will not create it.
+
+In the example below, Puppet runs Compose when the number of containers specified for a service doesn't match the scale values.  The optional tmpdir parameter is also specified.
 
 ```puppet
 docker_compose { 'test':
   compose_files => ['/tmp/docker-compose.yml'],
-  ensure  => present,
-  scale   => {
+  ensure        => present,
+  scale         => {
     'compose_test' => 2,
   },
-  options => ['--x-networking']
+  tmpdir        => '/usr/local/share/tmp_docker',
+  options       => ['--x-networking']
 }
 ```
 
@@ -670,10 +673,10 @@ To deploy the stack, add the following code to the manifest file:
 
 ```puppet
  docker::stack { 'yourapp':
-   ensure  => present,
-   stack_name => 'yourapp',
+   ensure        => present,
+   stack_name    => 'yourapp',
    compose_files => ['/tmp/docker-compose.yaml'],
-   require => [Class['docker'], File['/tmp/docker-compose.yaml']],
+   require       => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
 
@@ -685,11 +688,11 @@ To deploy the stack, add the following code to the manifest file.
 
 ```puppet
 docker::stack { 'yourapp':
-  ensure  => present,
-  stack_name => 'yourapp',
-  compose_files => ['/tmp/docker-compose.yaml'],
+  ensure             => present,
+  stack_name         => 'yourapp',
+  compose_files      => ['/tmp/docker-compose.yaml'],
   with_registry_auth => true,
-  require => [Class['docker'], File['/tmp/docker-compose.yaml']],
+  require            => [Class['docker'], File['/tmp/docker-compose.yaml']],
 }
 ```
 
@@ -698,8 +701,8 @@ To use the equivalent type and provider, use the following in your manifest file
 ```puppet
 docker_stack { 'test':
   compose_files => ['/tmp/docker-compose.yml'],
-  ensure  => present,
-  up_args => '--with-registry-auth',
+  ensure        => present,
+  up_args       => '--with-registry-auth',
 }
 ```
 
@@ -717,7 +720,7 @@ To install Docker Machine, add the following code to the manifest file:
 
 ```puppet
 class {'docker::machine':
-  ensure => present,
+  ensure  => present,
   version => '1.16.1',
 }
 ```
@@ -834,14 +837,14 @@ To create a Docker service, add the following code to the manifest file:
 
 ```puppet
 docker::services {'redis':
-    create => true,
+    create       => true,
     service_name => 'redis',
-    image => 'redis:latest',
-    publish => '6379:639',
-    replicas => '5',
-    mounts => ['type=bind,source=/etc/my-redis.conf,target=/etc/redis/redis.conf,readonly'],
+    image        => 'redis:latest',
+    publish      => '6379:639',
+    replicas     => '5',
+    mounts       => ['type=bind,source=/etc/my-redis.conf,target=/etc/redis/redis.conf,readonly'],
     extra_params => ['--update-delay 1m', '--restart-window 30s'],
-    command => ['redis-server', '--appendonly', 'yes'],
+    command      => ['redis-server', '--appendonly', 'yes'],
   }
 ```
 
@@ -851,10 +854,10 @@ To update the service, add the following code to the manifest file:
 
 ```puppet
 docker::services {'redis_update':
-  create => false,
-  update => true,
+  create       => false,
+  update       => true,
   service_name => 'redis',
-  replicas => '3',
+  replicas     => '3',
 }
 ```
 
@@ -864,10 +867,10 @@ To scale a service, add the following code to the manifest file:
 
 ```puppet
 docker::services {'redis_scale':
-  create => false,
-  scale => true,
+  create       => false,
+  scale        => true,
   service_name => 'redis',
-  replicas => '10',
+  replicas     => '10',
 }
 ```
 
@@ -877,8 +880,8 @@ To remove a service, add the following code to the manifest file:
 
 ```puppet
 docker::services {'redis':
-  create => false,
-  ensure => 'absent',
+  create       => false,
+  ensure       => 'absent',
   service_name => 'redis',
 }
 ```
@@ -962,14 +965,14 @@ Within the context of a running container, the docker module supports arbitrary 
 
 ```puppet
 docker::exec { 'cron_allow_root':
-  detach       => true,
-  container    => 'mycontainer',
-  command      => '/bin/echo root >> /usr/lib/cron/cron.allow',
-  onlyif       => 'running',
-  tty          => true,
-  env          => ['FOO=BAR', 'FOO2=BAR2'],
-  unless       => 'grep root /usr/lib/cron/cron.allow 2>/dev/null',
-  refreshonly  => true,
+  detach      => true,
+  container   => 'mycontainer',
+  command     => '/bin/echo root >> /usr/lib/cron/cron.allow',
+  onlyif      => 'running',
+  tty         => true,
+  env         => ['FOO=BAR', 'FOO2=BAR2'],
+  unless      => 'grep root /usr/lib/cron/cron.allow 2>/dev/null',
+  refreshonly => true,
 }
 ```
 

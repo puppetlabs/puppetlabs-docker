@@ -44,4 +44,8 @@ describe compose do
   it 'requires scale to be a hash' do
     expect(compose).to require_hash_for('scale')
   end
+
+  it 'requires tmpdir to be a string' do
+    expect(compose).to require_string_for('tmpdir')
+  end
 end
