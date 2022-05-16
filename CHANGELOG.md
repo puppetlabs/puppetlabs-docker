@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.3.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.3.0) - 2022-05-16
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.2.1...v4.3.0)
+
+### Added
+
+- Add tmpdir option to docker_compose [#823](https://github.com/puppetlabs/puppetlabs-docker/pull/823) ([canihavethisone](https://github.com/canihavethisone))
+
+- Support different Architectures (like `aarch64`) when installing Compose [#812](https://github.com/puppetlabs/puppetlabs-docker/pull/812) ([mpdude](https://github.com/mpdude))
+
+### Fixed
+
+- Only install docker-ce-cli with docker-ce [#827](https://github.com/puppetlabs/puppetlabs-docker/pull/827) ([vchepkov](https://github.com/vchepkov))
+
+- remove some legacy facts [#802](https://github.com/puppetlabs/puppetlabs-docker/pull/802) ([traylenator](https://github.com/traylenator))
+
+- Fix missing comma in docker::image example [#787](https://github.com/puppetlabs/puppetlabs-docker/pull/787) ([Vincevrp](https://github.com/Vincevrp))
+
+- allow docker::networks::networks param to be undef [#783](https://github.com/puppetlabs/puppetlabs-docker/pull/783) ([jhoblitt](https://github.com/jhoblitt))
+
 ## [v4.2.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.2.1) (2022-04-14)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.2.0...v4.2.1)
