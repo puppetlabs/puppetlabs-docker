@@ -6,11 +6,8 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
   desc 'Support for Docker Volumes'
 
   mk_resource_methods
-  commands dockercmd: 'docker'
 
-  has_command(:docker, command(:dockercmd)) do
-    environment(HOME: '/root')
-  end
+  has_command(:docker, 'docker')
 
   def volume_conf
     flags = ['volume', 'create']

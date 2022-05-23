@@ -6,16 +6,10 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
   desc 'Support for Puppet running Docker Compose'
 
   mk_resource_methods
-  commands dockercompose: 'docker-compose'
-  commands dockercmd: 'docker'
 
-  has_command(:docker, command(:dockercmd)) do
-    environment(HOME: '/root')
-  end
+  has_command(:docker, 'docker')
 
-  has_command(:dockercompose, command(:dockercompose)) do
-    environment(HOME: '/root')
-  end
+  has_command(:dockercompose, 'docker-compose')
 
   def set_tmpdir
     return unless resource[:tmpdir]
