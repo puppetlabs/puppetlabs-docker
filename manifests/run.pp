@@ -590,6 +590,7 @@ define docker::run (
       file { $initscript:
         ensure  => file,
         content => template($init_template),
+        seltype => 'container_unit_file_t',
         owner   => 'root',
         group   => $docker_group,
         mode    => $mode,
