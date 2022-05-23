@@ -13,7 +13,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     environment(HOME: '/root')
   end
 
-  has_command(:docker_compose, command(:dockercompose)) do
+  has_command(:dockercompose, command(:dockercompose)) do
     environment(HOME: '/root')
   end
 
