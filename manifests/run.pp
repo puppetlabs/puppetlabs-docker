@@ -572,6 +572,7 @@ define docker::run (
         file { $startscript:
           ensure  => file,
           content => epp($startstop_template, { 'script' => $docker_run_inline_start }),
+          seltype => 'container_runtime_exec_t',
           owner   => 'root',
           group   => $docker_group,
           mode    => '0770',
@@ -581,6 +582,7 @@ define docker::run (
         file { $stopscript:
           ensure  => file,
           content => epp($startstop_template, { 'script' => $docker_run_inline_stop }),
+          seltype => 'container_runtime_exec_t',
           owner   => 'root',
           group   => $docker_group,
           mode    => '0770',
