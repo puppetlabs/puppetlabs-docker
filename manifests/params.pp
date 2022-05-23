@@ -91,7 +91,7 @@ class docker::params {
 
   if ($facts['os']['family'] == 'windows') {
     $compose_install_path   = "${::docker_program_files_path}/Docker"
-    $compose_version        = '1.21.2'
+    $compose_version        = '1.29.2'
     $docker_ee_package_name = 'Docker'
     $machine_install_path   = "${::docker_program_files_path}/Docker"
     $tls_cacert             = "${::docker_program_data_path}/docker/certs.d/ca.pem"
@@ -99,7 +99,7 @@ class docker::params {
     $tls_key                = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
   } else {
     $compose_install_path   = '/usr/local/bin'
-    $compose_version        = '1.21.2'
+    $compose_version        = '1.29.2'
     $docker_ee_package_name = 'docker-ee'
     $machine_install_path   = '/usr/local/bin'
     $tls_cacert             = '/etc/docker/tls/ca.pem'
