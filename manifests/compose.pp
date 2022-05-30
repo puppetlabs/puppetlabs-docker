@@ -100,6 +100,7 @@ class docker::compose (
       file { $docker_compose_location_versioned:
         owner   => $file_owner,
         mode    => '0755',
+        seltype => 'container_runtime_exec_t',
         require => Exec["Install Docker Compose ${version}"],
       }
 

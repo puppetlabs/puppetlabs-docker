@@ -320,6 +320,7 @@ class docker::service (
         file { '/etc/systemd/system/docker.service.d/service-overrides.conf':
           ensure  => file,
           content => template($service_overrides_template),
+          seltype => 'container_unit_file_t',
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
         }
@@ -333,6 +334,7 @@ class docker::service (
         file { '/etc/systemd/system/docker.socket.d/socket-overrides.conf':
           ensure  => file,
           content => template($socket_overrides_template),
+          seltype => 'container_unit_file_t',
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
         }

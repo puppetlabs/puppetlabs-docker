@@ -6,11 +6,8 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
   desc 'Support for Puppet running Docker Stacks'
 
   mk_resource_methods
-  commands dockercmd: 'docker'
 
-  has_command(:docker, command(:dockercmd)) do
-    environment(HOME: '/root')
-  end
+  has_command(:docker, 'docker')
 
   def exists?
     Puppet.info("Checking for stack #{name}")
