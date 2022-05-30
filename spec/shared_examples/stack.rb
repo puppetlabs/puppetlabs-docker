@@ -20,7 +20,7 @@ shared_examples 'stack' do |_title, params, facts, defaults|
     provider    = 'powershell'
   else
     exec_path   = ['/bin', '/usr/bin']
-    check_stack = "#{docker_command} ls | grep #{stack_name}"
+    check_stack = "#{docker_command} ls | grep '#{stack_name}'"
     provider    = nil
   end
 
