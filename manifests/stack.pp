@@ -43,8 +43,8 @@ define docker::stack (
                     if ($info -eq $null) { Exit 1 } else { Exit 0 }'
     $provider    = 'powershell'
   } else {
-    $exec_path   = [ '/bin', '/usr/bin', ]
-    $check_stack = "${docker_command} ls | grep '${stack_name} '"
+    $exec_path   = ['/bin', '/usr/bin',]
+    $check_stack = "${docker_command} ls | grep '${stack_name}'"
     $provider    = undef
   }
 
