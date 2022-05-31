@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe 'the "docker_run_flags" parser function' do
+  before :each do
+    Puppet[:modulepath] = 'spec/fixtures/modules'
+  end
+
   let :scope do
     node     = Puppet::Node.new('localhost')
     compiler = Puppet::Parser::Compiler.new(node)
@@ -22,7 +26,7 @@ describe 'the "docker_run_flags" parser function' do
     let(:os_family) { 'windows' }
 
     it 'escapes special chars' do
-      expect(scope.function_docker_run_flags([{ 'env' => [%.MYSQL_PASSWORD='"$()[]{}<>.], 'extra_params' => [] }])).to eq(%^-e "MYSQL_PASSWORD='\\"$()[]{}<>" \\\n^)
+      expect(scope.function_docker_run_flags([{ 'env' => [%.MYSQL_PASSWORD='"$()[]{}<>.], 'extra_params' => [] }])).to eq(%^-e MYSQL_PASSWORD=`'\\`"`$()[]{}<> \\\n^)
     end
   end
 end

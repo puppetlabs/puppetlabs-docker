@@ -9,7 +9,7 @@ module Puppet::Parser::Functions
     subject = args[0]
 
     if self['facts'] && self['facts']['os']['family'] == 'windows'
-      %("#{subject.gsub('"', '\\"')}")
+      call_function('powershell_escape', subject)
     else
       subject.shellescape
     end
