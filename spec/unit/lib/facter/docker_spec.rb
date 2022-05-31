@@ -4,18 +4,24 @@ require 'spec_helper'
 require 'json'
 
 describe 'Facter::Util::Fact' do
+  let(:docker_command) do
+    if Facter.value(:kernel) == 'windows'
+      'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
+    else
+      'docker'
+    end
+  end
+
   before :each do
     Facter.clear
     allow(Facter::Core::Execution).to receive(:which).and_call_original
     allow(Facter::Core::Execution).to receive(:execute).and_call_original
 
     if Facter.value(:kernel) == 'windows'
-      docker_command = 'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
       allow(Facter::Core::Execution).to receive(:which).with('dhcpcd').and_return('C:\Windows\dhcpd.exe')
       allow(Facter::Core::Execution).to receive(:which).with('route').and_return('C:\Windows\System32\ROUTE.EXE')
       allow(Facter::Core::Execution).to receive(:which).with('docker').and_return('C:\Program Files\Docker\docker.exe')
     else
-      docker_command = 'docker'
       allow(Facter::Core::Execution).to receive(:which).with('route').and_return('/usr/bin/route')
       allow(Facter::Core::Execution).to receive(:which).with('dhcpcd').and_return('/usr/bin/dhcpd')
       allow(Facter::Core::Execution).to receive(:which).with('docker').and_return('/usr/bin/docker')
@@ -127,6 +133,27 @@ describe 'Facter::Util::Fact' do
       expect(Facter.fact(:docker_manager_join_token).value).to eq(
         'SWMTKN-1-2m7ekt7511j5kgrc6seyrewpdxv47ksz1sdg7iybzhuug6nmws-8gh1ns1lcavgau8k9p6ou7xj3',
       )
+    end
+  end
+
+  describe 'docker swarm worker join-token with inactive swarm cluster' do
+    before :each do
+      docker_info = File.read(fixtures('facts', 'docker_info_swarm_inactive'))
+      allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", timeout: 90).and_return(docker_info)
+    end
+    it do
+      expect(Facter.fact(:docker_worker_join_token).value).to be_nil
+    end
+  end
+
+  describe 'docker swarm manager join-token with inactive swarm cluster' do
+    before :each do
+      docker_info = File.read(fixtures('facts', 'docker_info_swarm_inactive'))
+      allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", timeout: 90).and_return(docker_info)
+    end
+
+    it do
+      expect(Facter.fact(:docker_manager_join_token).value).to be_nil
     end
   end
 end
