@@ -22,11 +22,11 @@ module Puppet::Parser::Functions
     flags = []
 
     if opts['username']
-      flags << "-u '#{call_function('docker::escape', [opts['username']])}'"
+      flags << "-u #{call_function('docker::escape', [opts['username']])}"
     end
 
     if opts['hostname']
-      flags << "-h '#{call_function('docker::escape', [opts['hostname']])}'"
+      flags << "-h #{call_function('docker::escape', [opts['hostname']])}"
     end
 
     if opts['restart']
@@ -37,7 +37,7 @@ module Puppet::Parser::Functions
       if opts['net'].is_a? String
         flags << "--net #{call_function('docker::escape', [opts['net']])}"
       elsif opts['net'].is_a? Array
-        flags << "--net #{call_function('docker::escape', [opts['net'].join(' --net ')])}" # FIXME: escaping is buggy
+        flags += opts['net'].map { |item| ["--net #{call_function('docker::escape', [item])}"] }
       end
     end
 
