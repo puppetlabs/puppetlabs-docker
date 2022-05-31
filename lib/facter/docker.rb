@@ -121,7 +121,6 @@ Facter.add(:docker_manager_join_token) do
   end
 end
 
-
 Facter.add(:docker) do
   setcode do
     docker_version = Facter.value(:docker_client_version)
