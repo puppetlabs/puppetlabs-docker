@@ -1258,12 +1258,12 @@ The following parameters are available in the `docker::compose` class:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 Whether to install or remove Docker Compose
 Valid values are absent present
 
-Default value: `'present'`
+Default value: `present`
 
 ##### <a name="version"></a>`version`
 
@@ -1429,7 +1429,7 @@ The following parameters are available in the `docker::machine` class:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 Whether to install or remove Docker Machine
 Valid values are absent present
@@ -1488,9 +1488,11 @@ The following parameters are available in the `docker::networks` class:
 
 ##### <a name="networks"></a>`networks`
 
-Data type: `Any`
+Data type: `Optional[Hash[String, Hash]]`
 
 
+
+Default value: ``undef``
 
 ### <a name="dockerparams"></a>`docker::params`
 
@@ -2398,7 +2400,7 @@ The following parameters are available in the `docker::exec` defined type:
 
 ##### <a name="detach"></a>`detach`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2406,7 +2408,7 @@ Default value: ``false``
 
 ##### <a name="interactive"></a>`interactive`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2414,7 +2416,7 @@ Default value: ``false``
 
 ##### <a name="env"></a>`env`
 
-Data type: `Optional[Array]`
+Data type: `Array`
 
 
 
@@ -2422,7 +2424,7 @@ Default value: `[]`
 
 ##### <a name="tty"></a>`tty`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2454,7 +2456,7 @@ Default value: ``undef``
 
 ##### <a name="sanitise_name"></a>`sanitise_name`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2462,7 +2464,7 @@ Default value: ``true``
 
 ##### <a name="refreshonly"></a>`refreshonly`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2496,7 +2498,7 @@ The following parameters are available in the `docker::image` defined type:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent,latest]]`
+Data type: `Enum[present,absent,latest]`
 
 Whether you want the image present or absent.
 
@@ -2545,7 +2547,7 @@ Default value: ``undef``
 
 ##### <a name="force"></a>`force`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2598,7 +2600,7 @@ Default value: `$title`
 
 ##### <a name="enabled"></a>`enabled`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 A setting to enable or disable an installed plugin.
 
@@ -2622,7 +2624,7 @@ Default value: ``undef``
 
 ##### <a name="disable_on_install"></a>`disable_on_install`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Alters the default behaviour of enabling a plugin upon install
 
@@ -2630,7 +2632,7 @@ Default value: ``false``
 
 ##### <a name="disable_content_trust"></a>`disable_content_trust`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Skip image verification
 
@@ -2638,7 +2640,7 @@ Default value: ``true``
 
 ##### <a name="grant_all_permissions"></a>`grant_all_permissions`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Grant all permissions necessary to run the plugin
 
@@ -2646,7 +2648,7 @@ Default value: ``true``
 
 ##### <a name="force_remove"></a>`force_remove`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Force the removal of an active plugin
 
@@ -2654,7 +2656,7 @@ Default value: ``true``
 
 ##### <a name="settings"></a>`settings`
 
-Data type: `Optional[Array]`
+Data type: `Array`
 
 Any additional settings to pass to the plugin during install
 
@@ -2662,7 +2664,7 @@ Default value: `[]`
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 
 
@@ -2703,7 +2705,7 @@ Default value: `$title`
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 Whether or not you want to login or logout of a repository
 
@@ -2746,7 +2748,7 @@ Default value: ``undef``
 
 ##### <a name="local_user"></a>`local_user`
 
-Data type: `Optional[String]`
+Data type: `String`
 
 The local user to log in as. Docker will store credentials in this
 users home directory
@@ -2763,7 +2765,7 @@ Default value: ``undef``
 
 ##### <a name="receipt"></a>`receipt`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Required to be true for idempotency
 
@@ -2924,7 +2926,7 @@ Default value: ``undef``
 
 ##### <a name="service_prefix"></a>`service_prefix`
 
-Data type: `Optional[String]`
+Data type: `String`
 
 (optional) The name to prefix the startup script with and the Puppet
 service resource title with.  Default: 'docker-'
@@ -2933,7 +2935,7 @@ Default value: `'docker-'`
 
 ##### <a name="restart_service"></a>`restart_service`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 (optional) Whether or not to restart the service if the the generated init
 script changes.  Default: true
@@ -2942,7 +2944,7 @@ Default value: ``true``
 
 ##### <a name="restart_service_on_docker_refresh"></a>`restart_service_on_docker_refresh`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Whether or not to restart the service if the docker service is restarted.
 Only has effect if the docker_service parameter is set.
@@ -2952,7 +2954,7 @@ Default value: ``true``
 
 ##### <a name="manage_service"></a>`manage_service`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 (optional) Whether or not to create a puppet Service resource for the init
 script.  Disabling this may be useful if integrating with existing modules.
@@ -2990,7 +2992,7 @@ Default value: ``undef``
 
 ##### <a name="restart_on_unhealthy"></a>`restart_on_unhealthy`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -2998,7 +3000,7 @@ Default value: ``false``
 
 ##### <a name="net"></a>`net`
 
-Data type: `Variant[String,Array,Undef]`
+Data type: `Variant[String,Array[String[1],1],Undef]`
 
 
 
@@ -3014,7 +3016,7 @@ Default value: ``undef``
 
 ##### <a name="systemd_restart"></a>`systemd_restart`
 
-Data type: `Optional[String]`
+Data type: `String`
 
 
 
@@ -3022,7 +3024,7 @@ Default value: `'on-failure'`
 
 ##### <a name="custom_unless"></a>`custom_unless`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3046,7 +3048,7 @@ Default value: ``undef``
 
 ##### <a name="prepare_service_only"></a>`prepare_service_only`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3058,9 +3060,11 @@ Data type: `Optional[Pattern[/^[\S]*$/]]`
 
 
 
+Default value: ``undef``
+
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 
 
@@ -3076,7 +3080,7 @@ Default value: ``undef``
 
 ##### <a name="memory_limit"></a>`memory_limit`
 
-Data type: `Optional[Pattern[/^[\d]*(b|k|m|g)$/]]`
+Data type: `Pattern[/^[\d]*(b|k|m|g)$/]`
 
 
 
@@ -3132,7 +3136,7 @@ Default value: `[]`
 
 ##### <a name="use_name"></a>`use_name`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3140,7 +3144,7 @@ Default value: ``false``
 
 ##### <a name="running"></a>`running`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3148,7 +3152,7 @@ Default value: ``true``
 
 ##### <a name="volumes_from"></a>`volumes_from`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3172,7 +3176,7 @@ Default value: ``false``
 
 ##### <a name="env"></a>`env`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3180,7 +3184,7 @@ Default value: `[]`
 
 ##### <a name="env_file"></a>`env_file`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3188,7 +3192,7 @@ Default value: `[]`
 
 ##### <a name="dns"></a>`dns`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3196,7 +3200,7 @@ Default value: `[]`
 
 ##### <a name="dns_search"></a>`dns_search`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3204,7 +3208,7 @@ Default value: `[]`
 
 ##### <a name="lxc_conf"></a>`lxc_conf`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3220,7 +3224,7 @@ Default value: ``undef``
 
 ##### <a name="disable_network"></a>`disable_network`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3228,7 +3232,7 @@ Default value: ``false``
 
 ##### <a name="privileged"></a>`privileged`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3244,7 +3248,7 @@ Default value: ``undef``
 
 ##### <a name="extra_systemd_parameters"></a>`extra_systemd_parameters`
 
-Data type: `Optional[Variant[String,Hash]]`
+Data type: `Variant[String,Hash]`
 
 
 
@@ -3252,7 +3256,7 @@ Default value: `{}`
 
 ##### <a name="pull_on_start"></a>`pull_on_start`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3260,7 +3264,7 @@ Default value: ``false``
 
 ##### <a name="after"></a>`after`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3268,7 +3272,7 @@ Default value: `[]`
 
 ##### <a name="after_service"></a>`after_service`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3276,7 +3280,7 @@ Default value: `[]`
 
 ##### <a name="depends"></a>`depends`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3284,7 +3288,7 @@ Default value: `[]`
 
 ##### <a name="depend_services"></a>`depend_services`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3292,7 +3296,7 @@ Default value: `['docker.service']`
 
 ##### <a name="tty"></a>`tty`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3300,7 +3304,7 @@ Default value: ``false``
 
 ##### <a name="socket_connect"></a>`socket_connect`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3308,7 +3312,7 @@ Default value: `[]`
 
 ##### <a name="hostentries"></a>`hostentries`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3348,7 +3352,7 @@ Default value: ``false``
 
 ##### <a name="remove_container_on_start"></a>`remove_container_on_start`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3356,7 +3360,7 @@ Default value: ``true``
 
 ##### <a name="remove_container_on_stop"></a>`remove_container_on_stop`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3364,7 +3368,7 @@ Default value: ``true``
 
 ##### <a name="remove_volume_on_start"></a>`remove_volume_on_start`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3372,7 +3376,7 @@ Default value: ``false``
 
 ##### <a name="remove_volume_on_stop"></a>`remove_volume_on_stop`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3380,7 +3384,7 @@ Default value: ``false``
 
 ##### <a name="stop_wait_time"></a>`stop_wait_time`
 
-Data type: `Optional[Integer]`
+Data type: `Integer`
 
 
 
@@ -3404,7 +3408,7 @@ Default value: ``undef``
 
 ##### <a name="read_only"></a>`read_only`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3425,7 +3429,7 @@ The following parameters are available in the `docker::secrets` defined type:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 
 
@@ -3433,7 +3437,7 @@ Default value: `'present'`
 
 ##### <a name="label"></a>`label`
 
-Data type: `Optional[Variant[String,Array]]`
+Data type: `Variant[String,Array]`
 
 
 
@@ -3486,7 +3490,7 @@ The following parameters are available in the `docker::services` defined type:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 This ensures that the service is present or not.
 
@@ -3502,7 +3506,7 @@ Default value: ``undef``
 
 ##### <a name="detach"></a>`detach`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Exit immediately instead of waiting for the service to converge (default true)
 
@@ -3510,7 +3514,7 @@ Default value: ``true``
 
 ##### <a name="env"></a>`env`
 
-Data type: `Optional[Array]`
+Data type: `Array`
 
 Set environment variables
 
@@ -3518,7 +3522,7 @@ Default value: `[]`
 
 ##### <a name="label"></a>`label`
 
-Data type: `Optional[Array]`
+Data type: `Array`
 
 Service labels.
 This used as metdata to configure constraints etc.
@@ -3543,7 +3547,7 @@ Default value: ``undef``
 
 ##### <a name="tty"></a>`tty`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Allocate a pseudo-TTY
 
@@ -3567,7 +3571,7 @@ Default value: ``undef``
 
 ##### <a name="extra_params"></a>`extra_params`
 
-Data type: `Optional[Array]`
+Data type: `Array`
 
 Allows you to pass any other flag that the Docker service create supports.
 This must be passed as an array. See docker service create --help for all options
@@ -3576,7 +3580,7 @@ Default value: `[]`
 
 ##### <a name="update"></a>`update`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 This changes the docker command to
 docker service update, you must pass a service name with this option
@@ -3585,7 +3589,7 @@ Default value: ``false``
 
 ##### <a name="scale"></a>`scale`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 This changes the docker command to
 docker service scale, this can only be used with service name and
@@ -3635,7 +3639,7 @@ Default value: ``undef``
 
 ##### <a name="create"></a>`create`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
@@ -3667,7 +3671,7 @@ The following parameters are available in the `docker::stack` defined type:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 This ensures that the stack is present or not.
 
@@ -3692,7 +3696,7 @@ Default value: ``undef``
 
 ##### <a name="prune"></a>`prune`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Prune services that are no longer referenced
 
@@ -3709,7 +3713,7 @@ Default value: ``undef``
 
 ##### <a name="with_registry_auth"></a>`with_registry_auth`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Send registry authentication details to Swarm agents
 
@@ -3750,7 +3754,7 @@ The following parameters are available in the `docker::swarm` defined type:
 
 ##### <a name="ensure"></a>`ensure`
 
-Data type: `Optional[Enum[present,absent]]`
+Data type: `Enum[present,absent]`
 
 This ensures that the cluster is present or not.
 Note this forcefully removes a node from the cluster. Make sure all worker nodes
@@ -3760,7 +3764,7 @@ Default value: `'present'`
 
 ##### <a name="init"></a>`init`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 This creates the first worker node for a new cluster.
 Set init to true to create a new cluster
@@ -3769,7 +3773,7 @@ Default value: ``false``
 
 ##### <a name="join"></a>`join`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 This adds either a worker or manger node to the cluster.
 The role of the node is defined by the join token.
@@ -3788,7 +3792,7 @@ Default value: ``undef``
 
 ##### <a name="autolock"></a>`autolock`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Enable manager autolocking (requiring an unlock key to start a stopped manager)
 
@@ -3836,7 +3840,7 @@ Default value: ``undef``
 
 ##### <a name="force_new_cluster"></a>`force_new_cluster`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Force create a new cluster from current state
 
@@ -3933,6 +3937,7 @@ The following parameters are available in the `docker_compose` type.
 * [`options`](#options)
 * [`provider`](#provider)
 * [`scale`](#scale)
+* [`tmpdir`](#tmpdir)
 * [`up_args`](#up_args)
 
 ##### <a name="compose_files"></a>`compose_files`
@@ -3957,6 +3962,17 @@ usually discover the appropriate provider for your platform.
 ##### <a name="scale"></a>`scale`
 
 A hash of compose services and number of containers.
+
+##### <a name="tmpdir"></a>`tmpdir`
+
+Override the temporary directory used by docker-compose.
+
+This property is useful when the /tmp directory has been mounted
+with the noexec option. Or is otherwise being prevented  It allows the module consumer to redirect
+docker-composes temporary files to a known directory.
+
+The directory passed to this property must exist and be accessible
+by the user that is executing the puppet agent.
 
 ##### <a name="up_args"></a>`up_args`
 
