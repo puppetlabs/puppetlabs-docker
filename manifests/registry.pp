@@ -47,15 +47,15 @@ define docker::registry (
   $docker_command = $docker::params::docker_command
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment = [ "PATH=${::docker_program_files_path}/Docker/", ]
+    $exec_environment = ["PATH=${::docker_program_files_path}/Docker/",]
     $exec_timeout     = 3000
-    $exec_path        = [ "${::docker_program_files_path}/Docker/", ]
+    $exec_path        = ["${::docker_program_files_path}/Docker/",]
     $exec_provider    = 'powershell'
     $password_env     = '$env:password'
     $exec_user        = undef
   } else {
     $exec_environment = []
-    $exec_path        = [ '/bin', '/usr/bin', ]
+    $exec_path        = ['/bin', '/usr/bin',]
     $exec_timeout     = 0
     $exec_provider    = undef
     $password_env     = "\${password}"
