@@ -33,7 +33,7 @@
 #
 define docker::registry (
   Optional[String]      $server          = $title,
-  Enum[present, absent] $ensure          = 'present',
+  Enum[present,absent]  $ensure          = 'present',
   Optional[String]      $username        = undef,
   Optional[String]      $password        = undef,
   Optional[String]      $pass_hash       = undef,
