@@ -38,7 +38,7 @@ define docker::registry (
   Optional[String]      $password        = undef,
   Optional[String]      $pass_hash       = undef,
   Optional[String]      $email           = undef,
-  Optional[String]      $local_user      = 'root',
+  String                $local_user      = 'root',
   Optional[String]      $local_user_home = undef,
   Optional[String]      $version         = $docker::version,
 ) {
@@ -72,19 +72,18 @@ define docker::registry (
   }
 
   if $ensure == 'present' {
-    if $username != undef and $password != undef and $email != undef and $version != undef and $version =~ /1[.][1-9]0?/
-    {
-      $auth_cmd = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
+    if $username != undef and $password != undef and $email != undef and $version != undef and $version =~ /1[.][1-9]0?/ {
+      $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
       $auth_environment = "password=${password}"
     } elsif $username != undef and $password != undef {
-      $auth_cmd = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
+      $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
       $auth_environment = "password=${password}"
     } else {
-      $auth_cmd = "${docker_command} login ${server}"
+      $auth_cmd         = "${docker_command} login ${server}"
       $auth_environment = ''
     }
   }  else {
-    $auth_cmd = "${docker_command} logout ${server}"
+    $auth_cmd         = "${docker_command} logout ${server}"
     $auth_environment = ''
   }
 
