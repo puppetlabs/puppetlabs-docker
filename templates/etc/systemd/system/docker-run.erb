@@ -42,7 +42,6 @@ RemainAfterExit=<%= @remain_after_exit %>
 <%- end -%>
 
 [Install]
-WantedBy=multi-user.target
 <%- if @service_name -%>
 WantedBy=<%= @service_name %>.service
 <%- end -%>
