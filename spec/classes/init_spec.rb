@@ -65,6 +65,7 @@ describe 'docker', type: :class do
             'apt_source_pin_level'              => defaults['apt_source_pin_level'],
             'bip'                               => defaults['bip'],
             'bridge'                            => defaults['bridge'],
+            'create_user'                       => true,
             'daemon_environment_files'          => [],
             'default_gateway_ipv6'              => defaults['default_gateway_ipv6'],
             'default_gateway'                   => defaults['default_gateway'],

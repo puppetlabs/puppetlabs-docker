@@ -259,6 +259,9 @@
 # @param docker_users
 #   Specify an array of users to add to the docker group
 #
+# @param create_user
+#   If `true` the list of `docker_users` will be created as well as added to the docker group
+#
 # @param docker_group
 #   Specify a string for the docker group
 #
@@ -446,6 +449,7 @@ class docker (
   Optional[String]                        $package_source                    = $docker::params::package_source,
   Optional[String]                        $service_name                      = $docker::params::service_name,
   Array                                   $docker_users                      = [],
+  Boolean                                 $create_user                       = true,
   String                                  $docker_group                      = $docker::params::docker_group,
   Array                                   $daemon_environment_files          = [],
   Optional[Variant[String,Hash]]          $repo_opt                          = $docker::params::repo_opt,
