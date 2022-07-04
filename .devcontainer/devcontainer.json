@@ -1,17 +1,18 @@
 {
-	"name": "Puppet Development Kit (Community)",
-	"dockerFile": "Dockerfile",
+  "name": "Puppet Development Kit (Community)",
+  "dockerFile": "Dockerfile",
+  "runArgs": ["--name", "devcontainer-puppetlabs-docker"],
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "bash"
+      }
+    }
+  },
 
-	"settings": {
-		"terminal.integrated.profiles.linux": {
-			"bash": {
-				"path": "bash",
-			}
-		}
-	},
-
-	"extensions": [
-		"puppet.puppet-vscode",
-		"rebornix.Ruby"
-	]
+  "extensions": [
+    "esbenp.prettier-vscode",
+    "puppet.puppet-vscode",
+    "rebornix.Ruby"
+  ]
 }
