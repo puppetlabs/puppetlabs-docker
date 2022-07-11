@@ -546,7 +546,7 @@ class docker (
     if ($docker_ee) {
       $package_location         = $docker::docker_ee_source_location
       $package_key_source       = $docker::docker_ee_key_source
-      $package_key_check_source = true
+      $package_key_check_source = $docker_package_key_check_source
       $package_key              = $docker::docker_ee_key_id
       $package_repos            = $docker::docker_ee_repos
       $release                  = $docker::docker_ee_release
@@ -564,7 +564,7 @@ class docker (
         'RedHat' : {
           $package_location         = $docker_ce_source_location
           $package_key_source       = $docker_ce_key_source
-          $package_key_check_source = true
+          $package_key_check_source = $docker_package_key_check_source
         }
         'windows': {
           fail('This module only work for Docker Enterprise Edition on Windows.')
