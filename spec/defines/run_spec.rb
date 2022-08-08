@@ -200,6 +200,26 @@ tests = {
   'when passing syslog_facility' => {
     'syslog_facility' => 'user',
   },
+  'when passing serveral extra systemd parameters' => {
+    'extra_systemd_parameters' => {
+      'Service' => {
+        'TimeoutStopSec' => '120',
+      },
+      'Unit' => {
+        'Documentation' => 'https://example.com/'
+      },
+      'Install' => {
+        'Alias' => 'example2',
+      },
+    }
+  },
+  'when passing an extra systemd parameter' => {
+    'extra_systemd_parameters' => {
+      'Service' => {
+        'TimeoutStopSec' => '120',
+      }
+    }
+  },
 }
 
 describe 'docker::run', type: :define do

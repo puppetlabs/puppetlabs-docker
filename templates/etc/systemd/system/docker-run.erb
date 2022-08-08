@@ -19,6 +19,11 @@ Requires=<%= @requires.uniq.join(" ") %>
 StartLimitIntervalSec=20
 StartLimitBurst=3
 <%- end -%>
+<%- if @extra_systemd_parameters['Unit'] -%>
+<%- @extra_systemd_parameters['Unit'].each do |key,value| -%>
+<%= key %>=<%= value %>
+<%- end -%>
+<%- end -%>
 
 [Service]
 Restart=<%= @systemd_restart %>
@@ -40,9 +45,19 @@ ExecStop=-/usr/local/bin/docker-run-<%= @sanitised_title %>-stop.sh
 <%- if @remain_after_exit %>
 RemainAfterExit=<%= @remain_after_exit %>
 <%- end -%>
+<%- if @extra_systemd_parameters['Service'] -%>
+<%- @extra_systemd_parameters['Service'].each do |key,value| -%>
+<%= key %>=<%= value %>
+<%- end -%>
+<%- end -%>
 
 [Install]
 WantedBy=multi-user.target
 <%- if @service_name -%>
 WantedBy=<%= @service_name %>.service
+<%- end -%>
+<%- if @extra_systemd_parameters['Install'] -%>
+<%- @extra_systemd_parameters['Install'].each do |key,value| -%>
+<%= key %>=<%= value %>
+<%- end -%>
 <%- end -%>
