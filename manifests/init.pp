@@ -159,6 +159,16 @@
 # @param manage_service
 #   Specify whether the service should be managed.
 #
+# @param manage_systemd_override_dirs
+#   Specify whether the systemd override directories such as
+#   /etc/systemd/systemd/docker.service.d and
+#   /etc/systemd/system/docker.socket.d should be managed by this module or
+#   not. Set this to 'false' if you manage custom Docker-related systemd
+#   overrides, for example with `systemd::dropin_file` from puppet-systemd.
+#   Otherwise this will lead to duplicate resource declaration errors because
+#   both this module and puppet-systemd want to manage the override
+#   directories.
+#
 # @param root_dir
 #   Custom root directory for containers
 #
@@ -405,6 +415,7 @@ class docker (
   String                                  $service_state                     = $docker::params::service_state,
   Boolean                                 $service_enable                    = $docker::params::service_enable,
   Boolean                                 $manage_service                    = $docker::params::manage_service,
+  Boolean                                 $manage_systemd_override_dirs      = $docker::params::manage_systemd_override_dirs,
   Optional[String]                        $root_dir                          = $docker::params::root_dir,
   Optional[Boolean]                       $tmp_dir_config                    = $docker::params::tmp_dir_config,
   Optional[String]                        $tmp_dir                           = $docker::params::tmp_dir,

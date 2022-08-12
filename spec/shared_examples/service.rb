@@ -47,9 +47,15 @@ shared_examples 'service' do |params, facts|
 
   case params['service_provider']
   when 'systemd'
-    it {
-      is_expected.to contain_file('/etc/systemd/system/docker.service.d').with_ensure('directory')
-    }
+    if params['manage_systemd_override_dirs']
+      it {
+        is_expected.to contain_file('/etc/systemd/system/docker.service.d').with_ensure('directory')
+      }
+    else
+      it {
+        is_expected.not_to contain_file('/etc/systemd/system/docker.service.d').with_ensure('directory')
+      }
+    end
 
     if params['service_overrides_template']
       it {
@@ -64,9 +70,15 @@ shared_examples 'service' do |params, facts|
     end
 
     if params['socket_override']
-      it {
-        is_expected.to contain_file('/etc/systemd/system/docker.socket.d').with_ensure('directory')
-      }
+      if params['manage_systemd_override_dirs']
+        it {
+          is_expected.to contain_file('/etc/systemd/system/docker.socket.d').with_ensure('directory')
+        }
+      else
+        it {
+          is_expected.not_to contain_file('/etc/systemd/system/docker.socket.d').with_ensure('directory')
+        }
+      end
 
       it {
         is_expected.to contain_file('/etc/systemd/system/docker.socket.d/socket-overrides.conf').with(

@@ -41,6 +41,7 @@ class docker::params {
   $service_state                     = running
   $service_enable                    = true
   $manage_service                    = true
+  $manage_systemd_override_dirs      = true
   $root_dir                          = undef
   $tmp_dir_config                    = true
   $tmp_dir                           = '/tmp/'

@@ -33,6 +33,18 @@
 #   Valid values are 'true', 'false'.
 #   Defaults to 'true'.
 #
+# @param manage_systemd_override_dirs
+#   Specify whether the systemd override directories such as
+#   /etc/systemd/systemd/docker.service.d and
+#   /etc/systemd/system/docker.socket.d should be managed by this module or
+#   not. Set this to 'false' if you manage custom Docker-related systemd
+#   overrides, for example with `systemd::dropin_file` from puppet-systemd.
+#   Otherwise this will lead to duplicate resource declaration errors because
+#   both this module and puppet-systemd want to manage the override
+#   directories.
+#   Valid values are 'true', 'false'.
+#   Defaults to 'true'.
+#
 # @param docker_command
 #
 # @param docker_start_command
@@ -204,6 +216,7 @@ class docker::service (
   $service_state                     = $docker::service_state,
   $service_enable                    = $docker::service_enable,
   $manage_service                    = $docker::manage_service,
+  $manage_systemd_override_dirs      = $docker::manage_systemd_override_dirs,
   $root_dir                          = $docker::root_dir,
   $extra_parameters                  = $docker::extra_parameters,
   $shell_values                      = $docker::shell_values,
@@ -312,8 +325,10 @@ class docker::service (
 
   case $service_provider {
     'systemd': {
-      file { '/etc/systemd/system/docker.service.d':
-        ensure => 'directory',
+      if $manage_systemd_override_dirs {
+        file { '/etc/systemd/system/docker.service.d':
+          ensure => 'directory',
+        }
       }
 
       if $service_overrides_template {
@@ -327,8 +342,10 @@ class docker::service (
       }
 
       if $socket_override {
-        file { '/etc/systemd/system/docker.socket.d':
-          ensure => 'directory',
+        if $manage_systemd_override_dirs {
+          file { '/etc/systemd/system/docker.socket.d':
+            ensure => 'directory',
+          }
         }
 
         file { '/etc/systemd/system/docker.socket.d/socket-overrides.conf':
@@ -373,7 +390,7 @@ class docker::service (
     unless $_skip_storage_config {
       file { $storage_config:
         ensure  => file,
-        force   => true, #force rewrite storage configuration 
+        force   => true, #force rewrite storage configuration
         content => template($storage_config_template),
         notify  => $_manage_service,
       }

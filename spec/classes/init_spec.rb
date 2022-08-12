@@ -30,6 +30,9 @@ tests = {
     'docker_msft_provider_version'   => '123',
     'nuget_package_provider_version' => '41',
   },
+  'with management of systemd override directories disabled' => {
+    'manage_systemd_override_dirs' => false,
+  }
 }
 
 describe 'docker', type: :class do
@@ -127,6 +130,7 @@ describe 'docker', type: :class do
             'log_opt'                           => defaults['log_opt'],
             'manage_package'                    => defaults['manage_package'],
             'manage_service'                    => defaults['manage_service'],
+            'manage_systemd_override_dirs'      => defaults['manage_systemd_override_dirs'],
             'mtu'                               => defaults['mtu'],
             'no_proxy'                          => defaults['no_proxy'],
             'nuget_package_provider_version'    => defaults['nuget_package_provider_version'],

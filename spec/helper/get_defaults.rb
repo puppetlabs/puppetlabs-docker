@@ -55,6 +55,7 @@ def get_defaults(_facts)
   machine_version                   = '0.16.1'
   manage_package                    = true
   manage_service                    = true
+  manage_systemd_override_dirs      = true
   mtu                               = :undef
   no_proxy                          = :undef
   nuget_package_provider_version    = :undef
@@ -411,6 +412,7 @@ def get_defaults(_facts)
     'machine_version' => machine_version,
     'manage_package' => manage_package,
     'manage_service' => manage_service,
+    'manage_systemd_override_dirs' => manage_systemd_override_dirs,
     'msft_nuget_package_provider_version' => msft_nuget_package_provider_version,
     'msft_package_version' => msft_package_version,
     'msft_provider_version' => msft_provider_version,
