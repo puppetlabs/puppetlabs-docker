@@ -10,6 +10,7 @@ jobs:
         platform:
           - ubuntu-18.04
           - ubuntu-20.04
+          - ubuntu-22.04
         collection:
           - puppet6-nightly
           - puppet7-nightly
