@@ -1,0 +1,64 @@
+name: "PR Test on Ubuntu Github Runners"
+
+on: [pull_request]
+
+jobs:
+  Acceptance:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ubuntu-18.04
+          - ubuntu-20.04
+          - ubuntu-22.04
+        collection:
+          - puppet6-nightly
+          - puppet7-nightly
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+
+      - name: Activate Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+
+      - name: Cache gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/gems
+          key: ${{ runner.os }}-pr-${{ hashFiles('**/Gemfile') }}
+          restore-keys: |
+            ${{ runner.os }}-pr-
+            ${{ runner.os }}-
+
+      - name: Prepare inventory file
+        run: |
+          cat <<EOF >> spec/fixtures/litmus_inventory.yaml
+          ---
+          version: 2
+          groups:
+          - name: local
+            targets:
+            - uri: litmus_localhost
+              config:
+                transport: local
+          - name: ssh_nodes
+            targets: []
+          - name: winrm_nodes
+            targets: []
+          EOF
+
+      - name: Install gems and puppet agent
+        run: |
+          bundle install
+          sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:install_agent[${{ matrix.collection }}]'
+
+      - name: Install module
+        run: bundle exec rake 'litmus:install_module'
+
+      - name: Run acceptance tests
+        run: sudo -u root env "PATH=$PATH" bundle exec rake 'litmus:acceptance:localhost'
