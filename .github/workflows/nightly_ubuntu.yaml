@@ -1,6 +1,8 @@
-name: "Test on Ubuntu Github Runners"
+name: "Nightly Test on Ubuntu Github Runners"
 
-on: [pull_request]
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   Acceptance:
