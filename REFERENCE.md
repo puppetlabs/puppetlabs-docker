@@ -6,9 +6,10 @@
 
 ### Classes
 
+#### Public Classes
+
 * [`docker`](#docker): Module to install an up-to-date version of Docker from package.
 * [`docker::compose`](#dockercompose): install Docker Compose using the recommended curl command.
-* [`docker::config`](#dockerconfig)
 * [`docker::images`](#dockerimages)
 * [`docker::install`](#dockerinstall): Module to install an up-to-date version of Docker from a package repository.
 Only for Debian, Red Hat and Windows
@@ -23,6 +24,10 @@ Only for Debian, Red Hat and Windows
 * [`docker::swarms`](#dockerswarms)
 * [`docker::systemd_reload`](#dockersystemd_reload): For systems that have systemd
 * [`docker::volumes`](#dockervolumes)
+
+#### Private Classes
+
+* `docker::config`: Configuration for docker
 
 ### Defined types
 
@@ -146,6 +151,7 @@ The following parameters are available in the `docker` class:
 * [`manage_package`](#manage_package)
 * [`service_name`](#service_name)
 * [`docker_users`](#docker_users)
+* [`create_user`](#create_user)
 * [`docker_group`](#docker_group)
 * [`daemon_environment_files`](#daemon_environment_files)
 * [`repo_opt`](#repo_opt)
@@ -412,24 +418,9 @@ Data type: `Optional[String]`
 
 Set the log driver.
 Docker default is json-file.
-Valid values: none, json-file, syslog, journald, gelf, fluentd
-Valid values description:
-  none     : Disables any logging for the container.
-             docker logs won't be available with this driver.
-  json-file: Default logging driver for Docker.
-             Writes JSON messages to file.
-  syslog   : Syslog logging driver for Docker.
-             Writes log messages to syslog.
-  journald : Journald logging driver for Docker.
-             Writes log messages to journald.
-  gelf     : Graylog Extended Log Format (GELF) logging driver for Docker.
-             Writes log messages to a GELF endpoint: Graylog or Logstash.
-  fluentd  : Fluentd logging driver for Docker.
-             Writes log messages to fluentd (forward input).
-  splunk   : Splunk logging driver for Docker.
-             Writes log messages to Splunk (HTTP Event Collector).
-  awslogs  : AWS Cloudwatch Logs logging driver for Docker.
-             Write log messages to Cloudwatch API
+Please verify the value by yourself, before setting it. Valid shipped log drivers can be found here:
+https://docs.docker.com/config/containers/logging/configure/#supported-logging-drivers
+Since custom log driver plugins are and must be possible, the value can not be verified through code here.
 
 Default value: `$docker::params::log_driver`
 
@@ -440,6 +431,9 @@ Data type: `Array`
 Set the log driver specific options
 Valid values per log driver:
   none     : undef
+  local    :
+             max-size=[0-9+][k|m|g]
+             max-file=[0-9+]
   json-file:
              max-size=[0-9+][k|m|g]
              max-file=[0-9+]
@@ -763,6 +757,14 @@ Data type: `Array`
 Specify an array of users to add to the docker group
 
 Default value: `[]`
+
+##### <a name="create_user"></a>`create_user`
+
+Data type: `Boolean`
+
+If `true` the list of `docker_users` will be created as well as added to the docker group
+
+Default value: ``true``
 
 ##### <a name="docker_group"></a>`docker_group`
 
@@ -1327,10 +1329,6 @@ Data type: `Optional[Boolean]`
 Whether or not the curl package is ensured by this module.
 
 Default value: `$docker::params::curl_ensure`
-
-### <a name="dockerconfig"></a>`docker::config`
-
-The docker::config class.
 
 ### <a name="dockerimages"></a>`docker::images`
 

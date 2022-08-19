@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.4.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.4.0) (2022-05-31)
+## [v5.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v5.0.0) (2022-08-18)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.4.0...v5.0.0)
+
+### Changed
+
+- Remove log\_driver limitations [\#792](https://github.com/puppetlabs/puppetlabs-docker/pull/792) ([timdeluxe](https://github.com/timdeluxe))
+
+### Added
+
+- pdksync - \(GH-cat-11\) Certify Support for Ubuntu 22.04 [\#850](https://github.com/puppetlabs/puppetlabs-docker/pull/850) ([david22swan](https://github.com/david22swan))
+- adding optional variable for package\_key\_check\_source to RedHat [\#846](https://github.com/puppetlabs/puppetlabs-docker/pull/846) ([STaegtmeier](https://github.com/STaegtmeier))
+- New create\_user parameter on main class [\#841](https://github.com/puppetlabs/puppetlabs-docker/pull/841) ([traylenator](https://github.com/traylenator))
+
+## [v4.4.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.4.0) (2022-06-01)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.3.0...v4.4.0)
 
@@ -294,7 +308,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - \(FM-8151\) Add Windows Server 2019 support [\#493](https://github.com/puppetlabs/puppetlabs-docker/pull/493) ([eimlav](https://github.com/eimlav))
 - Support for docker machine download and install [\#466](https://github.com/puppetlabs/puppetlabs-docker/pull/466) ([acurus-puppetmaster](https://github.com/acurus-puppetmaster))
-- Add service\_provider parameter to docker::run [\#376](https://github.com/puppetlabs/puppetlabs-docker/pull/376) ([iamjamestl](https://github.com/iamjamestl))
+- Add service\_provider parameter to docker::run [\#376](https://github.com/puppetlabs/puppetlabs-docker/pull/376) ([jameslikeslinux](https://github.com/jameslikeslinux))
 
 ### Fixed
 
@@ -428,7 +442,7 @@ All notable changes to this project will be documented in this file. The format 
 - fixing deep merge issue and yaml alias [\#387](https://github.com/puppetlabs/puppetlabs-docker/pull/387) ([davejrt](https://github.com/davejrt))
 - Adds a Usage example for daemon level extra\_parameters [\#386](https://github.com/puppetlabs/puppetlabs-docker/pull/386) ([mpepping](https://github.com/mpepping))
 - Fixing create\_resources for volumes [\#384](https://github.com/puppetlabs/puppetlabs-docker/pull/384) ([andytechdad](https://github.com/andytechdad))
-- docker::run: Support depend\_services with full systemd unit names [\#383](https://github.com/puppetlabs/puppetlabs-docker/pull/383) ([iamjamestl](https://github.com/iamjamestl))
+- docker::run: Support depend\_services with full systemd unit names [\#383](https://github.com/puppetlabs/puppetlabs-docker/pull/383) ([jameslikeslinux](https://github.com/jameslikeslinux))
 - \(WIP\) - removes packages that can still run docker after docker-ce is removed.  [\#379](https://github.com/puppetlabs/puppetlabs-docker/pull/379) ([davejrt](https://github.com/davejrt))
 - Fix the docker\_compose options parameter position [\#378](https://github.com/puppetlabs/puppetlabs-docker/pull/378) ([FlorentPoinsaut](https://github.com/FlorentPoinsaut))
 - missing quote in swarm documentation [\#377](https://github.com/puppetlabs/puppetlabs-docker/pull/377) ([lcrownover](https://github.com/lcrownover))
