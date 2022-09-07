@@ -1015,6 +1015,7 @@ This module supports:
 * Debian 8.0
 * Debian 9.0
 * Debian 10
+* Debian 11
 * RedHat 7.0 - limited support available
 * Ubuntu 18.04
 * Ubuntu 20.04
