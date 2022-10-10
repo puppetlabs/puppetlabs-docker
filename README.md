@@ -406,7 +406,7 @@ docker::run { 'helloworld':
   after_start      => 'echo "container has started"',
   after            => [ 'container_b', 'mysql' ],
   depends          => [ 'container_a', 'postgres' ],
-  stop_wait_time   => 0,
+  stop_wait_time   => 10,
   read_only        => false,
   extra_parameters => [ '--restart=always' ],
 }

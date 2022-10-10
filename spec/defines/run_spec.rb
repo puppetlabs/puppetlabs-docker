@@ -287,7 +287,7 @@ describe 'docker::run', type: :define do
             'service_prefix'                    => 'docker-',
             'service_provider'                  => :undef,
             'socket_connect'                    => [],
-            'stop_wait_time'                    => 0,
+            'stop_wait_time'                    => 10,
             'syslog_identifier'                 => :undef,
             'systemd_restart'                   => 'on-failure',
             'tty'                               => false,
