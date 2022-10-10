@@ -1,6 +1,8 @@
-name: "Test on Ubuntu Github Runners"
+name: "Nightly Test on Ubuntu Github Runners"
 
-on: [pull_request]
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   Acceptance:
@@ -10,6 +12,7 @@ jobs:
         platform:
           - ubuntu-18.04
           - ubuntu-20.04
+          - ubuntu-22.04
         collection:
           - puppet6-nightly
           - puppet7-nightly
@@ -21,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Activate Ruby 2.7
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: "2.7"
 
