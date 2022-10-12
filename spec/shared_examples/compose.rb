@@ -62,7 +62,7 @@ shared_examples 'compose' do |_params, _facts|
         is_expected.to contain_exec("Install Docker Compose #{version}").with(
           'path'    => '/usr/bin/',
           'cwd'     => '/tmp',
-          'command' => "curl -s -S -L #{proxy_opt} #{docker_compose_url} -o #{docker_compose_location_versioned}",
+          'command' => ['curl', '-s', '-S', '-L', proxy_opt, docker_compose_url, '-o', docker_compose_location_versioned],
           'creates' => docker_compose_location_versioned,
         ).that_requires(
           'Package[curl]',

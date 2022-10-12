@@ -56,7 +56,7 @@ class docker::machine (
     }
 
     if $facts['os']['family'] == 'windows' {
-      $docker_download_command = "if (Invoke-WebRequest ${docker_machine_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
+      $docker_download_command = ['if', '(Invoke-WebRequest', $docker_machine_url, $proxy_opt, '-UseBasicParsing', '-OutFile', "\"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}"] # lint:ignore:140chars
 
       exec { "Install Docker Machine ${version}":
         command  => template('docker/windows/download_docker_machine.ps1.erb'),
@@ -74,10 +74,11 @@ class docker::machine (
         ensure_packages(['curl'])
       }
 
+      $install_command = ['curl', '-s', '-S', '-L', $proxy_opt, $docker_machine_url, '-o', $docker_machine_location_versioned] # lint:ignore:140chars
       exec { "Install Docker Machine ${version}":
         path    => '/usr/bin/',
         cwd     => '/tmp',
-        command => "curl -s -S -L ${proxy_opt} ${docker_machine_url} -o ${docker_machine_location_versioned}",
+        command => $install_command,
         creates => $docker_machine_location_versioned,
         require => Package['curl'],
       }

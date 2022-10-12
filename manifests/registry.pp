@@ -125,7 +125,7 @@ define docker::registry (
       # server may be an URI, which can contain /
       $server_strip  = regsubst($server, '[/:]', '_', 'G')
       $passfile      = "${::docker_user_temp_path}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
-      $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 1 } else { exit 0 }" # lint:ignore:140chars
+      $_auth_command = ["if (-not (${auth_cmd}))", "{ Remove-Item -Path ${passfile}", '-Force', '-Recurse', '-EA', 'SilentlyContinue; exit 1 } else { exit 0 }'] # lint:ignore:140chars
 
       if $ensure == 'absent' {
         file { $passfile:

@@ -6,19 +6,19 @@ require 'open3'
 require 'puppet'
 
 def node_update(availability, role, label_add, label_rm, node)
-  cmd_string = 'docker node update'
-  cmd_string += " --availability #{availability}" unless availability.nil?
-  cmd_string += " --role #{role}" unless role.nil?
+  cmd_string = ['docker', 'node', 'update']
+  cmd_string += [" --availability #{availability}"] unless availability.nil?
+  cmd_string += [" --role #{role}"] unless role.nil?
 
   if label_add.is_a? Array
     label_add.each do |param|
-      cmd_string += " --label-add #{param}"
+      cmd_string += [" --label-add #{param}"]
     end
   end
 
   if label_rm.is_a? Array
     label_rm.each do |param|
-      cmd_string += " --label-rm #{param}"
+      cmd_string += [" --label-rm #{param}"]
     end
   end
 

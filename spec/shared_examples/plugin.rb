@@ -24,8 +24,8 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
       'settings'              => settings,
     )
 
-    exec_install   = "#{docker_command} install #{docker_plugin_install_flags}"
-    unless_install = "#{docker_command} ls --format='{{.PluginReference}}' | grep -w #{plugin_name}"
+    exec_install   = [docker_command, 'install', docker_plugin_install_flags]
+    unless_install = [docker_command, 'ls', "--format='{{.PluginReference}}' | grep -w #{plugin_name}"]
 
     it {
       is_expected.to contain_exec("plugin install #{plugin_name}").with(
@@ -43,8 +43,8 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
       'force_remove' => force_remove,
     )
 
-    exec_rm   = "#{docker_command} rm #{docker_plugin_remove_flags}"
-    onlyif_rm = "#{docker_command} ls --format='{{.PluginReference}}' | grep -w #{plugin_name}"
+    exec_rm   = [docker_command, 'rm', docker_plugin_remove_flags]
+    onlyif_rm = [docker_command, 'ls', "--format='{{.PluginReference}}' | grep -w #{plugin_name}"]
 
     it {
       is_expected.to contain_exec("plugin remove #{plugin_name}").with(
@@ -64,8 +64,8 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
       'timeout'      => timeout,
     )
 
-    exec_enable   = "#{docker_command} enable #{docker_plugin_enable_flags}"
-    onlyif_enable = "#{docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}"
+    exec_enable   = [docker_command, 'enable', docker_plugin_enable_flags]
+    onlyif_enable = [docker_command, 'ls', '-f', "enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}"]
 
     it {
       is_expected.to contain_exec("plugin enable #{plugin_name}").with(
@@ -77,13 +77,16 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
       )
     }
   else
+    else_command = [docker_command, 'disable', plugin_name]
+    else_unless = [docker_command, 'ls', '-f', "enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}"]
+
     it {
       is_expected.to contain_exec("disable #{plugin_name}").with(
-        'command'     => "#{docker_command} disable #{plugin_name}",
+        'command'     => else_command,
         'environment' => 'HOME=/root',
         'path'        => ['/bin', '/usr/bin'],
         'timeout'     => 0,
-        'unless'      => "#{docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}",
+        'unless'      => else_unless,
       )
     }
   end

@@ -373,8 +373,10 @@ define docker::run (
   }
 
   if $restart_on_unhealthy {
+    $unhealthy_command = [$docker_command, 'restart', $sanitised_title]
+
     exec { "Restart unhealthy container ${title} with docker":
-      command     => "${docker_command} restart ${sanitised_title}",
+      command     => $unhealthy_command,
       onlyif      => $restart_check,
       environment => $exec_environment,
       path        => $exec_path,
@@ -385,18 +387,24 @@ define docker::run (
 
   if $restart {
     if $ensure == 'absent' {
+      $restart_stop_command = [$docker_command, 'stop', "--time=${stop_wait_time}", $sanitised_title]
+      $restart_stop_onlyif = [$docker_command, 'inspect', $sanitised_title]
+
       exec { "stop ${title} with docker":
-        command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        command     => $restart_stop_command,
+        onlyif      => $restart_stop_onlyif,
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
         timeout     => $exec_timeout,
       }
 
+      $restart_remove_command = [$docker_command, 'rm', '-v', $sanitised_title]
+      $restart_remove_onlyif = [$docker_command, 'inspect', $sanitised_title]
+
       exec { "remove ${title} with docker":
-        command     => "${docker_command} rm -v ${sanitised_title}",
-        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        command     => $restart_remove_command,
+        onlyif      => $restart_remove_onlyif,
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
@@ -432,8 +440,9 @@ define docker::run (
         }
 
         if $running == false {
+          $running_stop_command = [$docker_command, 'stop', "--time=${stop_wait_time}", $sanitised_title]
           exec { "stop ${title} with docker":
-            command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
+            command     => $running_stop_command,
             onlyif      => $container_running_check,
             environment => $exec_environment,
             path        => $exec_path,
@@ -441,8 +450,9 @@ define docker::run (
             timeout     => $exec_timeout,
           }
         } else {
+          $running_start_command = [$docker_command, 'start', $sanitised_title]
           exec { "start ${title} with docker":
-            command     => "${docker_command} start ${sanitised_title}",
+            command     => $running_start_command,
             unless      => $container_running_check,
             environment => $exec_environment,
             path        => $exec_path,
@@ -517,9 +527,12 @@ define docker::run (
 
     if $ensure == 'absent' {
       if $facts['os']['family'] == 'windows' {
+        $absent_stop_command = [$docker_command, 'stop', "--time=${stop_wait_time}", $sanitised_title]
+        $absent_stop_onlyif = [$docker_command, 'inspect', $sanitised_title]
+
         exec { "stop container ${service_prefix}${sanitised_title}":
-          command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-          onlyif      => "${docker_command} inspect ${sanitised_title}",
+          command     => $absent_stop_command,
+          onlyif      => $absent_stop_onlyif,
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
@@ -536,9 +549,12 @@ define docker::run (
           notify    => Exec["remove container ${service_prefix}${sanitised_title}"],
         }
       }
+      $absent_remove_command = [$docker_command, 'rm', '-v', $sanitised_title]
+      $absent_remove_onlyif = [$docker_command, 'inspect', $sanitised_title]
+
       exec { "remove container ${service_prefix}${sanitised_title}":
-        command     => "${docker_command} rm -v ${sanitised_title}",
-        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        command     => $absent_remove_command,
+        onlyif      => $absent_remove_onlyif,
         environment => $exec_environment,
         path        => $exec_path,
         refreshonly => true,

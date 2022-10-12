@@ -6,8 +6,8 @@ require 'open3'
 require 'puppet'
 
 def service_rm(service)
-  cmd_string = 'docker service rm'
-  cmd_string += " #{service}" unless service.nil?
+  cmd_string = ['docker', 'service', 'rm']
+  cmd_string += [" #{service}"] unless service.nil?
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
