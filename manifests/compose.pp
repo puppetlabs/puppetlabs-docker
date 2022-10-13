@@ -89,10 +89,11 @@ class docker::compose (
         ensure_packages(['curl'])
       }
 
+      $compose_install = "curl -s -S -L ${proxy_opt} ${docker_compose_url} -o ${docker_compose_location_versioned}"
       exec { "Install Docker Compose ${version}":
         path    => '/usr/bin/',
         cwd     => '/tmp',
-        command => ['curl', '-s', '-S', '-L', $proxy_opt, $docker_compose_url, '-o', $docker_compose_location_versioned],
+        command => $compose_install,
         creates => $docker_compose_location_versioned,
         require => Package['curl'],
       }

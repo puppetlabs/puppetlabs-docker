@@ -113,7 +113,7 @@ class docker::install (
             }
           }
 
-          $fail_restart_command = ['SC.exe', 'failure', 'Docker', 'reset= 432000', 'actions= restart/30000/restart/60000/restart/60000']
+          $fail_restart_command = 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000'
           exec { 'service-restart-on-failure':
             command     => $fail_restart_command,
             refreshonly => true,

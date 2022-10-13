@@ -141,7 +141,7 @@ shared_examples 'install' do |_params, _facts|
 
       it {
         is_expected.to contain_exec('service-restart-on-failure').with(
-          'command'     => ['SC.exe', 'failure', 'Docker', 'reset= 432000', 'actions= restart/30000/restart/60000/restart/60000'],
+          'command'     => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
           'refreshonly' => true,
           'logoutput'   => true,
           'provider'    => 'powershell',

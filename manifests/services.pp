@@ -133,7 +133,7 @@ define docker::services (
     )
 
     $exec_create   = [$docker_command, 'create', '--name', $docker_service_create_flags]
-    $unless_create = ['docker', 'service', 'ps', "${service_name}"]
+    $unless_create = "docker service ps ${service_name}"
 
     exec { "${title} docker service create":
       command     => $exec_create,

@@ -399,7 +399,7 @@ define docker::run (
         timeout     => $exec_timeout,
       }
 
-      $restart_remove_command = [$docker_command, 'rm', '-v', $sanitised_title]
+      $restart_remove_command = "${docker_command} rm -v ${sanitised_title}"
       $restart_remove_onlyif = [$docker_command, 'inspect', $sanitised_title]
 
       exec { "remove ${title} with docker":
@@ -527,8 +527,8 @@ define docker::run (
 
     if $ensure == 'absent' {
       if $facts['os']['family'] == 'windows' {
-        $absent_stop_command = [$docker_command, 'stop', "--time=${stop_wait_time}", $sanitised_title]
-        $absent_stop_onlyif = [$docker_command, 'inspect', $sanitised_title]
+        $absent_stop_command = "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}"
+        $absent_stop_onlyif = "${docker_command} inspect ${sanitised_title}"
 
         exec { "stop container ${service_prefix}${sanitised_title}":
           command     => $absent_stop_command,
@@ -549,8 +549,8 @@ define docker::run (
           notify    => Exec["remove container ${service_prefix}${sanitised_title}"],
         }
       }
-      $absent_remove_command = [$docker_command, 'rm', '-v', $sanitised_title]
-      $absent_remove_onlyif = [$docker_command, 'inspect', $sanitised_title]
+      $absent_remove_command = "${docker_command} rm -v ${sanitised_title}"
+      $absent_remove_onlyif = "${docker_command} inspect ${sanitised_title}"
 
       exec { "remove container ${service_prefix}${sanitised_title}":
         command     => $absent_remove_command,
