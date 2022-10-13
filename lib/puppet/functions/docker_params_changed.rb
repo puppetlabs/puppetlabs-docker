@@ -1,157 +1,158 @@
 # frozen_string_literal: true
 
+require 'open3'
+require 'json'
+
+module DockerCheckChanges
+  class Base
+    attr_accessor :return_value,
+                  :stdout,
+                  :err,
+                  :status
+    def initialize
+      @return_value = 'No changes detected'
+    end
+    def run(cmd)
+      @stdout, @err, @status = Open3.capture3(cmd)
+      Puppet.err @err unless @status.success?
+    end
+    def delete_command(file)
+      run "rm -f #{file}"
+    end
+    def start_command(name)
+      run "docker start #{name}"
+    end
+    def stop_command(name, time = 10)
+      run "docker stop --time=#{time} #{name}"
+    end
+    def remove_command(name)
+      run "docker rm -v #{name}"
+    end
+    def pull_command(image)
+      run "docker pull #{image} -q"
+    end
+    def inspect_command(title)
+      run "docker inspect #{title}"
+    end
+    def create_container(cmd, image)
+      pull_command(image)
+      run(cmd)
+    end
+    def restart_container(name, stop_wait_time, cidfile, cmd, image)
+      stop_command(name, stop_wait_time)
+      remove_command(name)
+      delete_command(cidfile)
+      pull_command(image)
+      run(cmd)
+      @return_value = 'Param changed'
+    end
+
+    def get_volumes(volumes)
+      [volumes].flatten.reject {|i| i.include?(':')}.sort
+    end
+    def get_binds(volumes)
+      [volumes].flatten.select {|i| i.include?(':')}.sort
+    end
+    def port_changed?(opts, hash)
+      ports = hash['HostConfig']['PortBindings'].map { |key, item|
+        item.map {|pair|
+          [pair['HostIp'], pair['HostPort'], key.split('/')[0]].reject {
+            |c| c.empty?
+          }.join(':')
+        }
+      }.flatten
+      pp_ports = [opts['ports']].flatten.sort if opts['ports']
+
+      true if pp_ports && pp_ports != ports
+    end
+    def has_changes?(opts, hash)
+      inspect_volumes = []
+
+      return true if opts['image'] && opts['image'] != hash['Config']['Image']
+
+      volumes = get_volumes(opts['volumes'])
+      inspect_volumes = hash['Config']['Volumes'].keys.sort if hash['Config']['Volumes']
+      return true if volumes != inspect_volumes
+
+      binds = get_binds(opts['volumes'])
+      binds_hash  = hash['Mounts'].map do |item|
+        if item['Type'] == 'bind'
+          "#{item['Source']}:#{item['Destination']}"
+        else
+          next
+        end
+      end.compact.sort if hash['Mounts']
+      return true if binds != binds_hash
+
+      return true if binds != [] && hash['Mounts'].nil?
+      return true if port_changed?(opts, hash)
+
+      false
+    end
+  end
+  class Linux < Base; end
+  class Windows < Base
+    def run(cmd)
+      @stdout, @err, @status = Open3.capture3("powershell.exe -Command \"& {#{cmd}}\" ")
+      Puppet.err @err unless @status.success?
+    end
+    def delete_command(file)
+      run "del #{file}"
+    end
+    def get_volumes(volumes)
+      [volumes].flatten.reject {|i| i.scan(%r{(?=:)}).count == 1 }.sort
+    end
+    def get_binds(volumes)
+      [volumes].flatten.reject {|i| i.scan(%r{(?=:)}).count == 2 }.sort
+    end
+  end
+end
+
 Puppet::Functions.create_function(:docker_params_changed) do
   dispatch :detect_changes do
     param 'Hash', :opts
     return_type 'String'
   end
 
-  def run_with_powershell(cmd)
-    "powershell.exe -Command \"& {#{cmd}}\" "
-  end
-
-  def remove_cidfile(cidfile, osfamily)
-    delete_command = if osfamily == 'windows'
-                       run_with_powershell("del #{cidfile}")
-                     else
-                       "rm -f #{cidfile}"
-                     end
-    _stdout, _stderr, _status = Open3.capture3(delete_command)
-  end
-
-  def start_container(name, osfamily)
-    start_command = if osfamily == 'windows'
-                      run_with_powershell("docker start #{name}")
-                    else
-                      "docker start #{name}"
-                    end
-    _stdout, _stderr, _status = Open3.capture3(start_command)
-  end
-
-  def stop_container(name, osfamily)
-    stop_command = if osfamily == 'windows'
-                     run_with_powershell("docker stop #{name}")
-                   else
-                     "docker stop #{name}"
-                   end
-    _stdout, _stderr, _status = Open3.capture3(stop_command)
-  end
-
-  def remove_container(name, osfamily, stop_wait_time, cidfile)
-    stop_command = if osfamily == 'windows'
-                     run_with_powershell("docker stop --time=#{stop_wait_time} #{name}")
-                   else
-                     "docker stop --time=#{stop_wait_time} #{name}"
-                   end
-    _stdout, _stderr, _status = Open3.capture3(stop_command)
-
-    remove_command = if osfamily == 'windows'
-                       run_with_powershell("docker rm -v #{name}")
-                     else
-                       "docker rm -v #{name}"
-                     end
-    _stdout, _stderr, _status = Open3.capture3(remove_command)
-
-    remove_cidfile(cidfile, osfamily)
-  end
-
-  def create_container(cmd, osfamily, image)
-    pull_command = if osfamily == 'windows'
-                     run_with_powershell("docker pull #{image} -q")
-                   else
-                     "docker pull #{image} -q"
-                   end
-    _stdout, _stderr, _status = Open3.capture3(pull_command)
-
-    create_command = if osfamily == 'windows'
-                       run_with_powershell(cmd)
-                     else
-                       cmd
-                     end
-    _stdout, _stderr, _status = Open3.capture3(create_command)
-  end
-
   def detect_changes(opts)
-    require 'open3'
-    require 'json'
-    return_value = 'No changes detected'
+    return 'Arg osfamily is missing' unless opts['osfamily']
 
-    if opts['sanitised_title'] && opts['osfamily']
-      stdout, _stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
-      if status.to_s.include?('exit 0')
-        param_changed = false
-        inspect_hash = JSON.parse(stdout)[0]
-
-        # check if the image was changed
-        param_changed = true if opts['image'] && opts['image'] != inspect_hash['Config']['Image']
-
-        # check if something on volumes or mounts was changed(a new volume/mount was added or removed)
-        param_changed = true if opts['volumes'].is_a?(String) && opts['volumes'].include?(':') && opts['volumes'] != inspect_hash['Mounts'].to_a[0] && opts['osfamily'] != 'windows'
-        param_changed = true if opts['volumes'].is_a?(String) && !opts['volumes'].include?(':') && opts['volumes'] != inspect_hash['Config']['Volumes'].to_a[0] && opts['osfamily'] != 'windows'
-        param_changed = true if opts['volumes'].is_a?(String) && opts['volumes'].scan(%r{(?=:)}).count == 2 && opts['volumes'] != inspect_hash['Mounts'].to_a[0] && opts['osfamily'] == 'windows'
-        param_changed = if opts['volumes'].is_a?(String) && opts['volumes'].scan(%r{(?=:)}).count == 1 && opts['volumes'] != inspect_hash['Config']['Volumes'].to_a[0] && opts['osfamily'] == 'windows'
-                          true
-                        else
-                          param_changed
-                        end
-
-        pp_paths = opts['volumes'].reject { |item| item.include?(':') } if opts['volumes'].is_a?(Array) && opts['osfamily'] != 'windows'
-        pp_mounts = opts['volumes'].select { |item| item.include?(':') } if opts['volumes'].is_a?(Array) && opts['osfamily'] != 'windows'
-        pp_paths = opts['volumes'].select { |item| item.scan(%r{(?=:)}).count == 1 } if opts['volumes'].is_a?(Array) && opts['osfamily'] == 'windows'
-        pp_mounts = opts['volumes'].select { |item| item.scan(%r{(?=:)}).count == 2 } if opts['volumes'].is_a?(Array) && opts['osfamily'] == 'windows'
-
-        inspect_paths = if inspect_hash['Config']['Volumes']
-                          inspect_hash['Config']['Volumes'].keys
-                        else
-                          []
-                        end
-        param_changed = true if pp_paths != inspect_paths
-
-        names = inspect_hash['Mounts'].map { |item| item.values[1] } if inspect_hash['Mounts']
-        pp_names = pp_mounts.map { |item| item.split(':')[0] } if pp_mounts
-        names = names.select { |item| pp_names.include?(item) } if names && pp_names
-        destinations = inspect_hash['Mounts'].map { |item| item.values[3] } if inspect_hash['Mounts']
-        pp_destinations = pp_mounts.map { |item| item.split(':')[1] } if pp_mounts && opts['osfamily'] != 'windows'
-        pp_destinations = pp_mounts.map { |item| "#{item.split(':')[1].downcase}:#{item.split(':')[2]}" } if pp_mounts && opts['osfamily'] == 'windows'
-        destinations = destinations.select { |item| pp_destinations.include?(item) } if destinations && pp_destinations
-
-        param_changed = true if pp_names != names
-        param_changed = true if pp_destinations != destinations
-        param_changed = true if pp_mounts != [] && inspect_hash['Mounts'].nil?
-
-        # check if something on ports was changed(some ports were added or removed)
-
-        ports = inspect_hash['HostConfig']['PortBindings'].keys
-        ports = ports.map { |item| item.split('/')[0] }
-        pp_ports = opts['ports'].sort if opts['ports'].is_a?(Array)
-        pp_ports = [opts['ports']] if opts['ports'].is_a?(String)
-
-        param_changed = true if pp_ports && pp_ports != ports
-
-        if param_changed
-          remove_container(opts['sanitised_title'], opts['osfamily'], opts['stop_wait_time'], opts['cidfile'])
-          create_container(opts['command'], opts['osfamily'], opts['image'])
-          return_value = 'Param changed'
-        end
-      else
-        create_container(opts['command'], opts['osfamily'], opts['image']) unless File.exist?(opts['cidfile'])
-        _stdout, _stderr, status = Open3.capture3("docker inspect #{opts['sanitised_title']}")
-        unless status.to_s.include?('exit 0')
-          remove_cidfile(opts['cidfile'], opts['osfamily'])
-          create_container(opts['command'], opts['osfamily'], opts['image'])
-        end
-        return_value = 'No changes detected'
-      end
+    case opts['osfamily']
+    when 'windows'
+      @console = DockerCheckChanges::Windows.new
     else
-      return_value = 'Arg required missing'
+      @console = DockerCheckChanges::Base.new
+    end
+    @console.return_value = 'No changes detected'
+
+    if opts['sanitised_title']
+      @console.inspect_command(opts['sanitised_title'])
+      if @console.status.success?
+        param_changed = @console.has_changes?(opts, JSON.parse(@console.stdout)[0])
+
+        @console.restart_container(
+          opts['sanitised_title'],
+          opts['stop_wait_time'],
+          opts['cidfile'],
+          opts['command'],
+          opts['image']) if param_changed
+      else
+        @console.create_container(opts['command'], opts['image']) unless File.exist?(opts['cidfile'])
+        @console.inspect_command(opts['sanitised_title'])
+        unless @console.status.success?
+          @console.delete_command(opts['cidfile'])
+          @console.create_container(opts['command'], opts['image'])
+        end
+        @console.return_value = 'No changes detected'
+      end
     end
 
     if opts['container_running']
-      start_container(opts['sanitised_title'], opts['osfamily'])
+      @console.start_command(opts['sanitised_title'])
     else
-      stop_container(opts['sanitised_title'], opts['osfamily'])
+      @console.stop_command(opts['sanitised_title'])
     end
 
-    return_value
+    @console.return_value
   end
 end
