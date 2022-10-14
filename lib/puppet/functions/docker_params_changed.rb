@@ -4,6 +4,7 @@ require 'open3'
 require 'json'
 
 module DockerCheckChanges
+  DEBUG = ENV['DOCKER_CHECK_DEBUG'] || false
   class Base
     attr_accessor :return_value,
                   :stdout,
@@ -11,6 +12,9 @@ module DockerCheckChanges
                   :status
     def initialize
       @return_value = 'No changes detected'
+    end
+    def debug(message)
+      Puppet.err message if DEBUG
     end
     def run(cmd)
       @stdout, @err, @status = Open3.capture3(cmd)
@@ -65,28 +69,41 @@ module DockerCheckChanges
 
       true if pp_ports && pp_ports != ports
     end
-    def has_changes?(opts, hash)
-      inspect_volumes = []
-
+    def image_changed?(opts, hash)
+      debug "#{__method__}"
+      debug "Old value: #{hash['Config']['Image']}"
+      debug "New value: #{opts['image']}"
       return true if opts['image'] && opts['image'] != hash['Config']['Image']
-
+      debug "Don't have changes"
+      false
+    end
+    def volumes_changed?(opts, hash)
+      inspect_volumes = []
       volumes = get_volumes(opts['volumes'])
       inspect_volumes = hash['Config']['Volumes'].keys.sort if hash['Config']['Volumes']
+      debug "#{__method__}"
+      debug "Old value: #{inspect_volumes}"
+      debug "New value: #{volumes}"
       return true if volumes != inspect_volumes
-
+      debug "Don't have changes"
+      false
+    end
+    def binds_changed?(opts, hash)
       binds = get_binds(opts['volumes'])
-      binds_hash  = hash['Mounts'].map do |item|
-        if item['Type'] == 'bind'
-          "#{item['Source']}:#{item['Destination']}"
-        else
-          next
-        end
-      end.compact.sort if hash['Mounts']
+      binds_hash = [hash['HostConfig']['Binds']].flatten.sort
+      debug "#{__method__}"
+      debug "Old value: #{binds_hash}"
+      debug "New value: #{binds}"
       return true if binds != binds_hash
-
-      return true if binds != [] && hash['Mounts'].nil?
+      return true if binds != [] && hash['HostConfig'].nil?
+      debug "Don't have changes"
+      false
+    end
+    def has_changes?(opts, hash)
+      return true if image_changed?(opts, hash)
+      return true if volumes_changed?(opts, hash)
+      return true if binds_changed?(opts, hash)
       return true if port_changed?(opts, hash)
-
       false
     end
   end
