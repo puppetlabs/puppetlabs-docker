@@ -14,11 +14,18 @@ module DockerCheckChanges
       @return_value = 'No changes detected'
     end
     def debug(message)
-      Puppet.err message if DEBUG
+      Puppet.warning message if DEBUG
     end
-    def run(cmd)
+    def gen_message(method, old, new)
+      m = []
+      m << "#{method}"
+      m << "Old value: #{old}"
+      m << "New value: #{new}"
+      m.join("\n")
+    end
+    def run(cmd, ignore = false)
       @stdout, @err, @status = Open3.capture3(cmd)
-      Puppet.err @err unless @status.success?
+      Puppet.err @err unless (@status.success? || ignore)
     end
     def delete_command(file)
       run "rm -f #{file}"
@@ -65,14 +72,12 @@ module DockerCheckChanges
           }.join(':')
         }
       }.flatten
-      pp_ports = [opts['ports']].flatten.sort if opts['ports']
+      pp_ports = [opts['ports']].flatten.sort
 
-      true if pp_ports && pp_ports != ports
+      true if pp_ports != ports
     end
     def image_changed?(opts, hash)
-      debug "#{__method__}"
-      debug "Old value: #{hash['Config']['Image']}"
-      debug "New value: #{opts['image']}"
+      debug gen_message(__method__,hash['Config']['Image'],opts['image'])
       return true if opts['image'] && opts['image'] != hash['Config']['Image']
       debug "Don't have changes"
       false
@@ -81,9 +86,7 @@ module DockerCheckChanges
       inspect_volumes = []
       volumes = get_volumes(opts['volumes'])
       inspect_volumes = hash['Config']['Volumes'].keys.sort if hash['Config']['Volumes']
-      debug "#{__method__}"
-      debug "Old value: #{inspect_volumes}"
-      debug "New value: #{volumes}"
+      debug gen_message(__method__,inspect_volumes,volumes)
       return true if volumes != inspect_volumes
       debug "Don't have changes"
       false
@@ -91,9 +94,7 @@ module DockerCheckChanges
     def binds_changed?(opts, hash)
       binds = get_binds(opts['volumes'])
       binds_hash = [hash['HostConfig']['Binds']].flatten.sort
-      debug "#{__method__}"
-      debug "Old value: #{binds_hash}"
-      debug "New value: #{binds}"
+      debug gen_message(__method__,binds_hash,binds)
       return true if binds != binds_hash
       return true if binds != [] && hash['HostConfig'].nil?
       debug "Don't have changes"
@@ -109,9 +110,9 @@ module DockerCheckChanges
   end
   class Linux < Base; end
   class Windows < Base
-    def run(cmd)
+    def run(cmd, ignore = false)
       @stdout, @err, @status = Open3.capture3("powershell.exe -Command \"& {#{cmd}}\" ")
-      Puppet.err @err unless @status.success?
+      Puppet.err @err unless (@status.success? || ignore)
     end
     def delete_command(file)
       run "del #{file}"
@@ -140,10 +141,9 @@ Puppet::Functions.create_function(:docker_params_changed) do
     else
       @console = DockerCheckChanges::Base.new
     end
-    @console.return_value = 'No changes detected'
 
     if opts['sanitised_title']
-      @console.inspect_command(opts['sanitised_title'])
+      @console.run("docker inspect #{opts['sanitised_title']}", true)
       if @console.status.success?
         param_changed = @console.has_changes?(opts, JSON.parse(@console.stdout)[0])
 
@@ -169,7 +169,6 @@ Puppet::Functions.create_function(:docker_params_changed) do
     else
       @console.stop_command(opts['sanitised_title'])
     end
-
     @console.return_value
   end
 end
