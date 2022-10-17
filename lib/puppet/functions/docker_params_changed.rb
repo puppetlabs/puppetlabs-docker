@@ -71,10 +71,13 @@ module DockerCheckChanges
             |c| c.empty?
           }.join(':')
         }
-      }.flatten
+      }.flatten.sort
       pp_ports = [opts['ports']].flatten.sort
 
-      true if pp_ports != ports
+      debug gen_message(__method__,ports,pp_ports)
+      return true if pp_ports != ports
+      debug "Don't have changes"
+      false
     end
     def image_changed?(opts, hash)
       debug gen_message(__method__,hash['Config']['Image'],opts['image'])
