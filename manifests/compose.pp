@@ -71,8 +71,6 @@ class docker::compose (
     }
 
     if $facts['os']['family'] == 'windows' {
-      $docker_download_command = ['if', '(Invoke-WebRequest', $docker_compose_url, $proxy_opt, '-UseBasicParsing', '-OutFile', "\"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}"] # lint:ignore:140chars
-
       exec { "Install Docker Compose ${version}":
         command  => template('docker/windows/download_docker_compose.ps1.erb'),
         provider => powershell,

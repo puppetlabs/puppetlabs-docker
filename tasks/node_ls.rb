@@ -6,11 +6,11 @@ require 'open3'
 require 'puppet'
 
 def node_ls(filter, quiet)
-  cmd_string = ['docker', 'node', 'ls']
-  cmd_string += [" --filter=#{filter}"] unless filter.nil?
-  cmd_string += [' --quiet'] unless quiet.nil?
+  cmd = ['docker', 'node', 'ls']
+  cmd.concat([" --filter=#{filter}"]) unless filter.nil?
+  cmd.concat([' --quiet']) unless quiet.nil?
 
-  stdout, stderr, status = Open3.capture3(cmd_string)
+  stdout, stderr, status = Open3.capture3(cmd)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

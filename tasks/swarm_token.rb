@@ -6,10 +6,10 @@ require 'open3'
 require 'puppet'
 
 def swarm_token(node_role)
-  cmd_string = ['docker', 'swarm', 'join-token', '-q']
-  cmd_string += [" #{node_role}"] unless node_role.nil?
+  cmd = ['docker', 'swarm', 'join-token', '-q']
+  cmd.concat([" #{node_role}"]) unless node_role.nil?
 
-  stdout, stderr, status = Open3.capture3(cmd_string)
+  stdout, stderr, status = Open3.capture3(cmd)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

@@ -387,8 +387,8 @@ define docker::run (
 
   if $restart {
     if $ensure == 'absent' {
-      $restart_stop_command = [$docker_command, 'stop', "--time=${stop_wait_time}", $sanitised_title]
-      $restart_stop_onlyif = [$docker_command, 'inspect', $sanitised_title]
+      $restart_stop_command = [$docker_command, 'stop', '--time', $stop_wait_time, $sanitised_title]
+      $restart_stop_onlyif = [[$docker_command, 'inspect', $sanitised_title]]
 
       exec { "stop ${title} with docker":
         command     => $restart_stop_command,
@@ -400,7 +400,7 @@ define docker::run (
       }
 
       $restart_remove_command = "${docker_command} rm -v ${sanitised_title}"
-      $restart_remove_onlyif = [$docker_command, 'inspect', $sanitised_title]
+      $restart_remove_onlyif = [[$docker_command, 'inspect', $sanitised_title]]
 
       exec { "remove ${title} with docker":
         command     => $restart_remove_command,
@@ -440,7 +440,7 @@ define docker::run (
         }
 
         if $running == false {
-          $running_stop_command = [$docker_command, 'stop', "--time=${stop_wait_time}", $sanitised_title]
+          $running_stop_command = [$docker_command, 'stop', '--time', $stop_wait_time, $sanitised_title]
           exec { "stop ${title} with docker":
             command     => $running_stop_command,
             onlyif      => $container_running_check,
@@ -527,7 +527,7 @@ define docker::run (
 
     if $ensure == 'absent' {
       if $facts['os']['family'] == 'windows' {
-        $absent_stop_command = "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}"
+        $absent_stop_command = "${docker_command} stop --time ${stop_wait_time} ${sanitised_title}"
         $absent_stop_onlyif = "${docker_command} inspect ${sanitised_title}"
 
         exec { "stop container ${service_prefix}${sanitised_title}":
