@@ -5,21 +5,27 @@ require 'spec_helper_acceptance'
 if os[:family] == 'windows'
   os_name = run_shell('systeminfo | findstr /R /C:"OS Name"')
   raise 'Could not retrieve systeminfo for Windows box' if os_name.exit_code != 0
-  os_name = if os_name.stdout.split(%r{\s}).include?('2016')
-              'win-2016'
-            elsif os_name.stdout.split(%r{\s}).include?('2019')
-              'win-2019'
-            else
-              'win-2022'
-            end
+
+  case os_name.stdout
+  when /2016/
+    os_name = 'win-2016'
+  when /2019/
+    os_name = 'win-2019'
+  else
+    os_name = 'win-2022'
+  end
+
   docker_args = 'docker_ee => true'
   docker_network = 'nat'
   volume_location = 'C:\\'
-  docker_image = if os_name == 'win-2016'
-                   'stefanscherer/nanoserver:sac2016'
-                 else
-                   'stefanscherer/nanoserver:10.0.17763.1040'
-                 end
+
+  case os_name
+  when 'win-2016'
+    docker_image = 'stefanscherer/nanoserver:sac2016'
+  else
+    docker_image = 'stefanscherer/nanoserver:10.0.17763.1040'
+  end
+
 else
   docker_args = ''
   docker_network = 'bridge'
@@ -48,17 +54,17 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
                       'hello-world:latest'
                     end
     let(:pp1) do
-      "
-          class {'docker': #{docker_args}}
-          docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}' }
-      "
+      <<~EOF
+        class {'docker': #{docker_args}}
+        docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}' }
+      EOF
     end
 
     let(:pp2) do
-      "
-          class {'docker': #{docker_args}}
-          docker::run {'servercore': image => '#{image_changed}', restart => 'always', net => '#{docker_network}' }
-      "
+      <<~EOF
+        class {'docker': #{docker_args}}
+        docker::run {'servercore': image => '#{image_changed}', restart => 'always', net => '#{docker_network}' }
+      EOF
     end
 
     it 'creates servercore with first image' do
