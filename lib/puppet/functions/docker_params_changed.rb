@@ -159,7 +159,7 @@ Puppet::Functions.create_function(:docker_params_changed) do
           opts['image']) if param_changed
       else
         @console.create_container(opts['command'], opts['image']) unless File.exist?(opts['cidfile'])
-        @console.inspect_command(opts['sanitised_title'])
+        @console.run("docker inspect #{opts['sanitised_title']}", false)
         unless @console.status == 0
           @console.delete_command(opts['cidfile'])
           @console.create_container(opts['command'], opts['image'])
