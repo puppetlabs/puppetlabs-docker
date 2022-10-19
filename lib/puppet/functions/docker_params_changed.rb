@@ -12,6 +12,7 @@ module DockerCheckChanges
                   :status
     def initialize
       @return_value = 'No changes detected'
+      @status = true
     end
     def debug(message)
       Puppet.warning message if DEBUG
@@ -23,9 +24,9 @@ module DockerCheckChanges
       m << "New value: #{new}"
       m.join("\n")
     end
-    def run(cmd, ignore = false)
-      @stdout, @err, @status = Open3.capture3(cmd)
-      Puppet.err @err unless (@status.success? || ignore)
+    def run(cmd, failonfail = true)
+      @stdout = Puppet::Util::Execution.execute(cmd, {:failonfail => failonfail})
+      @status = @stdout.exitstatus
     end
     def delete_command(file)
       run "rm -f #{file}"
@@ -113,9 +114,9 @@ module DockerCheckChanges
   end
   class Linux < Base; end
   class Windows < Base
-    def run(cmd, ignore = false)
-      @stdout, @err, @status = Open3.capture3("powershell.exe -Command \"& {#{cmd}}\" ")
-      Puppet.err @err unless (@status.success? || ignore)
+    def run(cmd, failonfail = true)
+      @stdout = Puppet::Util::Execution.execute("powershell.exe -Command \"& {#{cmd}}\" ", {:failonfail => failonfail})
+      @status = @stdout.exitstatus
     end
     def delete_command(file)
       run "del #{file}"
@@ -146,8 +147,8 @@ Puppet::Functions.create_function(:docker_params_changed) do
     end
 
     if opts['sanitised_title']
-      @console.run("docker inspect #{opts['sanitised_title']}", true)
-      if @console.status.success?
+      @console.run("docker inspect #{opts['sanitised_title']}", false)
+      if @console.status == 0
         param_changed = @console.has_changes?(opts, JSON.parse(@console.stdout)[0])
 
         @console.restart_container(
@@ -159,7 +160,7 @@ Puppet::Functions.create_function(:docker_params_changed) do
       else
         @console.create_container(opts['command'], opts['image']) unless File.exist?(opts['cidfile'])
         @console.inspect_command(opts['sanitised_title'])
-        unless @console.status.success?
+        unless @console.status == 0
           @console.delete_command(opts['cidfile'])
           @console.create_container(opts['command'], opts['image'])
         end
