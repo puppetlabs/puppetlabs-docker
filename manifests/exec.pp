@@ -40,7 +40,7 @@ define docker::exec (
     $exec_provider    = undef
   }
 
-  $docker_exec_flags = docker_exec_flags( {
+  $docker_exec_flags = docker_exec_flags({
       detach      => $detach,
       interactive => $interactive,
       tty         => $tty,

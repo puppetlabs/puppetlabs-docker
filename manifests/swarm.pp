@@ -101,7 +101,7 @@ define docker::swarm (
   $docker_command = "${docker::params::docker_command} swarm"
 
   if $init {
-    $docker_swarm_init_flags = docker_swarm_init_flags( {
+    $docker_swarm_init_flags = docker_swarm_init_flags({
         init                          => $init,
         advertise_addr                => $advertise_addr,
         autolock                      => $autolock,
@@ -130,7 +130,7 @@ define docker::swarm (
   }
 
   if $join {
-    $docker_swarm_join_flags = docker_swarm_join_flags( {
+    $docker_swarm_join_flags = docker_swarm_join_flags({
         join           => $join,
         advertise_addr => $advertise_addr,
         listen_addr    => $listen_addr,

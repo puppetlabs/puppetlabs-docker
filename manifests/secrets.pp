@@ -19,7 +19,7 @@ define docker::secrets (
   $docker_command = "${docker::params::docker_command} secret"
 
   if $ensure == 'present' {
-    $docker_secrets_flags = docker_secrets_flags( {
+    $docker_secrets_flags = docker_secrets_flags({
         ensure      => $ensure,
         label       => $label,
         secret_name => $secret_name,
