@@ -112,7 +112,7 @@ define docker::services (
   }
 
   if $create {
-    $docker_service_create_flags = docker_service_flags( {
+    $docker_service_create_flags = docker_service_flags({
         detach          => $detach,
         env             => any2array($env),
         service_name    => $service_name,
@@ -146,7 +146,7 @@ define docker::services (
   }
 
   if $update {
-    $docker_service_flags = docker_service_flags( {
+    $docker_service_flags = docker_service_flags({
         detach          => $detach,
         env             => any2array($env),
         service_name    => $service_name,
@@ -175,7 +175,7 @@ define docker::services (
   }
 
   if $scale {
-    $docker_service_flags = docker_service_flags( {
+    $docker_service_flags = docker_service_flags({
         service_name => $service_name,
         replicas     => $replicas,
         extra_params => any2array($extra_params),
