@@ -429,59 +429,26 @@ define docker::run (
         $exec_unless = $inspect
       }
 
-      if versioncmp($facts['puppetversion'], '6') < 0 {
-        exec { "run ${title} with docker":
-          command     => join($run_with_docker_command, ' '),
-          unless      => $exec_unless,
-          environment => $exec_environment,
-          path        => $exec_path,
-          provider    => $exec_provider,
-          timeout     => $exec_timeout,
-        }
+      $docker_params_changed_args = {
+        sanitised_title   => $sanitised_title,
+        osfamily          => $facts['os']['family'],
+        command           => join($run_with_docker_command, ' '),
+        cidfile           => $cidfile,
+        image             => $image,
+        volumes           => $volumes,
+        ports             => $ports,
+        stop_wait_time    => $stop_wait_time,
+        container_running => $running,
+        # logfile_path      => ($facts['os']['family'] == 'windows') ? {
+        # true    => ::docker_user_temp_path,
+        # default => '/tmp',
+        # },
+      }
 
-        if $running == false {
-          $running_stop_command = [$docker_command, 'stop', '--time', $stop_wait_time, $sanitised_title]
-          exec { "stop ${title} with docker":
-            command     => $running_stop_command,
-            onlyif      => $container_running_check,
-            environment => $exec_environment,
-            path        => $exec_path,
-            provider    => $exec_provider,
-            timeout     => $exec_timeout,
-          }
-        } else {
-          $running_start_command = [$docker_command, 'start', $sanitised_title]
-          exec { "start ${title} with docker":
-            command     => $running_start_command,
-            unless      => $container_running_check,
-            environment => $exec_environment,
-            path        => $exec_path,
-            provider    => $exec_provider,
-            timeout     => $exec_timeout,
-          }
-        }
-      } else {
-        $docker_params_changed_args = {
-          sanitised_title   => $sanitised_title,
-          osfamily          => $facts['os']['family'],
-          command           => join($run_with_docker_command, ' '),
-          cidfile           => $cidfile,
-          image             => $image,
-          volumes           => $volumes,
-          ports             => $ports,
-          stop_wait_time    => $stop_wait_time,
-          container_running => $running,
-          # logfile_path      => ($facts['os']['family'] == 'windows') ? {
-          # true    => ::docker_user_temp_path,
-          # default => '/tmp',
-          # },
-        }
+      $detect_changes = Deferred('docker_params_changed', [$docker_params_changed_args])
 
-        $detect_changes = Deferred('docker_params_changed', [$docker_params_changed_args])
-
-        notify { "${title}_docker_params_changed":
-          message  => $detect_changes,
-        }
+      notify { "${title}_docker_params_changed":
+        message  => $detect_changes,
       }
     }
   } else {
