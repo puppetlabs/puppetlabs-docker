@@ -6,24 +6,24 @@ require 'open3'
 require 'puppet'
 
 def service_update(image, service, constraint_add, constraint_rm)
-  cmd_string = 'docker service update'
-  cmd_string += " --image #{image}" unless image.nil?
+  cmd = ['docker', 'service', 'update']
+  cmd.concat([" --image #{image}"]) unless image.nil?
 
   if constraint_add.is_a? Array
     constraint_add.each do |param|
-      cmd_string += " --constraint-add #{param}"
+      cmd.concat([" --constraint-add #{param}"])
     end
   end
 
   if constraint_rm.is_a? Array
     constraint_rm.each do |param|
-      cmd_string += " --constraint-rm #{param}"
+      cmd.concat([" --constraint-rm #{param}"])
     end
   end
 
-  cmd_string += " #{service}" unless service.nil?
+  cmd.concat([" #{service}"]) unless service.nil?
 
-  stdout, stderr, status = Open3.capture3(cmd_string)
+  stdout, stderr, status = Open3.capture3(cmd)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

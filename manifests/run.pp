@@ -373,8 +373,10 @@ define docker::run (
   }
 
   if $restart_on_unhealthy {
+    $unhealthy_command = [$docker_command, 'restart', $sanitised_title]
+
     exec { "Restart unhealthy container ${title} with docker":
-      command     => "${docker_command} restart ${sanitised_title}",
+      command     => $unhealthy_command,
       onlyif      => $restart_check,
       environment => $exec_environment,
       path        => $exec_path,
@@ -385,18 +387,24 @@ define docker::run (
 
   if $restart {
     if $ensure == 'absent' {
+      $restart_stop_command = [$docker_command, 'stop', '--time', $stop_wait_time, $sanitised_title]
+      $restart_stop_onlyif = [[$docker_command, 'inspect', $sanitised_title]]
+
       exec { "stop ${title} with docker":
-        command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        command     => $restart_stop_command,
+        onlyif      => $restart_stop_onlyif,
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
         timeout     => $exec_timeout,
       }
 
+      $restart_remove_command = "${docker_command} rm -v ${sanitised_title}"
+      $restart_remove_onlyif = [[$docker_command, 'inspect', $sanitised_title]]
+
       exec { "remove ${title} with docker":
-        command     => "${docker_command} rm -v ${sanitised_title}",
-        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        command     => $restart_remove_command,
+        onlyif      => $restart_remove_onlyif,
         environment => $exec_environment,
         path        => $exec_path,
         provider    => $exec_provider,
@@ -421,57 +429,26 @@ define docker::run (
         $exec_unless = $inspect
       }
 
-      if versioncmp($facts['puppetversion'], '6') < 0 {
-        exec { "run ${title} with docker":
-          command     => join($run_with_docker_command, ' '),
-          unless      => $exec_unless,
-          environment => $exec_environment,
-          path        => $exec_path,
-          provider    => $exec_provider,
-          timeout     => $exec_timeout,
-        }
+      $docker_params_changed_args = {
+        sanitised_title   => $sanitised_title,
+        osfamily          => $facts['os']['family'],
+        command           => join($run_with_docker_command, ' '),
+        cidfile           => $cidfile,
+        image             => $image,
+        volumes           => $volumes,
+        ports             => $ports,
+        stop_wait_time    => $stop_wait_time,
+        container_running => $running,
+        # logfile_path      => ($facts['os']['family'] == 'windows') ? {
+        # true    => ::docker_user_temp_path,
+        # default => '/tmp',
+        # },
+      }
 
-        if $running == false {
-          exec { "stop ${title} with docker":
-            command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-            onlyif      => $container_running_check,
-            environment => $exec_environment,
-            path        => $exec_path,
-            provider    => $exec_provider,
-            timeout     => $exec_timeout,
-          }
-        } else {
-          exec { "start ${title} with docker":
-            command     => "${docker_command} start ${sanitised_title}",
-            unless      => $container_running_check,
-            environment => $exec_environment,
-            path        => $exec_path,
-            provider    => $exec_provider,
-            timeout     => $exec_timeout,
-          }
-        }
-      } else {
-        $docker_params_changed_args = {
-          sanitised_title   => $sanitised_title,
-          osfamily          => $facts['os']['family'],
-          command           => join($run_with_docker_command, ' '),
-          cidfile           => $cidfile,
-          image             => $image,
-          volumes           => $volumes,
-          ports             => $ports,
-          stop_wait_time    => $stop_wait_time,
-          container_running => $running,
-          # logfile_path      => ($facts['os']['family'] == 'windows') ? {
-          # true    => ::docker_user_temp_path,
-          # default => '/tmp',
-          # },
-        }
+      $detect_changes = Deferred('docker_params_changed', [$docker_params_changed_args])
 
-        $detect_changes = Deferred('docker_params_changed', [$docker_params_changed_args])
-
-        notify { "${title}_docker_params_changed":
-          message  => $detect_changes,
-        }
+      notify { "${title}_docker_params_changed":
+        message  => $detect_changes,
       }
     }
   } else {
@@ -517,9 +494,12 @@ define docker::run (
 
     if $ensure == 'absent' {
       if $facts['os']['family'] == 'windows' {
+        $absent_stop_command = "${docker_command} stop --time ${stop_wait_time} ${sanitised_title}"
+        $absent_stop_onlyif = "${docker_command} inspect ${sanitised_title}"
+
         exec { "stop container ${service_prefix}${sanitised_title}":
-          command     => "${docker_command} stop --time=${stop_wait_time} ${sanitised_title}",
-          onlyif      => "${docker_command} inspect ${sanitised_title}",
+          command     => $absent_stop_command,
+          onlyif      => $absent_stop_onlyif,
           environment => $exec_environment,
           path        => $exec_path,
           provider    => $exec_provider,
@@ -536,9 +516,12 @@ define docker::run (
           notify    => Exec["remove container ${service_prefix}${sanitised_title}"],
         }
       }
+      $absent_remove_command = "${docker_command} rm -v ${sanitised_title}"
+      $absent_remove_onlyif = "${docker_command} inspect ${sanitised_title}"
+
       exec { "remove container ${service_prefix}${sanitised_title}":
-        command     => "${docker_command} rm -v ${sanitised_title}",
-        onlyif      => "${docker_command} inspect ${sanitised_title}",
+        command     => $absent_remove_command,
+        onlyif      => $absent_remove_onlyif,
         environment => $exec_environment,
         path        => $exec_path,
         refreshonly => true,
