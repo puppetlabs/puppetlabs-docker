@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'shellwords'
 #
 # docker_run_flags.rb
 #
@@ -8,11 +7,13 @@ module Puppet::Parser::Functions
   newfunction(:'docker::escape', type: :rvalue) do |args|
     subject = args[0]
 
-    if self['facts'] && self['facts']['os']['family'] == 'windows'
-      call_function('powershell_escape', subject)
-    else
-      subject.shellescape
-    end
+    escape_function = if self['facts'] && self['facts']['os']['family'] == 'windows'
+                        'powershell_escape'
+                      else
+                        'shell_escape'
+                      end
+
+    call_function(escape_function, subject)
   end
 
   # Transforms a hash into a string of docker flags
