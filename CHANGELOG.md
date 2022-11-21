@@ -2,20 +2,30 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v5.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v5.1.0) - 2022-10-19
+## [v6.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.0.0) (2022-11-21)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v5.1.0...v6.0.0)
+
+### Changed
+
+- \(CONT-263\) Bumping required puppet version [\#871](https://github.com/puppetlabs/puppetlabs-docker/pull/871) ([LukasAud](https://github.com/LukasAud))
+- docker\_run\_flags: Shellescape any provided values [\#869](https://github.com/puppetlabs/puppetlabs-docker/pull/869) ([LukasAud](https://github.com/LukasAud))
+- \(maint\) Hardening manifests and tasks [\#863](https://github.com/puppetlabs/puppetlabs-docker/pull/863) ([LukasAud](https://github.com/LukasAud))
+
+## [v5.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v5.1.0) (2022-10-21)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v5.0.0...v5.1.0)
 
 ### Added
 
-- Add missing extra_systemd_parameters values to docker-run.erb [#851](https://github.com/puppetlabs/puppetlabs-docker/pull/851) ([cbowman0](https://github.com/cbowman0))
+- Add missing extra\_systemd\_parameters values to docker-run.erb [\#851](https://github.com/puppetlabs/puppetlabs-docker/pull/851) ([cbowman0](https://github.com/cbowman0))
 
 ### Fixed
 
-- pdksync - (CONT-130) Dropping Support for Debian 9 [#859](https://github.com/puppetlabs/puppetlabs-docker/pull/859) ([jordanbreen28](https://github.com/jordanbreen28))
-- Change `stop_wait_time` value to match Docker default [#858](https://github.com/puppetlabs/puppetlabs-docker/pull/858) ([sebcdri](https://github.com/sebcdri))
+- pdksync - \(CONT-130\) Dropping Support for Debian 9 [\#859](https://github.com/puppetlabs/puppetlabs-docker/pull/859) ([jordanbreen28](https://github.com/jordanbreen28))
+- Change `stop_wait_time` value to match Docker default [\#858](https://github.com/puppetlabs/puppetlabs-docker/pull/858) ([sebcdri](https://github.com/sebcdri))
 
-## [v5.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v5.0.0) (2022-08-18)
+## [v5.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v5.0.0) (2022-08-19)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.4.0...v5.0.0)
 
