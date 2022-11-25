@@ -81,7 +81,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
     else
       server_strip  = server.gsub('[/:]', '_')
       passfile      = "#{facts['docker_user_temp_path']}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}"
-      auth_command = ["if (-not (#{auth_cmd}))", "{ Remove-Item -Path #{passfile}", '-Force', '-Recurse', '-EA', 'SilentlyContinue; exit 1 } else { exit 0 }']
+      auth_command = "if (-not (#{auth_cmd})) { Remove-Item -Path #{passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
 
       if ensure_value == 'absent'
         it {

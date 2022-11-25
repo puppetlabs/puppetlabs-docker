@@ -132,7 +132,7 @@ define docker::services (
       }
     )
 
-    $exec_create   = [$docker_command, 'create', '--name', $docker_service_create_flags]
+    $exec_create   = "${docker_command} create --name ${docker_service_create_flags}"
     $unless_create = "docker service ps ${service_name}"
 
     exec { "${title} docker service create":
@@ -163,7 +163,7 @@ define docker::services (
       }
     )
 
-    $exec_update = [$docker_command, 'update', $docker_service_flags]
+    $exec_update = "${docker_command} update ${docker_service_flags}"
 
     exec { "${title} docker service update":
       command     => $exec_update,
@@ -182,7 +182,7 @@ define docker::services (
       }
     )
 
-    $exec_scale = [$docker_command, 'scale', "${service_name}=${replicas}"]
+    $exec_scale = "${docker_command} scale ${service_name}=${replicas}"
 
     exec { "${title} docker service scale":
       command     => $exec_scale,
@@ -194,12 +194,9 @@ define docker::services (
   }
 
   if $ensure == 'absent' {
-    $service_command = ['docker', 'service', 'rm', $service_name]
-    $service_onlyif = ['docker', 'service', 'ps', $service_name]
-
     exec { "${title} docker service remove":
-      command  => $service_command,
-      onlyif   => $service_onlyif,
+      command  => "docker service rm ${service_name}",
+      onlyif   => "docker service ps ${service_name}",
       path     => $exec_path,
       provider => $exec_provider,
       timeout  => $exec_timeout,

@@ -71,6 +71,8 @@ class docker::compose (
     }
 
     if $facts['os']['family'] == 'windows' {
+      $docker_download_command = "if (Invoke-WebRequest ${docker_compose_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
+
       exec { "Install Docker Compose ${version}":
         command  => template('docker/windows/download_docker_compose.ps1.erb'),
         provider => powershell,
@@ -87,11 +89,10 @@ class docker::compose (
         ensure_packages(['curl'])
       }
 
-      $compose_install = "curl -s -S -L ${proxy_opt} ${docker_compose_url} -o ${docker_compose_location_versioned}"
       exec { "Install Docker Compose ${version}":
         path    => '/usr/bin/',
         cwd     => '/tmp',
-        command => $compose_install,
+        command => "curl -s -S -L ${proxy_opt} ${docker_compose_url} -o ${docker_compose_location_versioned}",
         creates => $docker_compose_location_versioned,
         require => Package['curl'],
       }

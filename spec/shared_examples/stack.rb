@@ -34,7 +34,7 @@ shared_examples 'stack' do |_title, params, facts, defaults|
       'resolve_image'      => resolve_image,
     )
 
-    exec_stack = [docker_command, 'deploy', docker_stack_flags, stack_name]
+    exec_stack = "#{docker_command} deploy #{docker_stack_flags} #{stack_name}"
 
     it {
       is_expected.to contain_exec("docker stack create #{stack_name}").with(
@@ -49,7 +49,7 @@ shared_examples 'stack' do |_title, params, facts, defaults|
   if ensure_value == 'absent'
     it {
       is_expected.to contain_exec("docker stack destroy #{stack_name}").with(
-        'command'  => [docker_command, 'rm', stack_name],
+        'command'  => "#{docker_command} rm #{stack_name}",
         'onlyif'   => check_stack,
         'path'     => exec_path,
         'provider' => provider,

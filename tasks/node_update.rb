@@ -6,25 +6,25 @@ require 'open3'
 require 'puppet'
 
 def node_update(availability, role, label_add, label_rm, node)
-  cmd = ['docker', 'node', 'update']
-  cmd.concat([" --availability #{availability}"]) unless availability.nil?
-  cmd.concat([" --role #{role}"]) unless role.nil?
+  cmd_string = 'docker node update'
+  cmd_string += " --availability #{availability}" unless availability.nil?
+  cmd_string += " --role #{role}" unless role.nil?
 
   if label_add.is_a? Array
     label_add.each do |param|
-      cmd.concat([" --label-add #{param}"])
+      cmd_string += " --label-add #{param}"
     end
   end
 
   if label_rm.is_a? Array
     label_rm.each do |param|
-      cmd.concat([" --label-rm #{param}"])
+      cmd_string += " --label-rm #{param}"
     end
   end
 
-  cmd.concat([" #{node}"]) unless node.nil?
+  cmd_string += " #{node}" unless node.nil?
 
-  stdout, stderr, status = Open3.capture3(cmd)
+  stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

@@ -59,7 +59,7 @@ define docker::stack (
       }
     )
 
-    $exec_stack = [$docker_command, 'deploy', $docker_stack_flags, $stack_name]
+    $exec_stack = "${docker_command} deploy ${docker_stack_flags} ${stack_name}"
 
     exec { "docker stack create ${stack_name}":
       command  => $exec_stack,
@@ -70,10 +70,8 @@ define docker::stack (
   }
 
   if $ensure == 'absent' {
-    $destroy_command = [$docker_command, 'rm', $stack_name]
-
     exec { "docker stack destroy ${stack_name}":
-      command  => $destroy_command,
+      command  => "${docker_command} rm ${stack_name}",
       onlyif   => $check_stack,
       path     => $exec_path,
       provider => $provider,
