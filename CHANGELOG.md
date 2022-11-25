@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v6.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.0.1) (2022-11-25)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v6.0.0...v6.0.1)
+
+### Fixed
+
+- Revert "\(maint\) Hardening manifests and tasks" [\#875](https://github.com/puppetlabs/puppetlabs-docker/pull/875) ([pmcmaw](https://github.com/pmcmaw))
+
 ## [v6.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.0.0) (2022-11-21)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v5.1.0...v6.0.0)
