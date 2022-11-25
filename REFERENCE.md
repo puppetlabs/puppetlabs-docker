@@ -4441,7 +4441,7 @@ Number of replicas
 
 ##### `expose`
 
-Data type: `Variant[Array,Undef]`
+Data type: `Variant[String,Array,Undef]`
 
 Publish service ports externally to the swarm
 
@@ -4453,7 +4453,7 @@ Set environment variables
 
 ##### `command`
 
-Data type: `Variant[Array,Undef]`
+Data type: `Variant[String,Array,Undef]`
 
 Command to run on the container
 
