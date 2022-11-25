@@ -16,8 +16,8 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
       'secret_path' => secret_path,
     )
 
-    exec_secret   = [docker_command, docker_secrets_flags]
-    unless_secret = [docker_command, 'inspect', secret_name]
+    exec_secret   = "#{docker_command} #{docker_secrets_flags}"
+    unless_secret = "#{docker_command} inspect #{secret_name}"
 
     it {
       is_expected.to contain_exec("#{title} docker secret create").with(
@@ -31,8 +31,8 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
   if ensure_value == 'absent'
     it {
       is_expected.to contain_exec("#{title} docker secret rm").with(
-        'command' => [docker_command, 'rm', secret_name],
-        'onlyif'  => [docker_command, 'inspect', secret_name],
+        'command' => "#{docker_command} rm #{secret_name}",
+        'onlyif'  => "#{docker_command} inspect #{secret_name}",
         'path'    => ['/bin', '/usr/bin'],
       )
     }

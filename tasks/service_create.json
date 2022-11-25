@@ -16,7 +16,7 @@
     },
     "expose": {
       "description": "Publish service ports externally to the swarm",
-      "type": "Variant[Array,Undef]"
+      "type": "Variant[String,Array,Undef]"
     },
     "env": {
       "description": "Set environment variables",
@@ -24,7 +24,7 @@
     },
     "command": {
       "description": "Command to run on the container",
-      "type": "Variant[Array,Undef]"
+      "type": "Variant[String,Array,Undef]"
     },
     "extra_params": {
       "description": "Allows you to pass any other flag that the Docker service create supports.",

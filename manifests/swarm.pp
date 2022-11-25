@@ -117,7 +117,7 @@ define docker::swarm (
       }
     )
 
-    $exec_init = [$docker_command, $docker_swarm_init_flags]
+    $exec_init = "${docker_command} ${docker_swarm_init_flags}"
 
     exec { 'Swarm init':
       command     => $exec_init,
@@ -138,7 +138,7 @@ define docker::swarm (
       }
     )
 
-    $exec_join = [$docker_command, $docker_swarm_join_flags, $manager_ip]
+    $exec_join = "${docker_command} ${docker_swarm_join_flags} ${manager_ip}"
 
     exec { 'Swarm join':
       command     => $exec_join,

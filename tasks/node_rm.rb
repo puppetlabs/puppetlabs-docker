@@ -6,11 +6,11 @@ require 'open3'
 require 'puppet'
 
 def node_rm(force, node)
-  cmd = ['docker', 'node', 'rm']
-  cmd.concat([' --force']) unless force.nil?
-  cmd.concat([" #{node}"]) unless node.nil?
+  cmd_string = 'docker node rm'
+  cmd_string += ' --force' unless force.nil?
+  cmd_string += " #{node}" unless node.nil?
 
-  stdout, stderr, status = Open3.capture3(cmd)
+  stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

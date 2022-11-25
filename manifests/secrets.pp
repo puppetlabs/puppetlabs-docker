@@ -27,8 +27,8 @@ define docker::secrets (
       }
     )
 
-    $exec_secret   = [$docker_command, $docker_secrets_flags]
-    $unless_secret = [$docker_command, 'inspect', $secret_name]
+    $exec_secret   = "${docker_command} ${docker_secrets_flags}"
+    $unless_secret = "${docker_command} inspect ${secret_name}"
 
     exec { "${title} docker secret create":
       command => $exec_secret,
@@ -38,12 +38,9 @@ define docker::secrets (
   }
 
   if $ensure == 'absent' {
-    $absent_secret_command = [$docker_command, 'rm', $secret_name]
-    $absent_secret_onlyif = [$docker_command, 'inspect', $secret_name]
-
     exec { "${title} docker secret rm":
-      command => $absent_secret_command,
-      onlyif  => $absent_secret_onlyif,
+      command => "${docker_command} rm ${secret_name}",
+      onlyif  => "${docker_command} inspect ${secret_name}",
       path    => ['/bin', '/usr/bin',],
     }
   }

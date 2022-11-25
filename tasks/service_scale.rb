@@ -6,12 +6,12 @@ require 'open3'
 require 'puppet'
 
 def service_scale(service, scale, detach)
-  cmd = ['docker', 'service', 'scale']
-  cmd.concat([" #{service}"]) unless service.nil?
-  cmd.concat(["=#{scale}"]) unless scale.nil?
-  cmd.concat([' -d']) unless detach.nil?
+  cmd_string = 'docker service scale'
+  cmd_string += " #{service}" unless service.nil?
+  cmd_string += "=#{scale}" unless scale.nil?
+  cmd_string += ' -d' unless detach.nil?
 
-  stdout, stderr, status = Open3.capture3(cmd)
+  stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

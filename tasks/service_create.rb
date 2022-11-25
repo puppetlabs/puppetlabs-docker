@@ -4,27 +4,33 @@
 require 'json'
 require 'open3'
 require 'puppet'
-require 'shellwords'
 
 def service_create(image, replicas, expose, env, command, extra_params, service, detach)
-  cmd = ['docker', 'service', 'create']
-  cmd.concat(extra_params) unless extra_params.nil? || extra_params.empty?
-
-  cmd.concat(['--name', service]) unless service.nil?
-  cmd.concat(['--replicas', replicas.to_s]) unless replicas.nil?
-  cmd.concat(['--publish', Shellwords.join(expose)]) unless expose.nil?
-
+  cmd_string = 'docker service create'
+  if extra_params.is_a? Array
+    extra_params.each do |param|
+      cmd_string += " #{param}"
+    end
+  end
+  cmd_string += " --name #{service}" unless service.nil?
+  cmd_string += " --replicas #{replicas}" unless replicas.nil?
+  cmd_string += " --publish #{expose}" unless expose.nil?
   if env.is_a? Hash
     env.each do |key, value|
-      cmd.concat(['--env', Shellwords.escape("#{key}=#{value}")])
+      cmd_string += " --env #{key}='#{value}'"
     end
   end
 
-  cmd.append(image) unless image.nil?
-  cmd.append('-d') unless !detach || detach.nil?
-  cmd.concat(command) unless command.nil? || command.empty?
+  if command.is_a? Array
+    cmd_string += command.join(' ')
+  elsif command && command.to_s != 'undef'
+    cmd_string += command.to_s
+  end
 
-  stdout, stderr, status = Open3.capture3(*cmd)
+  cmd_string += ' -d' unless detach.nil?
+  cmd_string += " #{image}" unless image.nil?
+
+  stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
   stdout.strip
 end

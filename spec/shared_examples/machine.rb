@@ -62,7 +62,7 @@ shared_examples 'machine' do |_params, _facts, _defaults|
         is_expected.to contain_exec("Install Docker Machine #{version}").with(
           'path'    => '/usr/bin/',
           'cwd'     => '/tmp',
-          'command' => ['curl', '-s', '-S', '-L', proxy_opt, docker_machine_url, '-o', docker_machine_location_versioned],
+          'command' => "curl -s -S -L #{proxy_opt} #{docker_machine_url} -o #{docker_machine_location_versioned}",
           'creates' => docker_machine_location_versioned,
         ).that_requires(
           'Package[curl]',

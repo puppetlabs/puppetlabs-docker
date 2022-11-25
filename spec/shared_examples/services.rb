@@ -56,7 +56,7 @@ shared_examples 'services' do |title, params, facts, defaults|
       'command'         => command,
     )
 
-    exec_create   = [docker_command, 'create', '--name', docker_service_create_flags]
+    exec_create   = "#{docker_command} create --name #{docker_service_create_flags}"
     unless_create = "docker service ps #{service_name == :undef ? '' : service_name}"
 
     it {
@@ -88,7 +88,7 @@ shared_examples 'services' do |title, params, facts, defaults|
       'registry_mirror' => registry_mirror,
     )
 
-    exec_update = [docker_command, 'update', docker_service_flags]
+    exec_update = "#{docker_command} update #{docker_service_flags}"
 
     it {
       is_expected.to contain_exec("#{title} docker service update").with(
@@ -108,7 +108,7 @@ shared_examples 'services' do |title, params, facts, defaults|
     #   'extra_params' => Array(extra_params),
     # )
 
-    exec_scale = [docker_command, 'scale', "#{service_name}=#{replicas}"]
+    exec_scale = "#{docker_command} scale #{service_name}=#{replicas}"
 
     it {
       is_expected.to contain_exec("#{title} docker service scale").with(
@@ -124,8 +124,8 @@ shared_examples 'services' do |title, params, facts, defaults|
   if ensure_value == 'absent'
     it {
       is_expected.to contain_exec("#{title} docker service remove").with(
-        'command'  => ['docker', 'service', 'rm', service_name],
-        'onlyif'   => ['docker', 'service', 'ps', service_name],
+        'command'  => "docker service rm #{service_name}",
+        'onlyif'   => "docker service ps #{service_name}",
         'path'     => exec_path,
         'provider' => exec_provider,
         'timeout'  => exec_timeout,

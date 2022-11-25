@@ -85,7 +85,7 @@ define docker::plugin (
       }
     )
 
-    $exec_rm   = [$docker_command, 'rm', $docker_plugin_remove_flags]
+    $exec_rm   = "${docker_command} rm ${docker_plugin_remove_flags}"
     $onlyif_rm = "${docker_command} ls --format='{{.PluginReference}}' | grep -w ${plugin_name}"
 
     exec { "plugin remove ${plugin_name}":
@@ -105,7 +105,7 @@ define docker::plugin (
       }
     )
 
-    $exec_enable   = [$docker_command, 'enable', $docker_plugin_enable_flags]
+    $exec_enable   = "${docker_command} enable ${docker_plugin_enable_flags}"
     $onlyif_enable = "${docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w ${plugin_name}"
 
     exec { "plugin enable ${plugin_name}":
@@ -116,15 +116,12 @@ define docker::plugin (
       onlyif      => $onlyif_enable,
     }
   } elsif $enabled == false {
-    $else_command = [$docker_command, 'disable', $plugin_name]
-    $else_unless = "${docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w ${plugin_name}"
-
     exec { "disable ${plugin_name}":
-      command     => $else_command,
+      command     => "${docker_command} disable ${plugin_name}",
       environment => 'HOME=/root',
       path        => ['/bin', '/usr/bin',],
       timeout     => 0,
-      unless      => $else_unless,
+      unless      => "${docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w ${plugin_name}",
     }
   }
 }

@@ -57,7 +57,7 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
       'snapshot_interval'             => snapshot_interval,
     )
 
-    exec_init = [docker_command, docker_swarm_init_flags]
+    exec_init = "#{docker_command} #{docker_swarm_init_flags}"
 
     it {
       is_expected.to contain_exec('Swarm init').with(
@@ -79,7 +79,7 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
       'token'          => token,
     )
 
-    exec_join = [docker_command, docker_swarm_join_flags, manager_ip]
+    exec_join = "#{docker_command} #{docker_swarm_join_flags} #{manager_ip}"
 
     it {
       is_expected.to contain_exec('Swarm join').with(

@@ -138,7 +138,7 @@ shared_examples 'run' do |title, params, facts, defaults|
   if restart_on_unhealthy
     it {
       is_expected.to contain_exec("Restart unhealthy container #{title} with docker").with(
-        'command'     => [docker_command, 'restart', sanitised_title],
+        'command'     => "#{docker_command} restart #{sanitised_title}",
         'onlyif'      => restart_check,
         'environment' => exec_environment,
         'path'        => exec_path,
@@ -152,8 +152,8 @@ shared_examples 'run' do |title, params, facts, defaults|
     if ensure_value == 'absent'
       it {
         is_expected.to contain_exec("stop #{title} with docker").with(
-          'command'     => [docker_command, 'stop', "--time=#{stop_wait_time}", sanitised_title],
-          'onlyif'      => [docker_command, 'inspect', sanitised_title],
+          'command'     => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+          'onlyif'      => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
           'path'        => exec_path,
           'provider'    => exec_provider,
