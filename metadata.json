@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-docker",
-  "version": "5.0.0",
+  "version": "6.0.1",
   "author": "puppetlabs",
   "summary": "Module for installing and managing docker",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.24.0 < 9.0.0"
+      "version_requirement": ">= 8.2.0 < 9.0.0"
     },
     {
       "name": "puppetlabs/apt",
@@ -59,7 +59,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 6.0.0 < 8.0.0"
+      "version_requirement": ">= 6.24.0 < 8.0.0"
     }
   ],
   "pdk-version": "2.4.0",

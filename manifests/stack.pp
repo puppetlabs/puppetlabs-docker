@@ -49,7 +49,7 @@ define docker::stack (
   }
 
   if $ensure == 'present' {
-    $docker_stack_flags = docker_stack_flags ( {
+    $docker_stack_flags = docker_stack_flags ({
         stack_name         => $stack_name,
         bundle_file        => $bundle_file,
         compose_files      => $compose_files,

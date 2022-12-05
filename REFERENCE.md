@@ -53,6 +53,7 @@ from the registry
 
 ### Functions
 
+* [`docker::escape`](#dockerescape)
 * [`docker::sanitised_name`](#dockersanitised_name): == Function: docker::sanitised_name  Function to sanitise container name.  === Parameters  [*name*]   Name to sanitise
 * [`docker_exec_flags`](#docker_exec_flags): Transforms a hash into a string of docker exec flags
 * [`docker_params_changed`](#docker_params_changed)
@@ -3386,7 +3387,7 @@ Data type: `Integer`
 
 
 
-Default value: `0`
+Default value: `10`
 
 ##### <a name="syslog_identifier"></a>`syslog_identifier`
 
@@ -4149,6 +4150,18 @@ The specific backend to use for this `docker_volume` resource. You will seldom n
 usually discover the appropriate provider for your platform.
 
 ## Functions
+
+### <a name="dockerescape"></a>`docker::escape`
+
+Type: Ruby 3.x API
+
+The docker::escape function.
+
+#### `docker::escape()`
+
+The docker::escape function.
+
+Returns: `Any`
 
 ### <a name="dockersanitised_name"></a>`docker::sanitised_name`
 

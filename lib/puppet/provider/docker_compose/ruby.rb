@@ -30,11 +30,10 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     args = [compose_files, '-p', name, 'config'].insert(3, resource[:options]).compact
     compose_output = YAML.safe_load(execute([command(:dockercompose)] + args, combine: false), [Symbol])
 
-    # rubocop:disable Style/StringLiterals
     containers = docker([
                           'ps',
                           '--format',
-                          "{{.Label \"com.docker.compose.service\"}}-{{.Image}}",
+                          "'{{.Label \"com.docker.compose.service\"}}-{{.Image}}'",
                           '--filter',
                           "label=com.docker.compose.project=#{name}",
                         ]).split("\n")
@@ -49,7 +48,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     counts = Hash[*compose_services.each.map { |key, array|
                     image = (array['image']) ? array['image'] : get_image(key, compose_services)
                     Puppet.info("Checking for compose service #{key} #{image}")
-                    [key, compose_containers.count("#{key}-#{image}")]
+                    [key, compose_containers.count("'#{key}-#{image}'")]
                   }.flatten]
 
     # No containers found for the project

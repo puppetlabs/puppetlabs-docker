@@ -58,7 +58,7 @@ define docker::plugin (
   }
 
   if $ensure == 'present' {
-    $docker_plugin_install_flags = docker_plugin_install_flags( {
+    $docker_plugin_install_flags = docker_plugin_install_flags({
         plugin_name           => $plugin_name,
         plugin_alias          => $plugin_alias,
         disable_on_install    => $disable_on_install,
@@ -79,7 +79,7 @@ define docker::plugin (
       unless      => $unless_install,
     }
   } elsif $ensure == 'absent' {
-    $docker_plugin_remove_flags = docker_plugin_remove_flags( {
+    $docker_plugin_remove_flags = docker_plugin_remove_flags({
         plugin_name => $plugin_name,
         force_remove => $force_remove,
       }
@@ -98,7 +98,7 @@ define docker::plugin (
   }
 
   if $enabled {
-    $docker_plugin_enable_flags = docker_plugin_enable_flags( {
+    $docker_plugin_enable_flags = docker_plugin_enable_flags({
         plugin_name  => $plugin_name,
         plugin_alias => $plugin_alias,
         timeout      => $timeout,

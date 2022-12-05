@@ -29,7 +29,7 @@ if os[:family] == 'windows'
 else
   docker_args = ''
   docker_network = 'bridge'
-  volume_location = '/opt'
+  volume_location = '/opt/'
   docker_image = 'hello-world:linux'
 end
 
@@ -39,8 +39,8 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
       install_pp = "class { 'docker': #{docker_args}}"
       apply_manifest(install_pp)
     end
-    run_shell("mkdir #{volume_location}/volume_1")
-    run_shell("mkdir #{volume_location}/volume_2")
+    run_shell("mkdir #{volume_location}volume_1")
+    run_shell("mkdir #{volume_location}volume_2")
   end
 
   context 'when image is changed' do
@@ -84,8 +84,8 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
       volumes1 = "volumes => ['volume-1:C:\\volume_1']"
       volumes2 = "volumes => ['volume-1:C:\\volume_1', 'volume-2:C:\\volume_2']"
     else
-      volumes1 = "volumes => ['volume-1:#{volume_location}/volume_1']"
-      volumes2 = "volumes => ['volume-1:#{volume_location}/volume_1', 'volume-2:#{volume_location}/volume_2']"
+      volumes1 = "volumes => ['volume-1:#{volume_location}volume_1']"
+      volumes2 = "volumes => ['volume-1:#{volume_location}volume_1', 'volume-2:#{volume_location}volume_2']"
     end
 
     let(:pp1) do
@@ -149,7 +149,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
   end
 
   after(:all) do
-    run_shell("rm -r #{volume_location}/volume_1")
-    run_shell("rm -r #{volume_location}/volume_2")
+    run_shell("rm -r #{volume_location}volume_1")
+    run_shell("rm -r #{volume_location}volume_2")
   end
 end

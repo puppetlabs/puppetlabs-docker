@@ -309,7 +309,7 @@ define docker::run (
   $depends_array          = any2array($depends)
   $depend_services_array  = any2array($depend_services)
 
-  $docker_run_flags = docker_run_flags( {
+  $docker_run_flags = docker_run_flags({
       cpuset                => any2array($cpuset),
       disable_network       => $disable_network,
       dns                   => any2array($dns),

@@ -1,21 +1,32 @@
 # frozen_string_literal: true
 
-require 'shellwords'
 #
 # docker_run_flags.rb
 #
 module Puppet::Parser::Functions
+  newfunction(:'docker::escape', type: :rvalue) do |args|
+    subject = args[0]
+
+    escape_function = if self['facts'] && self['facts']['os']['family'] == 'windows'
+                        'powershell_escape'
+                      else
+                        'shell_escape'
+                      end
+
+    call_function(escape_function, subject)
+  end
+
   # Transforms a hash into a string of docker flags
   newfunction(:docker_run_flags, type: :rvalue) do |args|
     opts = args[0] || {}
     flags = []
 
     if opts['username']
-      flags << "-u '#{opts['username'].shellescape}'"
+      flags << "-u #{call_function('docker::escape', [opts['username']])}"
     end
 
     if opts['hostname']
-      flags << "-h '#{opts['hostname'].shellescape}'"
+      flags << "-h #{call_function('docker::escape', [opts['hostname']])}"
     end
 
     if opts['restart']
@@ -24,9 +35,9 @@ module Puppet::Parser::Functions
 
     if opts['net']
       if opts['net'].is_a? String
-        flags << "--net #{opts['net'].shellescape}"
+        flags << "--net #{call_function('docker::escape', [opts['net']])}"
       elsif opts['net'].is_a? Array
-        flags << "--net #{opts['net'].join(' --net ').shellescape}"
+        flags += opts['net'].map { |item| ["--net #{call_function('docker::escape', [item])}"] }
       end
     end
 
@@ -72,7 +83,7 @@ module Puppet::Parser::Functions
 
     multi_flags = ->(values, fmt) {
       filtered = [values].flatten.compact
-      filtered.map { |val| (fmt + params_join_char) % val }
+      filtered.map { |val| (fmt + params_join_char) % call_function('docker::escape', [val]) }
     }
 
     [
@@ -80,9 +91,9 @@ module Puppet::Parser::Functions
       ['--dns-search %s',   'dns_search'],
       ['--expose=%s',       'expose'],
       ['--link %s',         'links'],
-      ['--lxc-conf="%s"',   'lxc_conf'],
+      ['--lxc-conf=%s',     'lxc_conf'],
       ['--volumes-from %s', 'volumes_from'],
-      ['-e "%s"',           'env'],
+      ['-e %s',             'env'],
       ['--env-file %s',     'env_file'],
       ['-p %s',             'ports'],
       ['-l %s',             'labels'],
