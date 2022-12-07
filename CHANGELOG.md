@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v6.0.2](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.0.2) (2022-12-07)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v6.0.1...v6.0.2)
+
+### Fixed
+
+- \(CONT-24\) docker_stack always redoploying [\#878](https://github.com/puppetlabs/puppetlabs-docker/pull/878) ([david22swan](https://github.com/david22swan))
+
 ## [v6.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.0.1) (2022-11-25)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v6.0.0...v6.0.1)
