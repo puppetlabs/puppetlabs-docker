@@ -467,7 +467,7 @@ class docker (
   Optional[Boolean]                       $service_hasrestart                = $docker::params::service_hasrestart,
   Optional[Variant[String,Array]]         $registry_mirror                   = $docker::params::registry_mirror,
   Boolean                                 $acknowledge_unsupported_os        = false,
-  Optional[String]                        $keyring                           = $docker::params::keyring,
+  Stdlib::Absolutepath                    $keyring                           = '/etc/apt/keyrings/docker.gpg',
 
   # Windows specific parameters
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,
