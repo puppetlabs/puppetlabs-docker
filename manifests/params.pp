@@ -194,6 +194,7 @@ class docker::params {
       } else {
         $detach_service_in_init = true
       }
+      $keyring = '/etc/apt/keyrings/docker.gpg'
     }
     'RedHat' : {
       $service_after_override      = undef

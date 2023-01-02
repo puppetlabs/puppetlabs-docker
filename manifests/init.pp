@@ -347,6 +347,7 @@
 # @param service_hasstatus
 # @param service_hasrestart
 # @param acknowledge_unsupported_os
+# @param keyring
 #
 class docker (
   Optional[String]                        $version                           = $docker::params::version,
@@ -466,6 +467,7 @@ class docker (
   Optional[Boolean]                       $service_hasrestart                = $docker::params::service_hasrestart,
   Optional[Variant[String,Array]]         $registry_mirror                   = $docker::params::registry_mirror,
   Boolean                                 $acknowledge_unsupported_os        = false,
+  Optional[String]                        $keyring                           = $docker::params::keyring,
 
   # Windows specific parameters
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,

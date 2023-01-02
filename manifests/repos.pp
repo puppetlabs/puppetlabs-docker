@@ -8,11 +8,14 @@
 #
 # @param architecture
 #
+# @param keyring
+#
 class docker::repos (
   $location         = $docker::package_location,
   $key_source       = $docker::package_key_source,
   $key_check_source = $docker::package_key_check_source,
   $architecture     = $facts['os']['architecture'],
+  $keyring          = $docker::keyring,
 ) {
   ensure_packages($docker::prerequired_packages)
 
@@ -22,19 +25,38 @@ class docker::repos (
       $package_key   = $docker::package_key
       $package_repos = $docker::package_repos
 
+      if ( $facts['os']['distro']['id'] == 'Debian' and versioncmp($facts['os']['distro']['release']['major'],'10') >= 0 ) or ( $facts['os']['distro']['id'] == 'Ubuntu' and versioncmp($facts['os']['distro']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
+        # fix deprecated apt-key warnings
+        file { $keyring:
+          ensure => file,
+          source => "puppet:///modules/${module_name}/etc/apt/keyrings/docker.gpg",
+          mode   => '0644',
+          owner  => 'root',
+          group  => 'root',
+        }
+        $key_options = {
+          keyring => $keyring,
+        }
+      }
+      else {
+        $key_options = {
+          key          => {
+            id     => $package_key,
+            source => $key_source,
+          },
+        }
+      }
+
       if ($docker::use_upstream_package_source) {
         apt::source { 'docker':
           location     => $location,
           architecture => $architecture,
           release      => $release,
           repos        => $package_repos,
-          key          => {
-            id     => $package_key,
-            source => $key_source,
-          },
           include      => {
             src => false,
           },
+          *            => $key_options,
         }
 
         $url_split  = split($location, '/')
