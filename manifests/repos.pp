@@ -28,11 +28,11 @@ class docker::repos (
       if ( $facts['os']['distro']['id'] == 'Debian' and versioncmp($facts['os']['distro']['release']['major'],'10') >= 0 ) or ( $facts['os']['distro']['id'] == 'Ubuntu' and versioncmp($facts['os']['distro']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
         # fix deprecated apt-key warnings
         file { $keyring:
-          ensure => file,
-          source => "puppet:///modules/${module_name}/etc/apt/keyrings/docker.gpg",
-          mode   => '0644',
-          owner  => 'root',
-          group  => 'root',
+          ensure  => file,
+          content => binary_file("${module_name}/etc/apt/keyrings/docker.gpg"),
+          mode    => '0644',
+          owner   => 'root',
+          group   => 'root',
         }
         $key_options = {
           keyring => $keyring,
