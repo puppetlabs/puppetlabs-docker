@@ -348,6 +348,8 @@
 # @param service_hasrestart
 # @param acknowledge_unsupported_os
 # @param keyring
+#   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
+#   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
 #
 class docker (
   Optional[String]                        $version                           = $docker::params::version,
