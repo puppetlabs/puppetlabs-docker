@@ -9,6 +9,8 @@
 # @param architecture
 #
 # @param keyring
+#   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
+#   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
 #
 class docker::repos (
   $location         = $docker::package_location,
