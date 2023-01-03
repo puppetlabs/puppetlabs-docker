@@ -40,7 +40,7 @@ class docker::repos (
       }
       else {
         $key_options = {
-          key          => {
+          key => {
             id     => $package_key,
             source => $key_source,
           },
