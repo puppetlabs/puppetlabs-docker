@@ -30,6 +30,9 @@ tests = {
     'docker_msft_provider_version'   => '123',
     'nuget_package_provider_version' => '41',
   },
+  'with keyring set to optional path' => {
+    'keyring' => '/root/keyrings/docker.gpg',
+  },
 }
 
 describe 'docker', type: :class do
@@ -180,6 +183,7 @@ describe 'docker', type: :class do
             'tmp_dir'                           => defaults['tmp_dir'],
             'use_upstream_package_source'       => defaults['use_upstream_package_source'],
             'version'                           => defaults['version'],
+            'keyring'                           => defaults['keyring']
           }.merge(default_params).merge(local_params)
 
           let(:facts) do
