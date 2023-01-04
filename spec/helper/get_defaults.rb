@@ -88,6 +88,7 @@ def get_defaults(_facts)
   tmp_dir                           = '/tmp/'
   tmp_dir_config                    = true
   version                           = :undef
+  keyring                           = '/etc/apt/keyrings/docker.gpg'
 
   if _facts[:os]['family'] == 'windows'
     compose_install_path   = "#{_facts['docker_program_files_path']}/Docker"
