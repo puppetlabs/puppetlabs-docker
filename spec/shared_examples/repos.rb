@@ -29,7 +29,7 @@ shared_examples 'repos' do |params, facts|
 
     if params['use_upstream_package_source']
       # check if debian version is atleast 10 and ubuntu version is atleast 22
-      if ( facts[:operatingsystem] == 'Debian' and facts[:operatingsystemrelease] =~ /1[0-9]/ ) or ( facts[:operatingsystem] == 'Ubuntu' and facts[:operatingsystemrelease] =~ /2[2-9]/ )
+      if (facts[:operatingsystem] == 'Debian' && facts[:operatingsystemrelease] =~ /1[0-9]/) || (facts[:operatingsystem] == 'Ubuntu' && facts[:operatingsystemrelease] =~ /2[2-9]/)
         it {
           is_expected.to contain_file(keyring).with(
             'ensure'  => 'file',
@@ -37,7 +37,7 @@ shared_examples 'repos' do |params, facts|
             'owner'   => 'root',
             'group'   => 'root',
           )
-        }    
+        }
         it {
           is_expected.to contain_apt__source('docker').with(
             'location'     => location,
