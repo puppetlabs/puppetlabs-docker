@@ -27,21 +27,37 @@ shared_examples 'repos' do |params, facts|
     package_repos = values['package_repos']
 
     if params['use_upstream_package_source']
-      it {
-        is_expected.to contain_apt__source('docker').with(
-          'location'     => location,
-          'architecture' => architecture,
-          'release'      => release,
-          'repos'        => package_repos,
-          'key'          => {
-            'id'     => package_key,
-            'source' => key_source,
-          },
-          'include' => {
-            'src' => false,
-          },
-        )
-      }
+      # check if debian version is atleast 10 and ubuntu version is atleast 22
+      if ( facts[:operatingsystem] == 'Debian' and facts[:operatingsystemrelease] =~ /1[0-9]/ ) or ( facts[:operatingsystem] == 'Ubuntu' and facts[:operatingsystemrelease] =~ /2[2-9]/ )
+        it {
+          is_expected.to contain_apt__source('docker').with(
+            'location'     => location,
+            'architecture' => architecture,
+            'release'      => release,
+            'repos'        => package_repos,
+            'keyring'      => '/etc/apt/keyrings/docker.gpg',
+            'include' => {
+              'src' => false,
+            },
+          )
+        }
+      else
+        it {
+          is_expected.to contain_apt__source('docker').with(
+            'location'     => location,
+            'architecture' => architecture,
+            'release'      => release,
+            'repos'        => package_repos,
+            'key'          => {
+              'id'     => package_key,
+              'source' => key_source,
+            },
+            'include' => {
+              'src' => false,
+            },
+          )
+        }
+      end
 
       url_split  = location.split('/')
       repo_host  = url_split[2]
