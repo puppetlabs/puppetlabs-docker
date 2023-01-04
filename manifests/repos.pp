@@ -39,7 +39,7 @@ class docker::repos (
         $key_options = {
           keyring => $keyring,
         }
-        apt::key { 'remove-key-from-trusted.gpg-store':
+        apt::key { 'docker-key-in-trusted.gpg':
           ensure => absent,
           id     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',
         }

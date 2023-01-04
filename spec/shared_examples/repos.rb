@@ -50,6 +50,13 @@ shared_examples 'repos' do |params, facts|
             },
           )
         }
+        it {
+          is_expected.to contain_apt__key('docker-key-in-trusted.gpg').with({
+            'ensure' => 'absent',
+            'id'     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',
+          })
+        }
+  
       else
         it {
           is_expected.to contain_apt__source('docker').with(
