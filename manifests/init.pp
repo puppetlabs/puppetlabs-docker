@@ -351,6 +351,9 @@
 #   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
 #   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
 #
+# @param gpg_force_update
+#   Forces to update the with keyring provided gpg key.
+#
 class docker (
   Optional[String]                        $version                           = $docker::params::version,
   String                                  $ensure                            = $docker::params::ensure,
@@ -470,6 +473,7 @@ class docker (
   Optional[Variant[String,Array]]         $registry_mirror                   = $docker::params::registry_mirror,
   Boolean                                 $acknowledge_unsupported_os        = false,
   Stdlib::Absolutepath                    $keyring                           = '/etc/apt/keyrings/docker.gpg',
+  Boolean                                 $keyring_force_update              = false,
 
   # Windows specific parameters
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,

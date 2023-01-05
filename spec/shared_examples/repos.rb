@@ -12,6 +12,7 @@ shared_examples 'repos' do |params, facts|
   key_check_source = values['package_key_check_source']
   architecture     = facts[:os]['architecture']
   keyring          = params['keyring']
+  os_lc            = params['os_lc']
 
   unless params['prerequired_packages'].empty?
     params['prerequired_packages'].each do |package|
@@ -30,15 +31,45 @@ shared_examples 'repos' do |params, facts|
     if params['use_upstream_package_source']
       # check if debian version is atleast 10 and ubuntu version is atleast 22
       if (facts[:operatingsystem] == 'Debian' && facts[:operatingsystemrelease] =~ /1[0-9]/) || (facts[:operatingsystem] == 'Ubuntu' && facts[:operatingsystemrelease] =~ /2[2-9]/)
+        # if params['curl_ensure']
+        #   it {
+        #     is_expected.to contain_package('curl')
+        #   }
+        # end
+        # if params['gpg_ensure']
+        #   it {
+        #     is_expected.to contain_package('gpg')
+        #   }
+        # end
+        if params['keyring_force_update']
+          it {
+            is_expected.to contain_exec('Remove Docker-GPG-Key').with(
+              'path'    => '/bin/',
+              'cwd'     => '/tmp',
+              'command' => "rm #{keyring}",
+            ).that_comes_before('Exec[Install Docker-GPG-Key]')
+          }
+        end
         it {
+          is_expected.to contain_exec('Install Docker-GPG-Key').with(
+            'path'    => '/usr/bin/',
+            'cwd'     => '/tmp',
+            'command' => "curl -fsSL https://download.docker.com/linux/#{os_lc}/gpg | gpg --dearmor -o #{keyring}",
+            'creates' => keyring,
+          ).that_requires(
+            [
+              'Package[curl]',
+              'Package[gpg]',
+            ],
+          )
+
           is_expected.to contain_file(keyring).with(
             'ensure'  => 'file',
             'mode'    => '0644',
             'owner'   => 'root',
             'group'   => 'root',
           )
-        }
-        it {
+
           is_expected.to contain_apt__source('docker').with(
             'location'     => location,
             'architecture' => architecture,
@@ -49,8 +80,7 @@ shared_examples 'repos' do |params, facts|
               'src' => false,
             },
           )
-        }
-        it {
+
           is_expected.to contain_apt__key('docker-key-in-trusted.gpg').with(
             'ensure' => 'absent',
             'id'     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',

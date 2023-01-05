@@ -33,6 +33,9 @@ tests = {
   'with keyring set to optional path' => {
     'keyring' => '/root/keyrings/docker.gpg',
   },
+  'with keyring set to force update' => {
+    'keyring_force_update' => true,
+  },
 }
 
 describe 'docker', type: :class do
@@ -183,7 +186,8 @@ describe 'docker', type: :class do
             'tmp_dir'                           => defaults['tmp_dir'],
             'use_upstream_package_source'       => defaults['use_upstream_package_source'],
             'version'                           => defaults['version'],
-            'keyring'                           => defaults['keyring']
+            'keyring'                           => defaults['keyring'],
+            'keyring_force_update'              => defaults['keyring_force_update'],
           }.merge(default_params).merge(local_params)
 
           let(:facts) do
