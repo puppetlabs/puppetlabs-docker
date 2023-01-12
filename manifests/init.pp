@@ -351,7 +351,7 @@
 #   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
 #   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
 #
-# @param gpg_force_update
+# @param keyring_force_update
 #   Forces to update the with keyring provided gpg key.
 #
 class docker (
