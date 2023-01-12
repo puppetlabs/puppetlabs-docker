@@ -17,7 +17,8 @@
 #
 # @param gpg_ensure
 #   Whether or not the gpg package is ensured by this module.
-#
+# @param keyring_force_update
+#   Forces to update the with keyring provided gpg key.
 class docker::repos (
   $location             = $docker::package_location,
   $key_source           = $docker::package_key_source,
