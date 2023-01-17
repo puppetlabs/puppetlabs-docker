@@ -37,25 +37,23 @@ shared_examples 'repos' do |params, facts|
               'path'    => '/bin/',
               'cwd'     => '/tmp',
               'command' => "rm #{keyring}",
-            ).that_comes_before('Exec[Install Docker-GPG-Key]')
+            ).that_comes_before("Archive[#{keyring}]")
           }
         end
         it {
-          is_expected.to contain_archive(keyring).with(
+          is_expected.to contain_class('archive')
+          is_expected.to contain_archive(keyring)
+          .with(
             'ensure'          => 'present',
             'source'          => "https://download.docker.com/linux/#{os_lc}/gpg",
             'extract'         => true,
             'extract_command' => 'gpg',
-            'extract_flags'   => "--dearmor -o ${keyring}",
+            'extract_flags'   => "--dearmor -o #{keyring}",
             'extract_path'    => '/tmp',
             'path'            => '/tmp/docker.gpg',
-            'creates'         => $keyring,
+            'creates'         => keyring,
             'cleanup'         => true,
-          ).that_requires(
-            [
-              'Package[gpg]',
-            ],
-          )
+          ).that_requires('Package[gpg]')
 
           is_expected.to contain_file(keyring).with(
             'ensure'  => 'file',

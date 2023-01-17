@@ -23,7 +23,6 @@ class docker::repos (
   $key_check_source     = $docker::package_key_check_source,
   $architecture         = $facts['os']['architecture'],
   $keyring              = $docker::keyring,
-  $curl_ensure          = $docker::params::curl_ensure,
   $gpg_ensure           = $docker::params::gpg_ensure,
   $keyring_force_update = $docker::keyring_force_update,
 ) {
@@ -36,6 +35,7 @@ class docker::repos (
       $package_repos = $docker::package_repos
 
       if ( $facts['os']['distro']['id'] == 'Debian' and versioncmp($facts['os']['distro']['release']['major'],'10') >= 0 ) or ( $facts['os']['distro']['id'] == 'Ubuntu' and versioncmp($facts['os']['distro']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
+        include archive
         # fix deprecated apt-key warnings
         if $gpg_ensure {
           ensure_packages(['gpg'])
@@ -46,8 +46,9 @@ class docker::repos (
             cwd     => '/tmp',
             command => "rm ${keyring}",
           }
-          Exec['Remove Docker-GPG-Key'] -> Exec['Install Docker-GPG-Key']
+          Exec['Remove Docker-GPG-Key'] -> Archive[$keyring]
         }
+
         archive { $keyring:
           ensure          => present,
           source          => "https://download.docker.com/linux/${docker::os_lc}/gpg",
