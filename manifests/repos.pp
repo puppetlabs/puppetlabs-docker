@@ -12,11 +12,9 @@
 #   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
 #   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
 #
-# @param curl_ensure
-#   Whether or not the curl package is ensured by this module.
-#
 # @param gpg_ensure
 #   Whether or not the gpg package is ensured by this module.
+#
 # @param keyring_force_update
 #   Forces to update the with keyring provided gpg key.
 class docker::repos (
@@ -39,9 +37,6 @@ class docker::repos (
 
       if ( $facts['os']['distro']['id'] == 'Debian' and versioncmp($facts['os']['distro']['release']['major'],'10') >= 0 ) or ( $facts['os']['distro']['id'] == 'Ubuntu' and versioncmp($facts['os']['distro']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
         # fix deprecated apt-key warnings
-        if $curl_ensure {
-          ensure_packages(['curl'])
-        }
         if $gpg_ensure {
           ensure_packages(['gpg'])
         }
@@ -53,12 +48,17 @@ class docker::repos (
           }
           Exec['Remove Docker-GPG-Key'] -> Exec['Install Docker-GPG-Key']
         }
-        exec { 'Install Docker-GPG-Key':
-          path    => '/usr/bin/',
-          cwd     => '/tmp',
-          command => "curl -fsSL https://download.docker.com/linux/${docker::os_lc}/gpg | gpg --dearmor -o ${keyring}",
-          creates => $keyring,
-          require => Package['curl','gpg'],
+        archive { $keyring:
+          ensure          => present,
+          source          => "https://download.docker.com/linux/${docker::os_lc}/gpg",
+          extract         => true,
+          extract_command => 'gpg',
+          extract_flags   => "--dearmor -o ${keyring}",
+          extract_path    => '/tmp',
+          path            => '/tmp/docker.gpg',
+          creates         => $keyring,
+          cleanup         => true,
+          require         => Package['gpg'],
         }
         file { $keyring:
           ensure => file,

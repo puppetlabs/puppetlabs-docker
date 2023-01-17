@@ -41,14 +41,18 @@ shared_examples 'repos' do |params, facts|
           }
         end
         it {
-          is_expected.to contain_exec('Install Docker-GPG-Key').with(
-            'path'    => '/usr/bin/',
-            'cwd'     => '/tmp',
-            'command' => "curl -fsSL https://download.docker.com/linux/#{os_lc}/gpg | gpg --dearmor -o #{keyring}",
-            'creates' => keyring,
+          is_expected.to contain_archive(keyring).with(
+            'ensure'          => 'present',
+            'source'          => "https://download.docker.com/linux/#{os_lc}/gpg",
+            'extract'         => true,
+            'extract_command' => 'gpg',
+            'extract_flags'   => "--dearmor -o ${keyring}",
+            'extract_path'    => '/tmp',
+            'path'            => '/tmp/docker.gpg',
+            'creates'         => $keyring,
+            'cleanup'         => true,
           ).that_requires(
             [
-              'Package[curl]',
               'Package[gpg]',
             ],
           )
