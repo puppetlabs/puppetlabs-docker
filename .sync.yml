@@ -12,6 +12,8 @@ Gemfile:
     - gem: ruby-pwsh
     - gem: github_changelog_generator
       version: '= 1.15.2'
+    - gem: mocha
+      version: '< 1.2.0'
     ":system_tests":
     - gem: rspec-retry
 Rakefile:
