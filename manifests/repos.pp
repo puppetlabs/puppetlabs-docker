@@ -15,8 +15,6 @@
 # @param gpg_ensure
 #   Whether or not the gpg package is ensured by this module.
 #
-# @param keyring_force_update
-#   Forces to update the with keyring provided gpg key.
 class docker::repos (
   $location             = $docker::package_location,
   $key_source           = $docker::package_key_source,
@@ -24,7 +22,6 @@ class docker::repos (
   $architecture         = $facts['os']['architecture'],
   $keyring              = $docker::keyring,
   $gpg_ensure           = $docker::params::gpg_ensure,
-  $keyring_force_update = $docker::keyring_force_update,
 ) {
   ensure_packages($docker::prerequired_packages)
 
@@ -39,14 +36,6 @@ class docker::repos (
         # fix deprecated apt-key warnings
         if $gpg_ensure {
           ensure_packages(['gpg'])
-        }
-        if $keyring_force_update {
-          exec { 'Remove Docker-GPG-Key':
-            path    => '/bin/',
-            cwd     => '/tmp',
-            command => "rm ${keyring}",
-          }
-          Exec['Remove Docker-GPG-Key'] -> Archive[$keyring]
         }
 
         archive { $keyring:

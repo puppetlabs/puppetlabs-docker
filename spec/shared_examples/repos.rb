@@ -31,15 +31,6 @@ shared_examples 'repos' do |params, facts|
     if params['use_upstream_package_source']
       # check if debian version is atleast 11 and ubuntu version is atleast 22
       if (facts[:operatingsystem] == 'Debian' && facts[:operatingsystemrelease] =~ /1[1-9]/) || (facts[:operatingsystem] == 'Ubuntu' && facts[:operatingsystemrelease] =~ /2[2-9]/)
-        if params['keyring_force_update']
-          it {
-            is_expected.to contain_exec('Remove Docker-GPG-Key').with(
-              'path'    => '/bin/',
-              'cwd'     => '/tmp',
-              'command' => "rm #{keyring}",
-            ).that_comes_before("Archive[#{keyring}]")
-          }
-        end
         it {
           is_expected.to contain_class('archive')
           is_expected.to contain_archive(keyring)

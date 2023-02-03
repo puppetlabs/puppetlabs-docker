@@ -89,7 +89,6 @@ def get_defaults(_facts)
   tmp_dir_config                    = true
   version                           = :undef
   keyring                           = '/etc/apt/keyrings/docker.gpg'
-  keyring_force_update              = false
 
   if _facts[:os]['family'] == 'windows'
     compose_install_path   = "#{_facts['docker_program_files_path']}/Docker"
@@ -490,6 +489,5 @@ def get_defaults(_facts)
     'use_upstream_package_source' => use_upstream_package_source,
     'version' => version,
     'keyring' => keyring,
-    'keyring_force_update' => keyring_force_update,
   }
 end
