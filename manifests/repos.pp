@@ -34,7 +34,7 @@ class docker::repos (
       $package_key   = $docker::package_key
       $package_repos = $docker::package_repos
 
-      if ( $facts['os']['distro']['id'] == 'Debian' and versioncmp($facts['os']['distro']['release']['major'],'10') >= 0 ) or ( $facts['os']['distro']['id'] == 'Ubuntu' and versioncmp($facts['os']['distro']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
+      if ( $facts['os']['name'] == 'Debian' and versioncmp($facts['os']['release']['major'],'11' ) >= 0 ) or ( $facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
         include archive
         # fix deprecated apt-key warnings
         if $gpg_ensure {
