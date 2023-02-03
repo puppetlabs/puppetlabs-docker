@@ -25,7 +25,7 @@
       "version_requirement": ">=2.0.0 < 5.0.0"
     },
     {
-      "name": "voxpupuli/puppet-archive",
+      "name": "puppet/archive",
       "version_requirement": ">= v1.0.0"
     }
   ],

@@ -4,6 +4,7 @@ fixtures:
     apt: 'puppetlabs-apt'
     powershell: 'puppetlabs-powershell'
     reboot: 'puppetlabs-reboot'
+    archive: 'puppet-archive'
   repositories:
     facts: 'https://github.com/puppetlabs/puppetlabs-facts.git'
     puppet_agent: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
