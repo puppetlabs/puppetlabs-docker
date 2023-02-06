@@ -99,7 +99,8 @@ For Red Hat Enterprise Linux (RHEL) based distributions, the docker module uses 
 class { 'docker':
   use_upstream_package_source => false,
   service_overrides_template  => false,
-  docker_ce_package_name      => 'docker',
+  docker_engine_package_name  => 'docker',
+  docker_engine_start_command => 'dockerd',
 }
 ```
 
