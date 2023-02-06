@@ -605,7 +605,7 @@ class docker (
     $docker_package_name  = $docker_engine_package_name
   }
 
-  if ($version != undef) and ($version =~ /^(17[.]0[0-4]|1.\d+)/) {
+  if ($version != undef) and ($version =~ /^(17[.]0[0-4]|1[.]\d+[.]\d)/) {
     $root_dir_flag = '-g'
   } else {
     $root_dir_flag = '--data-root'
