@@ -33,8 +33,7 @@ shared_examples 'repos' do |params, facts|
       if (facts[:operatingsystem] == 'Debian' && facts[:operatingsystemrelease] =~ /1[1-9]/) || (facts[:operatingsystem] == 'Ubuntu' && facts[:operatingsystemrelease] =~ /2[2-9]/)
         it {
           is_expected.to contain_class('archive')
-          is_expected.to contain_archive(keyring)
-          .with(
+          is_expected.to contain_archive(keyring).with(
             'ensure'          => 'present',
             'source'          => "https://download.docker.com/linux/#{os_lc}/gpg",
             'extract'         => true,
