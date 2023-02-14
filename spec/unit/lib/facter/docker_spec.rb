@@ -98,7 +98,7 @@ describe 'Facter::Util::Fact' do
     ].each do |docker_client_version|
       it "Does not generate a nested fact with legacy version #{docker_client_version}" do
         expect(Facter.fact(:docker_client_version)).to receive(:value).and_return(docker_client_version)
-        expect(Facter::Core::Execution).not_to receive(:execute).with("docker info --format '{{json .}}'", any_args)
+        expect(Facter::Core::Execution).not_to receive(:execute).with("#{docker_command} info --format '{{json .}}'", any_args)
 
         expect(Facter.fact(:docker).value).to be_nil
       end
@@ -114,7 +114,7 @@ describe 'Facter::Util::Fact' do
     ].each do |docker_client_version|
       it "Generates a nested fact with version #{docker_client_version}" do
         expect(Facter.fact(:docker_client_version)).to receive(:value).and_return(docker_client_version)
-        expect(Facter::Core::Execution).to receive(:execute).with("docker info --format '{{json .}}'", any_args).and_return('{}')
+        expect(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", any_args).and_return('{}')
 
         expect(Facter.fact(:docker).value).not_to be_nil
       end
