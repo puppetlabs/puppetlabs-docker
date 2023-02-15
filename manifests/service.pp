@@ -261,8 +261,8 @@ class docker::service (
   Optional[Variant[String,Array]]         $registry_mirror                   = $docker::registry_mirror,
   String                                  $root_dir_flag                     = $docker::root_dir_flag,
 ) {
-  unless $facts['os']['family'] =~ /(Debian|RedHat|windows)/ or $docker::acknowledge_unsupported_os {
-    fail('The docker::service class needs a Debian, Redhat or Windows based system.')
+  unless $facts['os']['family'] =~ /(Debian|RedHat|Archlinux|windows)/ or $::docker::acknowledge_unsupported_os {
+    fail('The docker::service class needs a Debian, Redhat, Archlinux or Windows based system.')
   }
 
   $dns_array              = any2array($dns)

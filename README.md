@@ -1019,6 +1019,7 @@ This module supports:
 * Ubuntu 18.04
 * Ubuntu 20.04
 * Ubuntu 22.04
+* Archlinux
 * Windows Server 2016 (Docker Enterprise Edition only)
 * Windows Server 2019 (Docker Enterprise Edition only)
 * Windows Server 2022 (Docker Enterprise Edition only)
