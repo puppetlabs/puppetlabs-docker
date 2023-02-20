@@ -38,7 +38,4 @@ spec/spec_helper.rb:
 Rakefile:
   extra_disabled_lint_checks:
     - parameter_types
-    - legacy_facts
-    - top_scope_facts
     - parameter_documentation
-    - topscope_variable

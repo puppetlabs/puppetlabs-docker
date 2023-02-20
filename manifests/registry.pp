@@ -51,9 +51,9 @@ define docker::registry (
   $docker_command = $docker::params::docker_command
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment = ["PATH=${::docker_program_files_path}/Docker/",]
+    $exec_environment = ["PATH=${facts['docker_program_files_path']}/Docker/",]
     $exec_timeout     = 3000
-    $exec_path        = ["${::docker_program_files_path}/Docker/",]
+    $exec_path        = ["${facts['docker_program_files_path']}/Docker/",]
     $exec_provider    = 'powershell'
     $password_env     = '$env:password'
     $exec_user        = undef
@@ -124,7 +124,7 @@ define docker::registry (
     } else {
       # server may be an URI, which can contain /
       $server_strip  = regsubst($server, '[/:]', '_', 'G')
-      $passfile      = "${::docker_user_temp_path}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
+      $passfile      = "${facts['docker_user_temp_path']}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
       $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 1 } else { exit 0 }" # lint:ignore:140chars
 
       if $ensure == 'absent' {

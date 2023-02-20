@@ -261,7 +261,7 @@ class docker::service (
   $registry_mirror                   = $docker::registry_mirror,
   $root_dir_flag                     = $docker::root_dir_flag,
 ) {
-  unless $facts['os']['family'] =~ /(Debian|RedHat|windows)/ or $::docker::acknowledge_unsupported_os {
+  unless $facts['os']['family'] =~ /(Debian|RedHat|windows)/ or $docker::acknowledge_unsupported_os {
     fail('The docker::service class needs a Debian, Redhat or Windows based system.')
   }
 
@@ -299,8 +299,8 @@ class docker::service (
 
   if $facts['os']['family'] == 'windows' {
     $dirs = [
-      "${::docker_program_data_path}/docker/",
-      "${::docker_program_data_path}/docker/config/",
+      "${facts['docker_program_data_path']}/docker/",
+      "${facts['docker_program_data_path']}/docker/config/",
     ]
 
     $dirs.each |$dir| {
