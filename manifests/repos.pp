@@ -9,10 +9,10 @@
 # @param architecture
 #
 class docker::repos (
-  $location         = $docker::package_location,
-  $key_source       = $docker::package_key_source,
-  $key_check_source = $docker::package_key_check_source,
-  $architecture     = $facts['os']['architecture'],
+  Optional[String]  $location         = $docker::package_location,
+  Optional[String]  $key_source       = $docker::package_key_source,
+  Optional[Boolean] $key_check_source = $docker::package_key_check_source,
+  String            $architecture     = $facts['os']['architecture'],
 ) {
   ensure_packages($docker::prerequired_packages)
 

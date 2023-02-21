@@ -3,7 +3,7 @@
 # @param instance
 #
 class docker::run_instance (
-  $instance
+  Hash $instance
 ) {
   create_resources(docker::run, $instance)
 }
