@@ -90,6 +90,37 @@ describe 'Facter::Util::Fact' do
     end
   end
 
+  describe 'docker_client_version fact containment' do
+    [
+      '0.0.1',
+      '0.5.12',
+      '1.12.0',
+    ].each do |docker_client_version|
+      it "Does not generate a nested fact with legacy version #{docker_client_version}" do
+        expect(Facter.fact(:docker_client_version)).to receive(:value).and_return(docker_client_version)
+        expect(Facter::Core::Execution).not_to receive(:execute).with("#{docker_command} info --format '{{json .}}'", any_args)
+
+        expect(Facter.fact(:docker).value).to be_nil
+      end
+    end
+
+    [
+      '1.13.0',
+      '1.14.0',
+      '2.0.0',
+      '20.10.22',
+      '23.0.1',
+      '108.42.1',
+    ].each do |docker_client_version|
+      it "Generates a nested fact with version #{docker_client_version}" do
+        expect(Facter.fact(:docker_client_version)).to receive(:value).and_return(docker_client_version)
+        expect(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", any_args).and_return('{}')
+
+        expect(Facter.fact(:docker).value).not_to be_nil
+      end
+    end
+  end
+
   describe 'docker server version' do
     before(:each) do
       docker_version = File.read(fixtures('facts', 'docker_version'))
