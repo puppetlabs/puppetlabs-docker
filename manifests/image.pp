@@ -41,11 +41,11 @@ define docker::image (
 
   if $facts['os']['family'] == 'windows' {
     $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
-    $update_docker_image_path     = "${::docker_user_temp_path}/update_docker_image.ps1"
-    $exec_environment             = "PATH=${::docker_program_files_path}/Docker/"
+    $update_docker_image_path     = "${facts['docker_user_temp_path']}/update_docker_image.ps1"
+    $exec_environment             = "PATH=${facts['docker_program_files_path']}/Docker/"
     $exec_timeout                 = 3000
     $update_docker_image_owner    = undef
-    $exec_path                    = ["${::docker_program_files_path}/Docker/",]
+    $exec_path                    = ["${facts['docker_program_files_path']}/Docker/",]
     $exec_provider                = 'powershell'
   } else {
     $update_docker_image_template = 'docker/update_docker_image.sh.erb'

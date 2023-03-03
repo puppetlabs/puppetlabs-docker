@@ -45,7 +45,7 @@ class docker::machine (
 
   if $ensure == 'present' {
     $docker_machine_url = $url ? {
-      undef   => "https://github.com/docker/machine/releases/download/v${version}/docker-machine-${::kernel}-x86_64${file_extension}",
+      undef   => "https://github.com/docker/machine/releases/download/v${version}/docker-machine-${facts['kernel']}-x86_64${file_extension}",
       default => $url,
     }
 

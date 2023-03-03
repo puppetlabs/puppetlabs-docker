@@ -1,6 +1,1 @@
 --relative
---no-parameter_types-check
---no-legacy_facts-check
---no-top_scope_facts-check
---no-parameter_documentation-check
---no-topscope_variable-check

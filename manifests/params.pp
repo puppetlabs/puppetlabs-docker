@@ -90,13 +90,13 @@ class docker::params {
   $docker_command                    = 'docker'
 
   if ($facts['os']['family'] == 'windows') {
-    $compose_install_path   = "${::docker_program_files_path}/Docker"
+    $compose_install_path   = "${facts['docker_program_files_path']}/Docker"
     $compose_version        = '1.29.2'
     $docker_ee_package_name = 'Docker'
-    $machine_install_path   = "${::docker_program_files_path}/Docker"
-    $tls_cacert             = "${::docker_program_data_path}/docker/certs.d/ca.pem"
-    $tls_cert               = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
-    $tls_key                = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
+    $machine_install_path   = "${facts['docker_program_files_path']}/Docker"
+    $tls_cacert             = "${facts['docker_program_data_path']}/docker/certs.d/ca.pem"
+    $tls_cert               = "${facts['docker_program_data_path']}/docker/certs.d/server-cert.pem"
+    $tls_key                = "${facts['docker_program_data_path']}/docker/certs.d/server-key.pem"
   } else {
     $compose_install_path   = '/usr/local/bin'
     $compose_version        = '1.29.2'
@@ -243,7 +243,7 @@ class docker::params {
       $msft_provider_version               = $docker_msft_provider_version
       $msft_package_version                = $version
       $service_config_template             = 'docker/windows/config/daemon.json.erb'
-      $service_config                      = "${::docker_program_data_path}/docker/config/daemon.json"
+      $service_config                      = "${facts['docker_program_data_path']}/docker/config/daemon.json"
       $docker_group                        = 'docker'
       $package_ce_source_location          = undef
       $package_ce_key_source               = undef

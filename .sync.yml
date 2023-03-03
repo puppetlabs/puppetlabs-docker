@@ -35,10 +35,3 @@ spec/spec_helper.rb:
   unmanaged: false
 .travis.yml:
   delete: true
-Rakefile:
-  extra_disabled_lint_checks:
-    - parameter_types
-    - legacy_facts
-    - top_scope_facts
-    - parameter_documentation
-    - topscope_variable
