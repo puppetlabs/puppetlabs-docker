@@ -350,6 +350,7 @@
 # @param keyring
 #   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
 #   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
+# @param have_systemd_v230
 #
 class docker (
   Optional[String]                        $version                           = $docker::params::version,

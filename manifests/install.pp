@@ -19,12 +19,12 @@
 # @param dependent_packages
 #
 class docker::install (
-  $version                        = $docker::version,
-  $nuget_package_provider_version = $docker::nuget_package_provider_version,
-  $docker_msft_provider_version   = $docker::docker_msft_provider_version,
-  $docker_ee_package_name         = $docker::docker_ee_package_name,
-  $docker_download_url            = $docker::package_location,
-  $dependent_packages             = $docker::dependent_packages,
+  Optional[String] $version                        = $docker::version,
+  Optional[String] $nuget_package_provider_version = $docker::nuget_package_provider_version,
+  Optional[String] $docker_msft_provider_version   = $docker::docker_msft_provider_version,
+  Optional[String] $docker_ee_package_name         = $docker::docker_ee_package_name,
+  Optional[String] $docker_download_url            = $docker::package_location,
+  Array            $dependent_packages             = $docker::dependent_packages,
 ) {
   $docker_start_command = $docker::docker_start_command
 

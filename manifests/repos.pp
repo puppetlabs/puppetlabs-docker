@@ -16,12 +16,12 @@
 #   Whether or not the gpg package is ensured by this module.
 #
 class docker::repos (
-  $location             = $docker::package_location,
-  $key_source           = $docker::package_key_source,
-  $key_check_source     = $docker::package_key_check_source,
-  $architecture         = $facts['os']['architecture'],
-  $keyring              = $docker::keyring,
-  $gpg_ensure           = $docker::params::gpg_ensure,
+  Optional[String]     $location         = $docker::package_location,
+  Optional[String]     $key_source       = $docker::package_key_source,
+  Optional[Boolean]    $key_check_source = $docker::package_key_check_source,
+  String               $architecture     = $facts['os']['architecture'],
+  Stdlib::Absolutepath $keyring          = $docker::keyring,
+  Boolean              $gpg_ensure       = $docker::params::gpg_ensure,
 ) {
   ensure_packages($docker::prerequired_packages)
 

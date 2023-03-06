@@ -100,8 +100,8 @@ define docker::services (
   }
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
-    $exec_path        = ["${::docker_program_files_path}/Docker/",]
+    $exec_environment = "PATH=${facts['docker_program_files_path']}/Docker/;${facts['docker_systemroot']}/System32/"
+    $exec_path        = ["${facts['docker_program_files_path']}/Docker/",]
     $exec_provider    = 'powershell'
     $exec_timeout     = 3000
   } else {

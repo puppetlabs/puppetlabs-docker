@@ -3,7 +3,7 @@
 # @param volumes
 #
 class docker::volumes (
-  $volumes
+  Hash $volumes
 ) {
   create_resources(docker_volume, $volumes)
 }

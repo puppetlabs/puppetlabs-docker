@@ -3,7 +3,7 @@
 # @param registries
 #
 class docker::registry_auth (
-  $registries
+  Hash $registries
 ) {
   create_resources(docker::registry, $registries)
 }
