@@ -196,6 +196,7 @@ services:
       @windows_ip = ip
     end
     apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }", catch_failures: true)
+    sleep 300
     docker_path = 'C:\\Program Files\\Docker'
     run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
     puts 'Waiting for box to come online'
