@@ -169,13 +169,58 @@ Puppet::Functions.create_function(:docker_params_changed) do
 
 
         # check if something on ports was changed(some ports were added or removed)
+        # for the ports from inspect, transform this into a hash so we can compare as a set
+        # with one entry per address family
+        ports = []
+        inspect_hash['NetworkSettings']['Ports'].each do |key, value|
+            next if not value
+            cp = key.split('/')
+            value.each do |host_info|
+                entry = {
+                    'protocol' => cp[1],
+                    'host_ip' => host_info.fetch('HostIp'),
+                    'host_port' => host_info.fetch('HostPort'),
+                    'container_port' => cp[0],
+                }
+                ports.append(entry)
+            end
+        end
 
-        ports = inspect_hash['HostConfig']['PortBindings'].keys
-        ports = ports.map { |item| item.split('/')[0] }
-        pp_ports = opts['ports'].sort if opts['ports'].is_a?(Array)
-        pp_ports = [opts['ports']] if opts['ports'].is_a?(String)
+        # TODO the manifest should probably also validate with this regex pattern (or a similar one)
+        # for the ports from the manifest, transform them into a similar hash so we can compare as a set
+        # with one entry per address family
+        pp_ports = []
+        if opts['ports'].is_a?(String)
+            if opts['ports'] =~ /(?:(.+):)?([0-9]+):([0-9]+)(?:\/(.+))?/
+                addrs = $1 ? [$1] : ['0.0.0.0', '::']
+                addrs.each do |addr|
+                    entry = {
+                        'protocol' => $4 || 'tcp',
+                        'host_ip' => addr,
+                        'host_port' => $2,
+                        'container_port' => $3,
+                    }
+                    pp_ports.append(entry)
+                end
+            end
+        elsif opts['ports'].is_a?(Array)
+            opts['ports'].each do |port|
+                if port =~ /(?:(.+):)?([0-9]+):([0-9]+)(?:\/(.+))?/
+                    addrs = $1 ? [$1] : ['0.0.0.0', '::']
+                    addrs.each do |addr|
+                        entry = {
+                            'protocol' => $4 || 'tcp',
+                            'host_ip' => addr,
+                            'host_port' => $2,
+                            'container_port' => $3,
+                        }
+                        pp_ports.append(entry)
+                    end
+                end
+            end
+        end
 
-        param_changed = true if pp_ports && pp_ports != ports
+        param_changed = true if (pp_ports.length != ports.length && Set.new(pp_ports) != Set.new(ports))
 
         if param_changed
           remove_container(opts['sanitised_title'], opts['osfamily'], opts['stop_wait_time'], opts['cidfile'])
