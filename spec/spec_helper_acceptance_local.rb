@@ -76,6 +76,8 @@ RSpec.configure do |c|
       run_shell('apt-get install -y net-tools')
     end
 
+    run_shell('sudo apt-get remove runc') unless os[:family] == 'windows' || !ENV['CI']
+
     run_shell('puppet module install puppetlabs-stdlib --version 4.24.0', expect_failures: true)
     run_shell('puppet module install puppetlabs-apt --version 4.4.1', expect_failures: true)
     run_shell('puppet module install puppetlabs-translate --version 1.0.0', expect_failures: true)
