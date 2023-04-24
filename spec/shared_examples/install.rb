@@ -42,6 +42,7 @@ shared_examples 'install' do |_params, _facts|
             }.merge(docker_hash),
           )
         }
+
         it {
           is_expected.to contain_package('docker-ce-cli').with(
             {
