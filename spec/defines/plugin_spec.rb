@@ -13,7 +13,7 @@ tests = {
     'enabled' => false,
   },
   'foo/force_remove:latest' => {
-    'ensure'       => 'absent',
+    'ensure' => 'absent',
     'force_remove' => true,
   },
 }
@@ -38,16 +38,16 @@ describe 'docker::plugin', type: :define do
       tests.each do |title, local_params|
         context title do
           params = {
-            'ensure'                => 'present',
-            'plugin_name'           => title,
-            'enabled'               => true,
-            'timeout'               => :undef,
-            'plugin_alias'          => :undef,
-            'disable_on_install'    => false,
+            'ensure' => 'present',
+            'plugin_name' => title,
+            'enabled' => true,
+            'timeout' => :undef,
+            'plugin_alias' => :undef,
+            'disable_on_install' => false,
             'disable_content_trust' => true,
             'grant_all_permissions' => true,
-            'force_remove'          => true,
-            'settings'              => [],
+            'force_remove' => true,
+            'settings' => [],
           }.merge(local_params)
 
           let(:facts) do

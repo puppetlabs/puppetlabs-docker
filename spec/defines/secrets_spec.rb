@@ -6,10 +6,10 @@ tests = {
   'with ensure present' => {
     'secret_name' => 'test_secret',
     'secret_path' => '/root/secret.txt',
-    'label'       => ['test'],
+    'label' => ['test'],
   },
   'with ensure absent' => {
-    'ensure'      => 'absent',
+    'ensure' => 'absent',
     'secret_name' => 'test_secret',
   },
 }
@@ -34,8 +34,8 @@ describe 'docker::secrets', type: :define do
       tests.each do |title, local_params|
         context title do
           params = {
-            'ensure'      => 'present',
-            'label'       => [],
+            'ensure' => 'present',
+            'label' => [],
             'secret_name' => :undef,
             'secret_path' => :undef,
           }.merge(local_params)

@@ -72,7 +72,7 @@ shared_examples 'run' do |title, params, facts, defaults|
   if use_name
     it {
       is_expected.to contain_notify("docker use_name warning: #{title}").with(
-        'message'  => 'The use_name parameter is no-longer required and will be removed in a future release',
+        'message' => 'The use_name parameter is no-longer required and will be removed in a future release',
         'withpath' => true,
       )
     }
@@ -87,32 +87,32 @@ shared_examples 'run' do |title, params, facts, defaults|
 
   docker_run_flags = get_docker_run_flags(
     'cpuset' => [cpuset],
-    'disable_network'       => disable_network,
-    'dns_search'            => [dns_search],
-    'dns'                   => [dns],
-    'env_file'              => [env_file],
-    'env'                   => [env],
-    'expose'                => [expose],
+    'disable_network' => disable_network,
+    'dns_search' => [dns_search],
+    'dns' => [dns],
+    'env_file' => [env_file],
+    'env' => [env],
+    'expose' => [expose],
     'extra_params' => [extra_parameters],
-    'health_check_cmd'      => health_check_cmd,
+    'health_check_cmd' => health_check_cmd,
     'health_check_interval' => health_check_interval,
-    'hostentries'           => [hostentries],
-    'hostname'              => hostname,
-    'labels'                => [labels],
-    'links'                 => [links],
-    'lxc_conf'              => [lxc_conf],
-    'memory_limit'          => memory_limit,
-    'net'                   => net,
-    'osfamily'              => facts[:os]['family'],
-    'ports'                 => [ports],
-    'privileged'            => privileged,
-    'read_only'             => read_only,
-    'restart_on_unhealthy'  => restart_on_unhealthy,
-    'socket_connect'        => [socket_connect],
-    'tty'                   => tty,
-    'username'              => username,
-    'volumes_from'          => [volumes_from],
-    'volumes'               => [volumes],
+    'hostentries' => [hostentries],
+    'hostname' => hostname,
+    'labels' => [labels],
+    'links' => [links],
+    'lxc_conf' => [lxc_conf],
+    'memory_limit' => memory_limit,
+    'net' => net,
+    'osfamily' => facts[:os]['family'],
+    'ports' => [ports],
+    'privileged' => privileged,
+    'read_only' => read_only,
+    'restart_on_unhealthy' => restart_on_unhealthy,
+    'socket_connect' => [socket_connect],
+    'tty' => tty,
+    'username' => username,
+    'volumes_from' => [volumes_from],
+    'volumes' => [volumes],
   )
 
   sanitised_title = title.gsub('[^0-9A-Za-z.\-_]', '-')
@@ -138,12 +138,12 @@ shared_examples 'run' do |title, params, facts, defaults|
   if restart_on_unhealthy
     it {
       is_expected.to contain_exec("Restart unhealthy container #{title} with docker").with(
-        'command'     => "#{docker_command} restart #{sanitised_title}",
-        'onlyif'      => restart_check,
+        'command' => "#{docker_command} restart #{sanitised_title}",
+        'onlyif' => restart_check,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'provider'    => exec_provider,
-        'timeout'     => exec_timeout,
+        'path' => exec_path,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
       )
     }
   end
@@ -152,21 +152,21 @@ shared_examples 'run' do |title, params, facts, defaults|
     if ensure_value == 'absent'
       it {
         is_expected.to contain_exec("stop #{title} with docker").with(
-          'command'     => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
-          'onlyif'      => "#{docker_command} inspect #{sanitised_title}",
+          'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+          'onlyif' => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
-          'path'        => exec_path,
-          'provider'    => exec_provider,
-          'timeout'     => exec_timeout,
+          'path' => exec_path,
+          'provider' => exec_provider,
+          'timeout' => exec_timeout,
         )
 
         is_expected.to contain_exec("remove #{title} with docker").with(
-          'command'     => "#{docker_command} rm -v #{sanitised_title}",
-          'onlyif'      => "#{docker_command} inspect #{sanitised_title}",
+          'command' => "#{docker_command} rm -v #{sanitised_title}",
+          'onlyif' => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
-          'path'        => exec_path,
-          'provider'    => exec_provider,
-          'timeout'     => exec_timeout,
+          'path' => exec_path,
+          'provider' => exec_provider,
+          'timeout' => exec_timeout,
         )
 
         is_expected.to contain_file(cidfile).with(
@@ -193,54 +193,54 @@ shared_examples 'run' do |title, params, facts, defaults|
       if facts[:puppetversion].to_i < 6
         it {
           is_expected.to contain_exec("run #{title} with docker").with(
-            'command'     => run_with_docker_command.join(' '),
+            'command' => run_with_docker_command.join(' '),
             ## todo:
             ## fix the following strange behavior:
             ## expected that the catalogue would contain Exec[run command with docker] with unless set to [["docker inspect command"]]
             ## but it is set to [["docker inspect command"], "docker inspect command"]
             # 'unless'      => exec_unless,
             'environment' => exec_environment,
-            'path'        => exec_path,
-            'provider'    => exec_provider,
-            'timeout'     => exec_timeout,
+            'path' => exec_path,
+            'provider' => exec_provider,
+            'timeout' => exec_timeout,
           )
         }
 
         if !running
           it {
             is_expected.to contain_exec("stop #{title} with docker").with(
-              'command'     => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
-              'onlyif'      => container_running_check,
+              'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+              'onlyif' => container_running_check,
               'environment' => exec_environment,
-              'path'        => exec_path,
-              'provider'    => exec_provider,
-              'timeout'     => exec_timeout,
+              'path' => exec_path,
+              'provider' => exec_provider,
+              'timeout' => exec_timeout,
             )
           }
         else
           it {
             is_expected.to contain_exec("start #{title} with docker").with(
-              'command'     => "#{docker_command} start #{sanitised_title}",
-              'unless'      => container_running_check,
+              'command' => "#{docker_command} start #{sanitised_title}",
+              'unless' => container_running_check,
               'environment' => exec_environment,
-              'path'        => exec_path,
-              'provider'    => exec_provider,
-              'timeout'     => exec_timeout,
+              'path' => exec_path,
+              'provider' => exec_provider,
+              'timeout' => exec_timeout,
             )
           }
         end
       else
         docker_params_changed_args = {
-          'sanitised_title'   => sanitised_title,
-          'osfamily'          => facts[:os]['family'],
-          'command'           => run_with_docker_command.join(' '),
-          'cidfile'           => cidfile,
-          'image'             => image,
-          'volumes'           => volumes,
-          'ports'             => ports,
-          'stop_wait_time'    => stop_wait_time,
+          'sanitised_title' => sanitised_title,
+          'osfamily' => facts[:os]['family'],
+          'command' => run_with_docker_command.join(' '),
+          'cidfile' => cidfile,
+          'image' => image,
+          'volumes' => volumes,
+          'ports' => ports,
+          'stop_wait_time' => stop_wait_time,
           'container_running' => running,
-          'logfile_path'      => facts[:os]['family'] == 'windows' ? facts['docker_user_temp_path'] : '/tmp',
+          'logfile_path' => facts[:os]['family'] == 'windows' ? facts['docker_user_temp_path'] : '/tmp',
         }
 
         detect_changes = get_docker_params_changed(docker_params_changed_args)
@@ -280,12 +280,12 @@ shared_examples 'run' do |title, params, facts, defaults|
       if facts[:os]['family'] == 'windows'
         it {
           is_expected.to contain_exec("stop container #{service_prefix}#{sanitised_title}").with(
-            'command'     => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
-            'onlyif'      => "#{docker_command} inspect #{sanitised_title}",
+            'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+            'onlyif' => "#{docker_command} inspect #{sanitised_title}",
             'environment' => exec_environment,
-            'path'        => exec_path,
-            'provider'    => exec_provider,
-            'timeout'     => exec_timeout,
+            'path' => exec_path,
+            'provider' => exec_provider,
+            'timeout' => exec_timeout,
           ).that_notifies(
             "Exec[remove container #{service_prefix}#{sanitised_title}]",
           )
@@ -293,23 +293,23 @@ shared_examples 'run' do |title, params, facts, defaults|
       else
         it {
           is_expected.to contain_service("#{service_prefix}#{sanitised_title}").with(
-            'ensure'    => false,
-            'enable'    => false,
+            'ensure' => false,
+            'enable' => false,
             'hasstatus' => hasstatus,
-            'provider'  => service_provider_real,
+            'provider' => service_provider_real,
           )
         }
       end
 
       it {
         is_expected.to contain_exec("remove container #{service_prefix}#{sanitised_title}").with(
-          'command'     => "#{docker_command} rm -v #{sanitised_title}",
-          'onlyif'      => "#{docker_command} inspect #{sanitised_title}",
+          'command' => "#{docker_command} rm -v #{sanitised_title}",
+          'onlyif' => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
-          'path'        => exec_path,
+          'path' => exec_path,
           'refreshonly' => true,
-          'provider'    => exec_provider,
-          'timeout'     => exec_timeout,
+          'provider' => exec_provider,
+          'timeout' => exec_timeout,
         )
       }
 
@@ -346,10 +346,10 @@ shared_examples 'run' do |title, params, facts, defaults|
       if startscript
         it {
           is_expected.to contain_file(startscript).with(
-            'ensure'  => 'file',
-            'owner'   => 'root',
-            'group'   => docker_group,
-            'mode'    => '0770',
+            'ensure' => 'file',
+            'owner' => 'root',
+            'group' => docker_group,
+            'mode' => '0770',
           )
         }
       end
@@ -357,20 +357,20 @@ shared_examples 'run' do |title, params, facts, defaults|
       if stopscript
         it {
           is_expected.to contain_file(stopscript).with(
-            'ensure'  => 'file',
-            'owner'   => 'root',
-            'group'   => docker_group,
-            'mode'    => '0770',
+            'ensure' => 'file',
+            'owner' => 'root',
+            'group' => docker_group,
+            'mode' => '0770',
           )
         }
       end
 
       it {
         is_expected.to contain_file(initscript).with(
-          'ensure'  => 'file',
-          'owner'   => 'root',
-          'group'   => docker_group,
-          'mode'    => mode,
+          'ensure' => 'file',
+          'owner' => 'root',
+          'group' => docker_group,
+          'mode' => mode,
         )
       }
 
@@ -378,8 +378,8 @@ shared_examples 'run' do |title, params, facts, defaults|
         if !running
           it {
             is_expected.to contain_service("#{service_prefix}#{sanitised_title}").with(
-              'ensure'    => running,
-              'enable'    => false,
+              'ensure' => running,
+              'enable' => false,
               'hasstatus' => hasstatus,
             ).that_requires(
               "File[#{initscript}]",
@@ -409,9 +409,9 @@ shared_examples 'run' do |title, params, facts, defaults|
 
           it {
             is_expected.to contain_service("#{service_prefix}#{sanitised_title}").with(
-              'ensure'    => running,
-              'enable'    => true,
-              'provider'  => service_provider_real,
+              'ensure' => running,
+              'enable' => true,
+              'provider' => service_provider_real,
               'hasstatus' => hasstatus,
             ).that_requires(
               "File[#{initscript}]",
@@ -447,8 +447,8 @@ shared_examples 'run' do |title, params, facts, defaults|
       if service_provider_real == 'systemd'
         it {
           is_expected.to contain_exec("docker-#{sanitised_title}-systemd-reload").with(
-            'path'        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
-            'command'     => 'systemctl daemon-reload',
+            'path' => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
+            'command' => 'systemctl daemon-reload',
             'refreshonly' => true,
           ).that_requires(
             [

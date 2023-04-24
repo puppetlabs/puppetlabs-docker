@@ -32,13 +32,13 @@ describe 'docker::images', type: :class do
         context title do
           params = {
             'base' => {
-              'ensure'       => 'present',
-              'image_tag'    => :undef,
+              'ensure' => 'present',
+              'image_tag' => :undef,
               'image_digest' => :undef,
-              'force'        => false,
-              'docker_file'  => :undef,
-              'docker_dir'   => :undef,
-              'docker_tar'   => :undef,
+              'force' => false,
+              'docker_file' => :undef,
+              'docker_dir' => :undef,
+              'docker_tar' => :undef,
             },
           }
 

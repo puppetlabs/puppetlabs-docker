@@ -15,24 +15,24 @@ tests = {
   },
   'when running with onlyif "running"' => {
     'interactive' => true,
-    'onlyif'      => 'running',
+    'onlyif' => 'running',
   },
   'when running without onlyif custom command' => {
     'interactive' => true,
-    'onlyif'      => 'custom',
+    'onlyif' => 'custom',
   },
   'when running without onlyif' => {
     'interactive' => true,
   },
   'when running with unless' => {
     'interactive' => true,
-    'unless'      => 'some_command arg1',
+    'unless' => 'some_command arg1',
   },
   'when running without unless' => {
     'interactive' => true,
   },
   'with title that need sanitisation' => {
-    'detach'        => true,
+    'detach' => true,
     'sanitise_name' => true,
   },
   'with environment variables passed to exec' => {
@@ -63,16 +63,16 @@ describe 'docker::exec', type: :define do
       tests.each do |title, local_params|
         context title do
           params = {
-            'command'       => '/bin/echo foo',
-            'container'     => 'some_conainer_name',
-            'detach'        => false,
-            'env'           => [],
-            'interactive'   => false,
-            'onlyif'        => :undef,
-            'refreshonly'   => false,
+            'command' => '/bin/echo foo',
+            'container' => 'some_conainer_name',
+            'detach' => false,
+            'env' => [],
+            'interactive' => false,
+            'onlyif' => :undef,
+            'refreshonly' => false,
             'sanitise_name' => true,
-            'tty'           => false,
-            'unless'        => :undef,
+            'tty' => false,
+            'unless' => :undef,
           }.merge(local_params)
 
           let(:facts) do

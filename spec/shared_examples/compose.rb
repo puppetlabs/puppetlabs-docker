@@ -41,7 +41,7 @@ shared_examples 'compose' do |_params, _facts|
         is_expected.to contain_exec("Install Docker Compose #{version}").with(
           # 'command'  => template('docker/windows/download_docker_compose.ps1.erb'),
           'provider' => 'powershell',
-          'creates'  => docker_compose_location_versioned,
+          'creates' => docker_compose_location_versioned,
         )
 
         is_expected.to contain_file(docker_compose_location).with(
@@ -60,8 +60,8 @@ shared_examples 'compose' do |_params, _facts|
 
       it {
         is_expected.to contain_exec("Install Docker Compose #{version}").with(
-          'path'    => '/usr/bin/',
-          'cwd'     => '/tmp',
+          'path' => '/usr/bin/',
+          'cwd' => '/tmp',
           'command' => "curl -s -S -L #{proxy_opt} #{docker_compose_url} -o #{docker_compose_location_versioned}",
           'creates' => docker_compose_location_versioned,
         ).that_requires(
@@ -70,7 +70,7 @@ shared_examples 'compose' do |_params, _facts|
 
         is_expected.to contain_file(docker_compose_location_versioned).with(
           'owner' => file_owner,
-          'mode'  => '0755',
+          'mode' => '0755',
         ).that_requires(
           "Exec[Install Docker Compose #{version}]",
         )

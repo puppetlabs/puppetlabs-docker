@@ -9,58 +9,58 @@ tests = {
   },
   'with ensure => absent and force => true' => {
     'ensure' => 'absent',
-    'force'  => true,
+    'force' => true,
   },
   'with ensure => absent and image_tag => precise' => {
-    'ensure'    => 'absent',
+    'ensure' => 'absent',
     'image_tag' => 'precise',
   },
   'with docker_file => Dockerfile' => {
     'docker_file' => 'Dockerfile',
   },
   'with ensure => present and docker_file => Dockerfile' => {
-    'ensure'      => 'present',
+    'ensure' => 'present',
     'docker_file' => 'Dockerfile',
   },
   'with docker_dir => /tmp/docker_images/test1 and docker_file => /tmp/docker_images/test1/Dockerfile_altbuild' => {
-    'docker_dir'  => '/tmp/docker_images/test1',
+    'docker_dir' => '/tmp/docker_images/test1',
     'docker_file' => '/tmp/docker_images/test1/Dockerfile_altbuild',
   },
   'with docker_dir => /tmp/docker_images/test1' => {
-    'docker_dir'   => '/tmp/docker_images/test1',
+    'docker_dir' => '/tmp/docker_images/test1',
   },
   'with ensure => present and docker_dir => /tmp/docker_images/test1' => {
-    'ensure'     => 'present',
+    'ensure' => 'present',
     'docker_dir' => '/tmp/docker_images/test1',
   },
   'with ensure => present and image_tag => precise' => {
-    'ensure'    => 'present',
+    'ensure' => 'present',
     'image_tag' => 'precise',
   },
   'with ensure => present and image_digest => sha256:deadbeef' => {
-    'ensure'       => 'present',
+    'ensure' => 'present',
     'image_digest' => 'sha256:deadbeef',
   },
   'with ensure => present and image_tag => precise and docker_file => Dockerfile' => {
-    'ensure'      => 'present',
-    'image_tag'   => 'precise',
+    'ensure' => 'present',
+    'image_tag' => 'precise',
     'docker_file' => 'Dockerfile',
   },
   'with ensure => present and image_tag => precise and docker_dir => /tmp/docker_images/test1' => {
-    'ensure'     => 'present',
-    'image_tag'  => 'precise',
+    'ensure' => 'present',
+    'image_tag' => 'precise',
     'docker_dir' => '/tmp/docker_images/test1',
   },
   'with docker_tar => /tmp/docker_tars/test1.tar' => {
     'docker_tar' => '/tmp/docker_tars/test1.tar',
   },
   'with ensure => present and docker_tar => /tmp/docker_tars/test1.tar' => {
-    'ensure'     => 'present',
+    'ensure' => 'present',
     'docker_tar' => '/tmp/docker_tars/test1.tar',
   },
   'with docker_file => Dockerfile and docker_tar => /tmp/docker_tars/test1.tar' => {
     'docker_file' => 'Dockerfile',
-    'docker_tar'  => '/tmp/docker_tars/test1.tar',
+    'docker_tar' => '/tmp/docker_tars/test1.tar',
   },
   'with docker_tar => /tmp/docker_tars/test1.tar and docker_dir => /tmp/docker_images/test1' => {
     'docker_tar' => '/tmp/docker_tars/test1.tar',
@@ -68,11 +68,11 @@ tests = {
   },
   'with image_digest => sha256:deadbeef and docker_file => Dockerfile' => {
     'image_digest' => 'sha256:deadbeef',
-    'docker_file'  => 'Dockerfile',
+    'docker_file' => 'Dockerfile',
   },
   'with image_digest => sha256:deadbeef and docker_dir => /tmp/docker_images/test1' => {
     'image_digest' => 'sha256:deadbeef',
-    'docker_dir'   => '/tmp/docker_images/test1',
+    'docker_dir' => '/tmp/docker_images/test1',
   },
   'with image_digest => sha256:deadbeef and docker_tar => /tmp/docker_tars/test1.tar' => {
     'image_digest' => 'sha256:deadbeef',
@@ -82,11 +82,11 @@ tests = {
     'ensure' => 'latest',
   },
   'with ensure => latest and image_tag => precise' => {
-    'ensure'    => 'latest',
+    'ensure' => 'latest',
     'image_tag' => 'precise',
   },
   'with ensure => latest and image_digest => sha256:deadbeef' => {
-    'ensure'       => 'latest',
+    'ensure' => 'latest',
     'image_digest' => 'sha256:deadbeef',
   },
 }
@@ -111,14 +111,14 @@ describe 'docker::image', type: :define do
       tests.each do |title, local_params|
         context title do
           params = {
-            'ensure'       => 'present',
-            'image'        => 'base',
-            'image_tag'    => :undef,
+            'ensure' => 'present',
+            'image' => 'base',
+            'image_tag' => :undef,
             'image_digest' => :undef,
-            'force'        => false,
-            'docker_file'  => :undef,
-            'docker_dir'   => :undef,
-            'docker_tar'   => :undef,
+            'force' => false,
+            'docker_file' => :undef,
+            'docker_dir' => :undef,
+            'docker_tar' => :undef,
           }.merge(local_params)
 
           let(:facts) do

@@ -11,7 +11,7 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
   if ensure_value == 'present'
     docker_secrets_flags = get_docker_secrets_flags(
       'ensure' => ensure_value,
-      'label'       => label,
+      'label' => label,
       'secret_name' => secret_name,
       'secret_path' => secret_path,
     )
@@ -22,8 +22,8 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
     it {
       is_expected.to contain_exec("#{title} docker secret create").with(
         'command' => exec_secret,
-        'unless'  => unless_secret,
-        'path'    => ['/bin', '/usr/bin'],
+        'unless' => unless_secret,
+        'path' => ['/bin', '/usr/bin'],
       )
     }
   end
@@ -32,8 +32,8 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
     it {
       is_expected.to contain_exec("#{title} docker secret rm").with(
         'command' => "#{docker_command} rm #{secret_name}",
-        'onlyif'  => "#{docker_command} inspect #{secret_name}",
-        'path'    => ['/bin', '/usr/bin'],
+        'onlyif' => "#{docker_command} inspect #{secret_name}",
+        'path' => ['/bin', '/usr/bin'],
       )
     }
   end

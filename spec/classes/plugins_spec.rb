@@ -32,15 +32,15 @@ describe 'docker::plugins', type: :class do
         context title do
           params = {
             'base' => {
-              'ensure'                => 'present',
-              'enabled'               => true,
-              'timeout'               => :undef,
-              'plugin_alias'          => :undef,
-              'disable_on_install'    => false,
+              'ensure' => 'present',
+              'enabled' => true,
+              'timeout' => :undef,
+              'plugin_alias' => :undef,
+              'disable_on_install' => false,
               'disable_content_trust' => true,
               'grant_all_permissions' => true,
-              'force_remove'          => true,
-              'settings'              => [],
+              'force_remove' => true,
+              'settings' => [],
             },
           }
 

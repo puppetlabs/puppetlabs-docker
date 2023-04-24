@@ -27,20 +27,20 @@ shared_examples 'stack' do |_title, params, facts, defaults|
   if ensure_value == 'present'
     docker_stack_flags = get_docker_stack_flags(
       'stack_name' => stack_name,
-      'bundle_file'        => bundle_file,
-      'compose_files'      => compose_files,
-      'prune'              => prune,
+      'bundle_file' => bundle_file,
+      'compose_files' => compose_files,
+      'prune' => prune,
       'with_registry_auth' => with_registry_auth,
-      'resolve_image'      => resolve_image,
+      'resolve_image' => resolve_image,
     )
 
     exec_stack = "#{docker_command} deploy #{docker_stack_flags} #{stack_name}"
 
     it {
       is_expected.to contain_exec("docker stack create #{stack_name}").with(
-        'command'  => exec_stack,
-        'unless'   => check_stack,
-        'path'     => exec_path,
+        'command' => exec_stack,
+        'unless' => check_stack,
+        'path' => exec_path,
         'provider' => provider,
       )
     }
@@ -49,9 +49,9 @@ shared_examples 'stack' do |_title, params, facts, defaults|
   if ensure_value == 'absent'
     it {
       is_expected.to contain_exec("docker stack destroy #{stack_name}").with(
-        'command'  => "#{docker_command} rm #{stack_name}",
-        'onlyif'   => check_stack,
-        'path'     => exec_path,
+        'command' => "#{docker_command} rm #{stack_name}",
+        'onlyif' => check_stack,
+        'path' => exec_path,
         'provider' => provider,
       )
     }

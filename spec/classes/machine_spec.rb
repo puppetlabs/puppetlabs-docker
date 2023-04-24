@@ -26,12 +26,12 @@ describe 'docker::machine', type: :class do
       tests.each do |title, local_params|
         context title do
           params = {
-            'ensure'       => 'present',
-            'version'      => defaults['machine_version'],
+            'ensure' => 'present',
+            'version' => defaults['machine_version'],
             'install_path' => defaults['machine_install_path'],
-            'proxy'        => :undef,
-            'url'          => :undef,
-            'curl_ensure'  => defaults['curl_ensure'],
+            'proxy' => :undef,
+            'url' => :undef,
+            'curl_ensure' => defaults['curl_ensure'],
           }.merge(local_params)
 
           let(:facts) do

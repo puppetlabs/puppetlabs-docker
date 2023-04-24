@@ -70,10 +70,10 @@ shared_examples 'registry' do |title, params, facts, defaults|
 
       it {
         is_expected.to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
-          'ensure'  => ensure_value,
+          'ensure' => ensure_value,
           'content' => _pass_hash,
-          'owner'   => local_user,
-          'group'   => local_user,
+          'owner' => local_user,
+          'group' => local_user,
         ).that_notifies(
           "Exec[#{title} auth]",
         )
@@ -96,8 +96,8 @@ shared_examples 'registry' do |title, params, facts, defaults|
           is_expected.to contain_exec(compute - hash).with(
             # 'command'     => template('docker/windows/compute_hash.ps1.erb'),
             'environment' => exec_env,
-            'provider'    => exec_provider,
-            'logoutput'   => true,
+            'provider' => exec_provider,
+            'logoutput' => true,
             # 'unless'      => template('docker/windows/check_hash.ps1.erb'),
           ).that_notifies(
             "Exec[#{title} auth]",
@@ -112,11 +112,11 @@ shared_examples 'registry' do |title, params, facts, defaults|
   it {
     is_expected.to contain_exec("#{title} auth").with(
       'environment' => exec_env,
-      'command'     => auth_command,
-      'user'        => exec_user,
-      'path'        => exec_path,
-      'timeout'     => exec_timeout,
-      'provider'    => exec_provider,
+      'command' => auth_command,
+      'user' => exec_user,
+      'path' => exec_path,
+      'timeout' => exec_timeout,
+      'provider' => exec_provider,
       'refreshonly' => receipt,
     )
   }

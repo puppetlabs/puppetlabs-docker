@@ -12,7 +12,7 @@ shared_examples 'system_user' do |user, group|
   it {
     is_expected.to contain_exec("docker-system-user-#{user}").with(
       'command' => "/usr/sbin/usermod -aG #{docker_group} #{user}",
-      'unless'  => "/bin/cat /etc/group | grep '^#{docker_group}:' | grep -qw #{user}",
+      'unless' => "/bin/cat /etc/group | grep '^#{docker_group}:' | grep -qw #{user}",
     )
   }
 end

@@ -108,15 +108,15 @@ describe 'docker::registry', type: :define do
       tests.each do |title, local_params|
         context title do
           params = {
-            'server'     => title,
-            'ensure'     => 'present',
-            'username'   => :undef,
-            'password'   => :undef,
-            'pass_hash'  => :undef,
-            'email'      => :undef,
+            'server' => title,
+            'ensure' => 'present',
+            'username' => :undef,
+            'password' => :undef,
+            'pass_hash' => :undef,
+            'email' => :undef,
             'local_user' => 'root',
-            'version'    => defaults['version'],
-            'receipt'    => true,
+            'version' => defaults['version'],
+            'receipt' => true,
           }.merge(local_params)
 
           let(:facts) do

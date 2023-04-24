@@ -29,12 +29,12 @@ shared_examples 'repos' do |params, facts|
     if params['use_upstream_package_source']
       it {
         is_expected.to contain_apt__source('docker').with(
-          'location'     => location,
+          'location' => location,
           'architecture' => architecture,
-          'release'      => release,
-          'repos'        => package_repos,
-          'key'          => {
-            'id'     => package_key,
+          'release' => release,
+          'repos' => package_repos,
+          'key' => {
+            'id' => package_key,
             'source' => key_source,
           },
           'include' => {
@@ -54,8 +54,8 @@ shared_examples 'repos' do |params, facts|
 
       it {
         is_expected.to contain_apt__pin('docker').with(
-          'ensure'   => pin_ensure,
-          'origin'   => repo_host,
+          'ensure' => pin_ensure,
+          'origin' => repo_host,
           'priority' => params['apt_source_pin_level'],
         )
       }
@@ -99,9 +99,9 @@ shared_examples 'repos' do |params, facts|
       if params['use_upstream_package_source']
         it {
           is_expected.to contain_yumrepo('docker').with(
-            'descr'    => 'Docker',
-            'baseurl'  => baseurl,
-            'gpgkey'   => gpgkey,
+            'descr' => 'Docker',
+            'baseurl' => baseurl,
+            'gpgkey' => gpgkey,
             'gpgcheck' => gpgkey_check,
           ).that_comes_before('package[docker]')
         }

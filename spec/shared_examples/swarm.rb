@@ -44,29 +44,29 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
   if init
     docker_swarm_init_flags = get_docker_swarm_init_flags(
       'init' => init,
-      'advertise_addr'                => advertise_addr,
-      'autolock'                      => autolock,
-      'cert_expiry'                   => cert_expiry,
-      'dispatcher_heartbeat'          => dispatcher_heartbeat,
-      'default_addr_pool'             => default_addr_pool,
+      'advertise_addr' => advertise_addr,
+      'autolock' => autolock,
+      'cert_expiry' => cert_expiry,
+      'dispatcher_heartbeat' => dispatcher_heartbeat,
+      'default_addr_pool' => default_addr_pool,
       'default_addr_pool_mask_length' => default_addr_pool_mask_length,
-      'external_ca'                   => external_ca,
-      'force_new_cluster'             => force_new_cluster,
-      'listen_addr'                   => listen_addr,
-      'max_snapshots'                 => max_snapshots,
-      'snapshot_interval'             => snapshot_interval,
+      'external_ca' => external_ca,
+      'force_new_cluster' => force_new_cluster,
+      'listen_addr' => listen_addr,
+      'max_snapshots' => max_snapshots,
+      'snapshot_interval' => snapshot_interval,
     )
 
     exec_init = "#{docker_command} #{docker_swarm_init_flags}"
 
     it {
       is_expected.to contain_exec('Swarm init').with(
-        'command'     => exec_init,
+        'command' => exec_init,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'provider'    => exec_provider,
-        'timeout'     => exec_timeout,
-        'unless'      => unless_init,
+        'path' => exec_path,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
+        'unless' => unless_init,
       )
     }
   end
@@ -75,20 +75,20 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
     docker_swarm_join_flags = get_docker_swarm_join_flags(
       'join' => join,
       'advertise_addr' => advertise_addr,
-      'listen_addr'    => listen_addr,
-      'token'          => token,
+      'listen_addr' => listen_addr,
+      'token' => token,
     )
 
     exec_join = "#{docker_command} #{docker_swarm_join_flags} #{manager_ip}"
 
     it {
       is_expected.to contain_exec('Swarm join').with(
-        'command'     => exec_join,
+        'command' => exec_join,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'provider'    => exec_provider,
-        'timeout'     => exec_timeout,
-        'unless'      => unless_join,
+        'path' => exec_path,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
+        'unless' => unless_join,
       )
     }
   end
@@ -96,9 +96,9 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
   if ensure_value == 'absent'
     it {
       is_expected.to contain_exec('Leave swarm').with(
-        'command'  => 'docker swarm leave --force',
-        'onlyif'   => onlyif_leave,
-        'path'     => exec_path,
+        'command' => 'docker swarm leave --force',
+        'onlyif' => onlyif_leave,
+        'path' => exec_path,
         'provider' => exec_provider,
       )
     }

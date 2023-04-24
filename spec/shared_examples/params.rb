@@ -13,7 +13,7 @@ shared_examples 'params' do |_facts|
           '/usr/bin/',
           '/usr/sbin/',
         ],
-        'command'     => 'systemctl daemon-reload',
+        'command' => 'systemctl daemon-reload',
         'refreshonly' => 'true',
       )
     }

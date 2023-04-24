@@ -26,10 +26,10 @@ shared_examples 'service' do |params, facts|
   if facts[:os]['family'] == 'RedHat'
     it {
       is_expected.to contain_file(params['storage_setup_file']).with(
-        'ensure'  => 'file',
-        'force'   => true,
-        'before'  => manage_service,
-        'notify'  => manage_service,
+        'ensure' => 'file',
+        'force' => true,
+        'before' => manage_service,
+        'notify' => manage_service,
       )
     }
   end
@@ -54,9 +54,9 @@ shared_examples 'service' do |params, facts|
     if params['service_overrides_template']
       it {
         is_expected.to contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with(
-          'ensure'  => 'file',
+          'ensure' => 'file',
           # 'content' => template($service_overrides_template),
-          'before'  => manage_service,
+          'before' => manage_service,
         ).that_notifies(
           'Exec[docker-systemd-reload-before-service]',
         )
@@ -82,8 +82,8 @@ shared_examples 'service' do |params, facts|
 
     it {
       is_expected.to contain_exec('docker-systemd-reload-before-service').with(
-        'path'        => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
-        'command'     => 'systemctl daemon-reload > /dev/null',
+        'path' => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
+        'command' => 'systemctl daemon-reload > /dev/null',
         'refreshonly' => true,
       ).that_notifies(
         manage_service,
@@ -94,7 +94,7 @@ shared_examples 'service' do |params, facts|
       is_expected.to contain_file('/etc/init.d/docker').with(
         'ensure' => 'link',
         'target' => '/lib/init/upstart-job',
-        'force'  => true,
+        'force' => true,
       ).that_notifies(
         manage_service,
       )
@@ -104,8 +104,8 @@ shared_examples 'service' do |params, facts|
   if params['storage_config'] != :undef
     it {
       is_expected.to contain_file(params['storage_config']).with(
-        'ensure'  => 'file',
-        'force'   => true,
+        'ensure' => 'file',
+        'force' => true,
       ).that_notifies(
         manage_service,
       )
@@ -115,8 +115,8 @@ shared_examples 'service' do |params, facts|
   if service_config
     it {
       is_expected.to contain_file(service_config).with(
-        'ensure'  => 'file',
-        'force'   => true,
+        'ensure' => 'file',
+        'force' => true,
       ).that_notifies(
         manage_service,
       )
@@ -127,8 +127,8 @@ shared_examples 'service' do |params, facts|
     if facts[:os]['family'] == 'windows'
       it {
         is_expected.to contain_reboot('pending_reboot').with(
-          'when'    => 'pending',
-          'onlyif'  => 'component_based_servicing',
+          'when' => 'pending',
+          'onlyif' => 'component_based_servicing',
           'timeout' => 1,
         )
       }
@@ -154,12 +154,12 @@ shared_examples 'service' do |params, facts|
                  end
 
       is_expected.to contain_service('docker').with(
-        'ensure'     => params['service_state'],
-        'name'       => params['service_name'],
-        'enable'     => params['service_enable'],
-        'hasstatus'  => hasstatus,
+        'ensure' => params['service_state'],
+        'name' => params['service_name'],
+        'enable' => params['service_enable'],
+        'hasstatus' => hasstatus,
         'hasrestart' => hasrestart,
-        'provider'   => provider,
+        'provider' => provider,
       )
     }
   end

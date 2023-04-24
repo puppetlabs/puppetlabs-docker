@@ -28,8 +28,8 @@ shared_examples 'exec' do |_params, _facts, _defaults|
   docker_exec_flags = get_docker_exec_flags(
     'detach' => detach,
     'interactive' => interactive,
-    'tty'         => tty,
-    'env'         => env,
+    'tty' => tty,
+    'env' => env,
   )
 
   sanitised_container = if sanitise_name
@@ -63,12 +63,12 @@ shared_examples 'exec' do |_params, _facts, _defaults|
   it {
     is_expected.to contain_exec(exec).with(
       'environment' => exec_environment,
-      'onlyif'      => onlyif_command,
-      'path'        => exec_path,
+      'onlyif' => onlyif_command,
+      'path' => exec_path,
       'refreshonly' => refreshonly,
-      'timeout'     => exec_timeout,
-      'provider'    => exec_provider,
-      'unless'      => unless_command,
+      'timeout' => exec_timeout,
+      'provider' => exec_provider,
+      'unless' => unless_command,
     )
   }
 end
