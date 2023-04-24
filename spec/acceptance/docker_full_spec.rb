@@ -608,7 +608,7 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        run_shell('#{docker_command} inspect container_3_5_5') do |r|
+        run_shell("#{docker_command} inspect container_3_5_5") do |r|
           expect(r.stdout).to match(%r{"CpusetCpus"\: "0"})
         end
       end

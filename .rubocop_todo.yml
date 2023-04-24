@@ -1,9 +1,3 @@
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Lint/InterpolationCheck:
-  Exclude:
-    - 'spec/acceptance/docker_full_spec.rb'
-
 # Offense count: 22
 # Configuration parameters: AllowKeywordBlockArguments.
 Lint/UnderscorePrefixedVariableName:
