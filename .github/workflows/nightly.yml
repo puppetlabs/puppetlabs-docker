@@ -20,8 +20,8 @@ jobs:
           - ubuntu-20.04
           - ubuntu-latest
         collection:
-          - puppet6-nightly
           - puppet7-nightly
+          - puppet8-nightly
 
     runs-on: ${{ matrix.platform }}
 
@@ -89,8 +89,8 @@ jobs:
             provider: "provision::provision_service"
             image: "windows-2022"
         collection:
-          - puppet6-nightly
-          - puppet7-nightly 
+          - puppet7-nightly
+          - puppet8-nightly 
 
     steps:
       - name: Checkout Source
