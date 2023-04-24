@@ -19,6 +19,7 @@ def swarm_init(advertise_addr, autolock, cert_expiry, dispatcher_heartbeat, exte
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
+
   stdout.strip
 end
 

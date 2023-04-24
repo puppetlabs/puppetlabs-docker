@@ -9,6 +9,7 @@ registry_port = 5000
 if os[:family] == 'windows'
   result = run_shell("ipconfig | findstr /i 'ipv4'")
   raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
+
   ip = result.stdout.split("\n")[0].split(':')[1].strip
   @windows_ip = ip
   docker_args = "docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]'"

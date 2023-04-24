@@ -5,6 +5,7 @@ require 'spec_helper_acceptance'
 if os[:family] == 'windows'
   os_name = run_shell('systeminfo | findstr /R /C:"OS Name"')
   raise 'Could not retrieve systeminfo for Windows box' if os_name.exit_code != 0
+
   os_name = if os_name.stdout.split(%r{\s}).include?('2016')
               'win-2016'
             elsif os_name.stdout.split(%r{\s}).include?('2019')

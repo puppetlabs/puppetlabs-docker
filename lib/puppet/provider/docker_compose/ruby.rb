@@ -13,6 +13,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def set_tmpdir
     return unless resource[:tmpdir]
+
     # Check if the the tmpdir target exists
     Puppet.warning("#{resource[:tmpdir]} (defined as docker_compose tmpdir) does not exist") unless Dir.exist?(resource[:tmpdir])
     # Set TMPDIR environment variable only if defined among resources and exists
@@ -80,6 +81,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     args = [compose_files, '-p', name, 'up', '-d', '--remove-orphans'].insert(3, resource[:options]).insert(5, resource[:up_args]).compact
     dockercompose(args)
     return unless resource[:scale]
+
     instructions = resource[:scale].map { |k, v| "#{k}=#{v}" }
     Puppet.info("Scaling compose project #{name}: #{instructions.join(' ')}")
     args = [compose_files, '-p', name, 'scale'].insert(3, resource[:options]).compact + instructions
@@ -96,6 +98,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def restart
     return unless exists?
+
     Puppet.info("Rebuilding and Restarting all containers for compose project #{name}")
     kill_args = [compose_files, '-p', name, 'kill'].insert(3, resource[:options]).compact
     dockercompose(kill_args)

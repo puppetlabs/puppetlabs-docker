@@ -39,6 +39,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
     if stack_services.count != stack_containers.count
       return false
     end
+
     counts = Hash[*stack_services.each.map { |key, array|
                     image = (array['image']) ? array['image'] : get_image(key, stack_services)
                     image = "#{image}:latest" unless image.include?(':')

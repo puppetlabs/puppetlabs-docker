@@ -10,6 +10,7 @@ def swarm_leave(force)
   cmd_string += ' -f' if force == 'true'
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
+
   stdout.strip
 end
 

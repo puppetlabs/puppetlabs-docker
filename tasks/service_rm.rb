@@ -11,6 +11,7 @@ def service_rm(service)
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
+
   stdout.strip
 end
 

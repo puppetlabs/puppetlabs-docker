@@ -24,6 +24,7 @@ def retry_on_error_matching(max_retry_count = 3, retry_wait_interval_secs = 5, e
     yield
   rescue StandardError => e
     raise unless try < max_retry_count && (error_matcher.nil? || e.message =~ error_matcher)
+
     sleep retry_wait_interval_secs
     retry
   end
@@ -189,8 +190,10 @@ services:
     end
 
     next unless os[:family] == 'windows'
+
     result = run_shell("ipconfig | findstr /i 'ipv4'")
     raise 'Could not retrieve ip address for Windows box' if result.exit_code != 0
+
     ip = result.stdout.split("\n")[0].split(':')[1].strip
     retry_on_error_matching(60, 5, %r{connection failure running}) do
       @windows_ip = ip
