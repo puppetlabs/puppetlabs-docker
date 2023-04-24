@@ -227,7 +227,7 @@ describe 'docker::run', type: :define do
     ##
     ## set some needed facts
     ##
-    if %r{windows}.match?(os)
+    if os.include?('windows')
       facts = windows_facts.merge(os_facts)
       facts = facts.merge({ puppetversion: Puppet.version })
 

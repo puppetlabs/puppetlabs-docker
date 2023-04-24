@@ -83,11 +83,6 @@ Performance/CollectionLiteralInLoop:
     - 'spec/defines/stack_spec.rb'
     - 'spec/defines/swarm_spec.rb'
 
-# Offense count: 16
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/StringInclude:
-  Enabled: false
-
 # Offense count: 41
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without

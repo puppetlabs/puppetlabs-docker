@@ -9,7 +9,7 @@ shared_examples 'config' do |_params, _facts|
 
   unless docker_users.empty?
     docker_users.each do |user|
-      if %r{windows}.match?(_facts[:os]['family'])
+      if _facts[:os]['family'].include?('windows')
         it {
           is_expected.to contain_docker__windows_account(user)
         }

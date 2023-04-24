@@ -16,7 +16,7 @@ describe 'docker::plugins', type: :class do
     ##
     ## set some needed facts
     ##
-    facts = if %r{windows}.match?(os)
+    facts = if os.include?('windows')
               windows_facts.merge(os_facts)
             else
               os_facts
