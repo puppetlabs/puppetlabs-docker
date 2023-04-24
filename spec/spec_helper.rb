@@ -38,8 +38,6 @@ RSpec.configure do |c|
     Puppet.settings[:strict] = :warning
   end
   c.filter_run_excluding(bolt: true) unless ENV['GEM_BOLT']
-  c.after(:suite) do
-  end
 end
 
 # Ensures that a module is defined
