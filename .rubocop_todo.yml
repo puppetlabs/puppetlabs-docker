@@ -1,0 +1,385 @@
+# Offense count: 9
+# This cop supports safe autocorrection (--autocorrect).
+Layout/HeredocIndentation:
+  Exclude:
+    - 'spec/spec_helper_acceptance_local.rb'
+
+# Offense count: 2
+# This cop supports safe autocorrection (--autocorrect).
+Layout/SpaceAroundMethodCallOperator:
+  Exclude:
+    - 'spec/shared_examples/install.rb'
+
+# Offense count: 5
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyleForEmptyBraces.
+# SupportedStyles: space, no_space, compact
+# SupportedStylesForEmptyBraces: space, no_space
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: space
+
+# Offense count: 3
+# This cop supports safe autocorrection (--autocorrect).
+Lint/AmbiguousOperatorPrecedence:
+  Exclude:
+    - 'lib/puppet/parser/functions/docker_secrets_flags.rb'
+    - 'lib/puppet/provider/docker_compose/ruby.rb'
+    - 'spec/helper/get_docker_secrets_flags.rb'
+
+# Offense count: 3
+# Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches.
+Lint/DuplicateBranch:
+  Exclude:
+    - 'spec/helper/get_values_init.rb'
+    - 'spec/shared_examples/exec.rb'
+
+# Offense count: 1
+# Configuration parameters: AllowComments, AllowEmptyLambdas.
+Lint/EmptyBlock:
+  Exclude:
+    - 'spec/spec_helper.rb'
+
+# Offense count: 1
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Lint/InterpolationCheck:
+  Exclude:
+    - 'spec/acceptance/docker_full_spec.rb'
+
+# Offense count: 22
+# Configuration parameters: AllowKeywordBlockArguments.
+Lint/UnderscorePrefixedVariableName:
+  Exclude:
+    - 'spec/helper/get_defaults.rb'
+    - 'spec/helper/get_values_init.rb'
+    - 'spec/shared_examples/compose.rb'
+    - 'spec/shared_examples/config.rb'
+    - 'spec/shared_examples/exec.rb'
+    - 'spec/shared_examples/image.rb'
+    - 'spec/shared_examples/install.rb'
+    - 'spec/shared_examples/machine.rb'
+    - 'spec/shared_examples/params.rb'
+    - 'spec/shared_examples/plugin.rb'
+    - 'spec/shared_examples/registry.rb'
+
+# Offense count: 7
+Lint/UselessAssignment:
+  Exclude:
+    - 'spec/classes/networks_spec.rb'
+    - 'spec/defines/run_spec.rb'
+    - 'spec/helper/get_defaults.rb'
+    - 'spec/shared_examples/compose.rb'
+    - 'spec/shared_examples/image.rb'
+    - 'spec/shared_examples/machine.rb'
+
+# Offense count: 20
+# Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
+Metrics/AbcSize:
+  Max: 301
+
+# Offense count: 12
+# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns, inherit_mode.
+# AllowedMethods: refine
+Metrics/BlockLength:
+  Max: 127
+
+# Offense count: 9
+# Configuration parameters: CountBlocks.
+Metrics/BlockNesting:
+  Max: 7
+
+# Offense count: 17
+# Configuration parameters: AllowedMethods, AllowedPatterns.
+Metrics/CyclomaticComplexity:
+  Max: 67
+
+# Offense count: 26
+# Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
+Metrics/MethodLength:
+  Max: 475
+
+# Offense count: 2
+# Configuration parameters: CountKeywordArgs, MaxOptionalParameters.
+Metrics/ParameterLists:
+  Max: 9
+
+# Offense count: 14
+# Configuration parameters: AllowedMethods, AllowedPatterns.
+Metrics/PerceivedComplexity:
+  Max: 72
+
+# Offense count: 3
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: lowercase, uppercase
+Naming/HeredocDelimiterCase:
+  Exclude:
+    - 'spec/acceptance/compose_v3_spec.rb'
+    - 'spec/acceptance_swarm/swarm_spec.rb'
+
+# Offense count: 47
+# Configuration parameters: ForbiddenDelimiters.
+# ForbiddenDelimiters: (?i-mx:(^|\s)(EO[A-Z]{1}|END)(\s|$))
+Naming/HeredocDelimiterNaming:
+  Exclude:
+    - 'spec/acceptance/docker_custom_source_spec.rb'
+    - 'spec/acceptance/docker_full_spec.rb'
+    - 'spec/acceptance/machine_spec.rb'
+    - 'spec/spec_helper_acceptance_local.rb'
+
+# Offense count: 8
+# Configuration parameters: MinSize.
+Performance/CollectionLiteralInLoop:
+  Exclude:
+    - 'spec/defines/exec_spec.rb'
+    - 'spec/defines/image_spec.rb'
+    - 'spec/defines/registry_spec.rb'
+    - 'spec/defines/run_spec.rb'
+    - 'spec/defines/secrets_spec.rb'
+    - 'spec/defines/services_spec.rb'
+    - 'spec/defines/stack_spec.rb'
+    - 'spec/defines/swarm_spec.rb'
+
+# Offense count: 16
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Performance/StringInclude:
+  Enabled: false
+
+# Offense count: 41
+# Configuration parameters: Prefixes, AllowedPatterns.
+# Prefixes: when, with, without
+RSpec/ContextWording:
+  Enabled: false
+
+# Offense count: 32
+# Configuration parameters: IgnoredMetadata.
+RSpec/DescribeClass:
+  Enabled: false
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: AllowConsecutiveOneLiners.
+RSpec/EmptyLineAfterExample:
+  Exclude:
+    - 'spec/shared_examples/install.rb'
+
+# Offense count: 9
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: AllowConsecutiveOneLiners.
+RSpec/EmptyLineAfterHook:
+  Exclude:
+    - 'spec/unit/lib/facter/docker_spec.rb'
+
+# Offense count: 102
+# Configuration parameters: CountAsOne.
+RSpec/ExampleLength:
+  Max: 52
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: CustomTransform, IgnoredWords, DisallowedExamples.
+# DisallowedExamples: works
+RSpec/ExampleWording:
+  Exclude:
+    - 'spec/acceptance/docker_spec.rb'
+
+# Offense count: 2
+RSpec/ExpectInHook:
+  Exclude:
+    - 'spec/acceptance/docker_full_spec.rb'
+
+# Offense count: 3
+# This cop supports safe autocorrection (--autocorrect).
+RSpec/HooksBeforeExamples:
+  Exclude:
+    - 'spec/acceptance/compose_v3_spec.rb'
+    - 'spec/acceptance/docker_params_changed_spec.rb'
+    - 'spec/acceptance/volume_spec.rb'
+
+# Offense count: 137
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: single_line_only, single_statement_only, disallow, require_implicit
+RSpec/ImplicitSubject:
+  Enabled: false
+
+# Offense count: 6
+# Configuration parameters: Max.
+RSpec/IndexedLet:
+  Exclude:
+    - 'spec/acceptance/docker_params_changed_spec.rb'
+
+# Offense count: 38
+RSpec/MultipleExpectations:
+  Max: 4
+
+# Offense count: 5
+# Configuration parameters: AllowedGroups.
+RSpec/NestedGroups:
+  Max: 4
+
+# Offense count: 59
+# Configuration parameters: AllowedPatterns.
+# AllowedPatterns: ^expect_, ^assert_
+RSpec/NoExpectationExample:
+  Exclude:
+    - 'spec/acceptance/compose_v3_spec.rb'
+    - 'spec/acceptance/docker_custom_source_spec.rb'
+    - 'spec/acceptance/docker_full_spec.rb'
+    - 'spec/acceptance/docker_spec.rb'
+    - 'spec/acceptance/machine_spec.rb'
+    - 'spec/acceptance/network_spec.rb'
+    - 'spec/acceptance/plugin_spec.rb'
+    - 'spec/acceptance/stack_spec.rb'
+    - 'spec/acceptance/volume_spec.rb'
+    - 'spec/acceptance_swarm/swarm_spec.rb'
+
+# Offense count: 3
+RSpec/StubbedMock:
+  Exclude:
+    - 'spec/unit/lib/facter/docker_spec.rb'
+
+# Offense count: 1
+# This cop supports unsafe autocorrection (--autocorrect-all).
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: always, always_true, never
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - 'spec/unit/lib/puppet/parser/functions/docker_run_flags_spec.rb'
+
+# Offense count: 12
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Style/GlobalStdStream:
+  Exclude:
+    - 'tasks/node_ls.rb'
+    - 'tasks/node_rm.rb'
+    - 'tasks/node_update.rb'
+    - 'tasks/service_create.rb'
+    - 'tasks/service_rm.rb'
+    - 'tasks/service_scale.rb'
+    - 'tasks/service_update.rb'
+    - 'tasks/swarm_init.rb'
+    - 'tasks/swarm_join.rb'
+    - 'tasks/swarm_leave.rb'
+    - 'tasks/swarm_token.rb'
+    - 'tasks/swarm_update.rb'
+
+# Offense count: 5
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Style/IdenticalConditionalBranches:
+  Exclude:
+    - 'spec/helper/get_defaults.rb'
+    - 'spec/helper/get_values_init.rb'
+
+# Offense count: 94
+# This cop supports safe autocorrection (--autocorrect).
+Style/IfUnlessModifier:
+  Enabled: false
+
+# Offense count: 1
+# This cop supports unsafe autocorrection (--autocorrect-all).
+# Configuration parameters: AllowedMethods.
+# AllowedMethods: nonzero?
+Style/IfWithBooleanLiteralBranches:
+  Exclude:
+    - 'spec/helper/get_defaults.rb'
+
+# Offense count: 2
+Style/MixinUsage:
+  Exclude:
+    - 'spec/spec_helper.rb'
+    - 'spec/spec_helper_acceptance_local.rb'
+
+# Offense count: 11
+# This cop supports safe autocorrection (--autocorrect).
+Style/NegatedIfElseCondition:
+  Exclude:
+    - 'lib/facter/docker.rb'
+    - 'spec/classes/init_spec.rb'
+    - 'spec/shared_examples/compose.rb'
+    - 'spec/shared_examples/registry.rb'
+    - 'spec/shared_examples/run.rb'
+
+# Offense count: 2
+# This cop supports unsafe autocorrection (--autocorrect-all).
+# Configuration parameters: Methods.
+Style/RedundantArgument:
+  Exclude:
+    - 'lib/puppet/provider/docker_network/ruby.rb'
+    - 'lib/puppet/provider/docker_volume/ruby.rb'
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+Style/RedundantCondition:
+  Exclude:
+    - 'spec/shared_examples/run.rb'
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+Style/RedundantConditional:
+  Exclude:
+    - 'spec/helper/get_defaults.rb'
+
+# Offense count: 2
+# This cop supports safe autocorrection (--autocorrect).
+Style/RedundantRegexpCharacterClass:
+  Exclude:
+    - 'spec/classes/compose_spec.rb'
+
+# Offense count: 42
+# This cop supports safe autocorrection (--autocorrect).
+Style/RedundantRegexpEscape:
+  Exclude:
+    - 'spec/acceptance/docker_custom_source_spec.rb'
+    - 'spec/acceptance/docker_full_spec.rb'
+    - 'spec/acceptance/docker_spec.rb'
+    - 'spec/classes/compose_spec.rb'
+
+# Offense count: 2
+# This cop supports safe autocorrection (--autocorrect).
+Style/RedundantSelfAssignmentBranch:
+  Exclude:
+    - 'lib/puppet/functions/docker_params_changed.rb'
+    - 'spec/helper/get_docker_params_changed.rb'
+
+# Offense count: 3
+# This cop supports safe autocorrection (--autocorrect).
+Style/RedundantStringEscape:
+  Exclude:
+    - 'spec/shared_examples/registry.rb'
+    - 'spec/shared_examples/run.rb'
+
+# Offense count: 1
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: implicit, explicit
+Style/RescueStandardError:
+  Exclude:
+    - 'spec/spec_helper.rb'
+
+# Offense count: 4
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: AllowModifier.
+Style/SoleNestedConditional:
+  Exclude:
+    - 'lib/puppet/provider/docker_network/ruby.rb'
+    - 'spec/classes/compose_spec.rb'
+    - 'spec/classes/machine_spec.rb'
+    - 'spec/defines/services_spec.rb'
+
+# Offense count: 4
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyle, AllowSafeAssignment.
+# SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
+Style/TernaryParentheses:
+  Exclude:
+    - 'lib/puppet/provider/docker_compose/ruby.rb'
+    - 'lib/puppet/provider/docker_stack/ruby.rb'
+    - 'spec/shared_examples/run.rb'
+    - 'spec/shared_examples/services.rb'
+
+# Offense count: 190
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyleForMultiline.
+# SupportedStylesForMultiline: comma, consistent_comma, no_comma
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
