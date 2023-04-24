@@ -103,15 +103,6 @@ RSpec/ExampleLength:
 RSpec/ExpectInHook:
   Exclude:
     - 'spec/acceptance/docker_full_spec.rb'
-
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/HooksBeforeExamples:
-  Exclude:
-    - 'spec/acceptance/compose_v3_spec.rb'
-    - 'spec/acceptance/docker_params_changed_spec.rb'
-    - 'spec/acceptance/volume_spec.rb'
-
 # Offense count: 137
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle.

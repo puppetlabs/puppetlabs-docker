@@ -38,6 +38,11 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     run_shell("mkdir #{volume_location}volume_2")
   end
 
+  after(:all) do
+    run_shell("rm -r #{volume_location}volume_1")
+    run_shell("rm -r #{volume_location}volume_2")
+  end
+
   context 'when image is changed' do
     image_changed = if os[:family] == 'windows'
                       if os_name == 'win-2016'
@@ -141,10 +146,5 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
         expect(inspect_result).to eq(['4444', '4445'])
       end
     end
-  end
-
-  after(:all) do
-    run_shell("rm -r #{volume_location}volume_1")
-    run_shell("rm -r #{volume_location}volume_2")
   end
 end
