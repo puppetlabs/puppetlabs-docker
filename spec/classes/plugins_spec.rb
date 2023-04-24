@@ -61,7 +61,7 @@ describe 'docker::plugins', type: :class do
 
             if facts[:os]['family'] == 'windows'
               it {
-                is_expected.to compile.and_raise_error(%r{Feature not implemented on windows.})
+                expect(subject).to compile.and_raise_error(%r{Feature not implemented on windows.})
               }
 
               next
@@ -70,7 +70,7 @@ describe 'docker::plugins', type: :class do
             include_examples 'plugin', values, facts, defaults
 
             it {
-              is_expected.to contain_docker__plugin(key)
+              expect(subject).to contain_docker__plugin(key)
             }
           end
         end

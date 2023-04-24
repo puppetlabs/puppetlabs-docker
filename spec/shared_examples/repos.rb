@@ -2,7 +2,7 @@
 
 shared_examples 'repos' do |params, facts|
   it {
-    is_expected.to contain_class('docker::repos')
+    expect(subject).to contain_class('docker::repos')
   }
 
   values = get_values_init(params, facts)
@@ -15,7 +15,7 @@ shared_examples 'repos' do |params, facts|
   unless params['prerequired_packages'].empty?
     params['prerequired_packages'].each do |package|
       it {
-        is_expected.to contain_package(package)
+        expect(subject).to contain_package(package)
       }
     end
   end
@@ -28,7 +28,7 @@ shared_examples 'repos' do |params, facts|
 
     if params['use_upstream_package_source']
       it {
-        is_expected.to contain_apt__source('docker').with(
+        expect(subject).to contain_apt__source('docker').with(
           'location' => location,
           'architecture' => architecture,
           'release' => release,
@@ -53,7 +53,7 @@ shared_examples 'repos' do |params, facts|
                     end
 
       it {
-        is_expected.to contain_apt__pin('docker').with(
+        expect(subject).to contain_apt__pin('docker').with(
           'ensure' => pin_ensure,
           'origin' => repo_host,
           'priority' => params['apt_source_pin_level'],
@@ -62,21 +62,21 @@ shared_examples 'repos' do |params, facts|
 
       if params['manage_package']
         it {
-          is_expected.to contain_class('apt')
+          expect(subject).to contain_class('apt')
         }
 
         if facts[:os]['name'] == 'Debian' && facts[:os]['distro']['codename'] == 'wheezy'
           it {
-            is_expected.to contain_class('apt::backports')
+            expect(subject).to contain_class('apt::backports')
           }
         end
 
         it {
           params['prerequired_packages'].each do |package|
-            is_expected.to contain_exec('apt_update').that_comes_before("package[#{package}]")
+            expect(subject).to contain_exec('apt_update').that_comes_before("package[#{package}]")
           end
 
-          is_expected.to contain_apt__source('docker').that_comes_before('package[docker]')
+          expect(subject).to contain_apt__source('docker').that_comes_before('package[docker]')
         }
       end
     end
@@ -98,7 +98,7 @@ shared_examples 'repos' do |params, facts|
 
       if params['use_upstream_package_source']
         it {
-          is_expected.to contain_yumrepo('docker').with(
+          expect(subject).to contain_yumrepo('docker').with(
             'descr' => 'Docker',
             'baseurl' => baseurl,
             'gpgkey' => gpgkey,

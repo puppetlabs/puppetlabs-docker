@@ -192,14 +192,14 @@ describe 'docker', type: :class do
           if params['ensure'] != 'absent'
             if params['package_source'] != :undef && facts[:os]['family'].include?('windows')
               it {
-                is_expected.to compile.and_raise_error(%r{Custom package source is currently not implemented on windows.})
+                expect(subject).to compile.and_raise_error(%r{Custom package source is currently not implemented on windows.})
               }
             else
               it {
-                is_expected.to contain_class('docker::repos').that_comes_before('Class[docker::install]')
-                is_expected.to contain_class('docker::install').that_comes_before('Class[docker::config]')
-                is_expected.to contain_class('docker::config').that_comes_before('Class[docker::service]')
-                is_expected.to contain_class('docker::service')
+                expect(subject).to contain_class('docker::repos').that_comes_before('Class[docker::install]')
+                expect(subject).to contain_class('docker::install').that_comes_before('Class[docker::config]')
+                expect(subject).to contain_class('docker::config').that_comes_before('Class[docker::service]')
+                expect(subject).to contain_class('docker::service')
               }
 
               include_examples 'params', facts
@@ -210,8 +210,8 @@ describe 'docker', type: :class do
             end
           else
             it {
-              is_expected.to contain_class('docker::repos').that_comes_before('Class[docker::install]')
-              is_expected.to contain_class('docker::install')
+              expect(subject).to contain_class('docker::repos').that_comes_before('Class[docker::install]')
+              expect(subject).to contain_class('docker::install')
             }
 
             include_examples 'params', facts

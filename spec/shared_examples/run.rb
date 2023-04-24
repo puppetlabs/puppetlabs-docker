@@ -71,7 +71,7 @@ shared_examples 'run' do |title, params, facts, defaults|
 
   if use_name
     it {
-      is_expected.to contain_notify("docker use_name warning: #{title}").with(
+      expect(subject).to contain_notify("docker use_name warning: #{title}").with(
         'message' => 'The use_name parameter is no-longer required and will be removed in a future release',
         'withpath' => true,
       )
@@ -137,7 +137,7 @@ shared_examples 'run' do |title, params, facts, defaults|
 
   if restart_on_unhealthy
     it {
-      is_expected.to contain_exec("Restart unhealthy container #{title} with docker").with(
+      expect(subject).to contain_exec("Restart unhealthy container #{title} with docker").with(
         'command' => "#{docker_command} restart #{sanitised_title}",
         'onlyif' => restart_check,
         'environment' => exec_environment,
@@ -151,7 +151,7 @@ shared_examples 'run' do |title, params, facts, defaults|
   if restart.to_s != 'undef'
     if ensure_value == 'absent'
       it {
-        is_expected.to contain_exec("stop #{title} with docker").with(
+        expect(subject).to contain_exec("stop #{title} with docker").with(
           'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
           'onlyif' => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
@@ -160,7 +160,7 @@ shared_examples 'run' do |title, params, facts, defaults|
           'timeout' => exec_timeout,
         )
 
-        is_expected.to contain_exec("remove #{title} with docker").with(
+        expect(subject).to contain_exec("remove #{title} with docker").with(
           'command' => "#{docker_command} rm -v #{sanitised_title}",
           'onlyif' => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
@@ -169,7 +169,7 @@ shared_examples 'run' do |title, params, facts, defaults|
           'timeout' => exec_timeout,
         )
 
-        is_expected.to contain_file(cidfile).with(
+        expect(subject).to contain_file(cidfile).with(
           'ensure' => 'absent',
         )
       }
@@ -192,7 +192,7 @@ shared_examples 'run' do |title, params, facts, defaults|
 
       if facts[:puppetversion].to_i < 6
         it {
-          is_expected.to contain_exec("run #{title} with docker").with(
+          expect(subject).to contain_exec("run #{title} with docker").with(
             'command' => run_with_docker_command.join(' '),
             ## todo:
             ## fix the following strange behavior:
@@ -208,7 +208,7 @@ shared_examples 'run' do |title, params, facts, defaults|
 
         if !running
           it {
-            is_expected.to contain_exec("stop #{title} with docker").with(
+            expect(subject).to contain_exec("stop #{title} with docker").with(
               'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
               'onlyif' => container_running_check,
               'environment' => exec_environment,
@@ -219,7 +219,7 @@ shared_examples 'run' do |title, params, facts, defaults|
           }
         else
           it {
-            is_expected.to contain_exec("start #{title} with docker").with(
+            expect(subject).to contain_exec("start #{title} with docker").with(
               'command' => "#{docker_command} start #{sanitised_title}",
               'unless' => container_running_check,
               'environment' => exec_environment,
@@ -246,7 +246,7 @@ shared_examples 'run' do |title, params, facts, defaults|
         detect_changes = get_docker_params_changed(docker_params_changed_args)
 
         it {
-          is_expected.to contain_notify("#{title}_docker_params_changed").with(
+          expect(subject).to contain_notify("#{title}_docker_params_changed").with(
             'message' => detect_changes,
           )
         }
@@ -279,7 +279,7 @@ shared_examples 'run' do |title, params, facts, defaults|
     if ensure_value == 'absent'
       if facts[:os]['family'] == 'windows'
         it {
-          is_expected.to contain_exec("stop container #{service_prefix}#{sanitised_title}").with(
+          expect(subject).to contain_exec("stop container #{service_prefix}#{sanitised_title}").with(
             'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
             'onlyif' => "#{docker_command} inspect #{sanitised_title}",
             'environment' => exec_environment,
@@ -292,7 +292,7 @@ shared_examples 'run' do |title, params, facts, defaults|
         }
       else
         it {
-          is_expected.to contain_service("#{service_prefix}#{sanitised_title}").with(
+          expect(subject).to contain_service("#{service_prefix}#{sanitised_title}").with(
             'ensure' => false,
             'enable' => false,
             'hasstatus' => hasstatus,
@@ -302,7 +302,7 @@ shared_examples 'run' do |title, params, facts, defaults|
       end
 
       it {
-        is_expected.to contain_exec("remove container #{service_prefix}#{sanitised_title}").with(
+        expect(subject).to contain_exec("remove container #{service_prefix}#{sanitised_title}").with(
           'command' => "#{docker_command} rm -v #{sanitised_title}",
           'onlyif' => "#{docker_command} inspect #{sanitised_title}",
           'environment' => exec_environment,
@@ -315,14 +315,14 @@ shared_examples 'run' do |title, params, facts, defaults|
 
       if facts[:os]['family'] != 'windows'
         it {
-          is_expected.to contain_file("/etc/systemd/system/#{service_prefix}#{sanitised_title}.service").with(
+          expect(subject).to contain_file("/etc/systemd/system/#{service_prefix}#{sanitised_title}.service").with(
             'ensure' => 'absent',
           )
         }
 
         if startscript
           it {
-            is_expected.to contain_file(startscript).with(
+            expect(subject).to contain_file(startscript).with(
               'ensure' => 'absent',
             )
           }
@@ -330,14 +330,14 @@ shared_examples 'run' do |title, params, facts, defaults|
 
         if stopscript
           it {
-            is_expected.to contain_file(stopscript).with(
+            expect(subject).to contain_file(stopscript).with(
               'ensure' => 'absent',
             )
           }
         end
       else
         it {
-          is_expected.to contain_file(cidfile).with(
+          expect(subject).to contain_file(cidfile).with(
             'ensure' => 'absent',
           )
         }
@@ -345,7 +345,7 @@ shared_examples 'run' do |title, params, facts, defaults|
     else
       if startscript
         it {
-          is_expected.to contain_file(startscript).with(
+          expect(subject).to contain_file(startscript).with(
             'ensure' => 'file',
             'owner' => 'root',
             'group' => docker_group,
@@ -356,7 +356,7 @@ shared_examples 'run' do |title, params, facts, defaults|
 
       if stopscript
         it {
-          is_expected.to contain_file(stopscript).with(
+          expect(subject).to contain_file(stopscript).with(
             'ensure' => 'file',
             'owner' => 'root',
             'group' => docker_group,
@@ -366,7 +366,7 @@ shared_examples 'run' do |title, params, facts, defaults|
       end
 
       it {
-        is_expected.to contain_file(initscript).with(
+        expect(subject).to contain_file(initscript).with(
           'ensure' => 'file',
           'owner' => 'root',
           'group' => docker_group,
@@ -377,7 +377,7 @@ shared_examples 'run' do |title, params, facts, defaults|
       if manage_service
         if !running
           it {
-            is_expected.to contain_service("#{service_prefix}#{sanitised_title}").with(
+            expect(subject).to contain_service("#{service_prefix}#{sanitised_title}").with(
               'ensure' => running,
               'enable' => false,
               'hasstatus' => hasstatus,
@@ -393,13 +393,13 @@ shared_examples 'run' do |title, params, facts, defaults|
             ]
 
             it {
-              is_expected.to contain_exec("/bin/sh /etc/init.d/#{service_prefix}#{sanitised_title} stop").with(
+              expect(subject).to contain_exec("/bin/sh /etc/init.d/#{service_prefix}#{sanitised_title} stop").with(
                 'onlyif' => transition_onlyif.join(' '),
               ).that_comes_before(
                 "File[/var/run/#{service_prefix}#{sanitised_title}.cid]",
               )
 
-              is_expected.to contain_file("/var/run/#{service_prefix}#{sanitised_title}.cid").with(
+              expect(subject).to contain_file("/var/run/#{service_prefix}#{sanitised_title}.cid").with(
                 'ensure' => 'absent',
               ).that_comes_before(
                 "File[#{initscript}]",
@@ -408,7 +408,7 @@ shared_examples 'run' do |title, params, facts, defaults|
           end
 
           it {
-            is_expected.to contain_service("#{service_prefix}#{sanitised_title}").with(
+            expect(subject).to contain_service("#{service_prefix}#{sanitised_title}").with(
               'ensure' => running,
               'enable' => true,
               'provider' => service_provider_real,
@@ -421,22 +421,22 @@ shared_examples 'run' do |title, params, facts, defaults|
           if docker_service
             if docker_service.to_s == 'true'
               it {
-                is_expected.to contain_service('docker').that_comes_before("Service[#{service_prefix}#{sanitised_title}]")
+                expect(subject).to contain_service('docker').that_comes_before("Service[#{service_prefix}#{sanitised_title}]")
               }
 
               if restart_service_on_docker_refresh.to_s == 'true'
                 it {
-                  is_expected.to contain_service('docker').that_notifies("Service[#{service_prefix}#{sanitised_title}]")
+                  expect(subject).to contain_service('docker').that_notifies("Service[#{service_prefix}#{sanitised_title}]")
                 }
               end
             else
               it {
-                is_expected.to contain_service('docker').with('name' => docker_service).that_comes_before("Service[#{service_prefix}#{sanitised_title}]")
+                expect(subject).to contain_service('docker').with('name' => docker_service).that_comes_before("Service[#{service_prefix}#{sanitised_title}]")
               }
 
               if restart_service_on_docker_refresh.to_s == 'true'
                 it {
-                  is_expected.to contain_service('docker').with('name' => docker_service).that_notifies("Service[#{service_prefix}#{sanitised_title}]")
+                  expect(subject).to contain_service('docker').with('name' => docker_service).that_notifies("Service[#{service_prefix}#{sanitised_title}]")
                 }
               end
             end
@@ -446,7 +446,7 @@ shared_examples 'run' do |title, params, facts, defaults|
 
       if service_provider_real == 'systemd'
         it {
-          is_expected.to contain_exec("docker-#{sanitised_title}-systemd-reload").with(
+          expect(subject).to contain_exec("docker-#{sanitised_title}-systemd-reload").with(
             'path' => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'],
             'command' => 'systemctl daemon-reload',
             'refreshonly' => true,

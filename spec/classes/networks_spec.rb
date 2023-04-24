@@ -53,7 +53,7 @@ describe 'docker::networks', type: :class do
           end
 
           it {
-            is_expected.to contain_docker_network(title).with(
+            expect(subject).to contain_docker_network(title).with(
               'ensure' => params['ensure'],
               'driver' => params['driver'],
               'subnet' => params['subnet'],

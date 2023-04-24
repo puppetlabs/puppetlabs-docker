@@ -135,7 +135,7 @@ describe 'docker::image', type: :define do
 
           if params['docker_file'] != :undef && params['docker_tar'] != :undef
             it {
-              is_expected.to compile.and_raise_error(%r{docker::image must not have both \$docker_file and \$docker_tar set})
+              expect(subject).to compile.and_raise_error(%r{docker::image must not have both \$docker_file and \$docker_tar set})
             }
 
             next
@@ -143,7 +143,7 @@ describe 'docker::image', type: :define do
 
           if params['docker_dir'] != :undef && params['docker_tar'] != :undef
             it {
-              is_expected.to compile.and_raise_error(%r{docker::image must not have both \$docker_dir and \$docker_tar set})
+              expect(subject).to compile.and_raise_error(%r{docker::image must not have both \$docker_dir and \$docker_tar set})
             }
 
             next
@@ -151,7 +151,7 @@ describe 'docker::image', type: :define do
 
           if params['image_digest'] != :undef && params['docker_file'] != :undef
             it {
-              is_expected.to compile.and_raise_error(%r{docker::image must not have both \$image_digest and \$docker_file set})
+              expect(subject).to compile.and_raise_error(%r{docker::image must not have both \$image_digest and \$docker_file set})
             }
 
             next
@@ -159,7 +159,7 @@ describe 'docker::image', type: :define do
 
           if params['image_digest'] != :undef && params['docker_dir'] != :undef
             it {
-              is_expected.to compile.and_raise_error(%r{docker::image must not have both \$image_digest and \$docker_dir set})
+              expect(subject).to compile.and_raise_error(%r{docker::image must not have both \$image_digest and \$docker_dir set})
             }
 
             next
@@ -167,7 +167,7 @@ describe 'docker::image', type: :define do
 
           if params['image_digest'] != :undef && params['docker_tar'] != :undef
             it {
-              is_expected.to compile.and_raise_error(%r{docker::image must not have both \$image_digest and \$docker_tar set})
+              expect(subject).to compile.and_raise_error(%r{docker::image must not have both \$image_digest and \$docker_tar set})
             }
 
             next

@@ -103,12 +103,6 @@ RSpec/ExampleLength:
 RSpec/ExpectInHook:
   Exclude:
     - 'spec/acceptance/docker_full_spec.rb'
-# Offense count: 137
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_line_only, single_statement_only, disallow, require_implicit
-RSpec/ImplicitSubject:
-  Enabled: false
 
 # Offense count: 6
 # Configuration parameters: Max.

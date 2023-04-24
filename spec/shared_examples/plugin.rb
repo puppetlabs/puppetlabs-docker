@@ -28,7 +28,7 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
     unless_install = "#{docker_command} ls --format='{{.PluginReference}}' | grep -w #{plugin_name}"
 
     it {
-      is_expected.to contain_exec("plugin install #{plugin_name}").with(
+      expect(subject).to contain_exec("plugin install #{plugin_name}").with(
         'command' => exec_install,
         'environment' => 'HOME=/root',
         'path' => ['/bin', '/usr/bin'],
@@ -47,7 +47,7 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
     onlyif_rm = "#{docker_command} ls --format='{{.PluginReference}}' | grep -w #{plugin_name}"
 
     it {
-      is_expected.to contain_exec("plugin remove #{plugin_name}").with(
+      expect(subject).to contain_exec("plugin remove #{plugin_name}").with(
         'command' => exec_rm,
         'environment' => 'HOME=/root',
         'path' => ['/bin', '/usr/bin'],
@@ -68,7 +68,7 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
     onlyif_enable = "#{docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}"
 
     it {
-      is_expected.to contain_exec("plugin enable #{plugin_name}").with(
+      expect(subject).to contain_exec("plugin enable #{plugin_name}").with(
         'command' => exec_enable,
         'environment' => 'HOME=/root',
         'path' => ['/bin', '/usr/bin'],
@@ -78,7 +78,7 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
     }
   else
     it {
-      is_expected.to contain_exec("disable #{plugin_name}").with(
+      expect(subject).to contain_exec("disable #{plugin_name}").with(
         'command' => "#{docker_command} disable #{plugin_name}",
         'environment' => 'HOME=/root',
         'path' => ['/bin', '/usr/bin'],

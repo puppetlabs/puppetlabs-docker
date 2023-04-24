@@ -18,13 +18,13 @@ shared_examples 'install' do |_params, _facts|
 
     if _params['package_source'] != :undef
       it {
-        is_expected.to contain_class('docker::install')
+        expect(subject).to contain_class('docker::install')
       }
 
       case _params['package_source']
       when 'docker-engine'
         it {
-          is_expected.to contain_package('docker').with(
+          expect(subject).to contain_package('docker').with(
             {
               'ensure' => ensure_value,
               'source' => _params['package_source'],
@@ -34,7 +34,7 @@ shared_examples 'install' do |_params, _facts|
         }
       when 'docker-ce'
         it {
-          is_expected.to contain_package('docker').with(
+          expect(subject).to contain_package('docker').with(
             {
               'ensure' => ensure_value,
               'source' => _params['package_source'],
@@ -44,7 +44,7 @@ shared_examples 'install' do |_params, _facts|
         }
 
         it {
-          is_expected.to contain_package('docker-ce-cli').with(
+          expect(subject).to contain_package('docker-ce-cli').with(
             {
               'ensure' => ensure_value,
               'source' => _params['package_source'],
@@ -55,7 +55,7 @@ shared_examples 'install' do |_params, _facts|
       end
     elsif _facts[:os]['family'] != 'windows'
       it {
-        is_expected.to contain_package('docker').with(
+        expect(subject).to contain_package('docker').with(
           'ensure' => ensure_value,
           'name' => values['docker_package_name'],
         )
@@ -64,7 +64,7 @@ shared_examples 'install' do |_params, _facts|
       if ensure_value == 'absent'
         _params['dependent_packages'].each do |dependent_package|
           it {
-            is_expected.to contain_package(dependent_package).with(
+            expect(subject).to contain_package(dependent_package).with(
               'ensure' => ensure_value,
             )
           }
@@ -73,12 +73,12 @@ shared_examples 'install' do |_params, _facts|
     elsif ensure_value == 'absent'
       it {
         if _params['version'] != :undef
-          is_expected.to contain_exec('remove-docker-package').with(
+          expect(subject).to contain_exec('remove-docker-package').with(
             'command' => %r{-RequiredVersion #{_params['version']}},
           )
         end
 
-        is_expected.to contain_exec('remove-docker-package').with(
+        expect(subject).to contain_exec('remove-docker-package').with(
           'command' => %r{\$package=Uninstall-Package #{_params['docker_ee_package_name']} -ProviderName \$dockerProviderName -Force},
           'provider' => 'powershell',
           'unless' => %r{\$package=Get-Package #{_params['docker_ee_package_name']} -ProviderName \$dockerProviderName -ErrorAction Ignore},
@@ -88,7 +88,7 @@ shared_examples 'install' do |_params, _facts|
     else
       if _params['package_location']
         it {
-          is_expected.to contain_exec('install-docker-package').with(
+          expect(subject).to contain_exec('install-docker-package').with(
             'command' => %r{Invoke-webrequest -UseBasicparsing -Outfile \$dockerLocation "#{_params['docker_download_url']}"},
             'provider' => 'powershell',
             'unless' => %r{\$webRequest = \[System.Net.HttpWebRequest\]::Create("#{_params['docker_download_url']}");},
@@ -100,7 +100,7 @@ shared_examples 'install' do |_params, _facts|
       else
         it {
           if _params['nuget_package_provider_version'] != :undef
-            is_expected.to contain_exec(
+            expect(subject).to contain_exec(
               'install-docker-package',
             ).with_command(
               %r{-RequiredVersion #{_params['nuget_package_provider_version']}},
@@ -110,7 +110,7 @@ shared_examples 'install' do |_params, _facts|
           end
 
           if _params['docker_msft_provider_version'] != :undef
-            is_expected.to contain_exec(
+            expect(subject).to contain_exec(
               'install-docker-package',
             ).with_command(
               %r{-RequiredVersion #{_params['docker_msft_provider_version']}},
@@ -120,7 +120,7 @@ shared_examples 'install' do |_params, _facts|
           end
 
           if _params['version'] != :undef
-            is_expected.to contain_exec(
+            expect(subject).to contain_exec(
               'install-docker-package',
             ).with_command(
               %r{-RequiredVersion #{_params['version']}},
@@ -129,7 +129,7 @@ shared_examples 'install' do |_params, _facts|
             )
           end
 
-          is_expected.to contain_exec('install-docker-package').with(
+          expect(subject).to contain_exec('install-docker-package').with(
             'command' => %r{\$package=Install-Package #{_params['docker_ee_package_name']} -ProviderName \$dockerProviderName -Force},
             'provider' => 'powershell',
             'unless' => %r{\$package=Get-Package #{_params['docker_ee_package_name']} -ProviderName \$dockerProviderName},
@@ -141,7 +141,7 @@ shared_examples 'install' do |_params, _facts|
       end
 
       it {
-        is_expected.to contain_exec('service-restart-on-failure').with(
+        expect(subject).to contain_exec('service-restart-on-failure').with(
           'command' => 'SC.exe failure Docker reset= 432000 actions= restart/30000/restart/60000/restart/60000',
           'refreshonly' => true,
           'logoutput' => true,

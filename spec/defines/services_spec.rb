@@ -105,7 +105,7 @@ describe 'docker::services', type: :define do
           if params['ensure'] == 'absent'
             if params['update'] || params['scale']
               it {
-                is_expected.to compile.and_raise_error('When removing a service you can not update it.')
+                expect(subject).to compile.and_raise_error('When removing a service you can not update it.')
               }
 
               next

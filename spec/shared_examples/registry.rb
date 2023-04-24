@@ -69,7 +69,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
       auth_command = "#{auth_cmd} || rm -f \"/#{local_user_home}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}\""
 
       it {
-        is_expected.to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
+        expect(subject).to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
           'ensure' => ensure_value,
           'content' => _pass_hash,
           'owner' => local_user,
@@ -85,7 +85,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
 
       if ensure_value == 'absent'
         it {
-          is_expected.to contain_file(passfile).with(
+          expect(subject).to contain_file(passfile).with(
             'ensure' => ensure_value,
           ).that_notifies(
             "Exec[#{title} auth]",
@@ -93,7 +93,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
         }
       elsif ensure_value == 'present'
         it {
-          is_expected.to contain_exec(compute - hash).with(
+          expect(subject).to contain_exec(compute - hash).with(
             # 'command'     => template('docker/windows/compute_hash.ps1.erb'),
             'environment' => exec_env,
             'provider' => exec_provider,
@@ -110,7 +110,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
   end
 
   it {
-    is_expected.to contain_exec("#{title} auth").with(
+    expect(subject).to contain_exec("#{title} auth").with(
       'environment' => exec_env,
       'command' => auth_command,
       'user' => exec_user,

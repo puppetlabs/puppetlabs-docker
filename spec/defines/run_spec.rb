@@ -344,7 +344,7 @@ describe 'docker::run', type: :define do
 
           if params['remove_volume_on_start'] && !params['remove_container_on_start']
             it {
-              is_expected.to compile.and_raise_error("In order to remove the volume on start for #{_title} you need to also remove the container")
+              expect(subject).to compile.and_raise_error("In order to remove the volume on start for #{_title} you need to also remove the container")
             }
 
             next
@@ -352,7 +352,7 @@ describe 'docker::run', type: :define do
 
           if params['remove_volume_on_stop'] && !params['remove_container_on_stop']
             it {
-              is_expected.to compile.and_raise_error("In order to remove the volume on stop for #{_title} you need to also remove the container")
+              expect(subject).to compile.and_raise_error("In order to remove the volume on stop for #{_title} you need to also remove the container")
             }
 
             next
@@ -368,13 +368,13 @@ describe 'docker::run', type: :define do
           if !params['service_provider_real'] == 'systemd' && !params['service_provider_real'] == 'upstart'
             if facts[:os]['family'] != 'windows'
               it {
-                is_expected.to compile.and_raise_error('Docker needs a Debian or RedHat based system.')
+                expect(subject).to compile.and_raise_error('Docker needs a Debian or RedHat based system.')
               }
 
               next
             elsif params['ensure'] == 'present'
               it {
-                is_expected.to compile.and_raise_error('Restart parameter is required for Windows')
+                expect(subject).to compile.and_raise_error('Restart parameter is required for Windows')
               }
 
               next

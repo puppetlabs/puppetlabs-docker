@@ -20,7 +20,7 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
     unless_secret = "#{docker_command} inspect #{secret_name}"
 
     it {
-      is_expected.to contain_exec("#{title} docker secret create").with(
+      expect(subject).to contain_exec("#{title} docker secret create").with(
         'command' => exec_secret,
         'unless' => unless_secret,
         'path' => ['/bin', '/usr/bin'],
@@ -30,7 +30,7 @@ shared_examples 'secrets' do |title, params, _facts, defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec("#{title} docker secret rm").with(
+      expect(subject).to contain_exec("#{title} docker secret rm").with(
         'command' => "#{docker_command} rm #{secret_name}",
         'onlyif' => "#{docker_command} inspect #{secret_name}",
         'path' => ['/bin', '/usr/bin'],

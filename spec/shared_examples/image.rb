@@ -30,7 +30,7 @@ shared_examples 'image' do |_params, _facts, _defaults|
   end
 
   it {
-    is_expected.to contain_file(update_docker_image_path).with(
+    expect(subject).to contain_file(update_docker_image_path).with(
       'ensure' => 'present',
       'owner' => update_docker_image_owner,
       'group' => update_docker_image_owner,
@@ -85,7 +85,7 @@ shared_examples 'image' do |_params, _facts, _defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec(image_remove).with(
+      expect(subject).to contain_exec(image_remove).with(
         'path' => exec_path,
         'environment' => exec_environment,
         'onlyif' => _image_find,
@@ -96,13 +96,13 @@ shared_examples 'image' do |_params, _facts, _defaults|
     }
   elsif ensure_value == 'latest' || image_tag == 'latest'
     it {
-      is_expected.to contain_notify("Check if image #{image_arg} is in-sync").with(
+      expect(subject).to contain_notify("Check if image #{image_arg} is in-sync").with(
         'noop' => false,
       ).that_notifies(
         "Exec[#{image_install}]",
       )
 
-      is_expected.to contain_exec(image_install).with(
+      expect(subject).to contain_exec(image_install).with(
         'environment' => exec_environment,
         'path' => exec_path,
         'timeout' => exec_timeout,
@@ -116,7 +116,7 @@ shared_examples 'image' do |_params, _facts, _defaults|
         "Exec[echo 'Update of #{image_arg} complete']",
       )
 
-      is_expected.to contain_exec("echo 'Update of #{image_arg} complete'").with(
+      expect(subject).to contain_exec("echo 'Update of #{image_arg} complete'").with(
         'environment' => exec_environment,
         'path' => exec_path,
         'timeout' => exec_timeout,
@@ -130,7 +130,7 @@ shared_examples 'image' do |_params, _facts, _defaults|
     }
   elsif ensure_value == 'present'
     it {
-      is_expected.to contain_exec(image_install).with(
+      expect(subject).to contain_exec(image_install).with(
         'unless' => _image_find,
         'environment' => exec_environment,
         'path' => exec_path,

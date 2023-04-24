@@ -60,7 +60,7 @@ describe 'docker::images', type: :class do
             include_examples 'image', values, facts, defaults
 
             it {
-              is_expected.to contain_docker__image(key)
+              expect(subject).to contain_docker__image(key)
             }
           end
         end

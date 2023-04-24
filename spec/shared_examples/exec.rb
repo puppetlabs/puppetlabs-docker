@@ -57,7 +57,7 @@ shared_examples 'exec' do |_params, _facts, _defaults|
                    end
 
   it {
-    is_expected.to contain_exec(exec).with(
+    expect(subject).to contain_exec(exec).with(
       'environment' => exec_environment,
       'onlyif' => onlyif_command,
       'path' => exec_path,

@@ -45,7 +45,7 @@ describe 'docker::machine', type: :class do
           if params['proxy'] != :undef
             unless '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
               it {
-                is_expected.to compile.and_raise_error(%r{})
+                expect(subject).to compile.and_raise_error(%r{})
               }
 
               next

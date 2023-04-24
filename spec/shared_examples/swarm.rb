@@ -60,7 +60,7 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
     exec_init = "#{docker_command} #{docker_swarm_init_flags}"
 
     it {
-      is_expected.to contain_exec('Swarm init').with(
+      expect(subject).to contain_exec('Swarm init').with(
         'command' => exec_init,
         'environment' => exec_environment,
         'path' => exec_path,
@@ -82,7 +82,7 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
     exec_join = "#{docker_command} #{docker_swarm_join_flags} #{manager_ip}"
 
     it {
-      is_expected.to contain_exec('Swarm join').with(
+      expect(subject).to contain_exec('Swarm join').with(
         'command' => exec_join,
         'environment' => exec_environment,
         'path' => exec_path,
@@ -95,7 +95,7 @@ shared_examples 'swarm' do |_title, params, facts, defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec('Leave swarm').with(
+      expect(subject).to contain_exec('Leave swarm').with(
         'command' => 'docker swarm leave --force',
         'onlyif' => onlyif_leave,
         'path' => exec_path,

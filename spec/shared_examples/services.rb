@@ -60,7 +60,7 @@ shared_examples 'services' do |title, params, facts, defaults|
     unless_create = "docker service ps #{service_name == :undef ? '' : service_name}"
 
     it {
-      is_expected.to contain_exec("#{title} docker service create").with(
+      expect(subject).to contain_exec("#{title} docker service create").with(
         'command' => exec_create,
         'environment' => exec_environment,
         'path' => exec_path,
@@ -91,7 +91,7 @@ shared_examples 'services' do |title, params, facts, defaults|
     exec_update = "#{docker_command} update #{docker_service_flags}"
 
     it {
-      is_expected.to contain_exec("#{title} docker service update").with(
+      expect(subject).to contain_exec("#{title} docker service update").with(
         'command' => exec_update,
         'environment' => exec_environment,
         'path' => exec_path,
@@ -111,7 +111,7 @@ shared_examples 'services' do |title, params, facts, defaults|
     exec_scale = "#{docker_command} scale #{service_name}=#{replicas}"
 
     it {
-      is_expected.to contain_exec("#{title} docker service scale").with(
+      expect(subject).to contain_exec("#{title} docker service scale").with(
         'command' => exec_scale,
         'environment' => exec_environment,
         'path' => exec_path,
@@ -123,7 +123,7 @@ shared_examples 'services' do |title, params, facts, defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec("#{title} docker service remove").with(
+      expect(subject).to contain_exec("#{title} docker service remove").with(
         'command' => "docker service rm #{service_name}",
         'onlyif' => "docker service ps #{service_name}",
         'path' => exec_path,
