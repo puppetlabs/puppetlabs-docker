@@ -104,6 +104,9 @@ RSpec/ExpectInHook:
   Exclude:
     - 'spec/acceptance/docker_full_spec.rb'
 
+RSpec/NamedSubject:
+  Enabled: false
+
 # Offense count: 6
 # Configuration parameters: Max.
 RSpec/IndexedLet:
