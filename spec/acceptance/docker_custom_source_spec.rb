@@ -61,7 +61,7 @@ describe 'the Puppet Docker module' do
         require => Docker::Image['#{default_image}'],
         #{default_docker_run_arg}
         }
-    EOS
+      EOS
 
       pp2 = <<-EOS
         class { 'docker': #{docker_args} }
@@ -75,7 +75,7 @@ describe 'the Puppet Docker module' do
         image   => '#{default_image}',
         require => Docker::Image['#{default_image}'],
         }
-    EOS
+      EOS
 
       apply_manifest(pp, catch_failures: true)
       apply_manifest(pp) unless selinux == 'true'

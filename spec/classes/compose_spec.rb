@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 tests = {
-  'with default valus' => {
-  },
+  'with default valus' => {},
   'with ensure => absent' => {
     'ensure' => 'absent',
   },

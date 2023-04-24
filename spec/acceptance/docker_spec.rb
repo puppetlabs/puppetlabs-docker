@@ -279,7 +279,7 @@ describe 'docker' do
           net           => '#{docker_network}',
           ports         => '#{registry_port}:#{registry_port}',
         }
-        MANIFEST
+      MANIFEST
       retry_on_error_matching(60, 5, %r{connection failure running}) do
         apply_manifest(pp, catch_failures: true)
       end

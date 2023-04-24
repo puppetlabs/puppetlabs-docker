@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 tests = {
-  'with default value' => {
-  },
+  'with default value' => {},
 }
 
 describe 'docker::machine', type: :class do

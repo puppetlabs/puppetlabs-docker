@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 tests = {
-  'with default values' => {
-  },
+  'with default values' => {},
   'with docker_users set' => {
     'docker_users' => [
       'some_random_user',

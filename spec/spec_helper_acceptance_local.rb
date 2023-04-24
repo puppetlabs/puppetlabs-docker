@@ -98,7 +98,7 @@ services:
   compose_test:
     image: *default-image
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-      EOS
+    EOS
     docker_compose_override_v3 = <<-EOS
 version: "3.4"
 x-images:
@@ -108,7 +108,7 @@ services:
   compose_test:
     image: *default-image
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-        EOS
+    EOS
     docker_stack_override_v3 = <<-EOS
 version: "3.4"
 x-images:
@@ -118,7 +118,7 @@ services:
   compose_test:
     image: *default-image
     command: /bin/sh -c "while true; do echo hello world; sleep 1; done"
-        EOS
+    EOS
     docker_compose_content_v3_windows = <<-EOS
 version: "3"
 services:
@@ -129,7 +129,7 @@ networks:
   default:
     external:
       name: nat
-      EOS
+    EOS
     docker_compose_override_v3_windows = <<-EOS
 version: "3"
 services:
@@ -140,7 +140,7 @@ networks:
   default:
     external:
       name: nat
-      EOS
+    EOS
     docker_compose_override_v3_windows2016 = <<-EOS
 version: "3"
 services:
@@ -151,26 +151,26 @@ networks:
   default:
     external:
       name: nat
-      EOS
+    EOS
     docker_stack_content_windows = <<-EOS
 version: "3"
 services:
   compose_test:
     image: winamd64/hello-seattle
     command: cmd.exe /C "ping 8.8.8.8 -t"
-      EOS
+    EOS
     docker_stack_override_windows = <<-EOS
 version: "3"
 services:
   compose_test:
     image: winamd64/hello-seattle:nanoserver
-      EOS
+    EOS
     docker_stack_override_windows2016 = <<-EOS
 version: "3"
 services:
   compose_test:
     image: winamd64/hello-seattle:nanoserver-sac2016
-      EOS
+    EOS
     if os[:family] == 'windows'
       create_remote_file(host, '/tmp/docker-compose-v3.yml', docker_compose_content_v3_windows)
       create_remote_file(host, '/tmp/docker-stack.yml', docker_stack_content_windows)

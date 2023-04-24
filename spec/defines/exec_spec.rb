@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 tests = {
-  'with default values' => {
-  },
+  'with default values' => {},
   'when running detached' => {
     'detach' => true,
   },
