@@ -23,12 +23,12 @@ end
 describe 'docker compose' do
   before(:all) do
     retry_on_error_matching(60, 5, %r{connection failure running}) do
-      install_code = <<-code
+      install_code = <<-CODE
         class { 'docker': #{docker_args} }
         class { 'docker::compose':
           version => '1.23.2',
         }
-      code
+      CODE
       apply_manifest(install_code, catch_failures: true)
     end
   end
