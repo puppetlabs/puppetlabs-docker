@@ -99,7 +99,7 @@ shared_examples 'install' do |_params, _facts|
       else
         it {
           if _params['nuget_package_provider_version'] != :undef
-            is_expected. to contain_exec(
+            is_expected.to contain_exec(
               'install-docker-package',
             ).with_command(
               %r{-RequiredVersion #{_params['nuget_package_provider_version']}},
@@ -109,7 +109,7 @@ shared_examples 'install' do |_params, _facts|
           end
 
           if _params['docker_msft_provider_version'] != :undef
-            is_expected. to contain_exec(
+            is_expected.to contain_exec(
               'install-docker-package',
             ).with_command(
               %r{-RequiredVersion #{_params['docker_msft_provider_version']}},
