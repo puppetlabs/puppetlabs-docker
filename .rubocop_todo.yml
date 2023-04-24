@@ -94,13 +94,6 @@ RSpec/ContextWording:
 RSpec/DescribeClass:
   Enabled: false
 
-# Offense count: 9
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowConsecutiveOneLiners.
-RSpec/EmptyLineAfterHook:
-  Exclude:
-    - 'spec/unit/lib/facter/docker_spec.rb'
-
 # Offense count: 102
 # Configuration parameters: CountAsOne.
 RSpec/ExampleLength:
