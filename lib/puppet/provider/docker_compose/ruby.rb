@@ -57,7 +57,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
        # Containers described in the compose file are not running
        counts.any? { |_k, v| v.zero? } ||
        # The scaling factors in the resource do not match the number of running containers
-       resource[:scale] && counts.merge(resource[:scale]) != counts
+       (resource[:scale] && counts.merge(resource[:scale]) != counts)
       false
     else
       true

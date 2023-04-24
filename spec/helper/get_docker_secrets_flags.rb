@@ -19,7 +19,7 @@ def get_docker_secrets_flags(args)
 
   multi_flags = ->(values, format) {
     filtered = [values].flatten.compact
-    filtered.map { |val| format + " \\\n" % val }
+    filtered.map { |val| format + (" \\\n" % val) }
   }
   [
     ['-l %s', 'label'],
