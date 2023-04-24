@@ -99,14 +99,6 @@ RSpec/DescribeClass:
 RSpec/ExampleLength:
   Max: 52
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: CustomTransform, IgnoredWords, DisallowedExamples.
-# DisallowedExamples: works
-RSpec/ExampleWording:
-  Exclude:
-    - 'spec/acceptance/docker_spec.rb'
-
 # Offense count: 2
 RSpec/ExpectInHook:
   Exclude:

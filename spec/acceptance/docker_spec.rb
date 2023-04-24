@@ -114,7 +114,7 @@ describe 'docker' do
       end
     end
 
-    it 'works' do
+    it 'runs without error' do
       apply_manifest(pp, catch_failures: true)
       run_shell(shell_command) do |r|
         if os[:family] == 'windows'
