@@ -41,18 +41,14 @@ shared_examples 'exec' do |_params, _facts, _defaults|
   exec = "#{docker_command} exec #{docker_exec_flags} #{sanitised_container} #{command}"
 
   unless_command = case unless_value
-                   when :undef
-                     nil
-                   when ''
+                   when :undef, ''
                      nil
                    else
                      "#{docker_command} exec #{docker_exec_flags} #{sanitised_container} #{unless_value}"
                    end
 
   onlyif_command = case onlyif
-                   when :undef
-                     nil
-                   when ''
+                   when :undef, ''
                      nil
                    when 'running'
                      "#{docker_command} ps --no-trunc --format='table {{.Names}}' | grep '^#{sanitised_container}$'"

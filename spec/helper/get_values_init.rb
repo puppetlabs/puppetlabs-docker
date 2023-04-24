@@ -43,10 +43,6 @@ def get_values_init(_params, _facts)
       package_key              = _params['docker_package_key_id']
       package_repos            = 'main'
       release                  = _params['docker_package_release']
-    when 'RedHat'
-      package_location         = _params['docker_package_location']
-      package_key_source       = _params['docker_package_key_source']
-      package_key_check_source = _params['docker_package_key_check_source']
     else
       package_location         = _params['docker_package_location']
       package_key_source       = _params['docker_package_key_source']
