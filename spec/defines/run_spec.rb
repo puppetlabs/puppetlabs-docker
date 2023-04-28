@@ -317,9 +317,7 @@ describe 'docker::run', type: :define do
             'volumes' => [],
           }.merge(os_params).merge(local_params)
 
-          if params['docker_service'] && params['docker_service'].to_s != 'true'
-            docker_params['service_name'] = params['docker_service']
-          end
+          docker_params['service_name'] = params['docker_service'] if params['docker_service'] && params['docker_service'].to_s != 'true'
 
           let(:facts) do
             facts

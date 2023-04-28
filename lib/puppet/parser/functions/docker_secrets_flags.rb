@@ -10,17 +10,11 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['ensure'].to_s == 'present'
-      flags << 'create'
-    end
+    flags << 'create' if opts['ensure'].to_s == 'present'
 
-    if opts['secret_name'] && opts['secret_name'].to_s != 'undef'
-      flags << "'#{opts['secret_name']}'"
-    end
+    flags << "'#{opts['secret_name']}'" if opts['secret_name'] && opts['secret_name'].to_s != 'undef'
 
-    if opts['secret_path'] && opts['secret_path'].to_s != 'undef'
-      flags << "'#{opts['secret_path']}'"
-    end
+    flags << "'#{opts['secret_path']}'" if opts['secret_path'] && opts['secret_path'].to_s != 'undef'
 
     multi_flags = ->(values, format) {
       filtered = [values].flatten.compact

@@ -5,17 +5,11 @@ require 'shellwords'
 def get_docker_secrets_flags(args)
   flags = []
 
-  if args['ensure'].to_s == 'present'
-    flags << 'create'
-  end
+  flags << 'create' if args['ensure'].to_s == 'present'
 
-  if args['secret_name'] && args['secret_name'].to_s != 'undef'
-    flags << "'#{args['secret_name']}'"
-  end
+  flags << "'#{args['secret_name']}'" if args['secret_name'] && args['secret_name'].to_s != 'undef'
 
-  if args['secret_path'] && args['secret_path'].to_s != 'undef'
-    flags << "'#{args['secret_path']}'"
-  end
+  flags << "'#{args['secret_path']}'" if args['secret_path'] && args['secret_path'].to_s != 'undef'
 
   multi_flags = ->(values, format) {
     filtered = [values].flatten.compact
