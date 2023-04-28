@@ -164,14 +164,6 @@ RSpec/StubbedMock:
   Exclude:
     - 'spec/unit/lib/facter/docker_spec.rb'
 
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: nonzero?
-Style/IfWithBooleanLiteralBranches:
-  Exclude:
-    - 'spec/helper/get_defaults.rb'
-
 # Offense count: 2
 Style/MixinUsage:
   Exclude:

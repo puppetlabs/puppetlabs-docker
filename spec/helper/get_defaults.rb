@@ -150,11 +150,7 @@ def get_defaults(_facts)
     package_key_source            = 'https://apt.dockerproject.org/gpg'
     package_source_location       = 'http://apt.dockerproject.org/repo'
 
-    detach_service_in_init = if service_provider == 'systemd'
-                               false
-                             else
-                               true
-                             end
+    detach_service_in_init = service_provider != 'systemd'
   when 'RedHat'
     service_after_override      = :undef
     service_config              = '/etc/sysconfig/docker'
