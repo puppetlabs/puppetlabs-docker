@@ -38,7 +38,7 @@ describe 'the Puppet Docker module' do
         end
       else
         run_shell('ps aux | grep docker') do |r|
-          expect(r.stdout).to match %r{dockerd -H unix:\/\/\/var\/run\/docker.sock}
+          expect(r.stdout).to match %r{dockerd -H unix:///var/run/docker.sock}
         end
       end
     end

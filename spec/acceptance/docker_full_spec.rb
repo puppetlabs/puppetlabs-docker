@@ -88,7 +88,7 @@ describe 'the Puppet Docker module' do
             end
           else
             run_shell('ps aux | grep docker') do |r|
-              expect(r.stdout).to match(%r{dockerd -H unix:\/\/\/var\/run\/docker.sock})
+              expect(r.stdout).to match(%r{dockerd -H unix:///var/run/docker.sock})
             end
           end
         end
@@ -194,7 +194,7 @@ describe 'the Puppet Docker module' do
             end
           else
             run_shell('netstat -tulpn | grep docker') do |r|
-              expect(r.stdout).to match(%r{tcp\s+0\s+0\s+127.0.0.1:4444\s+0.0.0.0\:\*\s+LISTEN\s+\d+\/docker})
+              expect(r.stdout).to match(%r{tcp\s+0\s+0\s+127.0.0.1:4444\s+0.0.0.0:\*\s+LISTEN\s+\d+/docker})
             end
           end
         end
@@ -218,7 +218,7 @@ describe 'the Puppet Docker module' do
         it 'shows docker listening on the specified unix socket' do
           if os[:family] != 'windows'
             run_shell('ps aux | grep docker') do |r|
-              expect(r.stdout).to match(%r{unix:\/\/\/var\/run\/docker.sock})
+              expect(r.stdout).to match(%r{unix:///var/run/docker.sock})
             end
           end
         end
@@ -505,7 +505,7 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         run_shell("#{docker_command} ps") do |r|
-          expect(r.stdout).to match(%r{#{default_run_command}.+5555\/tcp\, 0\.0\.0.0\:\d+\-\>4444\/tcp})
+          expect(r.stdout).to match(%r{#{default_run_command}.+5555/tcp, 0\.0\.0.0:\d+->4444/tcp})
         end
       end
 
@@ -609,7 +609,7 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         run_shell("#{docker_command} inspect container_3_5_5") do |r|
-          expect(r.stdout).to match(%r{"CpusetCpus"\: "0"})
+          expect(r.stdout).to match(%r{"CpusetCpus": "0"})
         end
       end
 

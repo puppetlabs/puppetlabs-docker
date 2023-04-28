@@ -164,15 +164,6 @@ RSpec/StubbedMock:
   Exclude:
     - 'spec/unit/lib/facter/docker_spec.rb'
 
-# Offense count: 42
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantRegexpEscape:
-  Exclude:
-    - 'spec/acceptance/docker_custom_source_spec.rb'
-    - 'spec/acceptance/docker_full_spec.rb'
-    - 'spec/acceptance/docker_spec.rb'
-    - 'spec/classes/compose_spec.rb'
-
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
 Style/RedundantSelfAssignmentBranch:

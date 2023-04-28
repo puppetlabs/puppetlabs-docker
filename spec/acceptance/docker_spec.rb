@@ -118,7 +118,7 @@ describe 'docker' do
       apply_manifest(pp, catch_failures: true)
       run_shell(shell_command) do |r|
         if os[:family] == 'windows'
-          expect(r.stdout).to match(%r{\"data-root\": \"#{root_dir}\"})
+          expect(r.stdout).to match(%r{"data-root": "#{root_dir}"})
         else
           expect(r.stdout).to match(%r{--data-root #{root_dir}})
         end
@@ -195,7 +195,7 @@ describe 'docker' do
     it 'netstat -tlndp' do
       result = run_shell('netstat -tlndp')
       expect(result[:exit_code]).to eq 0
-      expect(result[:stdout]).to match %r{0\.0\.0\.0\:80}
+      expect(result[:stdout]).to match %r{0\.0\.0\.0:80}
     end
 
     it 'id testuser | grep docker' do
@@ -235,7 +235,7 @@ describe 'docker' do
 
     it 'has a registry mirror set' do
       run_shell('ps -aux | grep docker') do |r|
-        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror.io})
+        expect(r.stdout).to match(%r{--registry-mirror=http://testmirror.io})
       end
     end
   end
@@ -255,8 +255,8 @@ describe 'docker' do
 
     it 'has all registry mirrors set' do
       run_shell('ps -aux | grep docker') do |r|
-        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror1.io})
-        expect(r.stdout).to match(%r{--registry-mirror=http:\/\/testmirror2.io})
+        expect(r.stdout).to match(%r{--registry-mirror=http://testmirror1.io})
+        expect(r.stdout).to match(%r{--registry-mirror=http://testmirror2.io})
       end
     end
   end
