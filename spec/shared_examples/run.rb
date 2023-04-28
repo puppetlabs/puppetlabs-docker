@@ -166,11 +166,7 @@ shared_examples 'run' do |title, params, facts, defaults|
       hasstatus = defaults['service_hasstatus']
     end
 
-    _syslog_identifier = if syslog_identifier
-                           syslog_identifier
-                         else
-                           "#{service_prefix}#{sanitised_title}"
-                         end
+    _syslog_identifier = syslog_identifier || "#{service_prefix}#{sanitised_title}"
 
     if ensure_value == 'absent'
       if facts[:os]['family'] == 'windows'

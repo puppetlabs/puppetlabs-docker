@@ -166,12 +166,6 @@ RSpec/StubbedMock:
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
-Style/RedundantCondition:
-  Exclude:
-    - 'spec/shared_examples/run.rb'
-
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
 Style/RedundantConditional:
   Exclude:
     - 'spec/helper/get_defaults.rb'
