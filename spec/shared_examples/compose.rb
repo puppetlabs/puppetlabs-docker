@@ -22,16 +22,16 @@ shared_examples 'compose' do |_params, _facts|
   docker_compose_location_versioned = "#{install_path}/docker-compose-#{version}#{file_extension}"
 
   if ensure_value == 'present'
-    docker_compose_url = if raw_url != :undef
-                           raw_url
-                         else
+    docker_compose_url = if raw_url == :undef
                            "#{base_url}/#{version}/docker-compose-#{_facts[:kernel]}-x86_64#{file_extension}"
+                         else
+                           raw_url
                          end
 
-    proxy_opt = if proxy != :undef
-                  "--proxy #{proxy}"
-                else
+    proxy_opt = if proxy == :undef
                   ''
+                else
+                  "--proxy #{proxy}"
                 end
 
     if _facts[:os]['family'] == 'windows'

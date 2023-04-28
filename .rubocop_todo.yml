@@ -164,16 +164,6 @@ RSpec/StubbedMock:
   Exclude:
     - 'spec/unit/lib/facter/docker_spec.rb'
 
-# Offense count: 11
-# This cop supports safe autocorrection (--autocorrect).
-Style/NegatedIfElseCondition:
-  Exclude:
-    - 'lib/facter/docker.rb'
-    - 'spec/classes/init_spec.rb'
-    - 'spec/shared_examples/compose.rb'
-    - 'spec/shared_examples/registry.rb'
-    - 'spec/shared_examples/run.rb'
-
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: Methods.

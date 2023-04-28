@@ -62,11 +62,11 @@ shared_examples 'run' do |title, params, facts, defaults|
   volumes_from                      = params['volumes_from']
   docker_group                      = defaults['docker_group']
 
-  if socket_connect != []
+  if socket_connect == []
+    docker_command = defaults['docker_command']
+  else
     sockopts       = [socket_connect].join(',')
     docker_command = "#{defaults['docker_command']} -H #{sockopts}"
-  else
-    docker_command = defaults['docker_command']
   end
 
   if use_name
@@ -148,111 +148,7 @@ shared_examples 'run' do |title, params, facts, defaults|
     }
   end
 
-  if restart.to_s != 'undef'
-    if ensure_value == 'absent'
-      it {
-        expect(subject).to contain_exec("stop #{title} with docker").with(
-          'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
-          'onlyif' => "#{docker_command} inspect #{sanitised_title}",
-          'environment' => exec_environment,
-          'path' => exec_path,
-          'provider' => exec_provider,
-          'timeout' => exec_timeout,
-        )
-
-        expect(subject).to contain_exec("remove #{title} with docker").with(
-          'command' => "#{docker_command} rm -v #{sanitised_title}",
-          'onlyif' => "#{docker_command} inspect #{sanitised_title}",
-          'environment' => exec_environment,
-          'path' => exec_path,
-          'provider' => exec_provider,
-          'timeout' => exec_timeout,
-        )
-
-        expect(subject).to contain_file(cidfile).with(
-          'ensure' => 'absent',
-        )
-      }
-    else
-      run_with_docker_command = [
-        "#{docker_command} run -d #{docker_run_flags}",
-        "--name #{sanitised_title} --cidfile=#{cidfile}",
-        "--restart=\"#{restart}\" #{image} #{command}",
-      ]
-
-      # inspect = [
-      #   "#{docker_command} inspect #{sanitised_title}",
-      # ]
-
-      # exec_unless = if custom_unless
-      #                 custom_unless << inspect
-      #               else
-      #                 inspect
-      #               end
-
-      if facts[:puppetversion].to_i < 6
-        it {
-          expect(subject).to contain_exec("run #{title} with docker").with(
-            'command' => run_with_docker_command.join(' '),
-            ## todo:
-            ## fix the following strange behavior:
-            ## expected that the catalogue would contain Exec[run command with docker] with unless set to [["docker inspect command"]]
-            ## but it is set to [["docker inspect command"], "docker inspect command"]
-            # 'unless'      => exec_unless,
-            'environment' => exec_environment,
-            'path' => exec_path,
-            'provider' => exec_provider,
-            'timeout' => exec_timeout,
-          )
-        }
-
-        if !running
-          it {
-            expect(subject).to contain_exec("stop #{title} with docker").with(
-              'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
-              'onlyif' => container_running_check,
-              'environment' => exec_environment,
-              'path' => exec_path,
-              'provider' => exec_provider,
-              'timeout' => exec_timeout,
-            )
-          }
-        else
-          it {
-            expect(subject).to contain_exec("start #{title} with docker").with(
-              'command' => "#{docker_command} start #{sanitised_title}",
-              'unless' => container_running_check,
-              'environment' => exec_environment,
-              'path' => exec_path,
-              'provider' => exec_provider,
-              'timeout' => exec_timeout,
-            )
-          }
-        end
-      else
-        docker_params_changed_args = {
-          'sanitised_title' => sanitised_title,
-          'osfamily' => facts[:os]['family'],
-          'command' => run_with_docker_command.join(' '),
-          'cidfile' => cidfile,
-          'image' => image,
-          'volumes' => volumes,
-          'ports' => ports,
-          'stop_wait_time' => stop_wait_time,
-          'container_running' => running,
-          'logfile_path' => facts[:os]['family'] == 'windows' ? facts['docker_user_temp_path'] : '/tmp',
-        }
-
-        detect_changes = get_docker_params_changed(docker_params_changed_args)
-
-        it {
-          expect(subject).to contain_notify("#{title}_docker_params_changed").with(
-            'message' => detect_changes,
-          )
-        }
-      end
-    end
-  else
+  if restart.to_s == 'undef'
     case service_provider_real
     when 'systemd'
       hasstatus          = true
@@ -313,7 +209,13 @@ shared_examples 'run' do |title, params, facts, defaults|
         )
       }
 
-      if facts[:os]['family'] != 'windows'
+      if facts[:os]['family'] == 'windows'
+        it {
+          expect(subject).to contain_file(cidfile).with(
+            'ensure' => 'absent',
+          )
+        }
+      else
         it {
           expect(subject).to contain_file("/etc/systemd/system/#{service_prefix}#{sanitised_title}.service").with(
             'ensure' => 'absent',
@@ -335,12 +237,6 @@ shared_examples 'run' do |title, params, facts, defaults|
             )
           }
         end
-      else
-        it {
-          expect(subject).to contain_file(cidfile).with(
-            'ensure' => 'absent',
-          )
-        }
       end
     else
       if startscript
@@ -375,17 +271,7 @@ shared_examples 'run' do |title, params, facts, defaults|
       }
 
       if manage_service
-        if !running
-          it {
-            expect(subject).to contain_service("#{service_prefix}#{sanitised_title}").with(
-              'ensure' => running,
-              'enable' => false,
-              'hasstatus' => hasstatus,
-            ).that_requires(
-              "File[#{initscript}]",
-            )
-          }
-        else
+        if running
           if initscript == "/etc/init.d/#{service_prefix}#{sanitised_title}"
             transition_onlyif = [
               "/usr/bin/test -f /var/run/docker-#{sanitised_title}.cid &&",
@@ -441,6 +327,16 @@ shared_examples 'run' do |title, params, facts, defaults|
               end
             end
           end
+        else
+          it {
+            expect(subject).to contain_service("#{service_prefix}#{sanitised_title}").with(
+              'ensure' => running,
+              'enable' => false,
+              'hasstatus' => hasstatus,
+            ).that_requires(
+              "File[#{initscript}]",
+            )
+          }
         end
       end
 
@@ -467,6 +363,108 @@ shared_examples 'run' do |title, params, facts, defaults|
           )
         }
       end
+    end
+  elsif ensure_value == 'absent'
+    it {
+      expect(subject).to contain_exec("stop #{title} with docker").with(
+        'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+        'onlyif' => "#{docker_command} inspect #{sanitised_title}",
+        'environment' => exec_environment,
+        'path' => exec_path,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
+      )
+
+      expect(subject).to contain_exec("remove #{title} with docker").with(
+        'command' => "#{docker_command} rm -v #{sanitised_title}",
+        'onlyif' => "#{docker_command} inspect #{sanitised_title}",
+        'environment' => exec_environment,
+        'path' => exec_path,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
+      )
+
+      expect(subject).to contain_file(cidfile).with(
+        'ensure' => 'absent',
+      )
+    }
+  else
+    run_with_docker_command = [
+      "#{docker_command} run -d #{docker_run_flags}",
+      "--name #{sanitised_title} --cidfile=#{cidfile}",
+      "--restart=\"#{restart}\" #{image} #{command}",
+    ]
+
+    # inspect = [
+    #   "#{docker_command} inspect #{sanitised_title}",
+    # ]
+
+    # exec_unless = if custom_unless
+    #                 custom_unless << inspect
+    #               else
+    #                 inspect
+    #               end
+
+    if facts[:puppetversion].to_i < 6
+      it {
+        expect(subject).to contain_exec("run #{title} with docker").with(
+          'command' => run_with_docker_command.join(' '),
+          ## todo:
+          ## fix the following strange behavior:
+          ## expected that the catalogue would contain Exec[run command with docker] with unless set to [["docker inspect command"]]
+          ## but it is set to [["docker inspect command"], "docker inspect command"]
+          # 'unless'      => exec_unless,
+          'environment' => exec_environment,
+          'path' => exec_path,
+          'provider' => exec_provider,
+          'timeout' => exec_timeout,
+        )
+      }
+
+      if running
+        it {
+          expect(subject).to contain_exec("start #{title} with docker").with(
+            'command' => "#{docker_command} start #{sanitised_title}",
+            'unless' => container_running_check,
+            'environment' => exec_environment,
+            'path' => exec_path,
+            'provider' => exec_provider,
+            'timeout' => exec_timeout,
+          )
+        }
+      else
+        it {
+          expect(subject).to contain_exec("stop #{title} with docker").with(
+            'command' => "#{docker_command} stop --time=#{stop_wait_time} #{sanitised_title}",
+            'onlyif' => container_running_check,
+            'environment' => exec_environment,
+            'path' => exec_path,
+            'provider' => exec_provider,
+            'timeout' => exec_timeout,
+          )
+        }
+      end
+    else
+      docker_params_changed_args = {
+        'sanitised_title' => sanitised_title,
+        'osfamily' => facts[:os]['family'],
+        'command' => run_with_docker_command.join(' '),
+        'cidfile' => cidfile,
+        'image' => image,
+        'volumes' => volumes,
+        'ports' => ports,
+        'stop_wait_time' => stop_wait_time,
+        'container_running' => running,
+        'logfile_path' => facts[:os]['family'] == 'windows' ? facts['docker_user_temp_path'] : '/tmp',
+      }
+
+      detect_changes = get_docker_params_changed(docker_params_changed_args)
+
+      it {
+        expect(subject).to contain_notify("#{title}_docker_params_changed").with(
+          'message' => detect_changes,
+        )
+      }
     end
   end
 end

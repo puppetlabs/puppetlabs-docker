@@ -189,26 +189,7 @@ describe 'docker', type: :class do
             params
           end
 
-          if params['ensure'] != 'absent'
-            if params['package_source'] != :undef && facts[:os]['family'].include?('windows')
-              it {
-                expect(subject).to compile.and_raise_error(%r{Custom package source is currently not implemented on windows.})
-              }
-            else
-              it {
-                expect(subject).to contain_class('docker::repos').that_comes_before('Class[docker::install]')
-                expect(subject).to contain_class('docker::install').that_comes_before('Class[docker::config]')
-                expect(subject).to contain_class('docker::config').that_comes_before('Class[docker::service]')
-                expect(subject).to contain_class('docker::service')
-              }
-
-              include_examples 'params', facts
-              include_examples 'repos', params, facts
-              include_examples 'install', params, facts
-              include_examples 'config', params, facts
-              include_examples 'service', params, facts
-            end
-          else
+          if params['ensure'] == 'absent'
             it {
               expect(subject).to contain_class('docker::repos').that_comes_before('Class[docker::install]')
               expect(subject).to contain_class('docker::install')
@@ -217,6 +198,23 @@ describe 'docker', type: :class do
             include_examples 'params', facts
             include_examples 'repos', params, facts
             include_examples 'install', params, facts
+          elsif params['package_source'] != :undef && facts[:os]['family'].include?('windows')
+            it {
+              expect(subject).to compile.and_raise_error(%r{Custom package source is currently not implemented on windows.})
+            }
+          else
+            it {
+              expect(subject).to contain_class('docker::repos').that_comes_before('Class[docker::install]')
+              expect(subject).to contain_class('docker::install').that_comes_before('Class[docker::config]')
+              expect(subject).to contain_class('docker::config').that_comes_before('Class[docker::service]')
+              expect(subject).to contain_class('docker::service')
+            }
+
+            include_examples 'params', facts
+            include_examples 'repos', params, facts
+            include_examples 'install', params, facts
+            include_examples 'config', params, facts
+            include_examples 'service', params, facts
           end
         end
       end
