@@ -18,11 +18,9 @@ def get_docker_params_changed(opts)
       param_changed = true if opts['volumes'].is_a?(String) && opts['volumes'].include?(':') && opts['volumes'] != inspect_hash['Mounts'].to_a[0] && opts['osfamily'] != 'windows'
       param_changed = true if opts['volumes'].is_a?(String) && !opts['volumes'].include?(':') && opts['volumes'] != inspect_hash['Config']['Volumes'].to_a[0] && opts['osfamily'] != 'windows'
       param_changed = true if opts['volumes'].is_a?(String) && opts['volumes'].scan(%r{(?=:)}).count == 2 && opts['volumes'] != inspect_hash['Mounts'].to_a[0] && opts['osfamily'] == 'windows'
-      param_changed = if opts['volumes'].is_a?(String) && opts['volumes'].scan(%r{(?=:)}).count == 1 && opts['volumes'] != inspect_hash['Config']['Volumes'].to_a[0] && opts['osfamily'] == 'windows'
-                        true
-                      else
-                        param_changed
-                      end
+      if opts['volumes'].is_a?(String) && opts['volumes'].scan(%r{(?=:)}).count == 1 && opts['volumes'] != inspect_hash['Config']['Volumes'].to_a[0] && opts['osfamily'] == 'windows'
+        param_changed = true
+      end
 
       pp_paths = opts['volumes'].reject { |item| item.include?(':') } if opts['volumes'].is_a?(Array) && opts['osfamily'] != 'windows'
       pp_mounts = opts['volumes'].select { |item| item.include?(':') } if opts['volumes'].is_a?(Array) && opts['osfamily'] != 'windows'
