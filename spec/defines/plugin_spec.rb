@@ -7,15 +7,15 @@ tests = {
     'settings' => [
       'VAR1=test',
       'VAR2=value',
-    ],
+    ]
   },
   'foo/disabled:latest' => {
-    'enabled' => false,
+    'enabled' => false
   },
   'foo/force_remove:latest' => {
     'ensure' => 'absent',
-    'force_remove' => true,
-  },
+    'force_remove' => true
+  }
 }
 
 describe 'docker::plugin', type: :define do
@@ -47,7 +47,7 @@ describe 'docker::plugin', type: :define do
             'disable_content_trust' => true,
             'grant_all_permissions' => true,
             'force_remove' => true,
-            'settings' => [],
+            'settings' => []
           }.merge(local_params)
 
           let(:facts) do

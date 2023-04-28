@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 tests = {
-  'with default value' => {},
+  'with default value' => {}
 }
 
 describe 'docker::machine', type: :class do
@@ -31,7 +31,7 @@ describe 'docker::machine', type: :class do
             'install_path' => defaults['machine_install_path'],
             'proxy' => :undef,
             'url' => :undef,
-            'curl_ensure' => defaults['curl_ensure'],
+            'curl_ensure' => defaults['curl_ensure']
           }.merge(local_params)
 
           let(:facts) do

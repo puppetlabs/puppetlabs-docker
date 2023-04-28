@@ -28,7 +28,7 @@ shared_examples 'install' do |_params, _facts|
             {
               'ensure' => ensure_value,
               'source' => _params['package_source'],
-              'name' => _params['docker_engine_package_name'],
+              'name' => _params['docker_engine_package_name']
             }.merge(docker_hash),
           )
         }
@@ -38,7 +38,7 @@ shared_examples 'install' do |_params, _facts|
             {
               'ensure' => ensure_value,
               'source' => _params['package_source'],
-              'name' => _params['docker_ce_package_name'],
+              'name' => _params['docker_ce_package_name']
             }.merge(docker_hash),
           )
         }
@@ -48,7 +48,7 @@ shared_examples 'install' do |_params, _facts|
             {
               'ensure' => ensure_value,
               'source' => _params['package_source'],
-              'name' => _params['docker_ce_cli_package_name'],
+              'name' => _params['docker_ce_cli_package_name']
             }.merge(docker_hash),
           )
         }

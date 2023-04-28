@@ -7,27 +7,27 @@ tests = {
     'ensure' => 'absent',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with ensure => present' => {
     'ensure' => 'present',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with ensure => present and username => user1' => {
     'ensure' => 'present',
     'username' => 'user1',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with ensure => present and password => secret' => {
     'ensure' => 'present',
     'password' => 'secret',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
 
   'with ensure => present and email => user1@example.io' => {
@@ -35,7 +35,7 @@ tests = {
     'email' => 'user1@example.io',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with ensure => present and username => user1, and password => secret and email => user1@example.io' => {
     'ensure' => 'present',
@@ -44,7 +44,7 @@ tests = {
     'email' => 'user1@example.io',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with ensure => present and username => user1, and password => secret and email => user1@example.io and version < 1.11.0' => {
     'ensure' => 'present',
@@ -53,14 +53,14 @@ tests = {
     'email' => 'user1@example.io',
     'version' => '1.9.0',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with username => user1, and password => secret' => {
     'username' => 'user1',
     'password' => 'secret',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
+    'receipt' => false
   },
   'with username => user1, and password => secret and local_user => testuser' => {
     'username' => 'user1',
@@ -68,8 +68,8 @@ tests = {
     'local_user' => 'testuser',
     'version' => '17.06',
     'pass_hash' => 'test1234',
-    'receipt' => false,
-  },
+    'receipt' => false
+  }
 }
 
 describe 'docker::registry', type: :define do
@@ -81,19 +81,19 @@ describe 'docker::registry', type: :define do
       facts = windows_facts.merge(
         'docker_home_dirs' => {
           'user' => '/home/user',
-          'root' => '/root',
+          'root' => '/root'
         },
       ).merge(os_facts)
 
       docker_params = {
-        'docker_ee' => true,
+        'docker_ee' => true
       }
     else
       facts = {
         docker_home_dirs: {
           'user' => '/home/user',
-          'root' => '/root',
-        },
+          'root' => '/root'
+        }
       }.merge(os_facts)
 
       docker_params = {}
@@ -116,7 +116,7 @@ describe 'docker::registry', type: :define do
             'email' => :undef,
             'local_user' => 'root',
             'version' => defaults['version'],
-            'receipt' => true,
+            'receipt' => true
           }.merge(local_params)
 
           let(:facts) do

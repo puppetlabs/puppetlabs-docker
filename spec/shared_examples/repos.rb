@@ -35,10 +35,10 @@ shared_examples 'repos' do |params, facts|
           'repos' => package_repos,
           'key' => {
             'id' => package_key,
-            'source' => key_source,
+            'source' => key_source
           },
           'include' => {
-            'src' => false,
+            'src' => false
           },
         )
       }

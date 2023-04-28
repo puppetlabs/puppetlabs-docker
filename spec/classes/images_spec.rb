@@ -4,11 +4,11 @@ require 'spec_helper'
 
 tests = {
   'with ensure => present' => {
-    'ensure' => 'present',
+    'ensure' => 'present'
   },
   'with ensure => absent' => {
-    'ensure' => 'absent',
-  },
+    'ensure' => 'absent'
+  }
 }
 
 describe 'docker::images', type: :class do
@@ -38,8 +38,8 @@ describe 'docker::images', type: :class do
               'force' => false,
               'docker_file' => :undef,
               'docker_dir' => :undef,
-              'docker_tar' => :undef,
-            },
+              'docker_tar' => :undef
+            }
           }
 
           params.each do |key, values|
@@ -52,8 +52,8 @@ describe 'docker::images', type: :class do
             let(:params) do
               {
                 'images' => {
-                  key => values,
-                },
+                  key => values
+                }
               }
             end
 

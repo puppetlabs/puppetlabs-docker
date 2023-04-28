@@ -451,7 +451,7 @@ shared_examples 'run' do |title, params, facts, defaults|
         'ports' => ports,
         'stop_wait_time' => stop_wait_time,
         'container_running' => running,
-        'logfile_path' => (facts[:os]['family'] == 'windows') ? facts['docker_user_temp_path'] : '/tmp',
+        'logfile_path' => (facts[:os]['family'] == 'windows') ? facts['docker_user_temp_path'] : '/tmp'
       }
 
       detect_changes = get_docker_params_changed(docker_params_changed_args)

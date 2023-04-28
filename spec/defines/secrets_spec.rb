@@ -6,12 +6,12 @@ tests = {
   'with ensure present' => {
     'secret_name' => 'test_secret',
     'secret_path' => '/root/secret.txt',
-    'label' => ['test'],
+    'label' => ['test']
   },
   'with ensure absent' => {
     'ensure' => 'absent',
-    'secret_name' => 'test_secret',
-  },
+    'secret_name' => 'test_secret'
+  }
 }
 
 describe 'docker::secrets', type: :define do
@@ -37,7 +37,7 @@ describe 'docker::secrets', type: :define do
             'ensure' => 'present',
             'label' => [],
             'secret_name' => :undef,
-            'secret_path' => :undef,
+            'secret_path' => :undef
           }.merge(local_params)
 
           let(:facts) do

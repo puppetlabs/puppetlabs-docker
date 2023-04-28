@@ -6,22 +6,22 @@ tests = {
   'create stack with compose file' => {
     'stack_name' => 'foo',
     'compose_files' => ['/tmp/docker-compose.yaml'],
-    'resolve_image' => 'always',
+    'resolve_image' => 'always'
   },
   'create stack with multiple compose files' => {
     'stack_name' => 'foo',
     'compose_files' => ['/tmp/docker-compose.yaml', '/tmp/docker-compose-2.yaml'],
-    'resolve_image' => 'always',
+    'resolve_image' => 'always'
   },
   'with prune' => {
     'stack_name' => 'foo',
     'compose_files' => ['/tmp/docker-compose.yaml'],
-    'prune' => true,
+    'prune' => true
   },
   'with ensure => absent' => {
     'ensure' => 'absent',
-    'stack_name' => 'foo',
-  },
+    'stack_name' => 'foo'
+  }
 }
 
 describe 'docker::stack', type: :define do
@@ -50,7 +50,7 @@ describe 'docker::stack', type: :define do
             'compose_files' => :undef,
             'prune' => false,
             'with_registry_auth' => false,
-            'resolve_image' => :undef,
+            'resolve_image' => :undef
           }.merge(local_params)
 
           let(:facts) do

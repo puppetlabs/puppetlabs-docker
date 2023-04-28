@@ -64,6 +64,6 @@ def get_values_init(_params, _facts)
     'package_location' => package_location,
     'package_repos' => package_repos,
     'release' => release,
-    'root_dir_flag' => root_dir_flag,
+    'root_dir_flag' => root_dir_flag
   }
 end

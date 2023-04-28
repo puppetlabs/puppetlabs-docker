@@ -9,26 +9,26 @@ tests = {
       'some_random_user',
       'foo',
       'bar',
-    ],
+    ]
   },
   'with package_source set to docker-engine' => {
-    'package_source' => 'docker-engine',
+    'package_source' => 'docker-engine'
   },
   'with package_source set to docker-ce' => {
-    'package_source' => 'docker-ce',
+    'package_source' => 'docker-ce'
   },
   'with ensure set to absent' => {
-    'ensure' => 'absent',
+    'ensure' => 'absent'
   },
   'with ensure set to absent and given version' => {
     'ensure' => 'absent',
-    'version' => '16',
+    'version' => '16'
   },
   'with ms parameter set' => {
     'version' => '16',
     'docker_msft_provider_version' => '123',
-    'nuget_package_provider_version' => '41',
-  },
+    'nuget_package_provider_version' => '41'
+  }
 }
 
 describe 'docker', type: :class do
@@ -41,13 +41,13 @@ describe 'docker', type: :class do
 
       default_params = {
         'docker_ee' => true,
-        'docker_users' => [],
+        'docker_users' => []
       }
     else
       facts = os_facts
 
       default_params = {
-        'docker_users' => [],
+        'docker_users' => []
       }
     end
 
@@ -178,7 +178,7 @@ describe 'docker', type: :class do
             'tmp_dir_config' => defaults['tmp_dir_config'],
             'tmp_dir' => defaults['tmp_dir'],
             'use_upstream_package_source' => defaults['use_upstream_package_source'],
-            'version' => defaults['version'],
+            'version' => defaults['version']
           }.merge(default_params).merge(local_params)
 
           let(:facts) do

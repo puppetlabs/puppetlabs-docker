@@ -14,38 +14,38 @@ tests = {
     'label' => ['com.example.foo="bar"', 'bar=baz'],
     'mounts' => ['type=bind,src=/tmp/a,dst=/tmp/a', 'type=bind,src=/tmp/b,dst=/tmp/b,readonly'],
     'networks' => ['overlay'],
-    'command' => 'echo hello world',
+    'command' => 'echo hello world'
   },
   'multiple services declaration' => {
     'service_name' => 'foo_2',
     'image' => 'foo:bar',
-    'command' => ['echo', 'hello', 'world'],
+    'command' => ['echo', 'hello', 'world']
   },
   'multiple publish ports and multiple networks' => {
     'service_name' => 'foo_3',
     'image' => 'foo:bar',
     'publish' => ['80:8080', '9000:9000'],
-    'networks' => ['foo_1', 'foo_2'],
+    'networks' => ['foo_1', 'foo_2']
   },
   'with ensure => present and service update' => {
     'create' => false,
     'update' => true,
     'service_name' => 'foo',
-    'image' => 'bar:latest',
+    'image' => 'bar:latest'
   },
   'with ensure => present and service scale' => {
     'create' => false,
     'scale' => true,
     'service_name' => 'bar',
-    'replicas' => '5',
+    'replicas' => '5'
   },
   'with ensure => absent' => {
     'ensure' => 'absent',
-    'service_name' => 'foo',
+    'service_name' => 'foo'
   },
   'when adding a system user' => {
-    'user' => ['user1'],
-  },
+    'user' => ['user1']
+  }
 }
 
 describe 'docker::services', type: :define do
@@ -87,7 +87,7 @@ describe 'docker::services', type: :define do
             'registry_mirror' => :undef,
             'mounts' => :undef,
             'networks' => :undef,
-            'command' => :undef,
+            'command' => :undef
           }.merge(local_params)
 
           let(:facts) do

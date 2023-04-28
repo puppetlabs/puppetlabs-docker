@@ -4,11 +4,11 @@ require 'spec_helper'
 
 tests = {
   'foo/enabled:latest' => {
-    'enabled' => true,
+    'enabled' => true
   },
   'foo/disabled:latest' => {
-    'enabled' => false,
-  },
+    'enabled' => false
+  }
 }
 
 describe 'docker::plugins', type: :class do
@@ -40,8 +40,8 @@ describe 'docker::plugins', type: :class do
               'disable_content_trust' => true,
               'grant_all_permissions' => true,
               'force_remove' => true,
-              'settings' => [],
-            },
+              'settings' => []
+            }
           }
 
           params.each do |key, values|
@@ -54,8 +54,8 @@ describe 'docker::plugins', type: :class do
             let(:params) do
               {
                 'plugins' => {
-                  key => values,
-                },
+                  key => values
+                }
               }
             end
 

@@ -5,42 +5,42 @@ require 'spec_helper'
 tests = {
   'with default values' => {},
   'when running detached' => {
-    'detach' => true,
+    'detach' => true
   },
   'when running with tty' => {
-    'tty' => true,
+    'tty' => true
   },
   'when running with interactive' => {
-    'interactive' => true,
+    'interactive' => true
   },
   'when running with onlyif "running"' => {
     'interactive' => true,
-    'onlyif' => 'running',
+    'onlyif' => 'running'
   },
   'when running without onlyif custom command' => {
     'interactive' => true,
-    'onlyif' => 'custom',
+    'onlyif' => 'custom'
   },
   'when running without onlyif' => {
-    'interactive' => true,
+    'interactive' => true
   },
   'when running with unless' => {
     'interactive' => true,
-    'unless' => 'some_command arg1',
+    'unless' => 'some_command arg1'
   },
   'when running without unless' => {
-    'interactive' => true,
+    'interactive' => true
   },
   'with title that need sanitisation' => {
     'detach' => true,
-    'sanitise_name' => true,
+    'sanitise_name' => true
   },
   'with environment variables passed to exec' => {
     'env' => [
       'FOO=BAR',
       'FOO2=BAR2',
-    ],
-  },
+    ]
+  }
 }
 
 describe 'docker::exec', type: :define do
@@ -72,7 +72,7 @@ describe 'docker::exec', type: :define do
             'refreshonly' => false,
             'sanitise_name' => true,
             'tty' => false,
-            'unless' => :undef,
+            'unless' => :undef
           }.merge(local_params)
 
           let(:facts) do

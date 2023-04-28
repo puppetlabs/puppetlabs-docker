@@ -6,21 +6,21 @@ tests = {
   'with ensure => present and swarm init' => {
     'init' => true,
     'advertise_addr' => '192.168.1.1',
-    'listen_addr' => '192.168.1.1',
+    'listen_addr' => '192.168.1.1'
   },
   'with ensure => present and swarm init and default-addr-pool and default_addr_pool_mask_length' => {
     'init' => true,
     'advertise_addr' => '192.168.1.1',
     'listen_addr' => '192.168.1.1',
     'default_addr_pool' => ['30.30.0.0/16', '40.40.0.0/16'],
-    'default_addr_pool_mask_length' => '24',
+    'default_addr_pool_mask_length' => '24'
   },
   'with ensure => present and swarm join' => {
     'join' => true,
     'advertise_addr' => '192.168.1.1',
     'listen_addr' => '192.168.1.1',
     'token' => 'foo',
-    'manager_ip' => '192.168.1.2',
+    'manager_ip' => '192.168.1.2'
   },
   'with ensure => absent' => {
     'ensure' => 'absent',
@@ -28,8 +28,8 @@ tests = {
     'advertise_addr' => '192.168.1.1',
     'listen_addr' => '192.168.1.1',
     'token' => 'foo',
-    'manager_ip' => '192.168.1.2',
-  },
+    'manager_ip' => '192.168.1.2'
+  }
 }
 
 describe 'docker::swarm', type: :define do
@@ -67,7 +67,7 @@ describe 'docker::swarm', type: :define do
             'max_snapshots' => :undef,
             'snapshot_interval' => :undef,
             'token' => :undef,
-            'manager_ip' => :undef,
+            'manager_ip' => :undef
           }.merge(local_params)
 
           let(:facts) do

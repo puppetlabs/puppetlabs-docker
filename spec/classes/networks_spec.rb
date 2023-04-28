@@ -8,15 +8,15 @@ tests = {
     'driver' => 'overlay',
     'subnet' => '192.168.1.0/24',
     'gateway' => '192.168.1.1',
-    'ip_range' => '192.168.1.4/32',
+    'ip_range' => '192.168.1.4/32'
   },
   'network-absent' => {
     'ensure' => 'absent',
     'driver' => 'overlay',
     'subnet' => '192.168.1.0/24',
     'gateway' => '192.168.1.1',
-    'ip_range' => '192.168.1.4/32',
-  },
+    'ip_range' => '192.168.1.4/32'
+  }
 }
 
 describe 'docker::networks', type: :class do
@@ -47,8 +47,8 @@ describe 'docker::networks', type: :class do
           let(:params) do
             {
               'networks' => {
-                title => local_params,
-              },
+                title => local_params
+              }
             }
           end
 

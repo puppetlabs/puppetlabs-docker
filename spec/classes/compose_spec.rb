@@ -5,34 +5,34 @@ require 'spec_helper'
 tests = {
   'with default valus' => {},
   'with ensure => absent' => {
-    'ensure' => 'absent',
+    'ensure' => 'absent'
   },
   'with version => 1.7.0' => {
-    'version' => '1.7.0',
+    'version' => '1.7.0'
   },
   'when proxy is provided' => {
     'version' => '1.7.0',
-    'proxy' => 'http://proxy.example.org:3128/',
+    'proxy' => 'http://proxy.example.org:3128/'
   },
   'when proxy is not a http proxy' => {
-    'proxy' => 'this is not a URL',
+    'proxy' => 'this is not a URL'
   },
   'when proxy contains username and password' => {
     'version' => '1.7.0',
-    'proxy' => 'http://user:password@proxy.example.org:3128/',
+    'proxy' => 'http://user:password@proxy.example.org:3128/'
   },
   'when proxy IP is provided' => {
     'version' => '1.7.0',
-    'proxy' => 'http://10.10.10.10:3128/',
+    'proxy' => 'http://10.10.10.10:3128/'
   },
   'when base_url is provided' => {
     'version' => '1.7.0',
-    'base_url' => 'http://example.org',
+    'base_url' => 'http://example.org'
   },
   'when raw_url is provided' => {
     'version' => '1.7.0',
-    'raw_url' => 'http://example.org',
-  },
+    'raw_url' => 'http://example.org'
+  }
 }
 
 describe 'docker::compose', type: :class do
@@ -62,7 +62,7 @@ describe 'docker::compose', type: :class do
             'proxy' => :undef,
             'base_url' => defaults['compose_base_url'],
             'raw_url' => :undef,
-            'curl_ensure' => defaults['curl_ensure'],
+            'curl_ensure' => defaults['curl_ensure']
           }.merge(local_params)
 
           let(:facts) do
