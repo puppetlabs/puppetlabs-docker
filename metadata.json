@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-docker",
-  "version": "6.0.2",
+  "version": "6.1.0",
   "author": "puppetlabs",
   "summary": "Module for installing and managing docker",
   "license": "Apache-2.0",
