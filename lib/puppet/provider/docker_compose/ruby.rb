@@ -45,7 +45,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
     return false if compose_services.count != compose_containers.uniq.count
 
     counts = Hash[*compose_services.each.map { |key, array|
-                    image = (array['image']) ? array['image'] : get_image(key, compose_services)
+                    image = array['image'] || get_image(key, compose_services)
                     Puppet.info("Checking for compose service #{key} #{image}")
                     [key, compose_containers.count("'#{key}-#{image}'")]
                   }.flatten]
