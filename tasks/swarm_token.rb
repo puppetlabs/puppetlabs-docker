@@ -15,7 +15,7 @@ def swarm_token(node_role)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 node_role = params['node_role']
 
 begin

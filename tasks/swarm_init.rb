@@ -23,7 +23,7 @@ def swarm_init(advertise_addr, autolock, cert_expiry, dispatcher_heartbeat, exte
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 advertise_addr = params['advertise_addr']
 autolock = params['autolock']
 cert_expiry = params['cert_expiry']

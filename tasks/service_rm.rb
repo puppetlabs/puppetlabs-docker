@@ -15,7 +15,7 @@ def service_rm(service)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 service = params['service']
 
 begin

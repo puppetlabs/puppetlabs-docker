@@ -16,7 +16,7 @@ def node_rm(force, node)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 force = params['force']
 node = params['node']
 

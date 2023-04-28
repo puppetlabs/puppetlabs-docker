@@ -36,7 +36,7 @@ def service_create(image, replicas, expose, env, command, extra_params, service,
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 image = params['image']
 replicas = params['replicas']
 expose = params['expose']

@@ -17,7 +17,7 @@ def service_scale(service, scale, detach)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 service = params['service']
 scale = params['scale']
 detach = params['detach']

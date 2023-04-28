@@ -30,7 +30,7 @@ def node_update(availability, role, label_add, label_rm, node)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 availability = params['availability']
 role = params['role']
 label_add = params['label_add']

@@ -29,7 +29,7 @@ def service_update(image, service, constraint_add, constraint_rm)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 image = params['image']
 service = params['service']
 constraint_add = params['constraint_add']

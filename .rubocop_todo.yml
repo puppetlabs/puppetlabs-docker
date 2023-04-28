@@ -163,22 +163,6 @@ RSpec/NoExpectationExample:
 RSpec/StubbedMock:
   Exclude:
     - 'spec/unit/lib/facter/docker_spec.rb'
-# Offense count: 12
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/GlobalStdStream:
-  Exclude:
-    - 'tasks/node_ls.rb'
-    - 'tasks/node_rm.rb'
-    - 'tasks/node_update.rb'
-    - 'tasks/service_create.rb'
-    - 'tasks/service_rm.rb'
-    - 'tasks/service_scale.rb'
-    - 'tasks/service_update.rb'
-    - 'tasks/swarm_init.rb'
-    - 'tasks/swarm_join.rb'
-    - 'tasks/swarm_leave.rb'
-    - 'tasks/swarm_token.rb'
-    - 'tasks/swarm_update.rb'
 
 # Offense count: 4
 # This cop supports unsafe autocorrection (--autocorrect-all).

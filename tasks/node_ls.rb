@@ -16,7 +16,7 @@ def node_ls(filter, quiet)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 filter = params['filter']
 quiet = params['quiet']
 

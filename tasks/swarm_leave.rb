@@ -14,7 +14,7 @@ def swarm_leave(force)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 force = params['force']
 begin
   result = swarm_leave(force)

@@ -5,7 +5,7 @@ require 'json'
 require 'open3'
 require 'puppet'
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 image = params['image']
 service = params['service']
 

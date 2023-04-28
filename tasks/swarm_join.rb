@@ -18,7 +18,7 @@ def swarm_join(advertise_addr, listen_addr, token, manager_ip)
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 advertise_addr = params['advertise_addr']
 listen_addr = params['listen_addr']
 token = params['token']
