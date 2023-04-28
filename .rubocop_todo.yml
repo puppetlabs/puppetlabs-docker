@@ -164,12 +164,6 @@ RSpec/StubbedMock:
   Exclude:
     - 'spec/unit/lib/facter/docker_spec.rb'
 
-# Offense count: 2
-Style/MixinUsage:
-  Exclude:
-    - 'spec/spec_helper.rb'
-    - 'spec/spec_helper_acceptance_local.rb'
-
 # Offense count: 11
 # This cop supports safe autocorrection (--autocorrect).
 Style/NegatedIfElseCondition:

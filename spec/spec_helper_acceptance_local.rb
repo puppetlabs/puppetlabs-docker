@@ -4,7 +4,7 @@ require 'puppet_litmus'
 require 'rspec/retry'
 require 'tempfile'
 
-include PuppetLitmus
+include PuppetLitmus # rubocop:disable Style/MixinUsage
 
 # This method allows a block to be passed in and if an exception is raised
 # that matches the 'error_matcher' matcher, the block will wait a set number
