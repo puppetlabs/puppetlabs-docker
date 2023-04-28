@@ -25,7 +25,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
     exec_path        = ['/bin', '/usr/bin']
     exec_timeout     = 0
     exec_provider    = nil
-    password_env     = "\${password}"
+    password_env     = '${password}'
     exec_user        = local_user
     local_user_home  = facts[:docker_home_dirs][local_user]
   end

@@ -124,7 +124,7 @@ shared_examples 'run' do |title, params, facts, defaults|
     exec_provider           = 'powershell'
     cidfile                 = "#{facts['docker_user_temp_path']}/#{service_prefix}#{sanitised_title}.cid"
     restart_check           = "#{docker_command} inspect #{sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr #{sanitised_title}"
-    container_running_check = "\$state = #{docker_command} inspect #{sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }"
+    container_running_check = "$state = #{docker_command} inspect #{sanitised_title} -f \"{{ .State.Running }}\"; if ($state -ieq \"true\") { Exit 0 } else { Exit 1 }"
   else
     exec_environment        = 'HOME=/root'
     exec_path               = ['/bin', '/usr/bin']
