@@ -158,16 +158,6 @@ RSpec/StubbedMock:
 
 # Offense count: 4
 # This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowModifier.
-Style/SoleNestedConditional:
-  Exclude:
-    - 'lib/puppet/provider/docker_network/ruby.rb'
-    - 'spec/classes/compose_spec.rb'
-    - 'spec/classes/machine_spec.rb'
-    - 'spec/defines/services_spec.rb'
-
-# Offense count: 4
-# This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, AllowSafeAssignment.
 # SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
 Style/TernaryParentheses:

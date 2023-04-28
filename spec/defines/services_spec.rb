@@ -102,14 +102,12 @@ describe 'docker::services', type: :define do
             'rspec_services'
           end
 
-          if params['ensure'] == 'absent'
-            if params['update'] || params['scale']
-              it {
-                expect(subject).to compile.and_raise_error('When removing a service you can not update it.')
-              }
+          if params['ensure'] == 'absent' && (params['update'] || params['scale'])
+            it {
+              expect(subject).to compile.and_raise_error('When removing a service you can not update it.')
+            }
 
-              next
-            end
+            next
           end
 
           include_examples 'services', 'rspec_services', params, facts, defaults

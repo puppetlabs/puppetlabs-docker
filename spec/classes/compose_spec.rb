@@ -73,14 +73,12 @@ describe 'docker::compose', type: :class do
             params
           end
 
-          if params['proxy'] != :undef
-            unless %r{^((https?)?://)?([^:^@]+:[^:^@]+@|)([\da-z.-]+)\.([\da-z.]{2,6})(:\d)?([/\w .-]*)*/?$}.match?(params['proxy'])
-              it {
-                expect(subject).to compile.and_raise_error(%r{does not match})
-              }
+          if params['proxy'] != :undef && !%r{^((https?)?://)?([^:^@]+:[^:^@]+@|)([\da-z.-]+)\.([\da-z.]{2,6})(:\d)?([/\w .-]*)*/?$}.match?(params['proxy'])
+            it {
+              expect(subject).to compile.and_raise_error(%r{does not match})
+            }
 
-              next
-            end
+            next
           end
 
           include_examples 'compose', params, facts

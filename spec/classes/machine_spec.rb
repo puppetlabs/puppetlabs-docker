@@ -42,14 +42,12 @@ describe 'docker::machine', type: :class do
             params
           end
 
-          if params['proxy'] != :undef
-            unless '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
-              it {
-                expect(subject).to compile.and_raise_error(%r{})
-              }
+          if params['proxy'] != :undef && !'^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
+            it {
+              expect(subject).to compile.and_raise_error(%r{})
+            }
 
-              next
-            end
+            next
           end
 
           include_examples 'machine', params, facts, defaults
