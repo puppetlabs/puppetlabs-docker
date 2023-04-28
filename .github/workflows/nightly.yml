@@ -25,6 +25,9 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
 
+    env:
+      PUPPET_GEM_VERSION: '~> 7.24'
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v2
@@ -91,6 +94,9 @@ jobs:
         collection:
           - puppet7-nightly
           - puppet8-nightly 
+
+    env:
+      PUPPET_GEM_VERSION: '~> 7.24'
 
     steps:
       - name: Checkout Source
