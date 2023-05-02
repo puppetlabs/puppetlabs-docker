@@ -23,12 +23,12 @@ end
 describe 'docker compose' do
   before(:all) do
     retry_on_error_matching(60, 5, %r{connection failure running}) do
-      install_code = <<-code
+      install_code = <<-CODE
         class { 'docker': #{docker_args} }
         class { 'docker::compose':
           version => '1.23.2',
         }
-      code
+      CODE
       apply_manifest(install_code, catch_failures: true)
     end
   end
@@ -139,6 +139,14 @@ describe 'docker compose' do
       '1.21.2'
     end
 
+    after(:all) do
+      install_pp = <<-MANIFEST
+        class { 'docker': #{docker_args}}
+        class { 'docker::compose': }
+      MANIFEST
+      apply_manifest(install_pp, catch_failures: true)
+    end
+
     it 'is idempotent' do
       pp = <<-MANIFEST
         class { 'docker::compose':
@@ -152,14 +160,6 @@ describe 'docker compose' do
     it 'has removed the relevant files' do
       run_shell("test -e \"#{install_dir}/docker-compose#{file_extension}\"", expect_failures: true)
       run_shell("test -e \"#{install_dir}/docker-compose-#{version}#{file_extension}\"", expect_failures: true)
-    end
-
-    after(:all) do
-      install_pp = <<-MANIFEST
-        class { 'docker': #{docker_args}}
-        class { 'docker::compose': }
-      MANIFEST
-      apply_manifest(install_pp, catch_failures: true)
     end
   end
 end

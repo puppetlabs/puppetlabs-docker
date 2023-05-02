@@ -17,29 +17,29 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
   if ensure_value == 'present'
     docker_plugin_install_flags = get_docker_plugin_install_flags(
       'plugin_name' => plugin_name,
-      'plugin_alias'          => plugin_alias,
-      'disable_on_install'    => disable_on_install,
+      'plugin_alias' => plugin_alias,
+      'disable_on_install' => disable_on_install,
       'disable_content_trust' => disable_content_trust,
       'grant_all_permissions' => grant_all_permissions,
-      'settings'              => settings,
+      'settings' => settings,
     )
 
     exec_install   = "#{docker_command} install #{docker_plugin_install_flags}"
     unless_install = "#{docker_command} ls --format='{{.PluginReference}}' | grep -w #{plugin_name}"
 
     it {
-      is_expected.to contain_exec("plugin install #{plugin_name}").with(
-        'command'     => exec_install,
+      expect(subject).to contain_exec("plugin install #{plugin_name}").with(
+        'command' => exec_install,
         'environment' => 'HOME=/root',
-        'path'        => ['/bin', '/usr/bin'],
-        'timeout'     => 0,
-        'unless'      => unless_install,
+        'path' => ['/bin', '/usr/bin'],
+        'timeout' => 0,
+        'unless' => unless_install,
       )
     }
 
   elsif ensure_value == 'absent'
     docker_plugin_remove_flags = get_docker_plugin_remove_flags(
-      'plugin_name'  => plugin_name,
+      'plugin_name' => plugin_name,
       'force_remove' => force_remove,
     )
 
@@ -47,43 +47,43 @@ shared_examples 'plugin' do |_params, _facts, _defaults|
     onlyif_rm = "#{docker_command} ls --format='{{.PluginReference}}' | grep -w #{plugin_name}"
 
     it {
-      is_expected.to contain_exec("plugin remove #{plugin_name}").with(
-        'command'     => exec_rm,
+      expect(subject).to contain_exec("plugin remove #{plugin_name}").with(
+        'command' => exec_rm,
         'environment' => 'HOME=/root',
-        'path'        => ['/bin', '/usr/bin'],
-        'timeout'     => 0,
-        'onlyif'      => onlyif_rm,
+        'path' => ['/bin', '/usr/bin'],
+        'timeout' => 0,
+        'onlyif' => onlyif_rm,
       )
     }
   end
 
   if enabled
     docker_plugin_enable_flags = get_docker_plugin_enable_flags(
-      'plugin_name'  => plugin_name,
+      'plugin_name' => plugin_name,
       'plugin_alias' => plugin_alias,
-      'timeout'      => timeout,
+      'timeout' => timeout,
     )
 
     exec_enable   = "#{docker_command} enable #{docker_plugin_enable_flags}"
     onlyif_enable = "#{docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}"
 
     it {
-      is_expected.to contain_exec("plugin enable #{plugin_name}").with(
-        'command'     => exec_enable,
+      expect(subject).to contain_exec("plugin enable #{plugin_name}").with(
+        'command' => exec_enable,
         'environment' => 'HOME=/root',
-        'path'        => ['/bin', '/usr/bin'],
-        'timeout'     => 0,
-        'onlyif'      => onlyif_enable,
+        'path' => ['/bin', '/usr/bin'],
+        'timeout' => 0,
+        'onlyif' => onlyif_enable,
       )
     }
   else
     it {
-      is_expected.to contain_exec("disable #{plugin_name}").with(
-        'command'     => "#{docker_command} disable #{plugin_name}",
+      expect(subject).to contain_exec("disable #{plugin_name}").with(
+        'command' => "#{docker_command} disable #{plugin_name}",
         'environment' => 'HOME=/root',
-        'path'        => ['/bin', '/usr/bin'],
-        'timeout'     => 0,
-        'unless'      => "#{docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}",
+        'path' => ['/bin', '/usr/bin'],
+        'timeout' => 0,
+        'unless' => "#{docker_command} ls -f enabled=false --format='{{.PluginReference}}' | grep -w #{plugin_name}",
       )
     }
   end

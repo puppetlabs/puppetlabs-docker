@@ -45,12 +45,14 @@ describe 'Facter::Util::Fact' do
     docker_manager_token = File.read(fixtures('facts', 'docker_swarm_manager_token'))
     allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} swarm join-token manager -q", timeout: 90).and_return(docker_manager_token.chomp)
   end
+
   after(:each) { Facter.clear }
 
   describe 'docker fact with composer network' do
     before :each do
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-c5810f1e3113,docker0,eth0,lo')
     end
+
     it do
       fact = File.read(fixtures('facts', 'facts_with_compose'))
       fact = JSON.parse(fact.to_json, quirks_mode: true)
@@ -65,6 +67,7 @@ describe 'Facter::Util::Fact' do
     before :each do
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
+
     it do
       fact = File.read(fixtures('facts', 'facts_without_compose')).chomp
       fact_json = fact.to_json
@@ -83,6 +86,7 @@ describe 'Facter::Util::Fact' do
       allow(Facter.fact(:docker_version)).to receive(:value).and_return(JSON.parse(docker_version))
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
+
     it do
       expect(Facter.fact(:docker_client_version).value).to eq(
         '17.03.1-ce-client',
@@ -127,6 +131,7 @@ describe 'Facter::Util::Fact' do
       allow(Facter.fact(:docker_version)).to receive(:value).and_return(JSON.parse(docker_version))
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
+
     it do
       expect(Facter.fact(:docker_server_version).value).to eq(
         '17.03.1-ce-server',
@@ -138,6 +143,7 @@ describe 'Facter::Util::Fact' do
     before :each do
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
+
     it 'has valid entries' do
       expect(Facter.fact(:docker).value).to include(
         'Architecture' => 'x86_64',
@@ -149,6 +155,7 @@ describe 'Facter::Util::Fact' do
     before :each do
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
+
     it do
       expect(Facter.fact(:docker_worker_join_token).value).to eq(
         'SWMTKN-1-2m7ekt7511j5kgrc6seyrewpdxv47ksz1sdg7iybzhuug6nmws-0jh0syqeoj3tlr81p165ydfkm',
@@ -160,6 +167,7 @@ describe 'Facter::Util::Fact' do
     before :each do
       allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-19a6ebf6f5a5,docker0,eth0,lo')
     end
+
     it do
       expect(Facter.fact(:docker_manager_join_token).value).to eq(
         'SWMTKN-1-2m7ekt7511j5kgrc6seyrewpdxv47ksz1sdg7iybzhuug6nmws-8gh1ns1lcavgau8k9p6ou7xj3',
@@ -172,6 +180,7 @@ describe 'Facter::Util::Fact' do
       docker_info = File.read(fixtures('facts', 'docker_info_swarm_inactive'))
       allow(Facter::Core::Execution).to receive(:execute).with("#{docker_command} info --format '{{json .}}'", timeout: 90).and_return(docker_info)
     end
+
     it do
       expect(Facter.fact(:docker_worker_join_token).value).to be_nil
     end

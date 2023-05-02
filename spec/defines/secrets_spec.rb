@@ -6,12 +6,12 @@ tests = {
   'with ensure present' => {
     'secret_name' => 'test_secret',
     'secret_path' => '/root/secret.txt',
-    'label'       => ['test'],
+    'label' => ['test']
   },
   'with ensure absent' => {
-    'ensure'      => 'absent',
-    'secret_name' => 'test_secret',
-  },
+    'ensure' => 'absent',
+    'secret_name' => 'test_secret'
+  }
 }
 
 describe 'docker::secrets', type: :define do
@@ -19,7 +19,7 @@ describe 'docker::secrets', type: :define do
     ##
     ## set some needed facts
     ##
-    facts = if %r{windows}.match?(os)
+    facts = if os.include?('windows')
               windows_facts.merge(os_facts)
             else
               os_facts
@@ -34,10 +34,10 @@ describe 'docker::secrets', type: :define do
       tests.each do |title, local_params|
         context title do
           params = {
-            'ensure'      => 'present',
-            'label'       => [],
+            'ensure' => 'present',
+            'label' => [],
             'secret_name' => :undef,
-            'secret_path' => :undef,
+            'secret_path' => :undef
           }.merge(local_params)
 
           let(:facts) do

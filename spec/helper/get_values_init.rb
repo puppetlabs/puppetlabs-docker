@@ -35,22 +35,14 @@ def get_values_init(_params, _facts)
       docker_package_name  = _params['docker_ce_package_name']
     end
   else
+    package_location = _params['docker_package_location']
+    package_key_source = _params['docker_package_key_source']
+    package_key_check_source = _params['docker_package_key_check_source']
     case _facts[:os]['family']
     when 'Debian'
-      package_location         = _params['docker_package_location']
-      package_key_source       = _params['docker_package_key_source']
-      package_key_check_source = _params['docker_package_key_check_source']
-      package_key              = _params['docker_package_key_id']
+      package_key = _params['docker_package_key_id']
       package_repos            = 'main'
       release                  = _params['docker_package_release']
-    when 'RedHat'
-      package_location         = _params['docker_package_location']
-      package_key_source       = _params['docker_package_key_source']
-      package_key_check_source = _params['docker_package_key_check_source']
-    else
-      package_location         = _params['docker_package_location']
-      package_key_source       = _params['docker_package_key_source']
-      package_key_check_source = _params['docker_package_key_check_source']
     end
 
     docker_start_command = _params['docker_engine_start_command']
@@ -64,14 +56,14 @@ def get_values_init(_params, _facts)
                   end
 
   {
-    'docker_package_name'      => docker_package_name,
-    'docker_start_command'     => docker_start_command,
-    'package_key'              => package_key,
+    'docker_package_name' => docker_package_name,
+    'docker_start_command' => docker_start_command,
+    'package_key' => package_key,
     'package_key_check_source' => package_key_check_source,
-    'package_key_source'       => package_key_source,
-    'package_location'         => package_location,
-    'package_repos'            => package_repos,
-    'release'                  => release,
-    'root_dir_flag'            => root_dir_flag,
+    'package_key_source' => package_key_source,
+    'package_location' => package_location,
+    'package_repos' => package_repos,
+    'release' => release,
+    'root_dir_flag' => root_dir_flag
   }
 end

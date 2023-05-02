@@ -25,6 +25,10 @@ describe 'docker volume' do
   end
 
   context 'with a local volume described in Puppet' do
+    after(:all) do
+      run_shell("#{command} volume rm #{volume_name}")
+    end
+
     it 'applies idempotently' do
       pp = <<-MANIFEST
         docker_volume { '#{volume_name}':
@@ -37,10 +41,6 @@ describe 'docker volume' do
 
     it 'has created a volume' do
       run_shell("#{command} volume inspect #{volume_name}", expect_failures: false)
-    end
-
-    after(:all) do
-      run_shell("#{command} volume rm #{volume_name}")
     end
   end
 end
