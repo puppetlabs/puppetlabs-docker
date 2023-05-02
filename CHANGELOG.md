@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v7.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v7.0.0) (2023-05-02)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v6.1.0...v7.0.0)
+
+### Changed
+
+- \(CONT-776\) - Add Puppet 8/Drop Puppet 6 [\#910](https://github.com/puppetlabs/puppetlabs-docker/pull/910) ([jordanbreen28](https://github.com/jordanbreen28))
+
 ## [v6.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.1.0) (2023-04-28)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v6.0.2...v6.1.0)
@@ -13,9 +21,6 @@ All notable changes to this project will be documented in this file. The format 
 ### Fixed
 
 - Fix `docker` fact with recent version of docker [\#897](https://github.com/puppetlabs/puppetlabs-docker/pull/897) ([smortex](https://github.com/smortex))
-
-### UNCATEGORIZED PRS; LABEL THEM ON GITHUB
-
 - Use puppet yaml helper to workaround psych \>4 breaking changes  [\#877](https://github.com/puppetlabs/puppetlabs-docker/pull/877) ([gfargeas](https://github.com/gfargeas))
 
 ## [v6.0.2](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.0.2) (2022-12-08)
@@ -84,7 +89,6 @@ All notable changes to this project will be documented in this file. The format 
 - Avoid empty array to -net parameter [\#837](https://github.com/puppetlabs/puppetlabs-docker/pull/837) ([chelnak](https://github.com/chelnak))
 - \(GH-785\) Fix duplicate stack matching [\#836](https://github.com/puppetlabs/puppetlabs-docker/pull/836) ([chelnak](https://github.com/chelnak))
 - Fix docker-compose, network and volumes not applying on 1st run, fix other idempotency [\#833](https://github.com/puppetlabs/puppetlabs-docker/pull/833) ([canihavethisone](https://github.com/canihavethisone))
-- Fixed docker facts to check for active swarm clusters before running docker swarm sub-commands. [\#817](https://github.com/puppetlabs/puppetlabs-docker/pull/817) ([nmaludy](https://github.com/nmaludy))
 
 ## [v4.3.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.3.0) (2022-05-16)
 
@@ -109,6 +113,7 @@ All notable changes to this project will be documented in this file. The format 
 ### Fixed
 
 - Fix permission denied issue introduced in v4.2.0 [\#820](https://github.com/puppetlabs/puppetlabs-docker/pull/820) ([chelnak](https://github.com/chelnak))
+- Fixed docker facts to check for active swarm clusters before running docker swarm sub-commands. [\#817](https://github.com/puppetlabs/puppetlabs-docker/pull/817) ([nmaludy](https://github.com/nmaludy))
 
 ## [v4.2.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.2.0) (2022-04-11)
 
@@ -270,7 +275,6 @@ All notable changes to this project will be documented in this file. The format 
 - Fix unreachable StartLimitBurst value in unit template [\#616](https://github.com/puppetlabs/puppetlabs-docker/pull/616) ([omeinderink](https://github.com/omeinderink))
 - \(MODULES-9696\) remove docker\_home\_dirs fact [\#613](https://github.com/puppetlabs/puppetlabs-docker/pull/613) ([carabasdaniel](https://github.com/carabasdaniel))
 - \[MODULES-10629\] Throw error when docker login fails [\#610](https://github.com/puppetlabs/puppetlabs-docker/pull/610) ([carabasdaniel](https://github.com/carabasdaniel))
-- \(maint\) - facts fix for centos [\#608](https://github.com/puppetlabs/puppetlabs-docker/pull/608) ([david22swan](https://github.com/david22swan))
 - major adjustments for current code style [\#607](https://github.com/puppetlabs/puppetlabs-docker/pull/607) ([crazymind1337](https://github.com/crazymind1337))
 
 ## [v3.10.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.0) (2020-04-23)
@@ -288,6 +292,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Fixed
 
+- \(maint\) - facts fix for centos [\#608](https://github.com/puppetlabs/puppetlabs-docker/pull/608) ([david22swan](https://github.com/david22swan))
 - Enforce TLS1.2 on Windows; minor fixes for RH-based testing [\#603](https://github.com/puppetlabs/puppetlabs-docker/pull/603) ([carabasdaniel](https://github.com/carabasdaniel))
 - \[MODULES-10628\] Update documentation for docker volume and set options as parameter [\#599](https://github.com/puppetlabs/puppetlabs-docker/pull/599) ([carabasdaniel](https://github.com/carabasdaniel))
 - Allow module to work on SLES [\#591](https://github.com/puppetlabs/puppetlabs-docker/pull/591) ([npwalker](https://github.com/npwalker))
@@ -334,7 +339,6 @@ All notable changes to this project will be documented in this file. The format 
 - :bug: Fix wrong service detach handling [\#520](https://github.com/puppetlabs/puppetlabs-docker/pull/520) ([khaefeli](https://github.com/khaefeli))
 - Fixing error: [\#516](https://github.com/puppetlabs/puppetlabs-docker/pull/516) ([darshannnn](https://github.com/darshannnn))
 - Fix aliased plugin names [\#514](https://github.com/puppetlabs/puppetlabs-docker/pull/514) ([koshatul](https://github.com/koshatul))
-- Fix \#239 local\_user permission denied [\#497](https://github.com/puppetlabs/puppetlabs-docker/pull/497) ([thde](https://github.com/thde))
 
 ## [v3.7.0-bna](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.7.0-bna) (2019-08-08)
 
@@ -369,6 +373,7 @@ All notable changes to this project will be documented in this file. The format 
 ### Fixed
 
 - Tasks frozen string [\#499](https://github.com/puppetlabs/puppetlabs-docker/pull/499) ([khaefeli](https://github.com/khaefeli))
+- Fix \#239 local\_user permission denied [\#497](https://github.com/puppetlabs/puppetlabs-docker/pull/497) ([thde](https://github.com/thde))
 - \(MODULES-9193\) Revert part of MODULES-9177 [\#490](https://github.com/puppetlabs/puppetlabs-docker/pull/490) ([eimlav](https://github.com/eimlav))
 - \(MODULES-9177\) Fix version validation regex [\#489](https://github.com/puppetlabs/puppetlabs-docker/pull/489) ([eimlav](https://github.com/eimlav))
 - Fix publish flag being erroneously added to docker service commands [\#471](https://github.com/puppetlabs/puppetlabs-docker/pull/471) ([twistedduck](https://github.com/twistedduck))
