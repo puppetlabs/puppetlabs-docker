@@ -25,7 +25,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
     exec_path        = ['/bin', '/usr/bin']
     exec_timeout     = 0
     exec_provider    = nil
-    password_env     = "\${password}"
+    password_env     = '${password}'
     exec_user        = local_user
     local_user_home  = facts[:docker_home_dirs][local_user]
   end
@@ -48,14 +48,40 @@ shared_examples 'registry' do |title, params, facts, defaults|
 
   docker_auth = "#{title}#{auth_environment}#{auth_cmd}#{local_user}"
 
-  exec_env = if auth_environment != ''
-               exec_environment << auth_environment << "docker_auth=#{docker_auth}"
-             else
+  exec_env = if auth_environment == ''
                exec_environment << "docker_auth=#{docker_auth}"
+             else
+               exec_environment << auth_environment << "docker_auth=#{docker_auth}"
              end
 
   if receipt
-    if facts[:os]['family'] != 'windows'
+    if facts[:os]['family'] == 'windows'
+      server_strip  = server.gsub('[/:]', '_')
+      passfile      = "#{facts['docker_user_temp_path']}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}"
+      auth_command = "if (-not (#{auth_cmd})) { Remove-Item -Path #{passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
+
+      if ensure_value == 'absent'
+        it {
+          expect(subject).to contain_file(passfile).with(
+            'ensure' => ensure_value,
+          ).that_notifies(
+            "Exec[#{title} auth]",
+          )
+        }
+      elsif ensure_value == 'present'
+        it {
+          expect(subject).to contain_exec(compute - hash).with(
+            # 'command'     => template('docker/windows/compute_hash.ps1.erb'),
+            'environment' => exec_env,
+            'provider' => exec_provider,
+            'logoutput' => true,
+            # 'unless'      => template('docker/windows/check_hash.ps1.erb'),
+          ).that_notifies(
+            "Exec[#{title} auth]",
+          )
+        }
+      end
+    else
       server_strip     = server.tr('/', '_')
       local_user_strip = local_user.gsub('[-_]', '')
 
@@ -69,54 +95,28 @@ shared_examples 'registry' do |title, params, facts, defaults|
       auth_command = "#{auth_cmd} || rm -f \"/#{local_user_home}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}\""
 
       it {
-        is_expected.to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
-          'ensure'  => ensure_value,
+        expect(subject).to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
+          'ensure' => ensure_value,
           'content' => _pass_hash,
-          'owner'   => local_user,
-          'group'   => local_user,
+          'owner' => local_user,
+          'group' => local_user,
         ).that_notifies(
           "Exec[#{title} auth]",
         )
       }
-    else
-      server_strip  = server.gsub('[/:]', '_')
-      passfile      = "#{facts['docker_user_temp_path']}/registry-auth-puppet_receipt_#{server_strip}_#{local_user}"
-      auth_command = "if (-not (#{auth_cmd})) { Remove-Item -Path #{passfile} -Force -Recurse -EA SilentlyContinue; exit 0 } else { exit 0 }"
-
-      if ensure_value == 'absent'
-        it {
-          is_expected.to contain_file(passfile).with(
-            'ensure' => ensure_value,
-          ).that_notifies(
-            "Exec[#{title} auth]",
-          )
-        }
-      elsif ensure_value == 'present'
-        it {
-          is_expected.to contain_exec(compute - hash).with(
-            # 'command'     => template('docker/windows/compute_hash.ps1.erb'),
-            'environment' => exec_env,
-            'provider'    => exec_provider,
-            'logoutput'   => true,
-            # 'unless'      => template('docker/windows/check_hash.ps1.erb'),
-          ).that_notifies(
-            "Exec[#{title} auth]",
-          )
-        }
-      end
     end
   else
     auth_command = auth_cmd
   end
 
   it {
-    is_expected.to contain_exec("#{title} auth").with(
+    expect(subject).to contain_exec("#{title} auth").with(
       'environment' => exec_env,
-      'command'     => auth_command,
-      'user'        => exec_user,
-      'path'        => exec_path,
-      'timeout'     => exec_timeout,
-      'provider'    => exec_provider,
+      'command' => auth_command,
+      'user' => exec_user,
+      'path' => exec_path,
+      'timeout' => exec_timeout,
+      'provider' => exec_provider,
       'refreshonly' => receipt,
     )
   }

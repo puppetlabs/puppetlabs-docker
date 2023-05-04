@@ -21,17 +21,11 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['username']
-      flags << "-u #{call_function('docker::escape', [opts['username']])}"
-    end
+    flags << "-u #{call_function('docker::escape', [opts['username']])}" if opts['username']
 
-    if opts['hostname']
-      flags << "-h #{call_function('docker::escape', [opts['hostname']])}"
-    end
+    flags << "-h #{call_function('docker::escape', [opts['hostname']])}" if opts['hostname']
 
-    if opts['restart']
-      flags << "--restart '#{opts['restart']}'"
-    end
+    flags << "--restart '#{opts['restart']}'" if opts['restart']
 
     if opts['net']
       if opts['net'].is_a? String
@@ -41,9 +35,7 @@ module Puppet::Parser::Functions
       end
     end
 
-    if opts['memory_limit']
-      flags << "-m #{opts['memory_limit']}"
-    end
+    flags << "-m #{opts['memory_limit']}" if opts['memory_limit']
 
     cpusets = [opts['cpuset']].flatten.compact
     unless cpusets.empty?
@@ -51,29 +43,17 @@ module Puppet::Parser::Functions
       flags << "--cpuset-cpus=#{value}"
     end
 
-    if opts['disable_network']
-      flags << '-n false'
-    end
+    flags << '-n false' if opts['disable_network']
 
-    if opts['privileged']
-      flags << '--privileged'
-    end
+    flags << '--privileged' if opts['privileged']
 
-    if opts['health_check_cmd'] && opts['health_check_cmd'].to_s != 'undef'
-      flags << "--health-cmd='#{opts['health_check_cmd']}'"
-    end
+    flags << "--health-cmd='#{opts['health_check_cmd']}'" if opts['health_check_cmd'] && opts['health_check_cmd'].to_s != 'undef'
 
-    if opts['health_check_interval'] && opts['health_check_interval'].to_s != 'undef'
-      flags << "--health-interval=#{opts['health_check_interval']}s"
-    end
+    flags << "--health-interval=#{opts['health_check_interval']}s" if opts['health_check_interval'] && opts['health_check_interval'].to_s != 'undef'
 
-    if opts['tty']
-      flags << '-t'
-    end
+    flags << '-t' if opts['tty']
 
-    if opts['read_only']
-      flags << '--read-only=true'
-    end
+    flags << '--read-only=true' if opts['read_only']
 
     params_join_char = if opts['osfamily'] && opts['osfamily'].to_s != 'undef'
                          opts['osfamily'].casecmp('windows').zero? ? " `\n" : " \\\n"

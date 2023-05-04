@@ -5,6 +5,7 @@ require 'spec_helper_acceptance'
 if os[:family] == 'windows'
   os_name = run_shell('systeminfo | findstr /R /C:"OS Name"')
   raise 'Could not retrieve systeminfo for Windows box' if os_name.exit_code != 0
+
   os_name = if os_name.stdout.split(%r{\s}).include?('2016')
               'win-2016'
             elsif os_name.stdout.split(%r{\s}).include?('2019')
@@ -35,6 +36,11 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
     run_shell("mkdir #{volume_location}volume_1")
     run_shell("mkdir #{volume_location}volume_2")
+  end
+
+  after(:all) do
+    run_shell("rm -r #{volume_location}volume_1")
+    run_shell("rm -r #{volume_location}volume_2")
   end
 
   context 'when image is changed' do
@@ -140,10 +146,5 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
         expect(inspect_result).to eq(['4444', '4445'])
       end
     end
-  end
-
-  after(:all) do
-    run_shell("rm -r #{volume_location}volume_1")
-    run_shell("rm -r #{volume_location}volume_2")
   end
 end

@@ -30,11 +30,11 @@ shared_examples 'image' do |_params, _facts, _defaults|
   end
 
   it {
-    is_expected.to contain_file(update_docker_image_path).with(
-      'ensure'  => 'present',
-      'owner'   => update_docker_image_owner,
-      'group'   => update_docker_image_owner,
-      'mode'    => '0555',
+    expect(subject).to contain_file(update_docker_image_path).with(
+      'ensure' => 'present',
+      'owner' => update_docker_image_owner,
+      'group' => update_docker_image_owner,
+      'mode' => '0555',
       # 'content' => template($update_docker_image_template),
     )
   }
@@ -85,44 +85,44 @@ shared_examples 'image' do |_params, _facts, _defaults|
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec(image_remove).with(
-        'path'        => exec_path,
+      expect(subject).to contain_exec(image_remove).with(
+        'path' => exec_path,
         'environment' => exec_environment,
-        'onlyif'      => _image_find,
-        'provider'    => exec_provider,
-        'timeout'     => exec_timeout,
-        'logoutput'   => true,
+        'onlyif' => _image_find,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
+        'logoutput' => true,
       )
     }
   elsif ensure_value == 'latest' || image_tag == 'latest'
     it {
-      is_expected.to contain_notify("Check if image #{image_arg} is in-sync").with(
+      expect(subject).to contain_notify("Check if image #{image_arg} is in-sync").with(
         'noop' => false,
       ).that_notifies(
         "Exec[#{image_install}]",
       )
 
-      is_expected.to contain_exec(image_install).with(
+      expect(subject).to contain_exec(image_install).with(
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'timeout'     => exec_timeout,
-        'returns'     => ['0', '2'],
+        'path' => exec_path,
+        'timeout' => exec_timeout,
+        'returns' => ['0', '2'],
 
-        'provider'    => exec_provider,
-        'logoutput'   => true,
+        'provider' => exec_provider,
+        'logoutput' => true,
       ).that_requires(
         "File[#{update_docker_image_path}]",
       ).that_notifies(
         "Exec[echo 'Update of #{image_arg} complete']",
       )
 
-      is_expected.to contain_exec("echo 'Update of #{image_arg} complete'").with(
+      expect(subject).to contain_exec("echo 'Update of #{image_arg} complete'").with(
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'timeout'     => exec_timeout,
+        'path' => exec_path,
+        'timeout' => exec_timeout,
 
-        'provider'    => exec_provider,
-        'logoutput'   => true,
+        'provider' => exec_provider,
+        'logoutput' => true,
         'refreshonly' => true,
       ).that_requires(
         "File[#{update_docker_image_path}]",
@@ -130,14 +130,14 @@ shared_examples 'image' do |_params, _facts, _defaults|
     }
   elsif ensure_value == 'present'
     it {
-      is_expected.to contain_exec(image_install).with(
-        'unless'      => _image_find,
+      expect(subject).to contain_exec(image_install).with(
+        'unless' => _image_find,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'timeout'     => exec_timeout,
-        'returns'     => ['0', '2'],
-        'provider'    => exec_provider,
-        'logoutput'   => true,
+        'path' => exec_path,
+        'timeout' => exec_timeout,
+        'returns' => ['0', '2'],
+        'provider' => exec_provider,
+        'logoutput' => true,
       ).that_requires(
         "File[#{update_docker_image_path}]",
       )

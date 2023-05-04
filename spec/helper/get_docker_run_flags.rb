@@ -5,25 +5,15 @@ require 'shellwords'
 def get_docker_run_flags(args)
   flags = []
 
-  if args['username']
-    flags << "-u '#{args['username'].shellescape}'"
-  end
+  flags << "-u '#{args['username'].shellescape}'" if args['username']
 
-  if args['hostname']
-    flags << "-h '#{args['hostname'].shellescape}'"
-  end
+  flags << "-h '#{args['hostname'].shellescape}'" if args['hostname']
 
-  if args['restart']
-    flags << "--restart '#{args['restart']}'"
-  end
+  flags << "--restart '#{args['restart']}'" if args['restart']
 
-  if args['net'].is_a? String
-    flags << "--net #{args['net']}"
-  end
+  flags << "--net #{args['net']}" if args['net'].is_a? String
 
-  if args['memory_limit']
-    flags << "-m #{args['memory_limit']}"
-  end
+  flags << "-m #{args['memory_limit']}" if args['memory_limit']
 
   cpusets = [args['cpuset']].flatten.compact
 
@@ -32,29 +22,17 @@ def get_docker_run_flags(args)
     flags << "--cpuset-cpus=#{value}"
   end
 
-  if args['disable_network']
-    flags << '-n false'
-  end
+  flags << '-n false' if args['disable_network']
 
-  if args['privileged']
-    flags << '--privileged'
-  end
+  flags << '--privileged' if args['privileged']
 
-  if args['health_check_cmd'] && args['health_check_cmd'].to_s != 'undef'
-    flags << "--health-cmd='#{args['health_check_cmd']}'"
-  end
+  flags << "--health-cmd='#{args['health_check_cmd']}'" if args['health_check_cmd'] && args['health_check_cmd'].to_s != 'undef'
 
-  if args['health_check_interval'] && args['health_check_interval'].to_s != 'undef'
-    flags << "--health-interval=#{args['health_check_interval']}s"
-  end
+  flags << "--health-interval=#{args['health_check_interval']}s" if args['health_check_interval'] && args['health_check_interval'].to_s != 'undef'
 
-  if args['tty']
-    flags << '-t'
-  end
+  flags << '-t' if args['tty']
 
-  if args['read_only']
-    flags << '--read-only=true'
-  end
+  flags << '--read-only=true' if args['read_only']
 
   params_join_char = if args['osfamily'] && args['osfamily'].to_s != 'undef'
                        args['osfamily'].casecmp('windows').zero? ? " `\n" : " \\\n"

@@ -38,15 +38,15 @@ shared_examples 'machine' do |_params, _facts, _defaults|
       docker_download_command = "if (Invoke-WebRequest #{docker_machine_url} #{proxy_opt} -UseBasicParsing -OutFile \"#{docker_machine_location_versioned}\") { exit 0 } else { exit 1 }"
 
       it {
-        is_expected.to contain_exec("Install Docker Machine #{version}").with(
+        expect(subject).to contain_exec("Install Docker Machine #{version}").with(
           # 'command'  => template('docker/windows/download_docker_machine.ps1.erb'),
           'provider' => 'powershell',
-          'creates'  => docker_machine_location_versioned,
+          'creates' => docker_machine_location_versioned,
         )
 
-        is_expected.to contain_file(docker_machine_location).with(
-          'ensure'  => 'link',
-          'target'  => docker_machine_location_versioned,
+        expect(subject).to contain_file(docker_machine_location).with(
+          'ensure' => 'link',
+          'target' => docker_machine_location_versioned,
         ).that_requires(
           "Exec[Install Docker Machine #{version}]",
         )
@@ -54,41 +54,41 @@ shared_examples 'machine' do |_params, _facts, _defaults|
     else
       if curl_ensure
         it {
-          is_expected.to contain_package('curl')
+          expect(subject).to contain_package('curl')
         }
       end
 
       it {
-        is_expected.to contain_exec("Install Docker Machine #{version}").with(
-          'path'    => '/usr/bin/',
-          'cwd'     => '/tmp',
+        expect(subject).to contain_exec("Install Docker Machine #{version}").with(
+          'path' => '/usr/bin/',
+          'cwd' => '/tmp',
           'command' => "curl -s -S -L #{proxy_opt} #{docker_machine_url} -o #{docker_machine_location_versioned}",
           'creates' => docker_machine_location_versioned,
         ).that_requires(
           'Package[curl]',
         )
 
-        is_expected.to contain_file(docker_machine_location_versioned).with(
+        expect(subject).to contain_file(docker_machine_location_versioned).with(
           'owner' => file_owner,
-          'mode'  => '0755',
+          'mode' => '0755',
         ).that_requires(
           "Exec[Install Docker Machine #{version}]",
         )
 
-        is_expected.to contain_file(docker_machine_location).with(
-          'ensure'  => 'link',
-          'target'  => docker_machine_location_versioned,
+        expect(subject).to contain_file(docker_machine_location).with(
+          'ensure' => 'link',
+          'target' => docker_machine_location_versioned,
         ).that_requires(
           "File[#{docker_machine_location_versioned}]",
         )
       }
     end
   else
-    is_expected.to contain_file(docker_machine_location_versioned).with(
+    expect(subject).to contain_file(docker_machine_location_versioned).with(
       'ensure' => 'absent',
     )
 
-    is_expected.to contain_file(docker_machine_location).with(
+    expect(subject).to contain_file(docker_machine_location).with(
       'ensure' => 'absent',
     )
   end

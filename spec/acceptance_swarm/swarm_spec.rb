@@ -25,9 +25,9 @@ end
 describe 'docker swarm', skip: skip_tests do
   before(:each) do
     retry_on_error_matching(60, 5, %r{connection failure running}) do
-      install_code = <<-code
+      install_code = <<-CODE
         class { 'docker': #{docker_args} }
-      code
+      CODE
       apply_manifest_on(swarm_manager, install_code, catch_failures: true)
     end
     retry_on_error_matching(60, 5, %r{connection failure running}) do
@@ -56,11 +56,11 @@ describe 'docker swarm', skip: skip_tests do
   end
 
   after(:each) do
-    remove_worker = <<-code
+    remove_worker = <<-CODE
     docker::swarm {'cluster_worker':
       ensure => 'absent',
     }
-    code
+    CODE
     retry_on_error_matching(60, 5, %r{connection failure running}) do
       apply_manifest_on(swarm_worker, remove_worker, catch_failures: true)
     end

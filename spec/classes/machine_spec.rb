@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 tests = {
-  'with default value' => {
-  },
+  'with default value' => {}
 }
 
 describe 'docker::machine', type: :class do
@@ -12,7 +11,7 @@ describe 'docker::machine', type: :class do
     ##
     ## set some needed facts
     ##
-    facts = if %r{windows}.match?(os)
+    facts = if os.include?('windows')
               windows_facts.merge(os_facts)
             else
               os_facts
@@ -27,12 +26,12 @@ describe 'docker::machine', type: :class do
       tests.each do |title, local_params|
         context title do
           params = {
-            'ensure'       => 'present',
-            'version'      => defaults['machine_version'],
+            'ensure' => 'present',
+            'version' => defaults['machine_version'],
             'install_path' => defaults['machine_install_path'],
-            'proxy'        => :undef,
-            'url'          => :undef,
-            'curl_ensure'  => defaults['curl_ensure'],
+            'proxy' => :undef,
+            'url' => :undef,
+            'curl_ensure' => defaults['curl_ensure']
           }.merge(local_params)
 
           let(:facts) do
@@ -43,14 +42,12 @@ describe 'docker::machine', type: :class do
             params
           end
 
-          if params['proxy'] != :undef
-            unless '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
-              it {
-                is_expected.to compile.and_raise_error(%r{})
-              }
+          if params['proxy'] != :undef && !'^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
+            it {
+              expect(subject).to compile.and_raise_error(%r{})
+            }
 
-              next
-            end
+            next
           end
 
           include_examples 'machine', params, facts, defaults
