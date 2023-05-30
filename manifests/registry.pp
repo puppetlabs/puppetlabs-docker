@@ -148,7 +148,7 @@ define docker::registry (
   }
 
   exec { "${title} auth":
-    environment => $exec_env,
+    environment => Deferred('sprintf', [$exec_env]),
     command     => $_auth_command,
     user        => $exec_user,
     path        => $exec_path,
