@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-
+# Need to write test casees here
 tests = {
   'with default value' => {}
 }
@@ -42,14 +42,17 @@ describe 'docker::machine', type: :class do
             params
           end
 
-          if params['proxy'] != :undef && !'^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$'.match?(params['proxy'])
-            it {
-              expect(subject).to compile.and_raise_error(%r{})
-            }
-
-            next
-          end
-
+          # Need to write check condition for params['proxy']
+          # The block commented below currently has no test case, if in future more test cases are added to this spec file, please refer to spec/classes/compose_spec.rb and implement as required here.
+          # if title == 'when proxy is not a http proxy'
+          #  it 'raises an error for invalid proxy URL' do
+          #    is_expected.to compile.and_raise_error(
+          #      %r{parameter 'proxy' expects an undef value or a match for Pattern},
+          #    )
+          #  end
+          # else
+          # include_examples 'machine', params, facts, defaults
+          # end
           include_examples 'machine', params, facts, defaults
         end
       end

@@ -73,15 +73,15 @@ describe 'docker::compose', type: :class do
             params
           end
 
-          if params['proxy'] != :undef && !%r{^((https?)?://)?([^:^@]+:[^:^@]+@|)([\da-z.-]+)\.([\da-z.]{2,6})(:\d)?([/\w .-]*)*/?$}.match?(params['proxy'])
-            it {
-              expect(subject).to compile.and_raise_error(%r{does not match})
-            }
-
-            next
+          if title == 'when proxy is not a http proxy'
+            it 'raises an error for invalid proxy URL' do
+              expect(subject).to compile.and_raise_error(
+                %r{parameter 'proxy' expects an undef value or a match for Pattern},
+              )
+            end
+          else
+            include_examples 'compose', params, facts
           end
-
-          include_examples 'compose', params, facts
         end
       end
     end
