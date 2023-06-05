@@ -24,7 +24,7 @@ class docker::machine (
   Enum[present,absent]                                 $ensure       = 'present',
   Optional[String]                                     $version      = $docker::params::machine_version,
   Optional[String]                                     $install_path = $docker::params::machine_install_path,
-  Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']]    $proxy   = undef,
+  Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']] $proxy = undef,
   Optional[Variant[Stdlib::HTTPUrl, Stdlib::HTTPSUrl]] $url          = undef,
   Optional[Boolean]                                    $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
@@ -67,7 +67,7 @@ class docker::machine (
       }
     } else {
       if $curl_ensure {
-        ensure_packages(['curl'])
+        stdlib::ensure_packages(['curl'])
       }
 
       exec { "Install Docker Machine ${version}":
