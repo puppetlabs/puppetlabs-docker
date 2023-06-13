@@ -9,7 +9,7 @@ $module = Install-PackageProvider NuGet -Force `
 <% end -%>
 
 If ($module -eq $null) {
-    Write-Error "Failed to install NuGet PackagePrivider"
+    Write-Error "Failed to install NuGet Package Provider"
     Exit 1
 }
 
