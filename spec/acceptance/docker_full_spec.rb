@@ -41,7 +41,7 @@ else
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = '/root'
   storage_driver = 'devicemapper'
-  storage_driver = if os[:family].match?(%r{redhat|centos})
+  storage_driver = if os[:family].match?(%r{redhat})
                      'devicemapper'
                    else
                      'overlay2'
