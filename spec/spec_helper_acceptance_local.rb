@@ -63,7 +63,7 @@ RSpec.configure do |c|
     # Install module and dependencies
     # Due to RE-6764, running yum update renders the machine unable to install
     # other software. Thus this workaround.
-    if os[:family] == 'redhat'
+    if os[:family].match?(%r{redhat|centos})
       run_shell('mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/internal-mirror.repo', expect_failures: true)
       run_shell('rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm', expect_failures: true)
       run_shell('yum update -y -q')
@@ -76,7 +76,7 @@ RSpec.configure do |c|
       run_shell('apt-get install -y net-tools')
     end
 
-    run_shell('apt-get purge -y container-tools') unless os[:family] == 'windows' || !ENV['CI']
+    run_shell('apt-get purge -y container-tools') unless os[:family].match?(%r{windows|centos}) || !ENV['CI']
 
     run_shell('puppet module install puppetlabs-stdlib --version 4.24.0', expect_failures: true)
     run_shell('puppet module install puppetlabs-apt --version 4.4.1', expect_failures: true)
@@ -85,7 +85,7 @@ RSpec.configure do |c|
     run_shell('puppet module install puppetlabs-reboot --version 2.0.0', expect_failures: true)
 
     # net-tools required for netstat utility being used by some tests
-    if os[:family] == 'redhat' && os[:release].to_i == 7
+    if os[:family].match?(%r{redhat|centos}) && os[:release].to_i == 7
       run_shell('yum -y install lvm2 device-mapper device-mapper-persistent-data device-mapper-event device-mapper-libs device-mapper-event-libs')
       run_shell('yum install -y yum-utils net-tools')
       run_shell('yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo')
