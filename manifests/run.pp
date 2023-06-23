@@ -196,7 +196,7 @@ define docker::run (
   Enum[present,absent]                      $ensure                            = 'present',
   Optional[String]                          $verify_digest                     = undef,
   Optional[String]                          $command                           = undef,
-  Pattern[/^[\d]*(b|k|m|g)$/]               $memory_limit                      = '0b',
+  Pattern[/^[\d]*(b|k|m|g)$/]               $memory_limit                      = undef,
   Variant[String,Array,Undef]               $cpuset                            = [],
   Variant[String,Array,Undef]               $ports                             = [],
   Variant[String,Array,Undef]               $labels                            = [],
