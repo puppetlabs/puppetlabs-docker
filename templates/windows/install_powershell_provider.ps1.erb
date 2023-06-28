@@ -1,6 +1,6 @@
-# this file install the Windows Docker package using the DockerMsftProvider powershell provider
+# this file install the Windows Docker package using the Docker powershell provider
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$dockerProviderName="DockerMsftProvider"
+$dockerProviderName="DockerProvider"
 
 Write-Information "Installing Package Provider"
 $module = Install-PackageProvider NuGet -Force `
@@ -20,13 +20,14 @@ Install-Module $dockerProviderName -Force `
 <% end -%>
 
 $provider = Get-Module -ListAvailable -Name $dockerProviderName
+
 If ($provider -eq $null) {
     Write-Error "Failed to install Docker Microsoft Provider"
     Exit 1
 }
 
 Write-Information "Installing Docker Package"
-$package=Install-Package <%= @docker_ee_package_name %> -ProviderName $dockerProviderName -Force `
+$package=Install-Package <%= @docker_ee_package_name %> -ProviderName $dockerProviderName -Force -Verbose `
 <% if @version -%>
 -RequiredVersion <%= @version %>
 <% end -%>
