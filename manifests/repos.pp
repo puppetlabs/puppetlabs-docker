@@ -23,7 +23,7 @@ class docker::repos (
   Stdlib::Absolutepath $keyring          = $docker::keyring,
   Boolean              $gpg_ensure       = $docker::params::gpg_ensure,
 ) {
-  ensure_packages($docker::prerequired_packages)
+  stdlib::ensure_packages($docker::prerequired_packages)
 
   case $facts['os']['family'] {
     'Debian': {
