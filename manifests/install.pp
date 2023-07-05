@@ -109,6 +109,7 @@ class docker::install (
               provider  => powershell,
               unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
               logoutput => true,
+              timeout   => 1800,
               notify    => Exec['service-restart-on-failure'],
             }
           }

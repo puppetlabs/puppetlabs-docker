@@ -201,10 +201,13 @@ RSpec.configure do |c|
       @windows_ip = ip
     end
     apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }", catch_failures: true)
-    sleep 300
+    retry_on_error_matching(120, 5, %r{.*}) do
+      puts 'waiting for VM to restart..'
+      run_shell('ls') # random command to check connectivity to litmus host
+    end
     docker_path = 'C:\\Program Files\\Docker'
-    run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
-    puts 'Waiting for box to come online'
-    sleep 300
+    retry_on_error_matching(120, 5, %r{.*}) do
+      run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
+    end
   end
 end

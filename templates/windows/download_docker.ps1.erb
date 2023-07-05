@@ -1,3 +1,4 @@
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $dockerLocation = Join-Path $env:TEMP "docker.zip"
 
 Invoke-webrequest -UseBasicparsing -Outfile $dockerLocation "<%= @docker_download_url %>"
