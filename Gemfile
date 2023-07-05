@@ -37,6 +37,7 @@ group :development do
   gem "ruby-pwsh",                                 require: false
   gem "github_changelog_generator", '= 1.15.2',    require: false
   gem "mocha", '< 1.2.0',                          require: false
+  gem 'puppet-commit', :path => '/Users/gavin/go/src/github.com/GSPatton/puppetlabs/puppet-commit'
 end
 group :system_tests do
   gem "puppet_litmus", '~> 1.0', require: false, platforms: [:ruby, :x64_mingw]

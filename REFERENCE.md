@@ -3065,11 +3065,11 @@ Default value: `undef`
 
 ##### <a name="-docker--run--memory_limit"></a>`memory_limit`
 
-Data type: `Pattern[/^[\d]*(b|k|m|g)$/]`
+Data type: `Optional[Pattern[/^[\d]*(b|k|m|g)$/]]`
 
 
 
-Default value: `'0b'`
+Default value: `undef`
 
 ##### <a name="-docker--run--cpuset"></a>`cpuset`
 
@@ -4668,4 +4668,3 @@ The service to update
 Data type: `String[1]`
 
 The new image to use for the service
-
