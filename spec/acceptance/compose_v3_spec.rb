@@ -128,7 +128,10 @@ describe 'docker compose' do
         run_shell('sudo mv /usr/local/bin/docker-compose /usr/bin/docker-compose')
         run_shell('sudo chmod +x /usr/bin/docker-compose')
       end
-      run_shell('docker-compose --version', expect_failures: false) do |r|
+      command = 'docker-compose --version'
+      command = "export PATH=/usr/local/bin:$PATH && #{command}" if os[:family] == 'redhat'
+
+      run_shell(command, expect_failures: false) do |r|
         expect(r.stdout).to match(%r{#{version}})
       end
     end
