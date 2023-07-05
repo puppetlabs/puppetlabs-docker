@@ -52,23 +52,23 @@ class docker::install (
       }
       case $docker::package_source {
         /docker-engine/ : {
-          ensure_resource('package', 'docker', merge($docker_hash, {
+          ensure_resource('package', 'docker', $docker_hash + {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_engine_package_name,
-          }))
+          })
         }
         /docker-ce/ : {
-          ensure_resource('package', 'docker', merge($docker_hash, {
+          ensure_resource('package', 'docker', $docker_hash + {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_ce_package_name,
-          }))
-          ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
+          })
+          ensure_resource('package', 'docker-ce-cli', $docker_hash + {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_ce_cli_package_name,
-          }))
+          })
         }
         default : {
           # Empty
@@ -76,10 +76,10 @@ class docker::install (
       }
     } else {
       if $facts['os']['family'] != 'windows' {
-        ensure_resource('package', 'docker', merge($docker_hash, {
+        ensure_resource('package', 'docker', $docker_hash + {
               ensure => $ensure,
               name   => $docker::docker_package_name,
-        }))
+        })
 
         if $ensure == 'absent' {
           ensure_resource('package', $dependent_packages, {
