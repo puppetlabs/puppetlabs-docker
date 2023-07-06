@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v9.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v9.0.1) - 2023-07-06
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v8.0.0...v9.0.1)
+
+### Fixed
+
+- (CONT-1196) - Remove deprecated function merge [#935](https://github.com/puppetlabs/puppetlabs-docker/pull/935) ([Ramesh7](https://github.com/Ramesh7))
+
 ## [v8.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v8.0.0) - 2023-07-05
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v7.0.0...v8.0.0)
