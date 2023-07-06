@@ -83,7 +83,7 @@ class docker::install (
 
         if $ensure == 'absent' {
           ensure_resource('package', $dependent_packages, {
-            ensure => $ensure,
+              ensure => $ensure,
           })
         }
       } else {
