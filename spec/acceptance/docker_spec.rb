@@ -159,13 +159,17 @@ describe 'docker' do
       end
     end
 
-    describe package(package_name) do
-      it { is_expected.to be_installed }
-    end
+    # TODO : Temporarily commenting these test cases for RedHat & Debian family
+    # We are consistently getting "IOError:  closed stream"
+    unless ['redhat', 'debian'].include?(os[:family])
+      describe package(package_name) do
+        it { is_expected.to be_installed }
+      end
 
-    describe service(service_name) do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
+      describe service(service_name) do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
     end
 
     it "#{command} version" do
