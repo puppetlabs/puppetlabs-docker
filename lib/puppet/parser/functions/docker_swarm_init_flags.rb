@@ -10,21 +10,13 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['init'].to_s != 'false'
-      flags << 'init'
-    end
+    flags << 'init' if opts['init'].to_s != 'false'
 
-    if opts['advertise_addr'] && opts['advertise_addr'].to_s != 'undef'
-      flags << "--advertise-addr '#{opts['advertise_addr']}'"
-    end
+    flags << "--advertise-addr '#{opts['advertise_addr']}'" if opts['advertise_addr'] && opts['advertise_addr'].to_s != 'undef'
 
-    if opts['autolock'].to_s != 'false'
-      flags << '--autolock'
-    end
+    flags << '--autolock' if opts['autolock'].to_s != 'false'
 
-    if opts['cert_expiry'] && opts['cert_expiry'].to_s != 'undef'
-      flags << "--cert-expiry '#{opts['cert_expiry']}'"
-    end
+    flags << "--cert-expiry '#{opts['cert_expiry']}'" if opts['cert_expiry'] && opts['cert_expiry'].to_s != 'undef'
 
     if opts['default_addr_pool'].is_a? Array
       opts['default_addr_pool'].each do |default_addr_pool|
@@ -32,33 +24,19 @@ module Puppet::Parser::Functions
       end
     end
 
-    if opts['default_addr_pool_mask_length'] && opts['default_addr_pool_mask_length'].to_s != 'undef'
-      flags << "--default-addr-pool-mask-length '#{opts['default_addr_pool_mask_length']}'"
-    end
+    flags << "--default-addr-pool-mask-length '#{opts['default_addr_pool_mask_length']}'" if opts['default_addr_pool_mask_length'] && opts['default_addr_pool_mask_length'].to_s != 'undef'
 
-    if opts['dispatcher_heartbeat'] && opts['dispatcher_heartbeat'].to_s != 'undef'
-      flags << "--dispatcher-heartbeat '#{opts['dispatcher_heartbeat']}'"
-    end
+    flags << "--dispatcher-heartbeat '#{opts['dispatcher_heartbeat']}'" if opts['dispatcher_heartbeat'] && opts['dispatcher_heartbeat'].to_s != 'undef'
 
-    if opts['external_ca'] && opts['external_ca'].to_s != 'undef'
-      flags << "--external-ca '#{opts['external_ca']}'"
-    end
+    flags << "--external-ca '#{opts['external_ca']}'" if opts['external_ca'] && opts['external_ca'].to_s != 'undef'
 
-    if opts['force_new_cluster'].to_s != 'false'
-      flags << '--force-new-cluster'
-    end
+    flags << '--force-new-cluster' if opts['force_new_cluster'].to_s != 'false'
 
-    if opts['listen_addr'] && opts['listen_addr'].to_s != 'undef'
-      flags << "--listen-addr '#{opts['listen_addr']}'"
-    end
+    flags << "--listen-addr '#{opts['listen_addr']}'" if opts['listen_addr'] && opts['listen_addr'].to_s != 'undef'
 
-    if opts['max_snapshots'] && opts['max_snapshots'].to_s != 'undef'
-      flags << "--max-snapshots '#{opts['max_snapshots']}'"
-    end
+    flags << "--max-snapshots '#{opts['max_snapshots']}'" if opts['max_snapshots'] && opts['max_snapshots'].to_s != 'undef'
 
-    if opts['snapshot_interval'] && opts['snapshot_interval'].to_s != 'undef'
-      flags << "--snapshot-interval '#{opts['snapshot_interval']}'"
-    end
+    flags << "--snapshot-interval '#{opts['snapshot_interval']}'" if opts['snapshot_interval'] && opts['snapshot_interval'].to_s != 'undef'
 
     flags.flatten.join(' ')
   end

@@ -32,10 +32,11 @@ def service_create(image, replicas, expose, env, command, extra_params, service,
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
+
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 image = params['image']
 replicas = params['replicas']
 expose = params['expose']

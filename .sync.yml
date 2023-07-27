@@ -11,6 +11,9 @@ Gemfile:
     ":development":
     - gem: ruby-pwsh
     - gem: github_changelog_generator
+      version: '= 1.15.2'
+    - gem: mocha
+      version: '< 1.2.0'
     ":system_tests":
     - gem: rspec-retry
 Rakefile:
@@ -22,23 +25,15 @@ spec/spec_helper.rb:
   unmanaged: false
 .gitpod.yml:
   unmanaged: false
+.github/workflows/auto_release.yml:
+  unmanaged: false
+.github/workflows/ci.yml:
+  unmanaged: true
 .github/workflows/nightly.yml:
   unmanaged: true
-.github/workflows/pr_test.yml:
-  unmanaged: true
-.github/workflows/spec.yml:
-  checks: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
-  unmanaged: false
 .github/workflows/release.yml:
-  unmanaged: false
-.github/workflows/auto_release.yml:
   unmanaged: false
 .travis.yml:
   delete: true
-Rakefile:
-  extra_disabled_lint_checks:
-    - parameter_types
-    - legacy_facts
-    - top_scope_facts
-    - parameter_documentation
-    - topscope_variable
+.devcontainer/Dockerfile:
+  unmanaged: true

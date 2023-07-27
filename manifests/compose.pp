@@ -37,15 +37,11 @@ class docker::compose (
   Optional[String]               $version      = $docker::params::compose_version,
   Optional[String]               $install_path = $docker::params::compose_install_path,
   Optional[String]               $symlink_name = $docker::params::compose_symlink_name,
-  Optional[String]               $proxy        = undef,
+  Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']] $proxy = undef,
   Optional[String]               $base_url     = $docker::params::compose_base_url,
   Optional[String]               $raw_url      = undef,
   Optional[Boolean]              $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
-  if $proxy != undef {
-    validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
-  }
-
   if $facts['os']['family'] == 'windows' {
     $file_extension = '.exe'
     $file_owner     = 'Administrator'
@@ -61,7 +57,7 @@ class docker::compose (
     if $raw_url != undef {
       $docker_compose_url = $raw_url
     } else {
-      $docker_compose_url = "${base_url}/${version}/docker-compose-${::kernel}-${facts['os']['hardware']}${file_extension}"
+      $docker_compose_url = "${base_url}/${version}/docker-compose-${facts['kernel']}-${facts['os']['hardware']}${file_extension}"
     }
 
     if $proxy != undef {
@@ -86,7 +82,7 @@ class docker::compose (
       }
     } else {
       if $curl_ensure {
-        ensure_packages(['curl'])
+        stdlib::ensure_packages(['curl'])
       }
 
       exec { "Install Docker Compose ${version}":

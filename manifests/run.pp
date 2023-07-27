@@ -355,11 +355,11 @@ define docker::run (
   }
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment        = "PATH=${::docker_program_files_path}/Docker/;${::docker_systemroot}/System32/"
+    $exec_environment        = "PATH=${facts['docker_program_files_path']}/Docker/;${facts['docker_systemroot']}/System32/"
     $exec_timeout            = 3000
-    $exec_path               = ["${::docker_program_files_path}/Docker/"]
+    $exec_path               = ["${facts['docker_program_files_path']}/Docker/"]
     $exec_provider           = 'powershell'
-    $cidfile                 = "${::docker_user_temp_path}/${service_prefix}${sanitised_title}.cid"
+    $cidfile                 = "${facts['docker_user_temp_path']}/${service_prefix}${sanitised_title}.cid"
     $restart_check           = "${docker_command} inspect ${sanitised_title} -f '{{ if eq \\\"unhealthy\\\" .State.Health.Status }} {{ .Name }}{{ end }}' | findstr ${sanitised_title}" # lint:ignore:140chars
     $container_running_check = "\$state = ${docker_command} inspect ${sanitised_title} -f \"{{ .State.Running }}\"; if (\$state -ieq \"true\") { Exit 0 } else { Exit 1 }" # lint:ignore:140chars
   } else {
@@ -505,7 +505,7 @@ define docker::run (
           fail('Restart parameter is required for Windows')
         }
 
-        $hasstatus = $::docker::params::service_hasstatus
+        $hasstatus = $docker::params::service_hasstatus
       }
     }
 

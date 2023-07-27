@@ -51,9 +51,9 @@ define docker::registry (
   $docker_command = $docker::params::docker_command
 
   if $facts['os']['family'] == 'windows' {
-    $exec_environment = ["PATH=${::docker_program_files_path}/Docker/",]
+    $exec_environment = ["PATH=${facts['docker_program_files_path']}/Docker/",]
     $exec_timeout     = 3000
-    $exec_path        = ["${::docker_program_files_path}/Docker/",]
+    $exec_path        = ["${facts['docker_program_files_path']}/Docker/",]
     $exec_provider    = 'powershell'
     $password_env     = '$env:password'
     $exec_user        = undef
@@ -124,7 +124,7 @@ define docker::registry (
     } else {
       # server may be an URI, which can contain /
       $server_strip  = regsubst($server, '[/:]', '_', 'G')
-      $passfile      = "${::docker_user_temp_path}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
+      $passfile      = "${facts['docker_user_temp_path']}/registry-auth-puppet_receipt_${server_strip}_${local_user}"
       $_auth_command = "if (-not (${auth_cmd})) { Remove-Item -Path ${passfile} -Force -Recurse -EA SilentlyContinue; exit 1 } else { exit 0 }" # lint:ignore:140chars
 
       if $ensure == 'absent' {
@@ -134,11 +134,11 @@ define docker::registry (
         }
       } elsif $ensure == 'present' {
         exec { 'compute-hash':
-          command     => template('docker/windows/compute_hash.ps1.erb'),
-          environment => $exec_env,
+          command     => stdlib::deferrable_epp('docker/windows/compute_hash.ps1.epp', { 'passfile' => $passfile }),
+          environment => Deferred('docker::env', [$exec_env]),
           provider    => $exec_provider,
           logoutput   => true,
-          unless      => template('docker/windows/check_hash.ps1.erb'),
+          unless      => stdlib::deferrable_epp('docker/windows/check_hash.ps1.epp', { 'passfile' => $passfile }),
           notify      => Exec["${title} auth"],
         }
       }
@@ -148,8 +148,8 @@ define docker::registry (
   }
 
   exec { "${title} auth":
-    environment => $exec_env,
-    command     => $_auth_command,
+    environment => Deferred('docker::env', [$exec_env]),
+    command     => Deferred('sprintf', [$_auth_command]),
     user        => $exec_user,
     path        => $exec_path,
     timeout     => $exec_timeout,

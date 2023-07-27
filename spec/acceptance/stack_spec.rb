@@ -24,7 +24,7 @@ describe 'docker stack', win_broken: true do
             listen_addr => $facts['networking']['ip'],
             require => Class['docker'],
         }
-        MANIFEST
+      MANIFEST
       apply_manifest(install_pp, catch_failures: true)
     end
   end

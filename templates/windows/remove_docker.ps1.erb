@@ -1,5 +1,5 @@
-# this file install the Windows Docker package using the DockerMsftProvider powershell provider
-$dockerProviderName="DockerMsftProvider"
+# this file install the Windows Docker package using the DockerProvider powershell provider
+$dockerProviderName="DockerProvider"
 
 $package=Get-Package <%= @docker_ee_package_name %> -ProviderName $dockerProviderName -ErrorAction Ignore
 If ($package -ne $null) { 

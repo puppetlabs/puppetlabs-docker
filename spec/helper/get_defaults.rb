@@ -109,30 +109,21 @@ def get_defaults(_facts)
 
   case _facts[:os]['family']
   when 'Debian'
-    case _facts[:os]['name']
-    when 'Ubuntu'
-      package_release = "ubuntu-#{_facts[:os]['distro']['codename']}"
-      service_after_override     = :undef
-      service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-      service_hasrestart         = true
-      service_hasstatus          = true
-      service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
-      service_provider           = 'systemd'
-      socket_override            = false
-      socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
-      storage_config             = '/etc/default/docker-storage'
-    else
-      package_release            = "debian-#{_facts[:os]['distro']['codename']}"
-      service_after_override     = :undef
-      service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-      service_hasrestart         = true
-      service_hasstatus          = true
-      service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
-      service_provider           = 'systemd'
-      socket_override            = false
-      socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
-      storage_config             = '/etc/default/docker-storage'
-    end
+    package_release = case _facts[:os]['name']
+                      when 'Ubuntu'
+                        "ubuntu-#{_facts[:os]['distro']['codename']}"
+                      else
+                        "debian-#{_facts[:os]['distro']['codename']}"
+                      end
+    service_after_override = :undef
+    service_config_template = 'docker/etc/sysconfig/docker.systemd.erb'
+    service_hasrestart = true
+    service_hasstatus = true
+    service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+    service_provider = 'systemd'
+    socket_override = false
+    socket_overrides_template = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+    storage_config = '/etc/default/docker-storage'
 
     apt_source_pin_level          = 500
     docker_group                  = docker_group_default
@@ -159,11 +150,7 @@ def get_defaults(_facts)
     package_key_source            = 'https://apt.dockerproject.org/gpg'
     package_source_location       = 'http://apt.dockerproject.org/repo'
 
-    detach_service_in_init = if service_provider == 'systemd'
-                               false
-                             else
-                               true
-                             end
+    detach_service_in_init = service_provider != 'systemd'
   when 'RedHat'
     service_after_override      = :undef
     service_config              = '/etc/sysconfig/docker'
@@ -486,6 +473,6 @@ def get_defaults(_facts)
     'tmp_dir' => tmp_dir,
     'tmp_dir_config' => tmp_dir_config,
     'use_upstream_package_source' => use_upstream_package_source,
-    'version' => version,
+    'version' => version
   }
 end

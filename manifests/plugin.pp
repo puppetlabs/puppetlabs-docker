@@ -6,9 +6,6 @@
 #  Note that the default behaviour of docker plugin
 #  requires a plugin be disabled before it can be removed
 #
-# @param plugin_name
-#  The name of the docker plugin
-#
 # @param enabled
 #  A setting to enable or disable an installed plugin.
 #
@@ -34,8 +31,6 @@
 #  Any additional settings to pass to the plugin during install
 #
 # @param ensure
-#
-# @param grant_all_permissions
 #
 define docker::plugin (
   Enum[present,absent] $ensure                = 'present',

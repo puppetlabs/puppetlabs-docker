@@ -19,12 +19,12 @@
 # @param dependent_packages
 #
 class docker::install (
-  $version                        = $docker::version,
-  $nuget_package_provider_version = $docker::nuget_package_provider_version,
-  $docker_msft_provider_version   = $docker::docker_msft_provider_version,
-  $docker_ee_package_name         = $docker::docker_ee_package_name,
-  $docker_download_url            = $docker::package_location,
-  $dependent_packages             = $docker::dependent_packages,
+  Optional[String] $version                        = $docker::version,
+  Optional[String] $nuget_package_provider_version = $docker::nuget_package_provider_version,
+  Optional[String] $docker_msft_provider_version   = $docker::docker_msft_provider_version,
+  Optional[String] $docker_ee_package_name         = $docker::docker_ee_package_name,
+  Optional[String] $docker_download_url            = $docker::package_location,
+  Array            $dependent_packages             = $docker::dependent_packages,
 ) {
   $docker_start_command = $docker::docker_start_command
 
@@ -52,19 +52,19 @@ class docker::install (
       }
       case $docker::package_source {
         /docker-engine/ : {
-          ensure_resource('package', 'docker', merge($docker_hash, {
+          ensure_resource('package', 'docker', stdlib::merge($docker_hash, {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_engine_package_name,
           }))
         }
         /docker-ce/ : {
-          ensure_resource('package', 'docker', merge($docker_hash, {
+          ensure_resource('package', 'docker', stdlib::merge($docker_hash, {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_ce_package_name,
           }))
-          ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
+          ensure_resource('package', 'docker-ce-cli', stdlib::merge($docker_hash, {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_ce_cli_package_name,
@@ -76,7 +76,7 @@ class docker::install (
       }
     } else {
       if $facts['os']['family'] != 'windows' {
-        ensure_resource('package', 'docker', merge($docker_hash, {
+        ensure_resource('package', 'docker', stdlib::merge($docker_hash, {
               ensure => $ensure,
               name   => $docker::docker_package_name,
         }))
@@ -109,6 +109,7 @@ class docker::install (
               provider  => powershell,
               unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
               logoutput => true,
+              timeout   => 1800,
               notify    => Exec['service-restart-on-failure'],
             }
           }

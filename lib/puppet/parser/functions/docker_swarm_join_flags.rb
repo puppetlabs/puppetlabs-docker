@@ -10,21 +10,13 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['join'].to_s != 'false'
-      flags << 'join'
-    end
+    flags << 'join' if opts['join'].to_s != 'false'
 
-    if opts['advertise_addr'] && opts['advertise_addr'].to_s != 'undef'
-      flags << "--advertise-addr '#{opts['advertise_addr']}'"
-    end
+    flags << "--advertise-addr '#{opts['advertise_addr']}'" if opts['advertise_addr'] && opts['advertise_addr'].to_s != 'undef'
 
-    if opts['listen_addr'] && opts['listen_addr'].to_s != 'undef'
-      flags << "--listen-addr \"#{opts['listen_addr']}\""
-    end
+    flags << "--listen-addr \"#{opts['listen_addr']}\"" if opts['listen_addr'] && opts['listen_addr'].to_s != 'undef'
 
-    if opts['token'] && opts['token'].to_s != 'undef'
-      flags << "--token '#{opts['token']}'"
-    end
+    flags << "--token '#{opts['token']}'" if opts['token'] && opts['token'].to_s != 'undef'
 
     flags.flatten.join(' ')
   end

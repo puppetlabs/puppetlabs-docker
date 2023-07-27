@@ -10,13 +10,9 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['service_name'] && opts['service_name'].to_s != 'undef'
-      flags << "'#{opts['service_name']}'"
-    end
+    flags << "'#{opts['service_name']}'" if opts['service_name'] && opts['service_name'].to_s != 'undef'
 
-    if opts['detach'].to_s != 'false'
-      flags << '--detach'
-    end
+    flags << '--detach' if opts['detach'].to_s != 'false'
 
     if opts['env'].is_a? Array
       opts['env'].each do |env|
@@ -50,21 +46,13 @@ module Puppet::Parser::Functions
       flags << "--publish '#{opts['publish']}'"
     end
 
-    if opts['replicas'] && opts['replicas'].to_s != 'undef'
-      flags << "--replicas '#{opts['replicas']}'"
-    end
+    flags << "--replicas '#{opts['replicas']}'" if opts['replicas'] && opts['replicas'].to_s != 'undef'
 
-    if opts['tty'].to_s != 'false'
-      flags << '--tty'
-    end
+    flags << '--tty' if opts['tty'].to_s != 'false'
 
-    if opts['user'] && opts['user'].to_s != 'undef'
-      flags << "--user '#{opts['user']}'"
-    end
+    flags << "--user '#{opts['user']}'" if opts['user'] && opts['user'].to_s != 'undef'
 
-    if opts['workdir'] && opts['workdir'].to_s != 'undef'
-      flags << "--workdir '#{opts['workdir']}'"
-    end
+    flags << "--workdir '#{opts['workdir']}'" if opts['workdir'] && opts['workdir'].to_s != 'undef'
 
     if opts['extra_params'].is_a? Array
       opts['extra_params'].each do |param|
@@ -72,9 +60,7 @@ module Puppet::Parser::Functions
       end
     end
 
-    if opts['host_socket'] && opts['host_socket'].to_s != 'undef'
-      flags << "-H '#{opts['host_socket']}'"
-    end
+    flags << "-H '#{opts['host_socket']}'" if opts['host_socket'] && opts['host_socket'].to_s != 'undef'
 
     if opts['registry_mirror'].is_a? Array
       opts['registry_mirror'].each do |param|
@@ -84,9 +70,7 @@ module Puppet::Parser::Functions
       flags << "--registry-mirror='#{opts['registry_mirror']}'"
     end
 
-    if opts['image'] && opts['image'].to_s != 'undef'
-      flags << "'#{opts['image']}'"
-    end
+    flags << "'#{opts['image']}'" if opts['image'] && opts['image'].to_s != 'undef'
 
     if opts['command'].is_a? Array
       flags << opts['command'].join(' ')

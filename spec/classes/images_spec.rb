@@ -4,11 +4,11 @@ require 'spec_helper'
 
 tests = {
   'with ensure => present' => {
-    'ensure' => 'present',
+    'ensure' => 'present'
   },
   'with ensure => absent' => {
-    'ensure' => 'absent',
-  },
+    'ensure' => 'absent'
+  }
 }
 
 describe 'docker::images', type: :class do
@@ -16,7 +16,7 @@ describe 'docker::images', type: :class do
     ##
     ## set some needed facts
     ##
-    facts = if %r{windows}.match?(os)
+    facts = if os.include?('windows')
               windows_facts.merge(os_facts)
             else
               os_facts
@@ -32,14 +32,14 @@ describe 'docker::images', type: :class do
         context title do
           params = {
             'base' => {
-              'ensure'       => 'present',
-              'image_tag'    => :undef,
+              'ensure' => 'present',
+              'image_tag' => :undef,
               'image_digest' => :undef,
-              'force'        => false,
-              'docker_file'  => :undef,
-              'docker_dir'   => :undef,
-              'docker_tar'   => :undef,
-            },
+              'force' => false,
+              'docker_file' => :undef,
+              'docker_dir' => :undef,
+              'docker_tar' => :undef
+            }
           }
 
           params.each do |key, values|
@@ -52,15 +52,15 @@ describe 'docker::images', type: :class do
             let(:params) do
               {
                 'images' => {
-                  key => values,
-                },
+                  key => values
+                }
               }
             end
 
             include_examples 'image', values, facts, defaults
 
             it {
-              is_expected.to contain_docker__image(key)
+              expect(subject).to contain_docker__image(key)
             }
           end
         end
