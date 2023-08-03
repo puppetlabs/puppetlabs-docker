@@ -161,7 +161,7 @@ describe 'docker' do
 
     # TODO : Temporarily commenting these test cases for RedHat & Debian family
     # We are consistently getting "IOError:  closed stream"
-    unless ['redhat', 'debian'].include?(os[:family])
+    unless ['redhat', 'debian', 'ubuntu'].include?(os[:family])
       describe package(package_name) do
         it { is_expected.to be_installed }
       end
