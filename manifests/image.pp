@@ -40,7 +40,7 @@ define docker::image (
   $docker_command = $docker::params::docker_command
 
   if $facts['os']['family'] == 'windows' {
-    $update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
+    $update_docker_image_template = 'docker/windows/update_docker_image.ps1.epp'
     $update_docker_image_path     = "${facts['docker_user_temp_path']}/update_docker_image.ps1"
     $exec_environment             = "PATH=${facts['docker_program_files_path']}/Docker/"
     $exec_timeout                 = 3000
@@ -48,7 +48,7 @@ define docker::image (
     $exec_path                    = ["${facts['docker_program_files_path']}/Docker/",]
     $exec_provider                = 'powershell'
   } else {
-    $update_docker_image_template = 'docker/update_docker_image.sh.erb'
+    $update_docker_image_template = 'docker/update_docker_image.sh.epp'
     $update_docker_image_path     = '/usr/local/bin/update_docker_image.sh'
     $update_docker_image_owner    = 'root'
     $exec_environment             = 'HOME=/root'
@@ -57,6 +57,9 @@ define docker::image (
     $exec_provider                = undef
   }
 
+  $parameters = {
+    'docker_command' => $docker_command,
+  }
   # Wrapper used to ensure images are up to date
   ensure_resource('file', $update_docker_image_path,
     {
@@ -64,7 +67,7 @@ define docker::image (
       owner   => $update_docker_image_owner,
       group   => $update_docker_image_owner,
       mode    => '0555',
-      content => template($update_docker_image_template),
+      content => epp($update_docker_image_template, $parameters),
     }
   )
 

@@ -39,7 +39,6 @@ shared_examples 'compose' do |_params, _facts|
 
       it {
         expect(subject).to contain_exec("Install Docker Compose #{version}").with(
-          # 'command'  => template('docker/windows/download_docker_compose.ps1.erb'),
           'provider' => 'powershell',
           'creates' => docker_compose_location_versioned,
         )

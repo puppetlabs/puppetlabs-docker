@@ -10,11 +10,11 @@ param
 )
 
 Write-Information "Before - Looking for image"
-$before=$(& <%= @docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
+$before=$(& <%= $docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
 Write-Information "Pulling image"
-& <%= @docker_command %> pull ${DockerImage}
+& <%= $docker_command %> pull ${DockerImage}
 Write-Information "Inspecting image"
-$after=$(& <%= @docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
+$after=$(& <%= $docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
 If (!$after) {
     Write-Information "Docker image ${DockerImage} failed to pull!"
     Exit 3

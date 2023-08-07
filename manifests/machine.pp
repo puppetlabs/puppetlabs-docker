@@ -54,8 +54,14 @@ class docker::machine (
     if $facts['os']['family'] == 'windows' {
       $docker_download_command = "if (Invoke-WebRequest ${docker_machine_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
 
+      $parameters = {
+        'proxy'                             => $proxy,
+        'docker_machine_url'                => $docker_machine_url,
+        'docker_machine_location_versioned' => $docker_machine_location_versioned,
+      }
+
       exec { "Install Docker Machine ${version}":
-        command  => template('docker/windows/download_docker_machine.ps1.erb'),
+        command  => epp('docker/windows/download_docker_machine.ps1.epp', $parameters),
         provider => powershell,
         creates  => $docker_machine_location_versioned,
       }

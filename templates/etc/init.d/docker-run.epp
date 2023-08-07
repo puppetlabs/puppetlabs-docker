@@ -1,12 +1,12 @@
 <%-
-	@required_start = ["$network"] +
-		@sanitised_after_array.map{ |s| "#{@service_prefix}#{s}"} +
-		@sanitised_depends_array.map{ |s| "#{@service_prefix}#{s}"} +
-		@depend_services_array
+	$required_start = ["$network"] +
+		$sanitised_after_array.map |$s| { "${service_prefix}${s}"} +
+		$sanitised_depends_array.map |$s| { "${service_prefix}${s}"} +
+		$depend_services_array
 
-	@required_stop = ["$network"] +
-		@sanitised_depends_array.map{ |d| "#{@service_prefix}#{d}"} +
-		@depend_services_array
+	$required_stop = ["$network"] +
+		$sanitised_depends_array.map |$d| { "${service_prefix}${d}"} +
+		$depend_services_array
 -%>
 #!/bin/sh
 #
@@ -15,21 +15,21 @@
 #
 #    /etc/rc.d/init.d/<servicename>
 #
-#    Daemon for <%= @title %>
+#    Daemon for <%= $title %>
 #
 # chkconfig: 2345 97 15
-# description: Docker container for <%= @title %>
+# description: Docker container for <%= $title %>
 
 ### BEGIN INIT INFO
-# Provides:       <%= @service_prefix %><%= @sanitised_title %>
-# Required-Start: <%= @required_start.uniq.join(" ") %>
-# Required-Stop:  <%= @required_stop.uniq.join(" ") %>
+# Provides:       <%= $service_prefix %><%= $sanitised_title %>
+# Required-Start: <%= $required_start.unique.join(" ") %>
+# Required-Stop:  <%= $required_stop.unique.join(" ") %>
 # Should-Start:
 # Should-Stop:
 # Default-Start: 2 3 4 5
 # Default-Stop:  0 1 6
-# Short-Description: start and stop docker container for <%= @title %>
-# Description: Docker container for <%= @title %>
+# Short-Description: start and stop docker container for <%= $title %>
+# Description: Docker container for <%= $title %>
 ### END INIT INFO
 
 if [ -e /etc/init.d/functions ]; then
@@ -56,8 +56,8 @@ else
 fi
 
 export HOME=/root/
-docker="/usr/bin/<%= @docker_command %>"
-prog="<%= @service_prefix %><%= @sanitised_title %>"
+docker="/usr/bin/<%= $docker_command %>"
+prog="<%= $service_prefix %><%= $sanitised_title %>"
 if [ -d /var/lock/subsys ]; then
     lockfile="/var/lock/subsys/$prog"
 else
@@ -67,14 +67,14 @@ fi
 start() {
     [ -x $docker ] || exit 5
 
-    if [ "true" = "$($docker inspect --format='{{.State.Running}}' <%= @sanitised_title %> 2>/dev/null)" ]; then
+    if [ "true" = "$($docker inspect --format='{{.State.Running}}' <%= $sanitised_title %> 2>/dev/null)" ]; then
        failure
-       printf "Container <%= @sanitised_title %> is still running.\n"
+       printf "Container <%= $sanitised_title %> is still running.\n"
        exit 7
     fi
 
     printf "Starting $prog:\t"
-    <%= @docker_run_inline_start %>
+    <%= $docker_run_inline_start %>
 
     retval=$?
     echo
@@ -87,7 +87,7 @@ start() {
 
 stop() {
     echo -n "Stopping $prog: "
-    <%= @docker_run_inline_stop %>
+    <%= $docker_run_inline_stop %>
 
     return $?
 }
@@ -114,7 +114,7 @@ case "$1" in
     stop
     ;;
     status)
-    if [ "true" = "$($docker inspect --format='{{.State.Running}}' <%= @sanitised_title %> 2>/dev/null)" ]; then
+    if [ "true" = "$($docker inspect --format='{{.State.Running}}' <%= $sanitised_title %> 2>/dev/null)" ]; then
         echo $prog is running
         exit 0
     else

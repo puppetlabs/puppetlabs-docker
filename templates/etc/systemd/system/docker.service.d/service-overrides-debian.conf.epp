@@ -1,11 +1,11 @@
-<% if @service_after_override -%>
+<% if $service_after_override { -%>
 [Unit]
-After=<%= @service_after_override %>
+After=<%= $service_after_override %>  
+<% } -%>
 
-<% end -%>
 [Service]
 EnvironmentFile=-/etc/default/docker
 EnvironmentFile=-/etc/default/docker-storage
 ExecStart=
-ExecStart=/usr/bin/<%= @docker_start_command %> $OPTIONS \
+ExecStart=/usr/bin/<%= $docker_start_command %> $OPTIONS \
         $DOCKER_STORAGE_OPTIONS
