@@ -12,7 +12,7 @@ shared_examples 'image' do |_params, _facts, _defaults|
   image_tag      = _params['image_tag']
 
   if _facts[:os]['family'] == 'windows'
-    update_docker_image_template = 'docker/windows/update_docker_image.ps1.erb'
+    update_docker_image_template = 'docker/windows/update_docker_image.ps1.epp'
     update_docker_image_path     = "#{_facts['docker_user_temp_path']}/update_docker_image.ps1"
     exec_environment             = "PATH=#{_facts['docker_program_files_path']}/Docker/"
     exec_timeout                 = 3000
@@ -20,7 +20,7 @@ shared_examples 'image' do |_params, _facts, _defaults|
     exec_path                    = ["#{_facts['docker_program_files_path']}/Docker/"]
     exec_provider                = 'powershell'
   else
-    update_docker_image_template = 'docker/update_docker_image.sh.erb'
+    update_docker_image_template = 'docker/update_docker_image.sh.epp'
     update_docker_image_path     = '/usr/local/bin/update_docker_image.sh'
     update_docker_image_owner    = 'root'
     exec_environment             = 'HOME=/root'

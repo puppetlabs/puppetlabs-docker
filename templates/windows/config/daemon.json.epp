@@ -1,0 +1,23 @@
+{
+    <% if $dns { %> "dns": <%= $dns_array.to_json %>,<% } -%>
+    <% if $dns_search { %> "dns-search": <%= $dns_search_array.to_json %>,<% } -%>
+    <% if $log_driver { %> "log-driver": "<%= $log_driver %>", <% } -%>
+    <% if $mtu { %> "mtu": <%= $mtu %>,<% } -%>
+    <% if $tcp_bind { %> "hosts": <%= $tcp_bind_array.to_json %>,<% } -%>
+    <% if $log_level { %> "log-level": "<%= $log_level %>",<% } -%>
+    <% if $tls_enable { %> "tlsverify": true, 
+    "tlscacert": "<%= $tls_cacert %>",
+    "tlscert": "<%= $tls_cert %>",
+    "tlskey": "<%= $tls_key %>",    
+    <% } -%>
+    <% if $socket_group { %>"group": "<%= $socket_group %>",<% } -%>
+    <% if $bridge { %>"bridge": "<%= $bridge %>",<% } -%>
+    <% if $fixed_cidr { %>"fixed-cidr": "<%= $fixed_cidr %>",<% } -%>
+    <% if type($registry_mirror, 'generalized') == String { %>"registry-mirrors": ["<%= $registry_mirror %>"], <% } -%>
+    <% if String(type($registry_mirror, 'generalized')).index('Array') == 0 { %>"registry-mirrors": ["<%= $registry_mirror.join('", "') %>"], <% } -%>
+    <% if $extra_parameters { %><% $extra_parameters_array.each |$param| { %>
+    <%= $param %> ,<% } %>
+    <% } -%>
+    <% if $root_dir { %>"data-root": "<%= $root_dir %>",<% } -%>
+    "labels": <%= $labels_array.to_json %>
+}

@@ -9,14 +9,13 @@ If ($module -eq $null) {
     Exit 1
 }
 
-<% if @nuget_package_provider_version -%>
+<% if $nuget_package_provider_version { -%>
 Write-Information "Checking Package provider version"
-if ($module.Version.ToString() -ne "<%= @nuget_package_provider_version %>" ) {
+if ($module.Version.ToString() -ne "<%= $nuget_package_provider_version %>" ) {
     Write-Error "Incorrect Microsoft Nuget provider version installed"
     Exit 1
 }
-<% end -%>
-
+<% } -%>
 
 Write-Information "Checking Docker Provider"
 $provider = Get-Module -ListAvailable -Name $dockerProviderName -ErrorAction SilentlyContinue
@@ -25,25 +24,25 @@ If ($provider -eq $null) {
     Exit 1
 }
 
-<% if  @docker_msft_provider_version -%>
+<% if $docker_msft_provider_version { -%>
 Write-Information "Checking Docker provider version"
-if ($provider.Version.ToString() -ne "<%= @docker_msft_provider_version %>" ) {
+if ($provider.Version.ToString() -ne "<%= $docker_msft_provider_version %>" ) {
     Write-Error "Incorrect Microsoft Docker Provider version installed."
     Exit 1
 }
-<% end -%>
+<% } -%>
 
 Write-Information "Checking Docker package."
-$package=Get-Package <%= @docker_ee_package_name %> -ProviderName $dockerProviderName -ErrorAction SilentlyContinue
+$package=Get-Package <%= $docker_ee_package_name %> -ProviderName $dockerProviderName -ErrorAction SilentlyContinue
 If ($package -eq $null) { 
     Write-Error "Docker package is not installed."
     Exit 1
 }
 
-<% if @version -%>
+<% if $version { -%>
 Write-Information "Checking Docker package version"
-if ($package.Version.ToString() -notmatch  "<%= @version %>"){
+if ($package.Version.ToString() -notmatch  "<%= $version %>"){
     Write-Error "Incorrect Docker package version installed."
     Exit 1
 }
-<% end %>
+<% } %>
