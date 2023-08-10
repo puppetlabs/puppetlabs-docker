@@ -7,11 +7,4 @@ $StringBuilder = New-Object System.Text.StringBuilder
 [Void]$StringBuilder.Append($_.ToString("x2")) 
 } 
 
-if([System.IO.File]::Exists("<%= @passfile %>")){
-    $CurrentContent = Get-Content -Path "<%= @passfile %>"
-    if($CurrentContent -eq $StringBuilder.ToString()){
-        exit 0
-    }
-}
-
-exit 1
+$StringBuilder.ToString() | Out-File <%= $passfile %>

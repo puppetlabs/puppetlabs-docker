@@ -60,23 +60,13 @@ RSpec.configure do |c|
 
   # Configure all nodes in nodeset
   c.before :suite do
-    # Install module and dependencies
-    # Due to RE-6764, running yum update renders the machine unable to install
-    # other software. Thus this workaround.
-    if os[:family] == 'redhat'
-      run_shell('mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/internal-mirror.repo', expect_failures: true)
-      run_shell('rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm', expect_failures: true)
-      run_shell('yum update -y -q')
-      # run_shell('yum upgrade -y')
-    end
     if os[:family] == 'debian' || os[:family] == 'ubuntu'
       run_shell('apt-get update -y')
       # run_shell('apt-get upgrade -y')
       run_shell('apt-get install -y lsb-release')
       run_shell('apt-get install -y net-tools')
+      run_shell('apt-get purge -y container-tools') if ENV['CI']
     end
-
-    run_shell('apt-get purge -y container-tools') unless os[:family] == 'windows' || !ENV['CI']
 
     run_shell('puppet module install puppetlabs-stdlib --version 4.24.0', expect_failures: true)
     run_shell('puppet module install puppetlabs-apt --version 4.4.1', expect_failures: true)
@@ -201,10 +191,13 @@ RSpec.configure do |c|
       @windows_ip = ip
     end
     apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }", catch_failures: true)
-    sleep 300
+    retry_on_error_matching(120, 5, %r{.*}) do
+      puts 'waiting for VM to restart..'
+      run_shell('ls') # random command to check connectivity to litmus host
+    end
     docker_path = 'C:\\Program Files\\Docker'
-    run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
-    puts 'Waiting for box to come online'
-    sleep 300
+    retry_on_error_matching(120, 5, %r{.*}) do
+      run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
+    end
   end
 end
