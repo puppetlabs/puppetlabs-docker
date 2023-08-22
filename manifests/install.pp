@@ -52,19 +52,19 @@ class docker::install (
       }
       case $docker::package_source {
         /docker-engine/ : {
-          ensure_resource('package', 'docker', merge($docker_hash, {
+          ensure_resource('package', 'docker', stdlib::merge($docker_hash, {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_engine_package_name,
           }))
         }
         /docker-ce/ : {
-          ensure_resource('package', 'docker', merge($docker_hash, {
+          ensure_resource('package', 'docker', stdlib::merge($docker_hash, {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_ce_package_name,
           }))
-          ensure_resource('package', 'docker-ce-cli', merge($docker_hash, {
+          ensure_resource('package', 'docker-ce-cli', stdlib::merge($docker_hash, {
                 ensure => $ensure,
                 source => $docker::package_source,
                 name   => $docker::docker_ce_cli_package_name,
@@ -76,7 +76,7 @@ class docker::install (
       }
     } else {
       if $facts['os']['family'] != 'windows' {
-        ensure_resource('package', 'docker', merge($docker_hash, {
+        ensure_resource('package', 'docker', stdlib::merge($docker_hash, {
               ensure => $ensure,
               name   => $docker::docker_package_name,
         }))
@@ -88,27 +88,54 @@ class docker::install (
         }
       } else {
         if $ensure == 'absent' {
+          $remove_docker_parameters = {
+            'docker_ee_package_name' => $docker_ee_package_name,
+            'version'                => $version,
+          }
+          $check_docker_parameters = {
+            'docker_ee_package_name' => $docker_ee_package_name,
+          }
           exec { 'remove-docker-package':
-            command   => template('docker/windows/remove_docker.ps1.erb'),
+            command   => epp('docker/windows/remove_docker.ps1.epp', $remove_docker_parameters),
             provider  => powershell,
-            unless    => template('docker/windows/check_docker.ps1.erb'),
+            unless    => epp('docker/windows/check_docker.ps1.epp', $check_docker_parameters),
             logoutput => true,
           }
         } else {
           if $docker::package_location {
+            $download_docker_parameters = {
+              'docker_download_url' => $docker_download_url,
+            }
+            $check_docker_url_parameters = {
+              'docker_download_url' => $docker_download_url,
+            }
             exec { 'install-docker-package':
-              command   => template('docker/windows/download_docker.ps1.erb'),
+              command   => epp('docker/windows/download_docker.ps1.epp', $download_docker_parameters),
               provider  => powershell,
-              unless    => template('docker/windows/check_docker_url.ps1.erb'),
+              unless    => epp('docker/windows/check_docker_url.ps1.epp', $check_docker_url_parameters),
               logoutput => true,
               notify    => Exec['service-restart-on-failure'],
             }
           } else {
+            $install_powershell_provider_parameters = {
+              'nuget_package_provider_version' => $nuget_package_provider_version,
+              'docker_msft_provider_version'   => $docker_msft_provider_version,
+              'version'                        => $version,
+            }
+
+            $check_powershell_provider_parameters = {
+              'nuget_package_provider_version' => $nuget_package_provider_version,
+              'docker_msft_provider_version'   => $docker_msft_provider_version,
+              'docker_ee_package_name'         => $docker_ee_package_name,
+              'version'                        => $version,
+            }
+
             exec { 'install-docker-package':
-              command   => template('docker/windows/install_powershell_provider.ps1.erb'),
+              command   => epp('docker/windows/install_powershell_provider.ps1.epp', $install_powershell_provider_parameters),
               provider  => powershell,
-              unless    => template('docker/windows/check_powershell_provider.ps1.erb'),
+              unless    => epp('docker/windows/check_powershell_provider.ps1.epp', $check_powershell_provider_parameters),
               logoutput => true,
+              timeout   => 1800,
               notify    => Exec['service-restart-on-failure'],
             }
           }

@@ -81,7 +81,7 @@ class docker::params {
   $storage_auto_extend_pool          = undef
   $storage_pool_autoextend_threshold = undef
   $storage_pool_autoextend_percent   = undef
-  $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
+  $storage_config_template           = 'docker/etc/sysconfig/docker-storage.epp'
   $registry_mirror                   = undef
   $curl_ensure                       = true
   $os_lc                             = downcase($facts['os']['name'])
@@ -115,17 +115,17 @@ class docker::params {
 
           if (versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
             $service_after_override     = undef
-            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
+            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.epp'
             $service_hasrestart         = true
             $service_hasstatus          = true
-            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.epp'
             $service_provider           = 'systemd'
             $socket_override            = false
-            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
             $storage_config             = '/etc/default/docker-storage'
             include docker::systemd_reload
           } else {
-            $service_config_template    = 'docker/etc/default/docker.erb'
+            $service_config_template    = 'docker/etc/default/docker.epp'
             $service_overrides_template = undef
             $socket_overrides_template  = undef
             $socket_override            = false
@@ -144,9 +144,9 @@ class docker::params {
           }
           $service_provider           = 'systemd'
           $storage_config             = '/etc/default/docker-storage'
-          $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-          $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
-          $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+          $service_config_template    = 'docker/etc/sysconfig/docker.systemd.epp'
+          $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.epp'
+          $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
           $socket_override            = false
           $service_after_override     = undef
           $service_hasstatus          = true
@@ -198,13 +198,13 @@ class docker::params {
     'RedHat' : {
       $service_after_override      = undef
       $service_config              = '/etc/sysconfig/docker'
-      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.erb'
+      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.epp'
       $service_hasrestart          = true
       $service_hasstatus           = true
-      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
+      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.epp'
       $service_provider            = 'systemd'
       $socket_override             = false
-      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
       $storage_config              = '/etc/sysconfig/docker-storage'
       $storage_setup_file          = '/etc/sysconfig/docker-storage-setup'
       $use_upstream_package_source = true
@@ -242,7 +242,7 @@ class docker::params {
       $msft_nuget_package_provider_version = $nuget_package_provider_version
       $msft_provider_version               = $docker_msft_provider_version
       $msft_package_version                = $version
-      $service_config_template             = 'docker/windows/config/daemon.json.erb'
+      $service_config_template             = 'docker/windows/config/daemon.json.epp'
       $service_config                      = "${facts['docker_program_data_path']}/docker/config/daemon.json"
       $docker_group                        = 'docker'
       $package_ce_source_location          = undef

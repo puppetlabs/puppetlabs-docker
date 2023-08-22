@@ -22,29 +22,28 @@ shared_examples 'compose' do |_params, _facts|
   docker_compose_location_versioned = "#{install_path}/docker-compose-#{version}#{file_extension}"
 
   if ensure_value == 'present'
-    docker_compose_url = if raw_url != :undef
-                           raw_url
-                         else
+    docker_compose_url = if raw_url == :undef
                            "#{base_url}/#{version}/docker-compose-#{_facts[:kernel]}-x86_64#{file_extension}"
+                         else
+                           raw_url
                          end
 
-    proxy_opt = if proxy != :undef
-                  "--proxy #{proxy}"
-                else
+    proxy_opt = if proxy == :undef
                   ''
+                else
+                  "--proxy #{proxy}"
                 end
 
     if _facts[:os]['family'] == 'windows'
       docker_download_command = "if (Invoke-WebRequest #{docker_compose_url} #{proxy_opt} -UseBasicParsing -OutFile \"#{docker_compose_location_versioned}\") { exit 0 } else { exit 1 }"
 
       it {
-        is_expected.to contain_exec("Install Docker Compose #{version}").with(
-          # 'command'  => template('docker/windows/download_docker_compose.ps1.erb'),
+        expect(subject).to contain_exec("Install Docker Compose #{version}").with(
           'provider' => 'powershell',
-          'creates'  => docker_compose_location_versioned,
+          'creates' => docker_compose_location_versioned,
         )
 
-        is_expected.to contain_file(docker_compose_location).with(
+        expect(subject).to contain_file(docker_compose_location).with(
           'ensure' => 'link',
           'target' => docker_compose_location_versioned,
         ).that_requires(
@@ -54,28 +53,28 @@ shared_examples 'compose' do |_params, _facts|
     else
       if curl_ensure
         it {
-          is_expected.to contain_package('curl')
+          expect(subject).to contain_package('curl')
         }
       end
 
       it {
-        is_expected.to contain_exec("Install Docker Compose #{version}").with(
-          'path'    => '/usr/bin/',
-          'cwd'     => '/tmp',
+        expect(subject).to contain_exec("Install Docker Compose #{version}").with(
+          'path' => '/usr/bin/',
+          'cwd' => '/tmp',
           'command' => "curl -s -S -L #{proxy_opt} #{docker_compose_url} -o #{docker_compose_location_versioned}",
           'creates' => docker_compose_location_versioned,
         ).that_requires(
           'Package[curl]',
         )
 
-        is_expected.to contain_file(docker_compose_location_versioned).with(
+        expect(subject).to contain_file(docker_compose_location_versioned).with(
           'owner' => file_owner,
-          'mode'  => '0755',
+          'mode' => '0755',
         ).that_requires(
           "Exec[Install Docker Compose #{version}]",
         )
 
-        is_expected.to contain_file(docker_compose_location).with(
+        expect(subject).to contain_file(docker_compose_location).with(
           'ensure' => 'link',
           'target' => docker_compose_location_versioned,
         ).that_requires(
@@ -86,11 +85,11 @@ shared_examples 'compose' do |_params, _facts|
   else
 
     it {
-      is_expected.to contain_file(docker_compose_location_versioned).with(
+      expect(subject).to contain_file(docker_compose_location_versioned).with(
         'ensure' => 'absent',
       )
 
-      is_expected.to contain_file(docker_compose_location).with(
+      expect(subject).to contain_file(docker_compose_location).with(
         'ensure' => 'absent',
       )
     }

@@ -14,7 +14,7 @@ class docker::repos (
   Optional[Boolean] $key_check_source = $docker::package_key_check_source,
   String            $architecture     = $facts['os']['architecture'],
 ) {
-  ensure_packages($docker::prerequired_packages)
+  stdlib::ensure_packages($docker::prerequired_packages)
 
   case $facts['os']['family'] {
     'Debian': {

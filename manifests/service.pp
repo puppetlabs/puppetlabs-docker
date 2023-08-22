@@ -287,11 +287,25 @@ class docker::service (
     default => [],
   }
 
+  $docker_storage_setup_parameters = {
+    'storage_driver'                    => $storage_driver,
+    'storage_devs'                      => $storage_devs,
+    'storage_vg'                        => $storage_vg,
+    'storage_root_size'                 => $storage_root_size,
+    'storage_data_size'                 => $storage_data_size,
+    'storage_min_data_size'             => $storage_min_data_size,
+    'storage_chunk_size'                => $storage_chunk_size,
+    'storage_growpart'                  => $storage_growpart,
+    'storage_auto_extend_pool'          => $storage_auto_extend_pool,
+    'storage_pool_autoextend_threshold' => $storage_pool_autoextend_threshold,
+    'storage_pool_autoextend_percent'   => $storage_pool_autoextend_percent,
+  }
+
   if $facts['os']['family'] == 'RedHat' {
     file { $storage_setup_file:
       ensure  => file,
       force   => true,
-      content => template('docker/etc/sysconfig/docker-storage-setup.erb'),
+      content => epp('docker/etc/sysconfig/docker-storage-setup.epp', $docker_storage_setup_parameters),
       before  => $_manage_service,
       notify  => $_manage_service,
     }
@@ -310,6 +324,12 @@ class docker::service (
     }
   }
 
+  $parameters_service_overrides_template = {
+    'service_after_override'   => $service_after_override,
+    'docker_start_command'     => $docker_start_command,
+    'daemon_environment_files' => $daemon_environment_files,
+  }
+
   case $service_provider {
     'systemd': {
       file { '/etc/systemd/system/docker.service.d':
@@ -319,7 +339,7 @@ class docker::service (
       if $service_overrides_template {
         file { '/etc/systemd/system/docker.service.d/service-overrides.conf':
           ensure  => file,
-          content => template($service_overrides_template),
+          content => epp($service_overrides_template, $parameters_service_overrides_template),
           seltype => 'container_unit_file_t',
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
@@ -333,7 +353,7 @@ class docker::service (
 
         file { '/etc/systemd/system/docker.socket.d/socket-overrides.conf':
           ensure  => file,
-          content => template($socket_overrides_template),
+          content => epp($socket_overrides_template, { 'socket_group' => $socket_group }),
           seltype => 'container_unit_file_t',
           notify  => Exec['docker-systemd-reload-before-service'],
           before  => $_manage_service,
@@ -369,22 +389,114 @@ class docker::service (
     $_skip_storage_config = false
   }
 
+  $storage_config_parameters = {
+    'storage_driver'                    => $storage_driver,
+    'storage_devs'                      => $storage_devs,
+    'storage_vg'                        => $storage_vg,
+    'storage_root_size'                 => $storage_root_size,
+    'storage_data_size'                 => $storage_data_size,
+    'storage_min_data_size'             => $storage_min_data_size,
+    'storage_chunk_size'                => $storage_chunk_size,
+    'storage_growpart'                  => $storage_growpart,
+    'storage_auto_extend_pool'          => $storage_auto_extend_pool,
+    'storage_pool_autoextend_threshold' => $storage_pool_autoextend_threshold,
+    'storage_pool_autoextend_percent'   => $storage_pool_autoextend_percent,
+    'dm_basesize'                       => $dm_basesize,
+    'dm_fs'                             => $dm_fs,
+    'dm_mkfsarg'                        => $dm_mkfsarg,
+    'dm_mountopt'                       => $dm_mountopt,
+    'dm_blocksize'                      => $dm_blocksize,
+    'dm_loopdatasize'                   => $dm_loopdatasize,
+    'dm_loopmetadatasize'               => $dm_loopmetadatasize,
+    'dm_thinpooldev'                    => $dm_thinpooldev,
+    'dm_datadev'                        => $dm_datadev,
+    'dm_metadatadev'                    => $dm_metadatadev,
+    'dm_use_deferred_removal'           => $dm_use_deferred_removal,
+    'dm_use_deferred_deletion'          => $dm_use_deferred_deletion,
+    'dm_blkdiscard'                     => $dm_blkdiscard,
+    'dm_override_udev_sync_check'       => $dm_override_udev_sync_check,
+    'overlay2_override_kernel_check'    => $overlay2_override_kernel_check,
+  }
+
   if $storage_config {
     unless $_skip_storage_config {
       file { $storage_config:
         ensure  => file,
         force   => true, #force rewrite storage configuration 
-        content => template($storage_config_template),
+        content => epp($storage_config_template, $storage_config_parameters),
         notify  => $_manage_service,
       }
     }
+  }
+
+  $parameters = {
+    'docker_command' => $docker_command,
+    'proxy' => $proxy,
+    'no_proxy' => $no_proxy,
+    'tmp_dir' => $tmp_dir,
+    'root_dir' => $root_dir,
+    'root_dir_flag' => $root_dir_flag,
+    'tcp_bind' => $tcp_bind,
+    'tcp_bind_array' => $tcp_bind_array,
+    'tls_enable' => $tls_enable,
+    'tls_verify' => $tls_verify,
+    'tls_cacert' => $tls_cacert,
+    'tls_cert' => $tls_cert,
+    'tls_key' => $tls_key,
+    'socket_bind' => $socket_bind,
+    'ip_forward' => $ip_forward,
+    'iptables' => $iptables,
+    'ip_masq' => $ip_masq,
+    'icc' => $icc,
+    'fixed_cidr' => $fixed_cidr,
+    'bridge' => $bridge,
+    'default_gateway' => $default_gateway,
+    'log_level' => $log_level,
+    'log_driver' => $log_driver,
+    'log_opt' => $log_opt,
+    'selinux_enabled' => $selinux_enabled,
+    'socket_group' => $socket_group,
+    'dns' => $dns,
+    'dns_array' => $dns_array,
+    'dns_search' => $dns_search,
+    'dns_search_array' => $dns_search_array,
+    'execdriver' => $execdriver,
+    'bip' => $bip,
+    'mtu' => $mtu,
+    'registry_mirror' => $registry_mirror,
+    'storage_driver' => $storage_driver,
+    'dm_basesize' => $dm_basesize,
+    'dm_fs' => $dm_fs,
+    'dm_mkfsarg' => $dm_mkfsarg,
+    'dm_mountopt' => $dm_mountopt,
+    'dm_blocksize' => $dm_blocksize,
+    'dm_loopdatasize' => $dm_loopdatasize,
+    'dm_loopmetadatasize' => $dm_loopmetadatasize,
+    'dm_thinpooldev' => $dm_thinpooldev,
+    'dm_datadev' => $dm_datadev,
+    'dm_metadatadev' => $dm_metadatadev,
+    'dm_use_deferred_removal' => $dm_use_deferred_removal,
+    'dm_use_deferred_deletion' => $dm_use_deferred_deletion,
+    'dm_blkdiscard' => $dm_blkdiscard,
+    'dm_override_udev_sync_check' => $dm_override_udev_sync_check,
+    'overlay2_override_kernel_check' => $overlay2_override_kernel_check,
+    'labels' => $labels,
+    'extra_parameters' => $extra_parameters,
+    'extra_parameters_array' => $extra_parameters_array,
+    'shell_values' => $shell_values,
+    'shell_values_array' => $shell_values_array,
+    'labels_array' => $labels_array,
+    'ipv6' => $ipv6,
+    'ipv6_cidr' => $ipv6_cidr,
+    'default_gateway_ipv6' => $default_gateway_ipv6,
+    'tmp_dir_config' => $tmp_dir_config,
   }
 
   if $_service_config {
     file { $_service_config:
       ensure  => file,
       force   => true,
-      content => template($service_config_template),
+      content => epp($service_config_template, $parameters),
       notify  => $_manage_service,
     }
   }

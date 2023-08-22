@@ -50,17 +50,11 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
     lines = output.split("\n")
     lines.shift # remove header row
     lines.map do |line|
-      _, name, driver = line.split(' ')
+      _, name, driver = line.split
       inspect = docker(['network', 'inspect', name])
       obj = JSON.parse(inspect).first
-      ipam_driver = unless obj['IPAM']['Driver'].nil?
-                      obj['IPAM']['Driver']
-                    end
-      subnet = unless obj['IPAM']['Config'].nil? || obj['IPAM']['Config'].empty?
-                 if obj['IPAM']['Config'].first.key? 'Subnet'
-                   obj['IPAM']['Config'].first['Subnet']
-                 end
-               end
+      ipam_driver = (obj['IPAM']['Driver'] unless obj['IPAM']['Driver'].nil?)
+      subnet = (obj['IPAM']['Config'].first['Subnet'] if !(obj['IPAM']['Config'].nil? || obj['IPAM']['Config'].empty?) && (obj['IPAM']['Config'].first.key? 'Subnet'))
       new(
         name: name,
         id: obj['Id'],

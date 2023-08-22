@@ -134,11 +134,11 @@ define docker::registry (
         }
       } elsif $ensure == 'present' {
         exec { 'compute-hash':
-          command     => template('docker/windows/compute_hash.ps1.erb'),
-          environment => $exec_env,
+          command     => stdlib::deferrable_epp('docker/windows/compute_hash.ps1.epp', { 'passfile' => $passfile }),
+          environment => Deferred('docker::env', [$exec_env]),
           provider    => $exec_provider,
           logoutput   => true,
-          unless      => template('docker/windows/check_hash.ps1.erb'),
+          unless      => stdlib::deferrable_epp('docker/windows/check_hash.ps1.epp', { 'passfile' => $passfile }),
           notify      => Exec["${title} auth"],
         }
       }
@@ -148,8 +148,8 @@ define docker::registry (
   }
 
   exec { "${title} auth":
-    environment => $exec_env,
-    command     => $_auth_command,
+    environment => Deferred('docker::env', [$exec_env]),
+    command     => Deferred('sprintf', [$_auth_command]),
     user        => $exec_user,
     path        => $exec_path,
     timeout     => $exec_timeout,

@@ -10,17 +10,11 @@ module Puppet::Parser::Functions
     opts = args[0] || {}
     flags = []
 
-    if opts['detach']
-      flags << '--detach=true'
-    end
+    flags << '--detach=true' if opts['detach']
 
-    if opts['interactive']
-      flags << '--interactive=true'
-    end
+    flags << '--interactive=true' if opts['interactive']
 
-    if opts['tty']
-      flags << '--tty=true'
-    end
+    flags << '--tty=true' if opts['tty']
 
     opts['env']&.each do |namevaluepair|
       flags << "--env #{namevaluepair}"

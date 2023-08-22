@@ -1,0 +1,70 @@
+# Docker Upstart and SysVinit configuration file
+#
+# THIS FILE IS MANAGED BY PUPPET. Changes will be overwritten.
+
+# # Customize location of Docker binary (especially for development testing).
+DOCKER="/usr/bin/<%= $docker_command %>"
+
+# # If you need Docker to use an HTTP proxy, it can also be specified here.
+<% if $proxy { -%>
+export http_proxy='<%= $proxy %>'
+export https_proxy='<%= $proxy %>'
+<% } -%>
+<% if $no_proxy { -%>
+export no_proxy='<%= $no_proxy.convert_to(Array).join(',') %>'
+<% } -%>
+
+# # This is also a handy place to tweak where Docker's temporary files go.
+export TMPDIR="<%= $tmp_dir %>"
+
+# # Use DOCKER_OPTS to modify the daemon startup options.
+DOCKER_OPTS="\
+<% if $root_dir { %><%= $root_dir_flag %> <%= $root_dir %><% } -%>
+<% if $tcp_bind { %><% $tcp_bind_array.each |$param| { %> -H <%= $param %><% } %><% } -%>
+<% if $tls_enable { %> --tls<% if $tls_verify { %> --tlsverify<% } %> --tlscacert=<%= $tls_cacert %> --tlscert=<%= $tls_cert %> --tlskey=<%= $tls_key %><% } -%>
+<% if $socket_bind { %> -H <%= $socket_bind %><% } -%>
+ --ip-forward=<%= $ip_forward -%>
+ --iptables=<%= $iptables -%>
+ --ip-masq=<%= $ip_masq -%>
+<% if $icc { %> --icc=<%= $icc %><% } -%>
+<% if $fixed_cidr { %> --fixed-cidr <%= $fixed_cidr %><% } -%>
+<% if $bridge { %> --bridge <%= $bridge %><% } -%>
+<% if $default_gateway { %> --default-gateway <%= $default_gateway %><% } -%>
+<% if $log_level { %> -l <%= $log_level %><% } -%>
+<% if $log_driver { %> --log-driver <%= $log_driver %><% } -%>
+<% if $log_driver { %><% if $log_opt { %><% $log_opt.each |$param| { %> --log-opt <%= $param %><% } %><% } -%><% } -%>
+<% if $selinux_enabled { %> --selinux-enabled=<%= $selinux_enabled %><% } -%>
+<% if $socket_group { %> -G <%= $socket_group %><% } -%>
+<% if $dns { %><% $dns_array.each |$address| { %> --dns <%= $address %><% } %><% } -%>
+<% if $dns_search { %><% $dns_search_array.each |$domain| { %> --dns-search <%= $domain %><% } %><% } -%>
+<% if $execdriver { %> -e <%= $execdriver %><% } -%>
+<% if $bip { %> --bip=<%= $bip %><% } -%>
+<% if $mtu { %> --mtu=<%= $mtu %><% } -%>
+<% if type($registry_mirror, 'generalized') == String { %> --registry-mirror=<%= $registry_mirror %><% } -%>
+<% if String(type($registry_mirror, 'generalized')).index('Array') == 0 { %><% $registry_mirror.each |$param| { %> --registry-mirror=<%= $param %><% } %><% } -%>
+<% if $storage_driver { %> --storage-driver=<%= $storage_driver %><% } -%>
+<% if $storage_driver == 'devicemapper' { -%>
+  <%- if $dm_basesize { %> --storage-opt dm.basesize=<%= $dm_basesize %><% } -%>
+  <%- if $dm_fs { %> --storage-opt dm.fs=<%= $dm_fs %><% } -%>
+  <%- if $dm_mkfsarg { %> --storage-opt "dm.mkfsarg=<%= $dm_mkfsarg %>"<% } -%>
+  <%- if $dm_mountopt { %> --storage-opt dm.mountopt=<%= $dm_mountopt %><% } -%>
+  <%- if $dm_blocksize { %> --storage-opt dm.blocksize=<%= $dm_blocksize %><% } -%>
+  <%- if $dm_loopdatasize { %> --storage-opt dm.loopdatasize=<%= $dm_loopdatasize %><% } -%>
+  <%- if $dm_loopmetadatasize { %> --storage-opt dm.loopmetadatasize=<%= $dm_loopmetadatasize %><% } -%>
+  <%- if $dm_thinpooldev { %> --storage-opt dm.thinpooldev=<%= $dm_thinpooldev -%>
+  <%- }else { -%>
+    <%- if $dm_datadev { %> --storage-opt dm.datadev=<%= $dm_datadev %><% } -%>
+    <%- if $dm_metadatadev { %> --storage-opt dm.metadatadev=<%= $dm_metadatadev %><% } -%>
+  <%- } -%>
+<%- if $dm_use_deferred_removal { %> --storage-opt dm.use_deferred_removal=<%= $dm_use_deferred_removal %><% } -%>
+<%- if $dm_use_deferred_deletion { %> --storage-opt dm.use_deferred_deletion=<%= $dm_use_deferred_deletion %><% } -%>
+<%- if $dm_blkdiscard { %> --storage-opt dm.blkdiscard=<%= $dm_blkdiscard %><% } -%>
+<%- if $dm_override_udev_sync_check { %> --storage-opt dm.override_udev_sync_check=<%= $dm_override_udev_sync_check %><% } -%>
+<% } elsif $storage_driver == 'overlay2' { -%>
+  <%- if $overlay2_override_kernel_check { %> --storage-opt overlay2.override_kernel_check=<%= $overlay2_override_kernel_check %><% } -%>
+<% } -%>
+<% $labels.each |$label| { %> --label <%= $label %><% } -%>
+<% if $extra_parameters { %><% $extra_parameters_array.each |$param| { %> <%= $param %><% } %><% } -%>
+"
+<% if $shell_values { %><% $shell_values_array.each |$param| { %>
+<%= $param %><% } %><% } -%>

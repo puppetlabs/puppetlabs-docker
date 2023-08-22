@@ -25,10 +25,11 @@ def service_update(image, service, constraint_add, constraint_rm)
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
+
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 image = params['image']
 service = params['service']
 constraint_add = params['constraint_add']

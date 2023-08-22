@@ -37,15 +37,11 @@ class docker::compose (
   Optional[String]               $version      = $docker::params::compose_version,
   Optional[String]               $install_path = $docker::params::compose_install_path,
   Optional[String]               $symlink_name = $docker::params::compose_symlink_name,
-  Optional[String]               $proxy        = undef,
+  Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']] $proxy = undef,
   Optional[String]               $base_url     = $docker::params::compose_base_url,
   Optional[String]               $raw_url      = undef,
   Optional[Boolean]              $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
-  if $proxy != undef {
-    validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
-  }
-
   if $facts['os']['family'] == 'windows' {
     $file_extension = '.exe'
     $file_owner     = 'Administrator'
@@ -78,8 +74,14 @@ class docker::compose (
     if $facts['os']['family'] == 'windows' {
       $docker_download_command = "if (Invoke-WebRequest ${docker_compose_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_compose_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
 
+      $parameters = {
+        'proxy'                             => $proxy,
+        'docker_compose_url'                => $docker_compose_url,
+        'docker_compose_location_versioned' => $docker_compose_location_versioned,
+      }
+
       exec { "Install Docker Compose ${version}":
-        command  => template('docker/windows/download_docker_compose.ps1.erb'),
+        command  => epp('docker/windows/download_docker_compose.ps1.epp', $parameters),
         provider => powershell,
         creates  => $docker_compose_location_versioned,
       }
@@ -91,7 +93,7 @@ class docker::compose (
       }
     } else {
       if $curl_ensure {
-        ensure_packages(['curl'])
+        stdlib::ensure_packages(['curl'])
       }
 
       exec { "Install Docker Compose ${version}":

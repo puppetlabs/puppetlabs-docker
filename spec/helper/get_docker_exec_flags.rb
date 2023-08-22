@@ -3,17 +3,11 @@
 def get_docker_exec_flags(args)
   flags = []
 
-  if args['detach']
-    flags << '--detach=true'
-  end
+  flags << '--detach=true' if args['detach']
 
-  if args['interactive']
-    flags << '--interactive=true'
-  end
+  flags << '--interactive=true' if args['interactive']
 
-  if args['tty']
-    flags << '--tty=true'
-  end
+  flags << '--tty=true' if args['tty']
 
   unless args['env'].empty?
     args['env'].each do |namevaluepair|

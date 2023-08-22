@@ -26,10 +26,11 @@ def node_update(availability, role, label_add, label_rm, node)
 
   stdout, stderr, status = Open3.capture3(cmd_string)
   raise Puppet::Error, "stderr: '#{stderr}'" if status != 0
+
   stdout.strip
 end
 
-params = JSON.parse(STDIN.read)
+params = JSON.parse($stdin.read)
 availability = params['availability']
 role = params['role']
 label_add = params['label_add']
