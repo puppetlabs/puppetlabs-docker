@@ -11,14 +11,13 @@ class docker::compose (
   Enum[present,absent] $ensure  = present,
   Optional[String]     $version = $docker::params::compose_version,
 ) inherits docker::params {
-
   if $docker::manage_package {
     if $version and $ensure != 'absent' {
       $package_ensure = $version
     } else {
       $package_ensure = $ensure
     }
-  
+
     case $facts['os']['family'] {
       'Debian': {
         ensure_packages('docker-compose-plugin', { ensure => $package_ensure, require => defined(bool2str($docker::use_upstream_package_source)) ? { true => Apt::Source['docker'], false => undef } }) #lint:ignore:140chars
