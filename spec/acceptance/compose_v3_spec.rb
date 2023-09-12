@@ -33,7 +33,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'Creating compose v3 projects', win_broken: true do
+  context 'Creating compose v3 projects', :win_broken do
     let(:install_pp) do
       <<-MANIFEST
         docker_compose { 'web':
@@ -59,7 +59,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'creating compose projects with multi compose files', win_broken: true do
+  context 'creating compose projects with multi compose files', :win_broken do
     before(:all) do
       install_pp = <<-MANIFEST
         docker_compose { 'web1':
@@ -79,7 +79,7 @@ describe 'docker compose' do
     end
   end
 
-  context 'Destroying project with multiple compose files', win_broken: true do
+  context 'Destroying project with multiple compose files', :win_broken do
     let(:destroy_pp) do
       <<-MANIFEST
         docker_compose { 'web1':

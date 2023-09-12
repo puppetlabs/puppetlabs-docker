@@ -49,7 +49,7 @@ else
 end
 
 describe 'the Puppet Docker module' do
-  context 'clean up before each test', win_broken: true do
+  context 'clean up before each test', :win_broken do
     before(:each) do
       retry_on_error_matching(60, 5, %r{connection failure running}) do
         # Stop all container using systemd
@@ -70,7 +70,7 @@ describe 'the Puppet Docker module' do
     end
 
     describe 'docker class' do
-      context 'without any parameters', win_broken: true do
+      context 'without any parameters', :win_broken do
         let(:pp) { "class { 'docker': #{docker_args} }" }
 
         it 'runs successfully' do
@@ -349,7 +349,7 @@ describe 'the Puppet Docker module' do
         end
       end
 
-      it 'creates a new image based on a tar', win_broken: true do
+      it 'creates a new image based on a tar', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
@@ -585,7 +585,7 @@ describe 'the Puppet Docker module' do
 
       # cpuset is not supported on Docker Windows
       # STDERR: C:/Program Files/Docker/docker.exe: Error response from daemon: invalid option: Windows does not support CpusetCpus.
-      it 'starts a container with cpuset paramater set', win_broken: true do
+      it 'starts a container with cpuset paramater set', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -614,7 +614,7 @@ describe 'the Puppet Docker module' do
       end
 
       # leagacy container linking was not implemented on Windows. --link is a legacy Docker feature: https://docs.docker.com/network/links/
-      it 'starts multiple linked containers', win_broken: true do
+      it 'starts multiple linked containers', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -669,7 +669,7 @@ describe 'the Puppet Docker module' do
         end
       end
 
-      it 'stops a running container', win_broken: true do
+      it 'stops a running container', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -860,7 +860,7 @@ describe 'the Puppet Docker module' do
     end
   end
 
-  describe 'docker::exec', win_broken: true do
+  describe 'docker::exec', :win_broken do
     it 'runs a command inside an already running container' do
       pp = <<-EOS
           class { 'docker': #{docker_args} }
@@ -919,7 +919,7 @@ describe 'the Puppet Docker module' do
       apply_manifest(pp_delete, catch_failures: true)
     end
 
-    it 'onlies run if notified when refreshonly is true', win_broken: true do
+    it 'onlies run if notified when refreshonly is true', :win_broken do
       container_name = 'container_4_2'
       pp = <<-EOS
           class { 'docker': #{docker_args} }
