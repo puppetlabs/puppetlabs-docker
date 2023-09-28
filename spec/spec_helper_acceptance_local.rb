@@ -30,6 +30,18 @@ def retry_on_error_matching(max_retry_count = 3, retry_wait_interval_secs = 5, e
   end
 end
 
+def run_shell_wrapper(command)
+  retry_on_error_matching do
+    run_shell(command)
+  end
+end
+
+def apply_manifest_wrapper(pp, error_matcher = %r{connection failure running|apply manifest failed})
+  retry_on_error_matching(5, 5, error_matcher) do
+    apply_manifest(pp, catch_failures: true)
+  end
+end
+
 def create_remote_file(name, full_name, file_content)
   Tempfile.open name do |tempfile|
     File.open(tempfile.path, 'w') { |file| file.puts file_content }

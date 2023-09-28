@@ -3,7 +3,7 @@
 require 'spec_helper_acceptance'
 
 if os[:family] == 'windows'
-  os_name = run_shell('systeminfo | findstr /R /C:"OS Name"')
+  os_name = run_shell_wrapper('systeminfo | findstr /R /C:"OS Name"')
   raise 'Could not retrieve systeminfo for Windows box' if os_name.exit_code != 0
 
   os_name = if os_name.stdout.split(%r{\s}).include?('2016')
@@ -34,13 +34,13 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
       install_pp = "class { 'docker': #{docker_args}}"
       apply_manifest(install_pp)
     end
-    run_shell("mkdir #{volume_location}volume_1")
-    run_shell("mkdir #{volume_location}volume_2")
+    run_shell_wrapper("mkdir #{volume_location}volume_1")
+    run_shell_wrapper("mkdir #{volume_location}volume_2")
   end
 
   after(:all) do
-    run_shell("rm -r #{volume_location}volume_1")
-    run_shell("rm -r #{volume_location}volume_2")
+    run_shell_wrapper("rm -r #{volume_location}volume_1")
+    run_shell_wrapper("rm -r #{volume_location}volume_2")
   end
 
   context 'when image is changed' do
@@ -73,7 +73,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
 
     it 'detect image change and apply the change' do
       apply_manifest(pp2, catch_failures: true)
-      run_shell('docker inspect --format="{{ .Config.Image }}" servercore') do |r|
+      run_shell_wrapper('docker inspect --format="{{ .Config.Image }}" servercore') do |r|
         expect(r.stdout).to match(%r{#{image_changed}})
       end
     end
@@ -108,7 +108,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
 
     it "creates servercore with #{volumes2}" do
       apply_manifest(pp2, catch_failures: true)
-      run_shell('docker inspect servercore --format="{{ json .Mounts }}"') do |r|
+      run_shell_wrapper('docker inspect servercore --format="{{ json .Mounts }}"') do |r|
         inspect_result = JSON.parse(r.stdout)
         inspect_result = inspect_result.map { |item| item['Name'] }.sort
         expect(inspect_result).to eq(['volume-1', 'volume-2'])
@@ -140,7 +140,7 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
 
     it 'creates servercore with ports => ["4444", "4445"]' do
       apply_manifest(pp2, catch_failures: true)
-      run_shell('docker inspect servercore --format="{{ json .HostConfig.PortBindings }}"') do |r|
+      run_shell_wrapper('docker inspect servercore --format="{{ json .HostConfig.PortBindings }}"') do |r|
         inspect_result = JSON.parse(r.stdout)
         inspect_result = inspect_result.keys.map { |item| item.split('/')[0] }.sort
         expect(inspect_result).to eq(['4444', '4445'])

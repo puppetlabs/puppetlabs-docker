@@ -24,16 +24,16 @@ describe 'the Puppet Docker module' do
     end
 
     it 'runs successfully' do
-      apply_manifest(pp, catch_failures: true)
+      apply_manifest_wrapper(pp, catch_failures: true)
     end
 
     it 'runs idempotently' do
-      apply_manifest(pp, catch_changes: true) unless selinux == 'true'
+      apply_manifest_wrapper(pp) unless selinux == 'true'
     end
 
     it 'is start a docker process' do
       if os[:family] == 'windows'
-        run_shell('powershell Get-Process -Name dockerd') do |r|
+        run_shell_wrapper('powershell Get-Process -Name dockerd') do |r|
           expect(r.stdout).to match(%r{ProcessName})
         end
       else
@@ -77,7 +77,7 @@ describe 'the Puppet Docker module' do
         }
       EOS
 
-      apply_manifest(pp, catch_failures: true)
+      apply_manifest_wrapper(pp)
       apply_manifest(pp) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
@@ -85,8 +85,8 @@ describe 'the Puppet Docker module' do
 
       run_shell("#{docker_command} ps", expect_failures: false)
 
-      apply_manifest(pp2, catch_failures: true)
-      apply_manifest(pp2, catch_changes: true) unless selinux == 'true'
+      apply_manifest_wrapper(pp2)
+      apply_manifest_wrapper(pp2) unless selinux == 'true'
 
       # A sleep to give docker time to execute properly
       sleep 15

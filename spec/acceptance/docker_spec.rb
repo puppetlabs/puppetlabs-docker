@@ -39,7 +39,7 @@ describe 'docker' do
 
   before(:all) do
     install_pp = "class { 'docker': #{docker_args}}"
-    apply_manifest(install_pp)
+    apply_manifest_wrapper(install_pp)
   end
 
   context 'When adding system user', win_broken: broken do
