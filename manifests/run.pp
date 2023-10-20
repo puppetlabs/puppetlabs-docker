@@ -254,7 +254,6 @@ define docker::run (
   Variant[String,Array]                     $custom_unless                     = [],
   Optional[String]                          $remain_after_exit                 = undef,
   Boolean                                   $prepare_service_only              = false,
-  Optional[Boolean]                         $env_escape                        = true,
 ) {
   include docker::params
 
@@ -338,7 +337,6 @@ define docker::run (
       restart_on_unhealthy  => $restart_on_unhealthy,
       health_check_interval => $health_check_interval,
       osfamily              => $facts['os']['family'],
-      env_escape            => $env_escape,
     }
   )
 

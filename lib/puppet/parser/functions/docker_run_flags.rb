@@ -61,23 +61,10 @@ module Puppet::Parser::Functions
                          " \\\n"
                        end
 
-    multi_flags = ->(values, fmt, envescape) {
+    multi_flags = ->(values, fmt) {
       filtered = [values].flatten.compact
-      if envescape
       filtered.map { |val| (fmt + params_join_char) % call_function('docker::escape', [val]) }
-      else
-      filtered.map { |val| (fmt + params_join_char) % val }
-      end
     }
-
-    [
-      ['-e %s',             'env'],
-      ['--env-file %s',     'env_file'],
-    ].each do |(format, key)|
-      values    = opts[key]
-      new_flags = multi_flags.call(values, format,opts['env_escape'])
-      flags.concat(new_flags)
-    end
 
     [
       ['--dns %s',          'dns'],
@@ -86,13 +73,15 @@ module Puppet::Parser::Functions
       ['--link %s',         'links'],
       ['--lxc-conf=%s',     'lxc_conf'],
       ['--volumes-from %s', 'volumes_from'],
+      ['-e %s',             'env'],
+      ['--env-file %s',     'env_file'],
       ['-p %s',             'ports'],
       ['-l %s',             'labels'],
       ['--add-host %s',     'hostentries'],
       ['-v %s',             'volumes'],
     ].each do |(format, key)|
       values    = opts[key]
-      new_flags = multi_flags.call(values, format,true)
+      new_flags = multi_flags.call(values, format)
       flags.concat(new_flags)
     end
 
