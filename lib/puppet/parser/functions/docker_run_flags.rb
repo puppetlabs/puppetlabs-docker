@@ -61,9 +61,9 @@ module Puppet::Parser::Functions
                          " \\\n"
                        end
 
-    multi_flags = ->(values, fmt, envescape) {
+    multi_flags = ->(values, fmt, shellescape) {
       filtered = [values].flatten.compact
-      if envescape
+      if shellescape
         filtered.map { |val| (fmt + params_join_char) % call_function('docker::escape', [val]) }
       else
         filtered.map { |val| (fmt + params_join_char) % val }
