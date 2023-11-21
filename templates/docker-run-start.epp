@@ -1,0 +1,37 @@
+<% if $before_start { -%>
+    <%= $before_start %>
+<% } -%>
+<% if $remove_container_on_start { -%>
+    /usr/bin/<%= $docker_command %> rm <% if $remove_volume_on_start { %>-v<% } %> <%= $sanitised_title %> >/dev/null 2>&1
+<% } -%>
+
+<% if $pull_on_start { -%>
+    /usr/bin/<%= $docker_command %> pull <%= $image %>
+<% } -%>
+
+<% if $verify_digest { -%>
+    digest_local=$(docker image inspect <%= $image %> --format='{{index .RepoDigests 0}}')
+    digest_verify="<%= $verify_digest %>"
+    if [ "${digest_local##*:}" != "${digest_verify##*:}" ]; then
+      echo "Digest verify failed! Expected checksum 'sha256:$digest_verify' does not match with local checksum 'sha256:$digest_local'!"
+      exit 2
+    fi
+<% } -%>
+
+/usr/bin/<%= $docker_command %> create \
+<%= $docker_run_flags %> \
+--name <%= $sanitised_title %> \
+<%= $image %> <% if $command { %> \
+<%= $command %><% } %>
+
+<% if $after_create { %><%= $after_create %><% } %>
+<% if String(type($net, 'generalized')).index('Array') == 0 { %>
+  <% $net.each |$n| { %>
+/usr/bin/<%= $docker_command %> network connect <%= $n %> <%= $sanitised_title %>  
+  <% } %>
+<% } %>
+
+/usr/bin/<%= $docker_command %> start <% if ! $valid_detach { %>-a<% } %> <%= $sanitised_title %>
+<% if $after_start { -%>
+    <%= $after_start %>
+<% } -%>

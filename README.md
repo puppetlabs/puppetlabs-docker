@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-docker.svg?branch=main)](https://travis-ci.org/puppetlabs/puppetlabs-docker)
 [![Puppet Forge](https://img.shields.io/puppetforge/v/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Downloads](http://img.shields.io/puppetforge/dt/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Endorsement](https://img.shields.io/puppetforge/e/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)

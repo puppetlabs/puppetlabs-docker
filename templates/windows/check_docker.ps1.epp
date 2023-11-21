@@ -2,7 +2,7 @@
 $dockerProviderName="DockerProvider"
 
 Write-Information "Checking Docker package."
-$package=Get-Package <%= @docker_ee_package_name %> -ProviderName $dockerProviderName -ErrorAction Ignore
+$package=Get-Package <%= $docker_ee_package_name %> -ProviderName $dockerProviderName -ErrorAction Ignore
 if ($package -ne $null) { 
     Exit 1
 }

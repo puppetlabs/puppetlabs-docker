@@ -39,7 +39,6 @@ shared_examples 'machine' do |_params, _facts, _defaults|
 
       it {
         expect(subject).to contain_exec("Install Docker Machine #{version}").with(
-          # 'command'  => template('docker/windows/download_docker_machine.ps1.erb'),
           'provider' => 'powershell',
           'creates' => docker_machine_location_versioned,
         )

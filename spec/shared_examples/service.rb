@@ -55,7 +55,6 @@ shared_examples 'service' do |params, facts|
       it {
         expect(subject).to contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with(
           'ensure' => 'file',
-          # 'content' => template($service_overrides_template),
           'before' => manage_service,
         ).that_notifies(
           'Exec[docker-systemd-reload-before-service]',
@@ -71,7 +70,6 @@ shared_examples 'service' do |params, facts|
       it {
         expect(subject).to contain_file('/etc/systemd/system/docker.socket.d/socket-overrides.conf').with(
           'ensure' => 'file',
-          # 'content' => template($socket_overrides_template),
         ).that_comes_before(
           manage_service,
         ).that_notifies(

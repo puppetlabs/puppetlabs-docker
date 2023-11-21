@@ -475,8 +475,36 @@ define docker::run (
       }
     }
   } else {
-    $docker_run_inline_start = template('docker/docker-run-start.erb')
-    $docker_run_inline_stop  = template('docker/docker-run-stop.erb')
+    $run_start_parameters = {
+      'before_start'              => $before_start,
+      'remove_container_on_start' => $remove_container_on_start,
+      'docker_command'            => $docker_command,
+      'remove_volume_on_start'    => $remove_volume_on_start,
+      'sanitised_title'           => $sanitised_title,
+      'pull_on_start'             => $pull_on_start,
+      'image'                     => $image,
+      'verify_digest'             => $verify_digest,
+      'docker_run_flags'          => $docker_run_flags,
+      'command'                   => $command,
+      'after_create'              => $after_create,
+      'net'                       => $net,
+      'valid_detach'              => $valid_detach,
+      'after_start'               => $after_start,
+    }
+
+    $docker_run_inline_start = epp('docker/docker-run-start.epp', $run_start_parameters)
+
+    $run_stop_parameters = {
+      'before_stop'               => $before_stop,
+      'docker_command'            => $docker_command,
+      'stop_wait_time'            => $stop_wait_time,
+      'sanitised_title'           => $sanitised_title,
+      'remove_container_on_stop'  => $remove_container_on_stop,
+      'remove_volume_on_stop'     => $remove_volume_on_stop,
+      'after_stop'                => $after_stop,
+    }
+
+    $docker_run_inline_stop  = epp('docker/docker-run-stop.epp', $run_stop_parameters)
 
     case $service_provider_real {
       'systemd': {
@@ -484,13 +512,13 @@ define docker::run (
         $startscript        = "/usr/local/bin/docker-run-${sanitised_title}-start.sh"
         $stopscript         = "/usr/local/bin/docker-run-${sanitised_title}-stop.sh"
         $startstop_template = 'docker/usr/local/bin/docker-run.sh.epp'
-        $init_template      = 'docker/etc/systemd/system/docker-run.erb'
+        $init_template      = 'docker/etc/systemd/system/docker-run.epp'
         $mode               = '0644'
         $hasstatus          = true
       }
       'upstart': {
         $initscript         = "/etc/init.d/${service_prefix}${sanitised_title}"
-        $init_template      = 'docker/etc/init.d/docker-run.erb'
+        $init_template      = 'docker/etc/init.d/docker-run.epp'
         $mode               = '0750'
         $startscript        = undef
         $stopscript         = undef
@@ -589,9 +617,38 @@ define docker::run (
         }
       }
 
+      if $service_provider_real == 'systemd' {
+        $init_template_parameters = {
+          'depend_services_array'     => $depend_services_array,
+          'sanitised_after_array'     => $sanitised_after_array,
+          'service_prefix'            => $service_prefix,
+          'sanitised_depends_array'   => $sanitised_depends_array,
+          'title'                     => $title,
+          'have_systemd_v230'         => $docker::params::have_systemd_v230,
+          'extra_systemd_parameters'  => $extra_systemd_parameters,
+          'systemd_restart'           => $systemd_restart,
+          '_syslog_identifier'        => $_syslog_identifier,
+          'syslog_facility'           => $syslog_facility,
+          'sanitised_title'           => $sanitised_title,
+          'remain_after_exit'         => $remain_after_exit,
+          'service_name'              => $service_name,
+        }
+      } elsif $service_provider_real == 'upstart' {
+        $init_template_parameters = {
+          'sanitised_after_array'   => $sanitised_after_array,
+          'service_prefix'          => $service_prefix,
+          'sanitised_depends_array' => $sanitised_depends_array,
+          'depend_services_array'   => $depend_services_array,
+          'docker_command'          => $docker_command,
+          'sanitised_title'         => $sanitised_title,
+          'docker_run_inline_start' => $docker_run_inline_start,
+          'docker_run_inline_stop'  => $docker_run_inline_stop,
+        }
+      }
+
       file { $initscript:
         ensure  => file,
-        content => template($init_template),
+        content => epp($init_template, $init_template_parameters),
         seltype => 'container_unit_file_t',
         owner   => 'root',
         group   => $docker_group,

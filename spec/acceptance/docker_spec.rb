@@ -293,7 +293,7 @@ describe 'docker' do
       sleep 10
     end
 
-    it 'is able to login to the registry', retry: 3, retry_wait: 10, win_broken: true do
+    it 'is able to login to the registry', :win_broken, retry: 3, retry_wait: 10 do
       pp = <<-MANIFEST
         docker::registry { '#{registry_address}':
           username => 'username',
@@ -305,7 +305,7 @@ describe 'docker' do
       run_shell("test -e \"#{root_dir}/registry-auth-puppet_receipt_#{server_strip}_root\"", expect_failures: false)
     end
 
-    it 'is able to logout from the registry', win_broken: true do
+    it 'is able to logout from the registry', :win_broken do
       pp = <<-MANIFEST
         docker::registry { '#{registry_address}':
           ensure=> absent,
@@ -315,7 +315,7 @@ describe 'docker' do
       run_shell("grep #{registry_address} #{config_file}", expect_failures: true)
     end
 
-    it 'does not create receipt if registry login fails', win_broken: true do
+    it 'does not create receipt if registry login fails', :win_broken do
       pp = <<-MANIFEST
         docker::registry { '#{registry_bad_address}':
           username => 'username',

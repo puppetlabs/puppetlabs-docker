@@ -1,0 +1,38 @@
+# This file is managed by Puppet and local changes
+# may be overwritten
+
+OPTIONS="<% if $root_dir { %><%= $root_dir_flag %> <%= $root_dir %><% } -%>
+<% if $tcp_bind { %><% $tcp_bind_array.each |$param| { %> -H <%= $param %><% } %><% } -%>
+<% if $tls_enable { %> --tls<% if $tls_verify { %> --tlsverify<% } %> --tlscacert=<%= $tls_cacert %> --tlscert=<%= $tls_cert %> --tlskey=<%= $tls_key %><% } -%> 
+<% if $socket_bind { %> -H <%= $socket_bind %><% } -%>
+ --ip-forward=<%= $ip_forward -%>
+ --iptables=<%= $iptables -%>
+ --ip-masq=<%= $ip_masq -%>
+<% if $icc { %> --icc=<%= $icc %><% } -%>
+<% if type($registry_mirror, 'generalized') == String { %> --registry-mirror=<%= $registry_mirror %><% } -%>
+<% if String(type($registry_mirror, 'generalized')).index('Array') == 0 { %><% $registry_mirror.each |$param| { %> --registry-mirror=<%= $param %><% } %><% } -%>
+<% if $fixed_cidr { %> --fixed-cidr <%= $fixed_cidr %><% } -%>
+<% if $default_gateway { %> --default-gateway <%= $default_gateway %><% } -%>
+<% if $ipv6 { %> --ipv6<% } -%>
+<% if $ipv6_cidr { %> --fixed-cidr-v6 <%= $ipv6_cidr %><% } -%>
+<% if $default_gateway_ipv6 { %> --default-gateway-v6 <%= $default_gateway_ipv6 %><% } -%>
+<% if $bridge { %> --bridge <%= $bridge %><% } -%>
+<% if $log_level { %> -l <%= $log_level %><% } -%>
+<% if $log_driver { %> --log-driver <%= $log_driver %><% } -%>
+<% if $log_driver { %><% if $log_opt { %><% $log_opt.each |$param| { %> --log-opt <%= $param %><% } %><% } -%><% } -%>
+<% if $selinux_enabled { %> --selinux-enabled=<%= $selinux_enabled %><% } -%>
+<% if $socket_group { %> -G <%= $socket_group %><% } -%>
+<% if $dns { %><% $dns_array.each |$address| { %> --dns <%= $address %><% } %><% } -%>
+<% if $dns_search { %><% $dns_search_array.each |$domain| { %> --dns-search <%= $domain %><% } %><% } -%>
+<% if $execdriver { %> -e <%= $execdriver %><% } -%>
+<% if $bip { %> --bip=<%= $bip %><% } -%>
+<% if $mtu { %> --mtu=<%= $mtu %><% } -%>
+<% if $labels { %><% $labels_array.each |$label| { %> --label <%= $label %><% } %><% } -%>
+<% if $extra_parameters { %><% $extra_parameters_array.each |$param| { %> <%= $param %><% } %><% } -%>"
+
+<% if $proxy { %>http_proxy='<%= $proxy %>'
+  https_proxy='<%= $proxy %>'<% } %>
+<% if $no_proxy { %>no_proxy='<%= $no_proxy %>'<% } %>
+# This is also a handy place to tweak where Docker's temporary files go.
+<% if $tmp_dir_config { %>TMPDIR="<%= $tmp_dir %>"<% }else { %># TMPDIR="<%= $tmp_dir %>"<% } %>
+<% if $shell_values { %><% $shell_values_array.each |$param| { %> <%= $param %><% } %><% } -%>
