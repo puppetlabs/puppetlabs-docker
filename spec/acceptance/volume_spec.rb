@@ -14,10 +14,8 @@ end
 
 describe 'docker volume' do
   before(:all) do
-    retry_on_error_matching(60, 5, %r{connection failure running}) do
-      install_pp = "class { 'docker': #{docker_args} }"
-      apply_manifest(install_pp, catch_failures: true)
-    end
+    install_pp = "class { 'docker': #{docker_args} }"
+    apply_manifest_wrapper(install_pp)
   end
 
   it 'exposes volume subcommand' do
@@ -26,7 +24,7 @@ describe 'docker volume' do
 
   context 'with a local volume described in Puppet' do
     after(:all) do
-      run_shell("#{command} volume rm #{volume_name}")
+      run_shell_wrapper("#{command} volume rm #{volume_name}")
     end
 
     it 'applies idempotently' do
