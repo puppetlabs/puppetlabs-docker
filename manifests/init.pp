@@ -347,6 +347,9 @@
 # @param service_hasstatus
 # @param service_hasrestart
 # @param acknowledge_unsupported_os
+# @param keyring
+#   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
+#   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
 # @param have_systemd_v230
 #
 class docker (
@@ -467,6 +470,7 @@ class docker (
   Optional[Boolean]                       $service_hasrestart                = $docker::params::service_hasrestart,
   Optional[Variant[String,Array]]         $registry_mirror                   = $docker::params::registry_mirror,
   Boolean                                 $acknowledge_unsupported_os        = false,
+  Stdlib::Absolutepath                    $keyring                           = '/etc/apt/keyrings/docker.gpg',
 
   # Windows specific parameters
   Optional[String]                        $docker_msft_provider_version      = $docker::params::docker_msft_provider_version,
