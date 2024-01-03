@@ -19,7 +19,6 @@ class docker::repos (
   case $facts['os']['family'] {
     'Debian': {
       $release       = $docker::release
-      $package_key   = $docker::package_key
       $package_repos = $docker::package_repos
 
       if ($docker::use_upstream_package_source) {
@@ -29,7 +28,7 @@ class docker::repos (
           release      => $release,
           repos        => $package_repos,
           key          => {
-            id     => $package_key,
+            name   => 'docker.asc',
             source => $key_source,
           },
           include      => {
