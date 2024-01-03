@@ -475,8 +475,8 @@ class docker (
   Boolean                                 $have_systemd_v230                 = $docker::params::have_systemd_v230,
 ) inherits docker::params {
   if $facts['os']['family'] and ! $acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
-      fail('This module only works on Debian, Red Hat or Windows based systems.')
+    assert_type(Pattern[/^(Debian|RedHat|Archlinux|windows)$/], $facts['os']['family']) |$a, $b| {
+      fail('This module only works on Debian, Red Hat, Archlinux or Windows based systems.')
     }
     if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
       fail('This module only works on Red Hat based systems version 7 and higher.')
