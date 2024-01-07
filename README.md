@@ -62,14 +62,6 @@ class { 'docker':
 }
 ```
 
-Using a version prior to 17.06, configures and installs from the old repositories:
-
-```puppet
-class { 'docker':
-  version => '1.12.0-0~wheezy',
-}
-```
-
 Docker provides a enterprise addition of the [Docker Engine](https://www.docker.com/enterprise-edition), called Docker EE. To install Docker EE on Debian systems, add the following code to the manifest file:
 
 ```puppet
