@@ -80,6 +80,10 @@ class docker::install (
               ensure => $ensure,
               name   => $docker::docker_package_name,
         }))
+        ensure_resource('package', 'docker-ce-cli', stdlib::merge($docker_hash, {
+              ensure => $ensure,
+              name   => $docker::docker_ce_cli_package_name,
+        }))
 
         if $ensure == 'absent' {
           ensure_resource('package', $dependent_packages, {
