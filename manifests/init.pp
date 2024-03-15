@@ -478,8 +478,10 @@ class docker (
     assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
       fail('This module only works on Debian, Red Hat or Windows based systems.')
     }
-    if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
+    if ($facts['os']['family'] == 'RedHat') and ($facts['os']['name'] != 'Amazon') and (versioncmp($facts['os']['release']['major'], '7') < 0) {
       fail('This module only works on Red Hat based systems version 7 and higher.')
+    } elsif ($facts['os']['name'] == 'Amazon') and ($facts['os']['release']['major'] != '2') and (versioncmp($facts['os']['release']['major'], '2022') < 0) {
+      fail('This module only works on Amazon Linux 2 and newer systems.')
     }
   }
 
