@@ -22,7 +22,7 @@ class docker::compose (
       'Debian': {
         package { 'docker-compose-plugin':
           ensure  => $package_ensure,
-          require => defined(bool2str($docker::use_upstream_package_source)) ? {
+          require => $docker::use_upstream_package_source ? {
             true  => Apt::Source['docker'],
             false => undef,
           },
@@ -31,7 +31,7 @@ class docker::compose (
       'RedHat': {
         package { 'docker-compose-plugin':
           ensure  => $package_ensure,
-          require => defined(bool2str($docker::use_upstream_package_source)) ? {
+          require => $docker::use_upstream_package_source ? {
             true  => Yumrepo['docker'],
             false => undef,
           },
