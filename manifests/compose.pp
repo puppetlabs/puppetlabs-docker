@@ -20,21 +20,23 @@ class docker::compose (
 
     case $facts['os']['family'] {
       'Debian': {
+        $_require = $docker::use_upstream_package_source ? {
+          true  => Apt::Source['docker'],
+          false => undef,
+        }
         package { 'docker-compose-plugin':
           ensure  => $package_ensure,
-          require => $docker::use_upstream_package_source ? {
-            true  => Apt::Source['docker'],
-            false => undef,
-          },
+          require => $_require,
         }
       }
       'RedHat': {
+        $_require = $docker::use_upstream_package_source ? {
+          true  => Yumrepo['docker'],
+          false => undef,
+        }
         package { 'docker-compose-plugin':
           ensure  => $package_ensure,
-          require => $docker::use_upstream_package_source ? {
-            true  => Yumrepo['docker'],
-            false => undef,
-          },
+          require => $_require,
         }
       }
       'Windows': {
