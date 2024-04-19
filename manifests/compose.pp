@@ -40,7 +40,7 @@ class docker::compose (
         }
       }
       'Windows': {
-        fail('Docker compose is installed with docker machine on Windows')
+        fail('Docker compose is installed with Docker Desktop on Windows')
       }
       default: {
         fail('This module only works on Debian, RedHat or Windows.')
