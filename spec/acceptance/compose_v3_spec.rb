@@ -26,7 +26,7 @@ describe 'docker compose' do
       install_code = <<-CODE
         class { 'docker': #{docker_args} }
         class { 'docker::compose':
-          version => '1.23.2',
+          version => '2.26.1',
         }
       CODE
       apply_manifest(install_code, catch_failures: true)
