@@ -134,7 +134,7 @@ describe 'docker compose', :win_broken do
     end
 
     it 'has removed the compose plugin' do
-      run_shell("docker compose version", expect_failures: true)
+      run_shell('docker compose version', expect_failures: true)
     end
   end
 end
