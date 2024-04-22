@@ -3,8 +3,6 @@
 def get_defaults(_facts)
   bip                               = :undef
   bridge                            = :undef
-  compose_base_url                  = 'https://github.com/docker/compose/releases/download'
-  compose_symlink_name              = 'docker-compose'
   curl_ensure                       = true
   default_gateway                   = :undef
   default_gateway_ipv6              = :undef
@@ -88,18 +86,15 @@ def get_defaults(_facts)
   tmp_dir                           = '/tmp/'
   tmp_dir_config                    = true
   version                           = :undef
+  compose_version                   = :undef
 
   if _facts[:os]['family'] == 'windows'
-    compose_install_path   = "#{_facts['docker_program_files_path']}/Docker"
-    compose_version        = '1.21.2'
     docker_ee_package_name = 'Docker'
     machine_install_path   = "#{_facts['docker_program_files_path']}/Docker"
     tls_cacert             = "#{_facts['docker_program_data_path']}/docker/certs.d/ca.pem"
     tls_cert               = "#{_facts['docker_program_data_path']}/docker/certs.d/server-cert.pem"
     tls_key                = "#{_facts['docker_program_data_path']}/docker/certs.d/server-key.pem"
   else
-    compose_install_path   = '/usr/local/bin'
-    compose_version        = '1.9.0'
     docker_ee_package_name = 'docker-ee'
     machine_install_path   = '/usr/local/bin'
     tls_cacert             = '/etc/docker/tls/ca.pem'
@@ -340,9 +335,6 @@ def get_defaults(_facts)
     'apt_source_pin_level' => apt_source_pin_level,
     'bip' => bip,
     'bridge' => bridge,
-    'compose_base_url' => compose_base_url,
-    'compose_install_path' => compose_install_path,
-    'compose_symlink_name' => compose_symlink_name,
     'compose_version' => compose_version,
     'curl_ensure' => curl_ensure,
     'default_gateway' => default_gateway,
