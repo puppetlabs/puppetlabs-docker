@@ -9,11 +9,15 @@
 #
 class docker::compose (
   Enum[present,absent] $ensure  = present,
-  Optional[String]     $version = $docker::params::compose_version,
-) inherits docker::params {
+  Optional[String]     $version = undef,
+) {
   if $docker::manage_package {
-    if $version and $ensure != 'absent' {
-      $package_ensure = $version
+    $_version = $version ? {
+      undef   => $docker::params::compose_version,
+      default => $version,
+    }
+    if $_version and $ensure != 'absent' {
+      $package_ensure = $_version
     } else {
       $package_ensure = $ensure
     }
