@@ -12,6 +12,8 @@ class docker::compose (
   Optional[String]     $version = undef,
 ) {
   if $docker::manage_package {
+    include docker::params
+
     $_version = $version ? {
       undef   => $docker::params::compose_version,
       default => $version,
