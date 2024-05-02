@@ -53,6 +53,7 @@ from the registry
 
 ### Functions
 
+* [`docker::env`](#docker--env)
 * [`docker::escape`](#docker--escape)
 * [`docker::sanitised_name`](#docker--sanitised_name): == Function: docker::sanitised_name  Function to sanitise container name.  === Parameters  [*name*]   Name to sanitise
 * [`docker_exec_flags`](#docker_exec_flags): Transforms a hash into a string of docker exec flags
@@ -1296,7 +1297,7 @@ Default value: `$docker::params::compose_symlink_name`
 
 ##### <a name="-docker--compose--proxy"></a>`proxy`
 
-Data type: `Optional[String]`
+Data type: `Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']]`
 
 Proxy to use for downloading Docker Compose.
 
@@ -1453,7 +1454,7 @@ Default value: `$docker::params::machine_install_path`
 
 ##### <a name="-docker--machine--proxy"></a>`proxy`
 
-Data type: `Optional[String]`
+Data type: `Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']]`
 
 Proxy to use for downloading Docker Machine.
 
@@ -4136,6 +4137,24 @@ The specific backend to use for this `docker_volume` resource. You will seldom n
 usually discover the appropriate provider for your platform.
 
 ## Functions
+
+### <a name="docker--env"></a>`docker::env`
+
+Type: Ruby 4.x API
+
+The docker::env function.
+
+#### `docker::env(Array $args)`
+
+The docker::env function.
+
+Returns: `Array`
+
+##### `args`
+
+Data type: `Array`
+
+
 
 ### <a name="docker--escape"></a>`docker::escape`
 
