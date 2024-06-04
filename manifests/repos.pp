@@ -8,11 +8,20 @@
 #
 # @param architecture
 #
+# @param keyring
+#   Absolute path to a file containing the PGP keyring used to sign this repository. Value is used to set signed-by on the source entry.
+#   See https://wiki.debian.org/DebianRepository/UseThirdParty for details.
+#
+# @param gpg_ensure
+#   Whether or not the gpg package is ensured by this module.
+#
 class docker::repos (
-  Optional[String]  $location         = $docker::package_location,
-  Optional[String]  $key_source       = $docker::package_key_source,
-  Optional[Boolean] $key_check_source = $docker::package_key_check_source,
-  String            $architecture     = $facts['os']['architecture'],
+  Optional[String]     $location         = $docker::package_location,
+  Optional[String]     $key_source       = $docker::package_key_source,
+  Optional[Boolean]    $key_check_source = $docker::package_key_check_source,
+  String               $architecture     = $facts['os']['architecture'],
+  Stdlib::Absolutepath $keyring          = $docker::keyring,
+  Boolean              $gpg_ensure       = $docker::params::gpg_ensure,
 ) {
   stdlib::ensure_packages($docker::prerequired_packages)
 
@@ -22,19 +31,58 @@ class docker::repos (
       $package_key   = $docker::package_key
       $package_repos = $docker::package_repos
 
+      if ( $facts['os']['name'] == 'Debian' and versioncmp($facts['os']['release']['major'],'11' ) >= 0 ) or ( $facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['major'],'22') >= 0 ) { # lint:ignore:140chars
+        include archive
+        # fix deprecated apt-key warnings
+        if $gpg_ensure {
+          ensure_packages(['gpg'])
+        }
+
+        archive { $keyring:
+          ensure          => present,
+          source          => "https://download.docker.com/linux/${docker::os_lc}/gpg",
+          extract         => true,
+          extract_command => 'gpg',
+          extract_flags   => "--dearmor -o ${keyring}",
+          extract_path    => '/tmp',
+          path            => '/tmp/docker.gpg',
+          creates         => $keyring,
+          cleanup         => true,
+          require         => Package['gpg'],
+        }
+        file { $keyring:
+          ensure => file,
+          mode   => '0644',
+          owner  => 'root',
+          group  => 'root',
+        }
+        $key_options = {
+          keyring => $keyring,
+        }
+        apt::key { 'docker-key-in-trusted.gpg':
+          ensure => absent,
+          id     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',
+        }
+      }
+      else {
+        $key_options = {
+          key => {
+            id     => $package_key,
+            source => $key_source,
+          },
+        }
+      }
+
       if ($docker::use_upstream_package_source) {
         apt::source { 'docker':
           location     => $location,
           architecture => $architecture,
           release      => $release,
           repos        => $package_repos,
-          key          => {
-            id     => $package_key,
-            source => $key_source,
-          },
           include      => {
             src => false,
           },
+          *            => $key_options,
         }
 
         $url_split  = split($location, '/')

@@ -11,6 +11,8 @@ shared_examples 'repos' do |params, facts|
   key_source       = values['package_key_source']
   key_check_source = values['package_key_check_source']
   architecture     = facts[:os]['architecture']
+  keyring          = params['keyring']
+  os_lc            = params['os_lc']
 
   unless params['prerequired_packages'].empty?
     params['prerequired_packages'].each do |package|
@@ -27,21 +29,62 @@ shared_examples 'repos' do |params, facts|
     package_repos = values['package_repos']
 
     if params['use_upstream_package_source']
-      it {
-        expect(subject).to contain_apt__source('docker').with(
-          'location' => location,
-          'architecture' => architecture,
-          'release' => release,
-          'repos' => package_repos,
-          'key' => {
-            'id' => package_key,
-            'source' => key_source
-          },
-          'include' => {
-            'src' => false
-          },
-        )
-      }
+      # check if debian version is atleast 11 and ubuntu version is atleast 22
+      if (facts[:operatingsystem] == 'Debian' && facts[:operatingsystemrelease] =~ /1[1-9]/) || (facts[:operatingsystem] == 'Ubuntu' && facts[:operatingsystemrelease] =~ /2[2-9]/)
+        it {
+          is_expected.to contain_class('archive')
+          is_expected.to contain_archive(keyring).with(
+            'ensure'          => 'present',
+            'source'          => "https://download.docker.com/linux/#{os_lc}/gpg",
+            'extract'         => true,
+            'extract_command' => 'gpg',
+            'extract_flags'   => "--dearmor -o #{keyring}",
+            'extract_path'    => '/tmp',
+            'path'            => '/tmp/docker.gpg',
+            'creates'         => keyring,
+            'cleanup'         => true,
+          ).that_requires('Package[gpg]')
+
+          is_expected.to contain_file(keyring).with(
+            'ensure'  => 'file',
+            'mode'    => '0644',
+            'owner'   => 'root',
+            'group'   => 'root',
+          )
+
+          is_expected.to contain_apt__source('docker').with(
+            'location'     => location,
+            'architecture' => architecture,
+            'release'      => release,
+            'repos'        => package_repos,
+            'keyring'      => keyring,
+            'include' => {
+              'src' => false,
+            },
+          )
+
+          is_expected.to contain_apt__key('docker-key-in-trusted.gpg').with(
+            'ensure' => 'absent',
+            'id'     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',
+          )
+        }
+      else
+        it {
+          is_expected.to contain_apt__source('docker').with(
+            'location'     => location,
+            'architecture' => architecture,
+            'release'      => release,
+            'repos'        => package_repos,
+            'key'          => {
+              'id'     => package_key,
+              'source' => key_source,
+            },
+            'include' => {
+              'src' => false,
+            },
+          )
+        }
+      end
 
       url_split  = location.split('/')
       repo_host  = url_split[2]

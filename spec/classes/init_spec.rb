@@ -25,9 +25,12 @@ tests = {
     'version' => '16'
   },
   'with ms parameter set' => {
-    'version' => '16',
-    'docker_msft_provider_version' => '123',
-    'nuget_package_provider_version' => '41'
+    'version'                        => '16',
+    'docker_msft_provider_version'   => '123',
+    'nuget_package_provider_version' => '41',
+  },
+  'with keyring set to optional path' => {
+    'keyring' => '/root/keyrings/docker.gpg',
   }
 }
 
@@ -166,19 +169,20 @@ describe 'docker', type: :class do
             'storage_min_data_size' => defaults['storage_min_data_size'],
             'storage_pool_autoextend_percent' => defaults['storage_pool_autoextend_percent'],
             'storage_pool_autoextend_threshold' => defaults['storage_pool_autoextend_threshold'],
-            'storage_root_size' => defaults['storage_root_size'],
-            'storage_setup_file' => defaults['storage_setup_file'],
-            'storage_vg' => defaults['storage_vg'],
-            'tcp_bind' => defaults['tcp_bind'],
-            'tls_cacert' => defaults['tls_cacert'],
-            'tls_cert' => defaults['tls_cert'],
-            'tls_enable' => defaults['tls_enable'],
-            'tls_key' => defaults['tls_key'],
-            'tls_verify' => defaults['tls_verify'],
-            'tmp_dir_config' => defaults['tmp_dir_config'],
-            'tmp_dir' => defaults['tmp_dir'],
-            'use_upstream_package_source' => defaults['use_upstream_package_source'],
-            'version' => defaults['version']
+            'storage_root_size'                 => defaults['storage_root_size'],
+            'storage_setup_file'                => defaults['storage_setup_file'],
+            'storage_vg'                        => defaults['storage_vg'],
+            'tcp_bind'                          => defaults['tcp_bind'],
+            'tls_cacert'                        => defaults['tls_cacert'],
+            'tls_cert'                          => defaults['tls_cert'],
+            'tls_enable'                        => defaults['tls_enable'],
+            'tls_key'                           => defaults['tls_key'],
+            'tls_verify'                        => defaults['tls_verify'],
+            'tmp_dir_config'                    => defaults['tmp_dir_config'],
+            'tmp_dir'                           => defaults['tmp_dir'],
+            'use_upstream_package_source'       => defaults['use_upstream_package_source'],
+            'version'                           => defaults['version'],
+            'keyring'                           => defaults['keyring'],
           }.merge(default_params).merge(local_params)
 
           let(:facts) do
