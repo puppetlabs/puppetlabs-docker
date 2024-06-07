@@ -19,7 +19,6 @@ class docker::repos (
   case $facts['os']['family'] {
     'Debian': {
       $release       = $docker::release
-      $package_key   = $docker::package_key
       $package_repos = $docker::package_repos
 
       if ($docker::use_upstream_package_source) {
@@ -29,7 +28,7 @@ class docker::repos (
           release      => $release,
           repos        => $package_repos,
           key          => {
-            id     => $package_key,
+            name   => 'docker.asc',
             source => $key_source,
           },
           include      => {
@@ -52,21 +51,12 @@ class docker::repos (
 
         if $docker::manage_package {
           include apt
-
-          if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
-            if $facts['os']['name'] == 'Debian' and $facts['os']['lsb']['distcodename'] == 'wheezy' {
-              include apt::backports
-            }
-          } else {
-            if $facts['os']['name'] == 'Debian' and $facts['os']['distro']['codename'] == 'wheezy' {
-              include apt::backports
-            }
-          }
           Exec['apt_update']    -> Package[$docker::prerequired_packages]
           Apt::Source['docker'] -> Package['docker']
         }
       }
     }
+
     'RedHat': {
       if ($docker::manage_package) {
         $baseurl      = $location
@@ -85,6 +75,7 @@ class docker::repos (
         }
       }
     }
+
     default: {}
   }
 }
