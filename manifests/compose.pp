@@ -11,6 +11,8 @@ class docker::compose (
   Enum[present,absent] $ensure  = present,
   Optional[String]     $version = undef,
 ) {
+  include docker
+
   if $docker::manage_package {
     include docker::params
 
