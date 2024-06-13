@@ -30,19 +30,11 @@ class docker::compose (
           true  => [Apt::Source['docker'], Class['apt::update']],
           false => undef,
         }
-        package { 'docker-compose-plugin':
-          ensure  => $package_ensure,
-          require => $_require,
-        }
       }
       'RedHat': {
         $_require = $docker::use_upstream_package_source ? {
           true  => Yumrepo['docker'],
           false => undef,
-        }
-        package { 'docker-compose-plugin':
-          ensure  => $package_ensure,
-          require => $_require,
         }
       }
       'Windows': {
@@ -51,6 +43,10 @@ class docker::compose (
       default: {
         fail('The docker compose portion of this module only works on Debian or RedHat')
       }
+    }
+    package { 'docker-compose-plugin':
+      ensure  => $package_ensure,
+      require => $_require,
     }
   }
 }
