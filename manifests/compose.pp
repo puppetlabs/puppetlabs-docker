@@ -27,7 +27,7 @@ class docker::compose (
     case $facts['os']['family'] {
       'Debian': {
         $_require = $docker::use_upstream_package_source ? {
-          true  => Apt::Source['docker'],
+          true  => [Apt::Source['docker'], Class['apt::update']],
           false => undef,
         }
         package { 'docker-compose-plugin':
