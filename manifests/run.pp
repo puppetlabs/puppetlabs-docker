@@ -254,7 +254,7 @@ define docker::run (
   Variant[String,Array]                     $custom_unless                     = [],
   Optional[String]                          $remain_after_exit                 = undef,
   Boolean                                   $prepare_service_only              = false,
-  Optional[Boolean]                         $env_escape                        = true,
+  Boolean                                   $env_escape                        = true,
 ) {
   include docker::params
 
