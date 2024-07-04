@@ -53,6 +53,7 @@ from the registry
 
 ### Functions
 
+* [`docker::env`](#docker--env)
 * [`docker::escape`](#docker--escape)
 * [`docker::sanitised_name`](#docker--sanitised_name): == Function: docker::sanitised_name  Function to sanitise container name.  === Parameters  [*name*]   Name to sanitise
 * [`docker_exec_flags`](#docker_exec_flags): Transforms a hash into a string of docker exec flags
@@ -1252,12 +1253,6 @@ The following parameters are available in the `docker::compose` class:
 
 * [`ensure`](#-docker--compose--ensure)
 * [`version`](#-docker--compose--version)
-* [`install_path`](#-docker--compose--install_path)
-* [`symlink_name`](#-docker--compose--symlink_name)
-* [`proxy`](#-docker--compose--proxy)
-* [`base_url`](#-docker--compose--base_url)
-* [`raw_url`](#-docker--compose--raw_url)
-* [`curl_ensure`](#-docker--compose--curl_ensure)
 
 ##### <a name="-docker--compose--ensure"></a>`ensure`
 
@@ -1274,62 +1269,7 @@ Data type: `Optional[String]`
 
 The version of Docker Compose to install.
 
-Default value: `$docker::params::compose_version`
-
-##### <a name="-docker--compose--install_path"></a>`install_path`
-
-Data type: `Optional[String]`
-
-The path where to install Docker Compose.
-
-Default value: `$docker::params::compose_install_path`
-
-##### <a name="-docker--compose--symlink_name"></a>`symlink_name`
-
-Data type: `Optional[String]`
-
-The name of the symlink created pointing to the actual docker-compose binary
-This allows use of own docker-compose wrapper scripts for the times it's
-necessary to set certain things before running the docker-compose binary
-
-Default value: `$docker::params::compose_symlink_name`
-
-##### <a name="-docker--compose--proxy"></a>`proxy`
-
-Data type: `Optional[String]`
-
-Proxy to use for downloading Docker Compose.
-
 Default value: `undef`
-
-##### <a name="-docker--compose--base_url"></a>`base_url`
-
-Data type: `Optional[String]`
-
-The base url for installation
-This allows use of a mirror that follows the same layout as the
-official repository
-
-Default value: `$docker::params::compose_base_url`
-
-##### <a name="-docker--compose--raw_url"></a>`raw_url`
-
-Data type: `Optional[String]`
-
-Override the raw URL for installation
-The default is to build a URL from baseurl. If rawurl is set, the caller is
-responsible for ensuring the URL points to the correct version and
-architecture.
-
-Default value: `undef`
-
-##### <a name="-docker--compose--curl_ensure"></a>`curl_ensure`
-
-Data type: `Optional[Boolean]`
-
-Whether or not the curl package is ensured by this module.
-
-Default value: `$docker::params::curl_ensure`
 
 ### <a name="docker--images"></a>`docker::images`
 
@@ -1453,7 +1393,7 @@ Default value: `$docker::params::machine_install_path`
 
 ##### <a name="-docker--machine--proxy"></a>`proxy`
 
-Data type: `Optional[String]`
+Data type: `Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']]`
 
 Proxy to use for downloading Docker Machine.
 
@@ -4136,6 +4076,24 @@ The specific backend to use for this `docker_volume` resource. You will seldom n
 usually discover the appropriate provider for your platform.
 
 ## Functions
+
+### <a name="docker--env"></a>`docker::env`
+
+Type: Ruby 4.x API
+
+The docker::env function.
+
+#### `docker::env(Array $args)`
+
+The docker::env function.
+
+Returns: `Array`
+
+##### `args`
+
+Data type: `Array`
+
+
 
 ### <a name="docker--escape"></a>`docker::escape`
 

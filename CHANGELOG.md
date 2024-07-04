@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.0) - 2024-07-04
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v9.1.0...v10.0.0)
+
+### Changed
+
+- Use the docker-compose-plugin via 'docker compose' instead of 'docker-compose' [#975](https://github.com/puppetlabs/puppetlabs-docker/pull/975) ([nathanlcarlson](https://github.com/nathanlcarlson))
+
+### Fixed
+
+- (CAT-1143)-Conversion_of_erb_templates_to_epp [#944](https://github.com/puppetlabs/puppetlabs-docker/pull/944) ([praj1001](https://github.com/praj1001))
+
 ## [v9.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v9.1.0) - 2023-07-19
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v9.0.1...v9.1.0)
@@ -25,18 +37,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v7.0.0...v8.0.0)
 
+### Changed
+
+- pdksync - (MAINT) - Require Stdlib 9.x [#921](https://github.com/puppetlabs/puppetlabs-docker/pull/921) ([LukasAud](https://github.com/LukasAud))
+
 ### Added
 
 - (CONT-1121) - Add support for CentOS 8 [#926](https://github.com/puppetlabs/puppetlabs-docker/pull/926) ([jordanbreen28](https://github.com/jordanbreen28))
-
-### Changed
-- pdksync - (MAINT) - Require Stdlib 9.x [#921](https://github.com/puppetlabs/puppetlabs-docker/pull/921) ([LukasAud](https://github.com/LukasAud))
 
 ## [v7.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v7.0.0) - 2023-05-02
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v6.1.0...v7.0.0)
 
 ### Changed
+
 - (CONT-776) - Add Puppet 8/Drop Puppet 6 [#910](https://github.com/puppetlabs/puppetlabs-docker/pull/910) ([jordanbreen28](https://github.com/jordanbreen28))
 
 ## [v6.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v6.1.0) - 2023-04-28
@@ -73,6 +87,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v5.1.0...v6.0.0)
 
 ### Changed
+
 - (CONT-263) Bumping required puppet version [#871](https://github.com/puppetlabs/puppetlabs-docker/pull/871) ([LukasAud](https://github.com/LukasAud))
 - docker_run_flags: Shellescape any provided values [#869](https://github.com/puppetlabs/puppetlabs-docker/pull/869) ([LukasAud](https://github.com/LukasAud))
 - (maint) Hardening manifests and tasks [#863](https://github.com/puppetlabs/puppetlabs-docker/pull/863) ([LukasAud](https://github.com/LukasAud))
@@ -94,13 +109,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v4.4.0...v5.0.0)
 
+### Changed
+
+- Remove log_driver limitations [#792](https://github.com/puppetlabs/puppetlabs-docker/pull/792) ([timdeluxe](https://github.com/timdeluxe))
+
 ### Added
 
 - pdksync - (GH-cat-11) Certify Support for Ubuntu 22.04 [#850](https://github.com/puppetlabs/puppetlabs-docker/pull/850) ([david22swan](https://github.com/david22swan))
 - adding optional variable for package_key_check_source to RedHat [#846](https://github.com/puppetlabs/puppetlabs-docker/pull/846) ([STaegtmeier](https://github.com/STaegtmeier))
-
-### Changed
-- Remove log_driver limitations [#792](https://github.com/puppetlabs/puppetlabs-docker/pull/792) ([timdeluxe](https://github.com/timdeluxe))
+- New create_user parameter on main class [#841](https://github.com/puppetlabs/puppetlabs-docker/pull/841) ([traylenator](https://github.com/traylenator))
 
 ## [v4.4.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v4.4.0) - 2022-06-01
 
@@ -209,6 +226,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v3.13.1...v3.14.0)
 
 ### Changed
+
 - pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [#718](https://github.com/puppetlabs/puppetlabs-docker/pull/718) ([carabasdaniel](https://github.com/carabasdaniel))
 
 ### Fixed
@@ -285,7 +303,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - (MODULES-10691) - Add root_dir in daemon.json [#632](https://github.com/puppetlabs/puppetlabs-docker/pull/632) ([daianamezdrea](https://github.com/daianamezdrea))
 - Fixing the fix 'Fix the docker_compose options parameter position #378' [#631](https://github.com/puppetlabs/puppetlabs-docker/pull/631) ([awegmann](https://github.com/awegmann))
-- Blocking ordering between non-Windows service stops [#622](https://github.com/puppetlabs/puppetlabs-docker/pull/622) ([ALTinners](https://github.com/ALTinners))
+- Blocking ordering between non-Windows service stops [#622](https://github.com/puppetlabs/puppetlabs-docker/pull/622) ([AndrewLipscomb](https://github.com/AndrewLipscomb))
 - Allow all 3.x docker-compose minor versions [#620](https://github.com/puppetlabs/puppetlabs-docker/pull/620) ([runejuhl](https://github.com/runejuhl))
 
 ## [v3.10.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v3.10.1) - 2020-05-28
@@ -388,14 +406,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/3.5.0...v3.6.0)
 
+### Changed
+
+- (FM-8100) Update minimum supported Puppet version to 5.5.10 [#486](https://github.com/puppetlabs/puppetlabs-docker/pull/486) ([eimlav](https://github.com/eimlav))
+
 ### Added
 
 - (FM-8151) Add Windows Server 2019 support [#493](https://github.com/puppetlabs/puppetlabs-docker/pull/493) ([eimlav](https://github.com/eimlav))
 - Support for docker machine download and install [#466](https://github.com/puppetlabs/puppetlabs-docker/pull/466) ([acurus-puppetmaster](https://github.com/acurus-puppetmaster))
 - Add service_provider parameter to docker::run [#376](https://github.com/puppetlabs/puppetlabs-docker/pull/376) ([jameslikeslinux](https://github.com/jameslikeslinux))
-
-### Changed
-- (FM-8100) Update minimum supported Puppet version to 5.5.10 [#486](https://github.com/puppetlabs/puppetlabs-docker/pull/486) ([eimlav](https://github.com/eimlav))
 
 ### Fixed
 
