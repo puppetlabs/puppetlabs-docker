@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.1) - 2024-07-12
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.0.0...v10.0.1)
+
+### Fixed
+
+- systemd service overrides: restore whitespace to pre-conversion [#983](https://github.com/puppetlabs/puppetlabs-docker/pull/983) ([kenyon](https://github.com/kenyon))
+
 ## [v10.0.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.0) - 2024-07-04
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v9.1.0...v10.0.0)
