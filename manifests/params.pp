@@ -108,28 +108,16 @@ class docker::params {
         'Ubuntu' : {
           $package_release = "ubuntu-${facts['os']['distro']['codename']}"
 
-          if (versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
-            $service_after_override     = undef
-            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.epp'
-            $service_hasrestart         = true
-            $service_hasstatus          = true
-            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.epp'
-            $service_provider           = 'systemd'
-            $socket_override            = false
-            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
-            $storage_config             = '/etc/default/docker-storage'
-            include docker::systemd_reload
-          } else {
-            $service_config_template    = 'docker/etc/default/docker.epp'
-            $service_overrides_template = undef
-            $socket_overrides_template  = undef
-            $socket_override            = false
-            $service_after_override     = undef
-            $service_provider           = 'upstart'
-            $service_hasstatus          = true
-            $service_hasrestart         = false
-            $storage_config             = undef
-          }
+          $service_after_override     = undef
+          $service_config_template    = 'docker/etc/sysconfig/docker.systemd.epp'
+          $service_hasrestart         = true
+          $service_hasstatus          = true
+          $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.epp'
+          $service_provider           = 'systemd'
+          $socket_override            = false
+          $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
+          $storage_config             = '/etc/default/docker-storage'
+          include docker::systemd_reload
         }
         default: {
           if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {

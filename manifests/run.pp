@@ -516,15 +516,6 @@ define docker::run (
         $mode               = '0644'
         $hasstatus          = true
       }
-      'upstart': {
-        $initscript         = "/etc/init.d/${service_prefix}${sanitised_title}"
-        $init_template      = 'docker/etc/init.d/docker-run.epp'
-        $mode               = '0750'
-        $startscript        = undef
-        $stopscript         = undef
-        $startstop_template = undef
-        $hasstatus          = true
-      }
       default: {
         if $facts['os']['family'] != 'windows' {
           fail('Docker needs a Debian or RedHat based system.')
@@ -617,33 +608,20 @@ define docker::run (
         }
       }
 
-      if $service_provider_real == 'systemd' {
-        $init_template_parameters = {
-          'depend_services_array'     => $depend_services_array,
-          'sanitised_after_array'     => $sanitised_after_array,
-          'service_prefix'            => $service_prefix,
-          'sanitised_depends_array'   => $sanitised_depends_array,
-          'title'                     => $title,
-          'have_systemd_v230'         => $docker::params::have_systemd_v230,
-          'extra_systemd_parameters'  => $extra_systemd_parameters,
-          'systemd_restart'           => $systemd_restart,
-          '_syslog_identifier'        => $_syslog_identifier,
-          'syslog_facility'           => $syslog_facility,
-          'sanitised_title'           => $sanitised_title,
-          'remain_after_exit'         => $remain_after_exit,
-          'service_name'              => $service_name,
-        }
-      } elsif $service_provider_real == 'upstart' {
-        $init_template_parameters = {
-          'sanitised_after_array'   => $sanitised_after_array,
-          'service_prefix'          => $service_prefix,
-          'sanitised_depends_array' => $sanitised_depends_array,
-          'depend_services_array'   => $depend_services_array,
-          'docker_command'          => $docker_command,
-          'sanitised_title'         => $sanitised_title,
-          'docker_run_inline_start' => $docker_run_inline_start,
-          'docker_run_inline_stop'  => $docker_run_inline_stop,
-        }
+      $init_template_parameters = {
+        'depend_services_array'     => $depend_services_array,
+        'sanitised_after_array'     => $sanitised_after_array,
+        'service_prefix'            => $service_prefix,
+        'sanitised_depends_array'   => $sanitised_depends_array,
+        'title'                     => $title,
+        'have_systemd_v230'         => $docker::params::have_systemd_v230,
+        'extra_systemd_parameters'  => $extra_systemd_parameters,
+        'systemd_restart'           => $systemd_restart,
+        '_syslog_identifier'        => $_syslog_identifier,
+        'syslog_facility'           => $syslog_facility,
+        'sanitised_title'           => $sanitised_title,
+        'remain_after_exit'         => $remain_after_exit,
+        'service_name'              => $service_name,
       }
 
       file { $initscript:
