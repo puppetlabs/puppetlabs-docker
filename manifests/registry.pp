@@ -58,7 +58,6 @@ define docker::registry (
     $password_env     = '$env:password'
     $exec_user        = undef
   } else {
-    $exec_environment = []
     $exec_path        = ['/bin', '/usr/bin',]
     $exec_timeout     = 0
     $exec_provider    = undef
@@ -73,6 +72,7 @@ define docker::registry (
         default => "/home/${local_user}",
       }
     }
+    $exec_environment = ["HOME=$_local_user_home",]
   }
 
   if $ensure == 'present' {
