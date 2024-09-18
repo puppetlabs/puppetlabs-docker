@@ -27,10 +27,9 @@ class docker::install (
   Array            $dependent_packages             = $docker::dependent_packages,
 ) {
   $docker_start_command = $docker::docker_start_command
-
   if $facts['os']['family'] and ! $docker::acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
-      fail('This module only works on Debian, RedHat or Windows.')
+    assert_type(Pattern[/^(Debian|RedHat|Archlinux|windows)$/], $facts['os']['family']) |$a, $b| {
+      fail('This module only works on Debian, RedHat, Archlinux or Windows.')
     }
   }
   if $docker::version and $docker::ensure != 'absent' {
