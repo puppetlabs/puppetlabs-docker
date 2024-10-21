@@ -65,7 +65,7 @@ RSpec.configure do |c|
       # run_shell('apt-get upgrade -y')
       run_shell('apt-get install -y lsb-release')
       run_shell('apt-get install -y net-tools')
-      run_shell('apt-get purge -y container-tools') if ENV['CI']
+      run_shell('apt-get purge -y open-infrastructure-container-tools') if ENV['CI']
     end
 
     run_shell('puppet module install puppetlabs-stdlib --version 4.24.0', expect_failures: true)
