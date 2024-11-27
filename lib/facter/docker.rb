@@ -138,7 +138,11 @@ Facter.add(:docker) do
         docker_network_names.each do |network|
           inspect = JSON.parse(Facter::Core::Execution.execute("#{docker_command} network inspect #{network}", timeout: 90))
           docker['network'][network] = inspect[0]
-          network_id = docker['network'][network]['Id'][0..11]
+          network_id = if docker['network'][network]['Id'].nil?
+            docker['network'][network]['id'][0..11]
+          else
+            docker['network'][network]['Id'][0..11]
+          end
           interfaces.each do |iface|
             docker['network']['managed_interfaces'][iface] = network if %r{#{network_id}}.match?(iface)
           end
