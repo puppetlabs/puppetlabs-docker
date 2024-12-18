@@ -65,12 +65,6 @@ shared_examples 'repos' do |params, facts|
           expect(subject).to contain_class('apt')
         }
 
-        if facts[:os]['name'] == 'Debian' && facts[:os]['distro']['codename'] == 'wheezy'
-          it {
-            expect(subject).to contain_class('apt::backports')
-          }
-        end
-
         it {
           params['prerequired_packages'].each do |package|
             expect(subject).to contain_exec('apt_update').that_comes_before("package[#{package}]")
