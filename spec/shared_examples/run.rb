@@ -156,13 +156,6 @@ shared_examples 'run' do |title, params, facts, defaults|
       mode               = '0644'
       startscript        = "/usr/local/bin/docker-run-#{sanitised_title}-start.sh"
       stopscript         = "/usr/local/bin/docker-run-#{sanitised_title}-stop.sh"
-    when 'upstart'
-      hasstatus          = true
-      initscript         = "/etc/init.d/#{service_prefix}#{sanitised_title}"
-      mode               = '0750'
-      startscript        = nil
-      stopscript         = nil
-    else
       hasstatus = defaults['service_hasstatus']
     end
 
