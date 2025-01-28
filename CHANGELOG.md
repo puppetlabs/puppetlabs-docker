@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v10.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.1) - 2024-07-12
+## [v10.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.1.0) - 2024-12-18
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.0.1...v10.1.0)
+
+### Added
+
+- Add support for EL9 [#1007](https://github.com/puppetlabs/puppetlabs-docker/pull/1007) ([ghoneycutt](https://github.com/ghoneycutt))
+
+## [v10.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.1) - 2024-07-13
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.0.0...v10.0.1)
 
