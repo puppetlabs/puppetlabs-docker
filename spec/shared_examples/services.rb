@@ -38,65 +38,65 @@ shared_examples 'services' do |title, params, facts, defaults|
 
   if create
     docker_service_create_flags = get_docker_service_flags(
-      'detach'          => detach,
-      'env'             => Array(env),
-      'service_name'    => service_name,
-      'label'           => Array(label),
-      'publish'         => publish,
-      'replicas'        => replicas,
-      'tty'             => tty,
-      'user'            => user,
-      'workdir'         => workdir,
-      'extra_params'    => Array(extra_params),
-      'image'           => image,
-      'host_socket'     => host_socket,
+      'detach' => detach,
+      'env' => Array(env),
+      'service_name' => service_name,
+      'label' => Array(label),
+      'publish' => publish,
+      'replicas' => replicas,
+      'tty' => tty,
+      'user' => user,
+      'workdir' => workdir,
+      'extra_params' => Array(extra_params),
+      'image' => image,
+      'host_socket' => host_socket,
       'registry_mirror' => registry_mirror,
-      'mounts'          => mounts,
-      'networks'        => networks,
-      'command'         => command,
+      'mounts' => mounts,
+      'networks' => networks,
+      'command' => command,
     )
 
     exec_create   = "#{docker_command} create --name #{docker_service_create_flags}"
-    unless_create = "docker service ps #{service_name == :undef ? '' : service_name}"
+    unless_create = "docker service ps #{(service_name == :undef) ? '' : service_name}"
 
     it {
-      is_expected.to contain_exec("#{title} docker service create").with(
-        'command'     => exec_create,
+      expect(subject).to contain_exec("#{title} docker service create").with(
+        'command' => exec_create,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'timeout'     => exec_timeout,
-        'provider'    => exec_provider,
-        'unless'      => unless_create,
+        'path' => exec_path,
+        'timeout' => exec_timeout,
+        'provider' => exec_provider,
+        'unless' => unless_create,
       )
     }
   end
 
   if update
     docker_service_flags = get_docker_service_flags(
-      'detach'          => detach,
-      'env'             => Array(env),
-      'service_name'    => service_name,
-      'label'           => Array(label),
-      'publish'         => publish,
-      'replicas'        => replicas,
-      'tty'             => tty,
-      'user'            => user,
-      'workdir'         => workdir,
-      'extra_params'    => Array(extra_params),
-      'image'           => image,
-      'host_socket'     => host_socket,
+      'detach' => detach,
+      'env' => Array(env),
+      'service_name' => service_name,
+      'label' => Array(label),
+      'publish' => publish,
+      'replicas' => replicas,
+      'tty' => tty,
+      'user' => user,
+      'workdir' => workdir,
+      'extra_params' => Array(extra_params),
+      'image' => image,
+      'host_socket' => host_socket,
       'registry_mirror' => registry_mirror,
     )
 
     exec_update = "#{docker_command} update #{docker_service_flags}"
 
     it {
-      is_expected.to contain_exec("#{title} docker service update").with(
-        'command'     => exec_update,
+      expect(subject).to contain_exec("#{title} docker service update").with(
+        'command' => exec_update,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'provider'    => exec_provider,
-        'timeout'     => exec_timeout,
+        'path' => exec_path,
+        'provider' => exec_provider,
+        'timeout' => exec_timeout,
       )
     }
   end
@@ -111,24 +111,24 @@ shared_examples 'services' do |title, params, facts, defaults|
     exec_scale = "#{docker_command} scale #{service_name}=#{replicas}"
 
     it {
-      is_expected.to contain_exec("#{title} docker service scale").with(
-        'command'     => exec_scale,
+      expect(subject).to contain_exec("#{title} docker service scale").with(
+        'command' => exec_scale,
         'environment' => exec_environment,
-        'path'        => exec_path,
-        'timeout'     => exec_timeout,
-        'provider'    => exec_provider,
+        'path' => exec_path,
+        'timeout' => exec_timeout,
+        'provider' => exec_provider,
       )
     }
   end
 
   if ensure_value == 'absent'
     it {
-      is_expected.to contain_exec("#{title} docker service remove").with(
-        'command'  => "docker service rm #{service_name}",
-        'onlyif'   => "docker service ps #{service_name}",
-        'path'     => exec_path,
+      expect(subject).to contain_exec("#{title} docker service remove").with(
+        'command' => "docker service rm #{service_name}",
+        'onlyif' => "docker service ps #{service_name}",
+        'path' => exec_path,
         'provider' => exec_provider,
-        'timeout'  => exec_timeout,
+        'timeout' => exec_timeout,
       )
     }
   end

@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-docker.svg?branch=main)](https://travis-ci.org/puppetlabs/puppetlabs-docker)
 [![Puppet Forge](https://img.shields.io/puppetforge/v/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Downloads](http://img.shields.io/puppetforge/dt/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
 [![Puppet Forge Endorsement](https://img.shields.io/puppetforge/e/puppetlabs/docker.svg)](https://forge.puppetlabs.com/puppetlabs/docker)
@@ -26,8 +25,9 @@
    * [Plugins](#plugins)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
-7. [Acceptance](#acceptance)
+6. [License](#license)
+7. [Development - Guide for contributing to the module](#development)
+8. [Acceptance](#acceptance)
 
 
 ## Description
@@ -1011,12 +1011,13 @@ For information on classes, types, and functions, see the [REFERENCE.md](https:/
 
 This module supports:
 
-* Centos 7.0
+* EL 7 - limited support available, see note below.
+* EL 8
+* EL 9
 * Debian 8.0
 * Debian 9.0
 * Debian 10
 * Debian 11
-* RedHat 7.0 - limited support available
 * Ubuntu 18.04
 * Ubuntu 20.04
 * Ubuntu 22.04
@@ -1024,7 +1025,11 @@ This module supports:
 * Windows Server 2019 (Docker Enterprise Edition only)
 * Windows Server 2022 (Docker Enterprise Edition only)
 
-On RedHat 7 the default docker package installs docker server version 1.13.1. The default docker.service uses the docker-storage-service in this version and creates /etc/sysconfig/docker-storage based on the container-storage-setup configuration and /etc/sysconfig/docker-storage-setup file. As the puppetlabs-docker module manages both the docker-storage and docker-storage-setup files it causes a conflict with the container-storage-setup forcing a docker service restart, therefore a workaround was included in the service manifest that disables the service restart on storage configuration changes for this version of docker on RedHat 7. As a side effect of these changes, storage configuration changes with this docker version on RedHat 7 are not picked up by default by the docker.service. 
+On RedHat 7 the default docker package installs docker server version 1.13.1. The default docker.service uses the docker-storage-service in this version and creates /etc/sysconfig/docker-storage based on the container-storage-setup configuration and /etc/sysconfig/docker-storage-setup file. As the puppetlabs-docker module manages both the docker-storage and docker-storage-setup files it causes a conflict with the container-storage-setup forcing a docker service restart, therefore a workaround was included in the service manifest that disables the service restart on storage configuration changes for this version of docker on RedHat 7. As a side effect of these changes, storage configuration changes with this docker version on RedHat 7 are not picked up by default by the docker.service.
+
+## License
+
+This codebase is licensed under the Apache2.0 licensing, however due to the nature of the codebase the open source dependencies may also use a combination of [AGPL](https://opensource.org/license/agpl-v3/), [BSD-2](https://opensource.org/license/bsd-2-clause/), [BSD-3](https://opensource.org/license/bsd-3-clause/), [GPL2.0](https://opensource.org/license/gpl-2-0/), [LGPL](https://opensource.org/license/lgpl-3-0/), [MIT](https://opensource.org/license/mit/) and [MPL](https://opensource.org/license/mpl-2-0/) Licensing.
 
 ## Development
 

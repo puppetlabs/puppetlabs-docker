@@ -3,7 +3,7 @@
 # @param images
 #
 class docker::images (
-  $images
+  Hash $images
 ) {
   create_resources(docker::image, $images)
 }

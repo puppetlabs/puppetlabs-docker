@@ -4,11 +4,11 @@ require 'spec_helper'
 
 tests = {
   'foo/enabled:latest' => {
-    'enabled' => true,
+    'enabled' => true
   },
   'foo/disabled:latest' => {
-    'enabled' => false,
-  },
+    'enabled' => false
+  }
 }
 
 describe 'docker::plugins', type: :class do
@@ -16,7 +16,7 @@ describe 'docker::plugins', type: :class do
     ##
     ## set some needed facts
     ##
-    facts = if %r{windows}.match?(os)
+    facts = if os.include?('windows')
               windows_facts.merge(os_facts)
             else
               os_facts
@@ -32,16 +32,16 @@ describe 'docker::plugins', type: :class do
         context title do
           params = {
             'base' => {
-              'ensure'                => 'present',
-              'enabled'               => true,
-              'timeout'               => :undef,
-              'plugin_alias'          => :undef,
-              'disable_on_install'    => false,
+              'ensure' => 'present',
+              'enabled' => true,
+              'timeout' => :undef,
+              'plugin_alias' => :undef,
+              'disable_on_install' => false,
               'disable_content_trust' => true,
               'grant_all_permissions' => true,
-              'force_remove'          => true,
-              'settings'              => [],
-            },
+              'force_remove' => true,
+              'settings' => []
+            }
           }
 
           params.each do |key, values|
@@ -54,14 +54,14 @@ describe 'docker::plugins', type: :class do
             let(:params) do
               {
                 'plugins' => {
-                  key => values,
-                },
+                  key => values
+                }
               }
             end
 
             if facts[:os]['family'] == 'windows'
               it {
-                is_expected.to compile.and_raise_error(%r{Feature not implemented on windows.})
+                expect(subject).to compile.and_raise_error(%r{Feature not implemented on windows.})
               }
 
               next
@@ -70,7 +70,7 @@ describe 'docker::plugins', type: :class do
             include_examples 'plugin', values, facts, defaults
 
             it {
-              is_expected.to contain_docker__plugin(key)
+              expect(subject).to contain_docker__plugin(key)
             }
           end
         end

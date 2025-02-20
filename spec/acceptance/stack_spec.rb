@@ -12,7 +12,7 @@ else
   wait_for_container_seconds = 10
 end
 
-describe 'docker stack', win_broken: true do
+describe 'docker stack', :win_broken do
   before(:all) do
     retry_on_error_matching(60, 5, %r{connection failure running}) do
       install_pp = <<-MANIFEST
@@ -24,7 +24,7 @@ describe 'docker stack', win_broken: true do
             listen_addr => $facts['networking']['ip'],
             require => Class['docker'],
         }
-        MANIFEST
+      MANIFEST
       apply_manifest(install_pp, catch_failures: true)
     end
   end

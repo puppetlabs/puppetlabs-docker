@@ -3,7 +3,7 @@
 # @param plugins
 #
 class docker::plugins (
-  $plugins
+  Hash $plugins
 ) {
   create_resources(docker::plugin, $plugins)
 }

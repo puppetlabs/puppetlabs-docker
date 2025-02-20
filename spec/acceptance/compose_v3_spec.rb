@@ -2,38 +2,21 @@
 
 require 'spec_helper_acceptance'
 
-if os[:family] == 'windows'
-  install_dir = '/cygdrive/c/Program Files/Docker'
-  file_extension = '.exe'
-  docker_args = 'docker_ee => true'
-  tmp_path = 'C:/cygwin64/tmp'
-  test_container = if %r{2019|2022}.match?(os[:release])
-                     'nanoserver'
-                   else
-                     'nanoserver-sac2016'
-                   end
-else
-  docker_args = ''
-  install_dir = '/usr/local/bin'
-  file_extension = ''
-  tmp_path = '/tmp'
-  test_container = 'debian'
-end
+tmp_path = '/tmp'
+test_container = 'debian'
 
-describe 'docker compose' do
+describe 'docker compose', :win_broken do
   before(:all) do
     retry_on_error_matching(60, 5, %r{connection failure running}) do
-      install_code = <<-code
-        class { 'docker': #{docker_args} }
-        class { 'docker::compose':
-          version => '1.23.2',
-        }
-      code
+      install_code = <<-CODE
+        class { 'docker': }
+        class { 'docker::compose': }
+      CODE
       apply_manifest(install_code, catch_failures: true)
     end
   end
 
-  context 'Creating compose v3 projects', win_broken: true do
+  context 'Creating compose v3 projects' do
     let(:install_pp) do
       <<-MANIFEST
         docker_compose { 'web':
@@ -51,15 +34,15 @@ describe 'docker compose' do
     end
 
     it 'has docker compose installed' do
-      run_shell('docker-compose --help', expect_failures: false)
+      run_shell('docker compose --help', expect_failures: false)
     end
 
     it 'finds a docker container' do
-      run_shell('docker inspect web_compose_test_1', expect_failures: false)
+      run_shell('docker inspect web-compose_test_1', expect_failures: false)
     end
   end
 
-  context 'creating compose projects with multi compose files', win_broken: true do
+  context 'creating compose projects with multi compose files' do
     before(:all) do
       install_pp = <<-MANIFEST
         docker_compose { 'web1':
@@ -75,11 +58,11 @@ describe 'docker compose' do
     end
 
     it "finds container with #{test_container} tag" do
-      run_shell("docker inspect web1_compose_test_1 | grep #{test_container}", acceptable_exit_codes: [0])
+      run_shell("docker inspect web1-compose_test_1 | grep #{test_container}", acceptable_exit_codes: [0])
     end
   end
 
-  context 'Destroying project with multiple compose files', win_broken: true do
+  context 'Destroying project with multiple compose files' do
     let(:destroy_pp) do
       <<-MANIFEST
         docker_compose { 'web1':
@@ -105,61 +88,53 @@ describe 'docker compose' do
     end
 
     it 'does not find a docker container' do
-      run_shell('docker inspect web1_compose_test_1', expect_failures: true)
+      run_shell('docker inspect web1-compose_test_1', expect_failures: true)
     end
   end
 
   context 'Requesting a specific version of compose' do
     let(:version) do
-      '1.21.2'
+      '2.25.0'
     end
 
     it 'is idempotent' do
       pp = <<-MANIFEST
         class { 'docker::compose':
-          version => '#{version}',
+          version => '#{version}-*',
         }
       MANIFEST
       idempotent_apply(pp)
     end
 
     it 'has installed the requested version' do
-      if os[:family] == 'redhat' && os[:release].to_i == 7
-        run_shell('sudo mv /usr/local/bin/docker-compose /usr/bin/docker-compose')
-        run_shell('sudo chmod +x /usr/bin/docker-compose')
-      end
-      run_shell('docker-compose --version', expect_failures: false) do |r|
+      command = 'docker compose version'
+
+      run_shell(command, expect_failures: false) do |r|
         expect(r.stdout).to match(%r{#{version}})
       end
     end
   end
 
   context 'Removing docker compose' do
-    let(:version) do
-      '1.21.2'
+    after(:all) do
+      install_pp = <<-MANIFEST
+        class { 'docker': }
+        class { 'docker::compose': }
+      MANIFEST
+      apply_manifest(install_pp, catch_failures: true)
     end
 
     it 'is idempotent' do
       pp = <<-MANIFEST
         class { 'docker::compose':
           ensure  => absent,
-          version => '#{version}',
         }
       MANIFEST
       idempotent_apply(pp)
     end
 
-    it 'has removed the relevant files' do
-      run_shell("test -e \"#{install_dir}/docker-compose#{file_extension}\"", expect_failures: true)
-      run_shell("test -e \"#{install_dir}/docker-compose-#{version}#{file_extension}\"", expect_failures: true)
-    end
-
-    after(:all) do
-      install_pp = <<-MANIFEST
-        class { 'docker': #{docker_args}}
-        class { 'docker::compose': }
-      MANIFEST
-      apply_manifest(install_pp, catch_failures: true)
+    it 'has removed the compose plugin' do
+      run_shell('docker compose version', expect_failures: true)
     end
   end
 end

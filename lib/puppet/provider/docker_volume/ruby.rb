@@ -32,7 +32,7 @@ Puppet::Type.type(:docker_volume).provide(:ruby) do
     lines = output.split("\n")
     lines.shift # remove header row
     lines.map do |line|
-      driver, name = line.split(' ')
+      driver, name = line.split
       inspect = docker(['volume', 'inspect', name])
       obj = JSON.parse(inspect).first
       new(

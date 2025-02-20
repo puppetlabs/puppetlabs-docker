@@ -47,8 +47,7 @@ class docker::params {
   $dns                               = undef
   $dns_search                        = undef
   $proxy                             = undef
-  $compose_base_url                  = 'https://github.com/docker/compose/releases/download'
-  $compose_symlink_name              = 'docker-compose'
+  $compose_version                   = undef
   $no_proxy                          = undef
   $execdriver                        = undef
   $storage_driver                    = undef
@@ -81,7 +80,7 @@ class docker::params {
   $storage_auto_extend_pool          = undef
   $storage_pool_autoextend_threshold = undef
   $storage_pool_autoextend_percent   = undef
-  $storage_config_template           = 'docker/etc/sysconfig/docker-storage.erb'
+  $storage_config_template           = 'docker/etc/sysconfig/docker-storage.epp'
   $registry_mirror                   = undef
   $curl_ensure                       = true
   $os_lc                             = downcase($facts['os']['name'])
@@ -90,16 +89,12 @@ class docker::params {
   $docker_command                    = 'docker'
 
   if ($facts['os']['family'] == 'windows') {
-    $compose_install_path   = "${::docker_program_files_path}/Docker"
-    $compose_version        = '1.29.2'
     $docker_ee_package_name = 'Docker'
-    $machine_install_path   = "${::docker_program_files_path}/Docker"
-    $tls_cacert             = "${::docker_program_data_path}/docker/certs.d/ca.pem"
-    $tls_cert               = "${::docker_program_data_path}/docker/certs.d/server-cert.pem"
-    $tls_key                = "${::docker_program_data_path}/docker/certs.d/server-key.pem"
+    $machine_install_path   = "${facts['docker_program_files_path']}/Docker"
+    $tls_cacert             = "${facts['docker_program_data_path']}/docker/certs.d/ca.pem"
+    $tls_cert               = "${facts['docker_program_data_path']}/docker/certs.d/server-cert.pem"
+    $tls_key                = "${facts['docker_program_data_path']}/docker/certs.d/server-key.pem"
   } else {
-    $compose_install_path   = '/usr/local/bin'
-    $compose_version        = '1.29.2'
     $docker_ee_package_name = 'docker-ee'
     $machine_install_path   = '/usr/local/bin'
     $tls_cacert             = '/etc/docker/tls/ca.pem'
@@ -115,17 +110,17 @@ class docker::params {
 
           if (versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
             $service_after_override     = undef
-            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
+            $service_config_template    = 'docker/etc/sysconfig/docker.systemd.epp'
             $service_hasrestart         = true
             $service_hasstatus          = true
-            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
+            $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.epp'
             $service_provider           = 'systemd'
             $socket_override            = false
-            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+            $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
             $storage_config             = '/etc/default/docker-storage'
             include docker::systemd_reload
           } else {
-            $service_config_template    = 'docker/etc/default/docker.erb'
+            $service_config_template    = 'docker/etc/default/docker.epp'
             $service_overrides_template = undef
             $socket_overrides_template  = undef
             $socket_override            = false
@@ -144,9 +139,9 @@ class docker::params {
           }
           $service_provider           = 'systemd'
           $storage_config             = '/etc/default/docker-storage'
-          $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
-          $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.erb'
-          $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+          $service_config_template    = 'docker/etc/sysconfig/docker.systemd.epp'
+          $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-debian.conf.epp'
+          $socket_overrides_template  = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
           $socket_override            = false
           $service_after_override     = undef
           $service_hasstatus          = true
@@ -198,13 +193,13 @@ class docker::params {
     'RedHat' : {
       $service_after_override      = undef
       $service_config              = '/etc/sysconfig/docker'
-      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.erb'
+      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.epp'
       $service_hasrestart          = true
       $service_hasstatus           = true
-      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
+      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.epp'
       $service_provider            = 'systemd'
       $socket_override             = false
-      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.erb'
+      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
       $storage_config              = '/etc/sysconfig/docker-storage'
       $storage_setup_file          = '/etc/sysconfig/docker-storage-setup'
       $use_upstream_package_source = true
@@ -242,8 +237,8 @@ class docker::params {
       $msft_nuget_package_provider_version = $nuget_package_provider_version
       $msft_provider_version               = $docker_msft_provider_version
       $msft_package_version                = $version
-      $service_config_template             = 'docker/windows/config/daemon.json.erb'
-      $service_config                      = "${::docker_program_data_path}/docker/config/daemon.json"
+      $service_config_template             = 'docker/windows/config/daemon.json.epp'
+      $service_config                      = "${facts['docker_program_data_path']}/docker/config/daemon.json"
       $docker_group                        = 'docker'
       $package_ce_source_location          = undef
       $package_ce_key_source               = undef

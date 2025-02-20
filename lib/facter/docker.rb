@@ -55,10 +55,10 @@ Facter.add(:docker_client_version) do
   setcode do
     docker_version = Facter.value(:docker_version)
     if docker_version
-      if !docker_version['Client'].nil?
-        docker_version['Client']['Version']
-      else
+      if docker_version['Client'].nil?
         docker_version['Version']
+      else
+        docker_version['Client']['Version']
       end
     end
   end
@@ -121,7 +121,7 @@ Facter.add(:docker) do
   confine { Facter::Core::Execution.which('docker') }
   setcode do
     docker_version = Facter.value(:docker_client_version)
-    if docker_version&.match?(%r{1[0-9][0-2]?[.]\w+})
+    if docker_version&.match?(%r{\A(1\.1[3-9]|[2-9]|\d{2,})\.})
       docker_json_str = Facter::Core::Execution.execute(
         "#{docker_command} info --format '{{json .}}'", timeout: 90
       )

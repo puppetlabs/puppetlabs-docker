@@ -28,8 +28,8 @@ shared_examples 'exec' do |_params, _facts, _defaults|
   docker_exec_flags = get_docker_exec_flags(
     'detach' => detach,
     'interactive' => interactive,
-    'tty'         => tty,
-    'env'         => env,
+    'tty' => tty,
+    'env' => env,
   )
 
   sanitised_container = if sanitise_name
@@ -41,18 +41,14 @@ shared_examples 'exec' do |_params, _facts, _defaults|
   exec = "#{docker_command} exec #{docker_exec_flags} #{sanitised_container} #{command}"
 
   unless_command = case unless_value
-                   when :undef
-                     nil
-                   when ''
+                   when :undef, ''
                      nil
                    else
                      "#{docker_command} exec #{docker_exec_flags} #{sanitised_container} #{unless_value}"
                    end
 
   onlyif_command = case onlyif
-                   when :undef
-                     nil
-                   when ''
+                   when :undef, ''
                      nil
                    when 'running'
                      "#{docker_command} ps --no-trunc --format='table {{.Names}}' | grep '^#{sanitised_container}$'"
@@ -61,14 +57,14 @@ shared_examples 'exec' do |_params, _facts, _defaults|
                    end
 
   it {
-    is_expected.to contain_exec(exec).with(
+    expect(subject).to contain_exec(exec).with(
       'environment' => exec_environment,
-      'onlyif'      => onlyif_command,
-      'path'        => exec_path,
+      'onlyif' => onlyif_command,
+      'path' => exec_path,
       'refreshonly' => refreshonly,
-      'timeout'     => exec_timeout,
-      'provider'    => exec_provider,
-      'unless'      => unless_command,
+      'timeout' => exec_timeout,
+      'provider' => exec_provider,
+      'unless' => unless_command,
     )
   }
 end

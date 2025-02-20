@@ -49,7 +49,7 @@ else
 end
 
 describe 'the Puppet Docker module' do
-  context 'clean up before each test', win_broken: true do
+  context 'clean up before each test', :win_broken do
     before(:each) do
       retry_on_error_matching(60, 5, %r{connection failure running}) do
         # Stop all container using systemd
@@ -70,7 +70,7 @@ describe 'the Puppet Docker module' do
     end
 
     describe 'docker class' do
-      context 'without any parameters', win_broken: true do
+      context 'without any parameters', :win_broken do
         let(:pp) { "class { 'docker': #{docker_args} }" }
 
         it 'runs successfully' do
@@ -88,7 +88,7 @@ describe 'the Puppet Docker module' do
             end
           else
             run_shell('ps aux | grep docker') do |r|
-              expect(r.stdout).to match(%r{dockerd -H unix:\/\/\/var\/run\/docker.sock})
+              expect(r.stdout).to match(%r{dockerd -H unix:///var/run/docker.sock})
             end
           end
         end
@@ -111,7 +111,7 @@ describe 'the Puppet Docker module' do
             require => Docker::Image['#{default_image}'],
             #{default_docker_run_arg}
           }
-        EOS
+          EOS
 
           pp2 = <<-EOS
           class { 'docker': #{docker_args} }
@@ -125,7 +125,7 @@ describe 'the Puppet Docker module' do
             image   => '#{default_image}',
             require => Docker::Image['#{default_image}'],
           }
-        EOS
+          EOS
 
           apply_manifest(pp, catch_failures: true)
           apply_manifest(pp, catch_changes: true) unless selinux == 'true'
@@ -194,7 +194,7 @@ describe 'the Puppet Docker module' do
             end
           else
             run_shell('netstat -tulpn | grep docker') do |r|
-              expect(r.stdout).to match(%r{tcp\s+0\s+0\s+127.0.0.1:4444\s+0.0.0.0\:\*\s+LISTEN\s+\d+\/docker})
+              expect(r.stdout).to match(%r{tcp\s+0\s+0\s+127.0.0.1:4444\s+0.0.0.0:\*\s+LISTEN\s+\d+/docker})
             end
           end
         end
@@ -218,7 +218,7 @@ describe 'the Puppet Docker module' do
         it 'shows docker listening on the specified unix socket' do
           if os[:family] != 'windows'
             run_shell('ps aux | grep docker') do |r|
-              expect(r.stdout).to match(%r{unix:\/\/\/var\/run\/docker.sock})
+              expect(r.stdout).to match(%r{unix:///var/run/docker.sock})
             end
           end
         end
@@ -349,7 +349,7 @@ describe 'the Puppet Docker module' do
         end
       end
 
-      it 'creates a new image based on a tar', win_broken: true do
+      it 'creates a new image based on a tar', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
           docker::image { '#{default_image}':
@@ -505,7 +505,7 @@ describe 'the Puppet Docker module' do
         sleep 4
 
         run_shell("#{docker_command} ps") do |r|
-          expect(r.stdout).to match(%r{#{default_run_command}.+5555\/tcp\, 0\.0\.0.0\:\d+\-\>4444\/tcp})
+          expect(r.stdout).to match(%r{#{default_run_command}.+5555/tcp, 0\.0\.0.0:\d+->4444/tcp})
         end
       end
 
@@ -585,7 +585,7 @@ describe 'the Puppet Docker module' do
 
       # cpuset is not supported on Docker Windows
       # STDERR: C:/Program Files/Docker/docker.exe: Error response from daemon: invalid option: Windows does not support CpusetCpus.
-      it 'starts a container with cpuset paramater set', win_broken: true do
+      it 'starts a container with cpuset paramater set', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -608,13 +608,13 @@ describe 'the Puppet Docker module' do
         # A sleep to give docker time to execute properly
         sleep 4
 
-        run_shell('#{docker_command} inspect container_3_5_5') do |r|
-          expect(r.stdout).to match(%r{"CpusetCpus"\: "0"})
+        run_shell("#{docker_command} inspect container_3_5_5") do |r|
+          expect(r.stdout).to match(%r{"CpusetCpus": "0"})
         end
       end
 
       # leagacy container linking was not implemented on Windows. --link is a legacy Docker feature: https://docs.docker.com/network/links/
-      it 'starts multiple linked containers', win_broken: true do
+      it 'starts multiple linked containers', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -669,7 +669,7 @@ describe 'the Puppet Docker module' do
         end
       end
 
-      it 'stops a running container', win_broken: true do
+      it 'stops a running container', :win_broken do
         pp = <<-EOS
           class { 'docker': #{docker_args} }
 
@@ -805,7 +805,7 @@ describe 'the Puppet Docker module' do
           restart_on_unhealthy => true,
           #{default_docker_run_arg}
           }
-          EOS
+        EOS
 
         pp_delete = <<-EOS
       class { 'docker': #{docker_args} }
@@ -840,13 +840,13 @@ describe 'the Puppet Docker module' do
           image         => '#{default_image}:#{default_image_tag}',
           verify_digest => '#{default_local_digest}',
         }
-        EOS
+      EOS
       pp_invalid = <<-EOS
         docker::run { '#{default_image}':
           image         => '#{default_image}:#{default_image_tag}',
           verify_digest => 'sha256:90659bf80b44ce6be8234e6ff90a1ac34acbeb826903b02cfa0da11c82cbc000',
         }
-        EOS
+      EOS
 
       apply_manifest(pp, catch_failures: true)
       run_shell('/usr/local/bin/docker-run-alpine-start.sh', expect_failures: false) do |r|
@@ -860,7 +860,7 @@ describe 'the Puppet Docker module' do
     end
   end
 
-  describe 'docker::exec', win_broken: true do
+  describe 'docker::exec', :win_broken do
     it 'runs a command inside an already running container' do
       pp = <<-EOS
           class { 'docker': #{docker_args} }
@@ -875,7 +875,7 @@ describe 'the Puppet Docker module' do
             require => Docker::Image['#{default_image}'],
             #{default_docker_run_arg}
           }
-        EOS
+      EOS
 
       apply_manifest(pp, catch_failures: true)
       apply_manifest(pp, catch_changes: true) unless selinux == 'true'
@@ -892,14 +892,14 @@ describe 'the Puppet Docker module' do
             command   => '#{default_docker_exec_command}',
             tty       => true,
           }
-        EOS
+      EOS
 
       pp_delete = <<-EOS
         docker::run { 'container_4_1':
           image   => '#{default_image}',
           ensure  => absent,
           }
-          EOS
+      EOS
 
       apply_manifest(pp2, catch_failures: true)
 
@@ -919,7 +919,7 @@ describe 'the Puppet Docker module' do
       apply_manifest(pp_delete, catch_failures: true)
     end
 
-    it 'onlies run if notified when refreshonly is true', win_broken: true do
+    it 'onlies run if notified when refreshonly is true', :win_broken do
       container_name = 'container_4_2'
       pp = <<-EOS
           class { 'docker': #{docker_args} }
@@ -937,7 +937,7 @@ describe 'the Puppet Docker module' do
             command     => '#{default_docker_exec_command}',
             refreshonly => true,
           }
-        EOS
+      EOS
 
       apply_manifest(pp, catch_failures: true)
       apply_manifest(pp, catch_changes: true) unless selinux == 'true'
@@ -960,14 +960,14 @@ describe 'the Puppet Docker module' do
             ensure => 'present',
             notify => Docker::Exec['test_command'],
           }
-        EOS
+      EOS
 
       pp_delete = <<-EOS
         docker::run { '#{container_name}':
           image   => '#{default_image}',
           ensure  => absent,
           }
-          EOS
+      EOS
 
       pp2 = pp + pp_extra
 

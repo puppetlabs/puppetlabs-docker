@@ -36,11 +36,10 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
       end
     end
 
-    if stack_services.count != stack_containers.count
-      return false
-    end
+    return false if stack_services.count != stack_containers.count
+
     counts = Hash[*stack_services.each.map { |key, array|
-                    image = (array['image']) ? array['image'] : get_image(key, stack_services)
+                    image = array['image'] || get_image(key, stack_services)
                     image = "#{image}:latest" unless image.include?(':')
                     Puppet.info("Checking for compose service #{key} #{image}")
                     ["#{key}-#{image}", stack_containers.count("#{key}-#{image}")]

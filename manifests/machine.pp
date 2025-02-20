@@ -24,14 +24,10 @@ class docker::machine (
   Enum[present,absent]                                 $ensure       = 'present',
   Optional[String]                                     $version      = $docker::params::machine_version,
   Optional[String]                                     $install_path = $docker::params::machine_install_path,
-  Optional[String]                                     $proxy        = undef,
+  Optional[Pattern['^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$']] $proxy = undef,
   Optional[Variant[Stdlib::HTTPUrl, Stdlib::HTTPSUrl]] $url          = undef,
   Optional[Boolean]                                    $curl_ensure  = $docker::params::curl_ensure,
 ) inherits docker::params {
-  if $proxy != undef {
-    validate_re($proxy, '^((http[s]?)?:\/\/)?([^:^@]+:[^:^@]+@|)([\da-z\.-]+)\.([\da-z\.]{2,6})(:[\d])?([\/\w \.-]*)*\/?$')
-  }
-
   if $facts['os']['family'] == 'windows' {
     $file_extension = '.exe'
     $file_owner     = 'Administrator'
@@ -45,7 +41,7 @@ class docker::machine (
 
   if $ensure == 'present' {
     $docker_machine_url = $url ? {
-      undef   => "https://github.com/docker/machine/releases/download/v${version}/docker-machine-${::kernel}-x86_64${file_extension}",
+      undef   => "https://github.com/docker/machine/releases/download/v${version}/docker-machine-${facts['kernel']}-x86_64${file_extension}",
       default => $url,
     }
 
@@ -58,8 +54,14 @@ class docker::machine (
     if $facts['os']['family'] == 'windows' {
       $docker_download_command = "if (Invoke-WebRequest ${docker_machine_url} ${proxy_opt} -UseBasicParsing -OutFile \"${docker_machine_location_versioned}\") { exit 0 } else { exit 1}" # lint:ignore:140chars
 
+      $parameters = {
+        'proxy'                             => $proxy,
+        'docker_machine_url'                => $docker_machine_url,
+        'docker_machine_location_versioned' => $docker_machine_location_versioned,
+      }
+
       exec { "Install Docker Machine ${version}":
-        command  => template('docker/windows/download_docker_machine.ps1.erb'),
+        command  => epp('docker/windows/download_docker_machine.ps1.epp', $parameters),
         provider => powershell,
         creates  => $docker_machine_location_versioned,
       }
@@ -71,7 +73,7 @@ class docker::machine (
       }
     } else {
       if $curl_ensure {
-        ensure_packages(['curl'])
+        stdlib::ensure_packages(['curl'])
       }
 
       exec { "Install Docker Machine ${version}":

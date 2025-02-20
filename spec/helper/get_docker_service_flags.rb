@@ -5,13 +5,9 @@ require 'shellwords'
 def get_docker_service_flags(args)
   flags = []
 
-  if args['service_name'] && args['service_name'].to_s != 'undef'
-    flags << "'#{args['service_name']}'"
-  end
+  flags << "'#{args['service_name']}'" if args['service_name'] && args['service_name'].to_s != 'undef'
 
-  if args['detach'].to_s != 'false'
-    flags << '--detach'
-  end
+  flags << '--detach' if args['detach'].to_s != 'false'
 
   if args['env'].is_a? Array
     args['env'].each do |env|
@@ -45,21 +41,13 @@ def get_docker_service_flags(args)
     flags << "--publish '#{args['publish']}'"
   end
 
-  if args['replicas'] && args['replicas'].to_s != 'undef'
-    flags << "--replicas '#{args['replicas']}'"
-  end
+  flags << "--replicas '#{args['replicas']}'" if args['replicas'] && args['replicas'].to_s != 'undef'
 
-  if args['tty'].to_s != 'false'
-    flags << '--tty'
-  end
+  flags << '--tty' if args['tty'].to_s != 'false'
 
-  if args['user'] && args['user'].to_s != 'undef'
-    flags << "--user '#{args['user']}'"
-  end
+  flags << "--user '#{args['user']}'" if args['user'] && args['user'].to_s != 'undef'
 
-  if args['workdir'] && args['workdir'].to_s != 'undef'
-    flags << "--workdir '#{args['workdir']}'"
-  end
+  flags << "--workdir '#{args['workdir']}'" if args['workdir'] && args['workdir'].to_s != 'undef'
 
   if args['extra_params'].is_a? Array
     args['extra_params'].each do |param|
@@ -67,9 +55,7 @@ def get_docker_service_flags(args)
     end
   end
 
-  if args['host_socket'] && args['host_socket'].to_s != 'undef'
-    flags << "-H '#{args['host_socket']}'"
-  end
+  flags << "-H '#{args['host_socket']}'" if args['host_socket'] && args['host_socket'].to_s != 'undef'
 
   if args['registry_mirror'].is_a? Array
     args['registry_mirror'].each do |param|
@@ -79,9 +65,7 @@ def get_docker_service_flags(args)
     flags << "--registry-mirror='#{args['registry_mirror']}'"
   end
 
-  if args['image'] && args['image'].to_s != 'undef'
-    flags << "'#{args['image']}'"
-  end
+  flags << "'#{args['image']}'" if args['image'] && args['image'].to_s != 'undef'
 
   if args['command'].is_a? Array
     flags << args['command'].join(' ')
