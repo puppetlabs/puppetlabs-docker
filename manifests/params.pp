@@ -207,9 +207,9 @@ class docker::params {
       $apt_source_pin_level        = undef
       $detach_service_in_init      = false
       $package_ce_key_id           = undef
-      $package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
+      $package_ce_key_source       = 'https://download.docker.com/linux/rhel/gpg'
       $package_ce_release          = undef
-      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
+      $package_ce_source_location  = "https://download.docker.com/linux/rhel/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
       $package_ee_key_id           = $docker_ee_key_id
       $package_ee_key_source       = $docker_ee_key_source
       $package_ee_package_name     = $docker_ee_package_name
