@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.2.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.2.0) - 2025-03-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.1.0...v10.2.0)
+
+### Added
+
+- (GH-962) Allow Amazon Linux 2 and newer versions [#972](https://github.com/puppetlabs/puppetlabs-docker/pull/972) ([rjd1](https://github.com/rjd1))
+
 ## [v10.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.1.0) - 2024-12-18
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.0.1...v10.1.0)
