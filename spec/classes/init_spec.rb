@@ -131,6 +131,7 @@ describe 'docker', type: :class do
             'nuget_package_provider_version' => defaults['nuget_package_provider_version'],
             'os_lc' => defaults['os_lc'],
             'overlay2_override_kernel_check' => defaults['overlay2_override_kernel_check'],
+            'overlay2_size' => defaults['overlay2_size'],
             'package_release' => defaults['package_release'],
             'package_source' => defaults['package_source'],
             'pin_upstream_package_source' => defaults['pin_upstream_package_source'],

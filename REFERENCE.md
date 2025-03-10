@@ -150,6 +150,7 @@ The following parameters are available in the `docker` class:
 * [`dm_blkdiscard`](#-docker--dm_blkdiscard)
 * [`dm_override_udev_sync_check`](#-docker--dm_override_udev_sync_check)
 * [`overlay2_override_kernel_check`](#-docker--overlay2_override_kernel_check)
+* [`overlay2_size`](#-docker--overlay2_size)
 * [`manage_package`](#-docker--manage_package)
 * [`service_name`](#-docker--service_name)
 * [`docker_users`](#-docker--docker_users)
@@ -735,6 +736,16 @@ Data type: `Boolean`
 Overrides the Linux kernel version check allowing using overlay2 with kernel < 4.0.
 
 Default value: `$docker::params::overlay2_override_kernel_check`
+
+##### <a name="-docker--overlay2_size"></a>`overlay2_size`
+
+Data type: `Optional[String]`
+
+Sets the default max size of the container. It is supported only when the
+backing filesystem is xfs and mounted with pquota mount option.
+storage_driver needs to be set explicitely to overlay2 to be respected.
+
+Default value: `$docker::params::overlay2_size`
 
 ##### <a name="-docker--manage_package"></a>`manage_package`
 
@@ -1590,6 +1601,7 @@ The following parameters are available in the `docker::service` class:
 * [`dm_blkdiscard`](#-docker--service--dm_blkdiscard)
 * [`dm_override_udev_sync_check`](#-docker--service--dm_override_udev_sync_check)
 * [`overlay2_override_kernel_check`](#-docker--service--overlay2_override_kernel_check)
+* [`overlay2_size`](#-docker--service--overlay2_size)
 * [`storage_devs`](#-docker--service--storage_devs)
 * [`storage_vg`](#-docker--service--storage_vg)
 * [`storage_root_size`](#-docker--service--storage_root_size)
@@ -2039,6 +2051,14 @@ Data type: `Boolean`
 
 
 Default value: `$docker::overlay2_override_kernel_check`
+
+##### <a name="-docker--service--overlay2_size"></a>`overlay2_size`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `$docker::overlay2_size`
 
 ##### <a name="-docker--service--storage_devs"></a>`storage_devs`
 

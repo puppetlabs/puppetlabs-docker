@@ -238,6 +238,11 @@
 # @param overlay2_override_kernel_check
 #   Overrides the Linux kernel version check allowing using overlay2 with kernel < 4.0.
 #
+# @param overlay2_size
+#   Sets the default max size of the container.
+#   It is supported only when the backing filesystem is xfs and mounted with pquota mount option.
+#   storage_driver needs to be set explicitely to overlay2 to be respected.
+#
 # @param manage_package
 #   Won't install or define the docker package, useful if you want to use your own package
 #
@@ -433,6 +438,7 @@ class docker (
   Optional[Boolean]                       $dm_blkdiscard                     = $docker::params::dm_blkdiscard,
   Optional[Boolean]                       $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
   Boolean                                 $overlay2_override_kernel_check    = $docker::params::overlay2_override_kernel_check,
+  Optional[String]                        $overlay2_size                     = $docker::params::overlay2_size,
   Optional[String]                        $execdriver                        = $docker::params::execdriver,
   Boolean                                 $manage_package                    = $docker::params::manage_package,
   Optional[String]                        $package_source                    = $docker::params::package_source,
