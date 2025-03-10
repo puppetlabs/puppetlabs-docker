@@ -117,6 +117,8 @@
 #
 # @param overlay2_override_kernel_check
 #
+# @param overlay2_size
+#
 # @param storage_devs
 #
 # @param storage_vg
@@ -230,6 +232,7 @@ class docker::service (
   Optional[Boolean]                       $dm_blkdiscard                     = $docker::dm_blkdiscard,
   Optional[Boolean]                       $dm_override_udev_sync_check       = $docker::dm_override_udev_sync_check,
   Boolean                                 $overlay2_override_kernel_check    = $docker::overlay2_override_kernel_check,
+  Optional[String]                        $overlay2_size                     = $docker::overlay2_size,
   Optional[String]                        $storage_devs                      = $docker::storage_devs,
   Optional[String]                        $storage_vg                        = $docker::storage_vg,
   Optional[String]                        $storage_root_size                 = $docker::storage_root_size,
@@ -416,6 +419,7 @@ class docker::service (
     'dm_blkdiscard'                     => $dm_blkdiscard,
     'dm_override_udev_sync_check'       => $dm_override_udev_sync_check,
     'overlay2_override_kernel_check'    => $overlay2_override_kernel_check,
+    'overlay2_size'                     => $overlay2_size,
   }
 
   if $storage_config {
@@ -480,6 +484,7 @@ class docker::service (
     'dm_blkdiscard' => $dm_blkdiscard,
     'dm_override_udev_sync_check' => $dm_override_udev_sync_check,
     'overlay2_override_kernel_check' => $overlay2_override_kernel_check,
+    'overlay2_size' => $overlay2_size,
     'labels' => $labels,
     'extra_parameters' => $extra_parameters,
     'extra_parameters_array' => $extra_parameters_array,

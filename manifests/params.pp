@@ -66,6 +66,7 @@ class docker::params {
   $dm_blkdiscard                     = undef
   $dm_override_udev_sync_check       = undef
   $overlay2_override_kernel_check    = false
+  $overlay2_size                     = undef
   $manage_package                    = true
   $package_source                    = undef
   $service_name_default              = 'docker'

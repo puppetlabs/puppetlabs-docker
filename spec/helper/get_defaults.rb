@@ -58,6 +58,7 @@ def get_defaults(_facts)
   nuget_package_provider_version    = :undef
   os_lc                             = _facts[:os]['name']
   overlay2_override_kernel_check    = false
+  overlay2_size                     = :undef
   package_source                    = :undef
   proxy                             = :undef
   registry_mirror                   = :undef
@@ -399,6 +400,7 @@ def get_defaults(_facts)
     'nuget_package_provider_version' => nuget_package_provider_version,
     'os_lc' => os_lc,
     'overlay2_override_kernel_check' => overlay2_override_kernel_check,
+    'overlay2_size' => overlay2_size,
     'package_ce_key_id' => package_ce_key_id,
     'package_ce_key_source' => package_ce_key_source,
     'package_ce_release' => package_ce_release,
