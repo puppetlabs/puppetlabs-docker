@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.3.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.3.0) - 2025-04-14
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.2.0...v10.3.0)
+
+### Other
+
+- (MODULES-11475): Fix formatting in docker run and service manifests [#1017](https://github.com/puppetlabs/puppetlabs-docker/pull/1017) ([span786](https://github.com/span786))
+- Update package source to use rhel repo instead of deprecated centos. [#999](https://github.com/puppetlabs/puppetlabs-docker/pull/999) ([jbagleyjr](https://github.com/jbagleyjr))
+
 ## [v10.2.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.2.0) - 2025-03-10
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.1.0...v10.2.0)
