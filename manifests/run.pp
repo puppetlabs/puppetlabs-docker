@@ -470,7 +470,7 @@ define docker::run (
         $detect_changes = Deferred('docker_params_changed', [$docker_params_changed_args])
 
         notify { "${title}_docker_params_changed":
-          message  => $detect_changes,
+          message => $detect_changes,
         }
       }
     }
