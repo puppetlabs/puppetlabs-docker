@@ -56,6 +56,9 @@
         "2019",
         "2022"
       ]
+    },
+    {
+      "operatingsystem": "Archlinux"
     }
   ],
   "requirements": [
