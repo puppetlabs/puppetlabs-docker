@@ -23,23 +23,29 @@ shared_examples 'repos' do |params, facts|
   case facts[:os]['family']
   when 'Debian'
     release       = values['release']
-    package_key   = values['package_key']
     package_repos = values['package_repos']
+    key_name      = values['package_key_name']
+    key_path      = values['package_key_path']
 
     if params['use_upstream_package_source']
       it {
+        expect(subject).to contain_apt__keyring(key_name).with(
+          'ensure' => 'present',
+          'source' => key_source,
+          'dir'    => key_path,
+        )
+
         expect(subject).to contain_apt__source('docker').with(
+          'ensure' => 'present',
           'location' => location,
           'architecture' => architecture,
           'release' => release,
           'repos' => package_repos,
-          'key' => {
-            'id' => package_key,
-            'source' => key_source
-          },
           'include' => {
             'src' => false
           },
+          'keyring' => "#{key_path}/#{key_name}",
+          'require' => "Apt::Keyring[#{key_name}]"
         )
       }
 

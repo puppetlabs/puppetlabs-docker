@@ -177,12 +177,12 @@ The following parameters are available in the `docker` class:
 * [`docker_ce_cli_package_name`](#-docker--docker_ce_cli_package_name)
 * [`docker_ce_source_location`](#-docker--docker_ce_source_location)
 * [`docker_ce_key_source`](#-docker--docker_ce_key_source)
-* [`docker_ce_key_id`](#-docker--docker_ce_key_id)
 * [`docker_ce_release`](#-docker--docker_ce_release)
 * [`docker_package_location`](#-docker--docker_package_location)
 * [`docker_package_key_source`](#-docker--docker_package_key_source)
+* [`docker_package_key_name`](#-docker--docker_package_key_name)
+* [`docker_package_key_path`](#-docker--docker_package_key_path)
 * [`docker_package_key_check_source`](#-docker--docker_package_key_check_source)
-* [`docker_package_key_id`](#-docker--docker_package_key_id)
 * [`docker_package_release`](#-docker--docker_package_release)
 * [`docker_engine_start_command`](#-docker--docker_engine_start_command)
 * [`docker_engine_package_name`](#-docker--docker_engine_package_name)
@@ -191,7 +191,6 @@ The following parameters are available in the `docker` class:
 * [`docker_ee_package_name`](#-docker--docker_ee_package_name)
 * [`docker_ee_source_location`](#-docker--docker_ee_source_location)
 * [`docker_ee_key_source`](#-docker--docker_ee_key_source)
-* [`docker_ee_key_id`](#-docker--docker_ee_key_id)
 * [`docker_ee_repos`](#-docker--docker_ee_repos)
 * [`docker_ee_release`](#-docker--docker_ee_release)
 * [`package_release`](#-docker--package_release)
@@ -955,14 +954,6 @@ Data type: `Optional[String]`
 
 Default value: `$docker::params::package_ce_key_source`
 
-##### <a name="-docker--docker_ce_key_id"></a>`docker_ce_key_id`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `$docker::params::package_ce_key_id`
-
 ##### <a name="-docker--docker_ce_release"></a>`docker_ce_release`
 
 Data type: `Optional[String]`
@@ -987,6 +978,22 @@ Data type: `Optional[String]`
 
 Default value: `$docker::params::package_key_source`
 
+##### <a name="-docker--docker_package_key_name"></a>`docker_package_key_name`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `$docker::params::package_key_name`
+
+##### <a name="-docker--docker_package_key_path"></a>`docker_package_key_path`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+
+
+Default value: `$docker::params::package_key_path`
+
 ##### <a name="-docker--docker_package_key_check_source"></a>`docker_package_key_check_source`
 
 Data type: `Optional[Boolean]`
@@ -994,14 +1001,6 @@ Data type: `Optional[Boolean]`
 
 
 Default value: `$docker::params::package_key_check_source`
-
-##### <a name="-docker--docker_package_key_id"></a>`docker_package_key_id`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `$docker::params::package_key_id`
 
 ##### <a name="-docker--docker_package_release"></a>`docker_package_release`
 
@@ -1066,14 +1065,6 @@ Data type: `Optional[String]`
 
 
 Default value: `$docker::params::package_ee_key_source`
-
-##### <a name="-docker--docker_ee_key_id"></a>`docker_ee_key_id`
-
-Data type: `Optional[String]`
-
-
-
-Default value: `$docker::params::package_ee_key_id`
 
 ##### <a name="-docker--docker_ee_repos"></a>`docker_ee_repos`
 

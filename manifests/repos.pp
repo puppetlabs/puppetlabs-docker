@@ -19,22 +19,28 @@ class docker::repos (
   case $facts['os']['family'] {
     'Debian': {
       $release       = $docker::release
-      $package_key   = $docker::package_key
       $package_repos = $docker::package_repos
+      $key_name      = $docker::package_key_name
+      $key_path      = $docker::package_key_path
 
       if ($docker::use_upstream_package_source) {
+        apt::keyring { $key_name:
+          ensure => present,
+          source => $key_source,
+          dir    => $key_path,
+        }
+
         apt::source { 'docker':
+          ensure       => present,
           location     => $location,
           architecture => $architecture,
           release      => $release,
           repos        => $package_repos,
-          key          => {
-            id     => $package_key,
-            source => $key_source,
-          },
           include      => {
             src => false,
           },
+          keyring      => "${key_path}/${key_name}",
+          require      => Apt::Keyring[$key_name],
         }
 
         $url_split  = split($location, '/')

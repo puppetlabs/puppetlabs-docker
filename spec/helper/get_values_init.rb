@@ -6,7 +6,8 @@ def get_values_init(_params, _facts)
       package_location         = _params['docker_ee_source_location']
       package_key_source       = _params['docker_ee_key_source']
       package_key_check_source = true
-      package_key              = _params['docker_ee_key_id']
+      package_key_name         = _params['docker_package_key_name']
+      package_key_path         = _params['docker_package_key_path']
       package_repos            = _params['docker_ee_repos']
       release                  = _params['docker_ee_release']
       docker_start_command     = _params['docker_ee_start_command']
@@ -16,7 +17,8 @@ def get_values_init(_params, _facts)
       when 'Debian'
         package_location   = _params['docker_ce_source_location']
         package_key_source = _params['docker_ce_key_source']
-        package_key        = _params['docker_ce_key_id']
+        package_key_name   = _params['docker_package_key_name']
+        package_key_path   = _params['docker_package_key_path']
         package_repos      = _params['docker_ce_channel']
         release            = _params['docker_ce_release']
       when 'RedHat'
@@ -40,9 +42,10 @@ def get_values_init(_params, _facts)
     package_key_check_source = _params['docker_package_key_check_source']
     case _facts[:os]['family']
     when 'Debian'
-      package_key = _params['docker_package_key_id']
-      package_repos            = 'main'
-      release                  = _params['docker_package_release']
+      package_key_name  = _params['docker_package_key_name']
+      package_key_path  = _params['docker_package_key_path']
+      package_repos     = 'main'
+      release           = _params['docker_package_release']
     end
 
     docker_start_command = _params['docker_engine_start_command']
@@ -58,7 +61,8 @@ def get_values_init(_params, _facts)
   {
     'docker_package_name' => docker_package_name,
     'docker_start_command' => docker_start_command,
-    'package_key' => package_key,
+    'package_key_name' => package_key_name,
+    'package_key_path' => package_key_path,
     'package_key_check_source' => package_key_check_source,
     'package_key_source' => package_key_source,
     'package_location' => package_location,
