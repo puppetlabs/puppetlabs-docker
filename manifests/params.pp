@@ -365,7 +365,7 @@ class docker::params {
   # https://github.com/docker/docker/issues/4734
   $prerequired_packages = $facts['os']['family'] ? {
     'Debian' => $facts['os']['name'] ? {
-      'Debian' => ['cgroupfs-mount',],
+      'Debian' => ['apparmor',],
       'Ubuntu' => ['cgroup-lite', 'apparmor',],
       default  => [],
     },
