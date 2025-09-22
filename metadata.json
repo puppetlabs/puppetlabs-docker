@@ -14,7 +14,7 @@
     },
     {
       "name": "puppetlabs/apt",
-      "version_requirement": ">= 9.2.0 < 11.0.0"
+      "version_requirement": ">= 9.2.0 <= 11.2.0"
     },
     {
       "name": "puppetlabs/powershell",
@@ -30,16 +30,7 @@
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
         "7",
-        "8",
-        "9"
-      ]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "18.04",
-        "20.04",
-        "22.04"
+        "8"
       ]
     },
     {
@@ -48,23 +39,15 @@
         "10",
         "11"
       ]
-    },
-    {
-      "operatingsystem": "Windows",
-      "operatingsystemrelease": [
-        "2016",
-        "2019",
-        "2022"
-      ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 7.0.0 < 9.0.0"
+      "version_requirement": ">= 8.0.0 < 9.0.0"
     }
   ],
-  "pdk-version": "3.0.0",
+  "pdk-version": "3.5.0 (ga43db72)",
   "template-url": "https://github.com/puppetlabs/pdk-templates.git#main",
-  "template-ref": "heads/main-0-g79a2f93"
+  "template-ref": "heads/main-0-g11c0f3d"
 }
