@@ -5,7 +5,7 @@ require:
 AllCops:
   NewCops: enable
   DisplayCopNames: true
-  TargetRubyVersion: '2.7'
+  TargetRubyVersion: '3.1'
   Include:
   - "**/*.rb"
   Exclude:
@@ -723,3 +723,5 @@ Style/StringChars:
   Enabled: false
 Style/SwapValues:
   Enabled: false
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
