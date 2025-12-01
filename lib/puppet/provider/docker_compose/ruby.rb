@@ -74,7 +74,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def create
     Puppet.info("Running compose project #{name}")
-    args = ['compose', compose_files, '-p', name, 'up', '-d', '--remove-orphans'].insert(3, resource[:options]).insert(5, resource[:up_args]).compact
+    args = ['compose', compose_files, '-p', name, 'up', '-d', '--remove-orphans'].insert(3, resource[:options]).insert(6, resource[:up_args]).compact
     docker(args)
     return unless resource[:scale]
 
