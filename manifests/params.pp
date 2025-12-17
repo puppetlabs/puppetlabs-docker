@@ -344,7 +344,10 @@ class docker::params {
   # https://github.com/docker/docker/issues/4734
   $prerequired_packages = $facts['os']['family'] ? {
     'Debian' => $facts['os']['name'] ? {
-      'Debian' => ['cgroupfs-mount',],
+      'Debian' => $facts['os']['distro']['codename'] ? {
+        /bullseye|bookworm/ => ['cgroupfs-mount',],
+        default    => []
+      },
       'Ubuntu' => ['cgroup-lite', 'apparmor',],
       default  => [],
     },
