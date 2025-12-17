@@ -28,7 +28,7 @@ Puppet::Type.newtype(:docker_compose) do
   newparam(:up_args) do
     desc 'Arguments to be passed directly to docker-compose up.'
     validate do |value|
-      raise _('up_args should be a String') unless value.is_a? String
+      raise _('up_args should be a String') unless value.is_a? Array
     end
   end
 
