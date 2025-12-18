@@ -363,7 +363,7 @@ describe 'docker::run', type: :define do
                                     params['service_provider']
                                   end
 
-          if !params['service_provider_real'] == 'systemd' && !params['service_provider_real'] == 'upstart'
+          if !params['service_provider_real'] == 'systemd'
             if facts[:os]['family'] != 'windows'
               it {
                 expect(subject).to compile.and_raise_error('Docker needs a Debian or RedHat based system.')
