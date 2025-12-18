@@ -21,10 +21,16 @@ class docker::repos (
       $release       = $docker::release
       $package_repos = $docker::package_repos
 
+      if $architecture == 'aarch64' {
+        $_architecture = 'arm64'
+      } else {
+        $_architecture = $architecture
+      }
+
       if ($docker::use_upstream_package_source) {
         apt::source { 'docker':
           location     => $location,
-          architecture => $architecture,
+          architecture => $_architecture,
           release      => $release,
           repos        => $package_repos,
           key          => {
