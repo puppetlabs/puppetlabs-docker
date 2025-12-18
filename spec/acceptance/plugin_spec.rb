@@ -13,7 +13,7 @@ else
   docker_args = ''
 end
 
-describe 'docker plugin', win_broken: broken do
+describe 'docker plugin', win_broken: broken, skip: is_aarch? do
   before(:all) do
     install_code = "class { 'docker': #{docker_args}}"
     apply_manifest(install_code, catch_failures: true)

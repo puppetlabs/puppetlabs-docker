@@ -46,6 +46,10 @@ def fetch_puppet_version
   @fetch_puppet_version ||= run_shell('puppet --version').stdout.to_i
 end
 
+def is_aarch?
+  !os[:arch].nil? && os[:arch].include?('aarch')
+end
+
 RSpec.configure do |c|
   # Add exclusive filter for Windows untill all the windows functionality is implemented
   c.filter_run_excluding win_broken: true
@@ -65,7 +69,7 @@ RSpec.configure do |c|
       # run_shell('apt-get upgrade -y')
       run_shell('apt-get install -y lsb-release')
       run_shell('apt-get install -y net-tools')
-      run_shell('apt-get purge -y container-tools') if ENV['CI']
+      run_shell('apt-get purge -y open-infrastructure-container-tools') if ENV['CI']
     end
 
     run_shell('puppet module install puppetlabs-stdlib --version 4.24.0', expect_failures: true)
