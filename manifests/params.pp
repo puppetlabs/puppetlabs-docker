@@ -13,7 +13,6 @@ class docker::params {
   $docker_ee_start_command           = 'dockerd'
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
-  $docker_ee_key_id                  = undef
   $docker_ee_repos                   = stable
   $tcp_bind                          = undef
   $tls_enable                        = false
@@ -163,7 +162,6 @@ class docker::params {
 
       $package_ce_source_location    = "https://download.docker.com/linux/${os_lc}"
       $package_ce_key_source         = "https://download.docker.com/linux/${os_lc}/gpg"
-      $package_ce_key_id             = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
       if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
         $package_ce_release            = $facts['os']['lsb']['distcodename']
       } else {
@@ -172,10 +170,8 @@ class docker::params {
       $package_source_location       = 'http://apt.dockerproject.org/repo'
       $package_key_source            = 'https://apt.dockerproject.org/gpg'
       $package_key_check_source      = undef
-      $package_key_id                = '58118E89F3A912897C070ADBF76221572C52609D'
       $package_ee_source_location    = $docker_ee_source_location
       $package_ee_key_source         = $docker_ee_key_source
-      $package_ee_key_id             = $docker_ee_key_id
       if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
         $package_ee_release            = $facts['os']['lsb']['distcodename']
       } else {
@@ -206,18 +202,15 @@ class docker::params {
 
       $apt_source_pin_level        = undef
       $detach_service_in_init      = false
-      $package_ce_key_id           = undef
       $package_ce_key_source       = 'https://download.docker.com/linux/rhel/gpg'
       $package_ce_release          = undef
       $package_ce_source_location  = "https://download.docker.com/linux/rhel/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
-      $package_ee_key_id           = $docker_ee_key_id
       $package_ee_key_source       = $docker_ee_key_source
       $package_ee_package_name     = $docker_ee_package_name
       $package_ee_release          = undef
       $package_ee_repos            = $docker_ee_repos
       $package_ee_source_location  = $docker_ee_source_location
       $package_key_check_source    = true
-      $package_key_id              = undef
       $package_key_source          = 'https://yum.dockerproject.org/gpg'
       $package_release             = undef
       $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['major']}"
@@ -242,10 +235,8 @@ class docker::params {
       $docker_group                        = 'docker'
       $package_ce_source_location          = undef
       $package_ce_key_source               = undef
-      $package_ce_key_id                   = undef
       $package_ce_repos                    = undef
       $package_ce_release                  = undef
-      $package_key_id                      = undef
       $package_release                     = undef
       $package_source_location             = undef
       $package_key_source                  = undef
@@ -253,7 +244,6 @@ class docker::params {
       $package_ee_source_location          = undef
       $package_ee_package_name             = $docker_ee_package_name
       $package_ee_key_source               = undef
-      $package_ee_key_id                   = undef
       $package_ee_repos                    = undef
       $package_ee_release                  = undef
       $use_upstream_package_source         = undef
@@ -279,17 +269,14 @@ class docker::params {
       $package_key_source                  = undef
       $package_key_check_source            = undef
       $package_source_location             = undef
-      $package_key_id                      = undef
       $package_repos                       = undef
       $package_release                     = undef
       $package_ce_key_source               = undef
       $package_ce_source_location          = undef
-      $package_ce_key_id                   = undef
       $package_ce_repos                    = undef
       $package_ce_release                  = undef
       $package_ee_source_location          = undef
       $package_ee_key_source               = undef
-      $package_ee_key_id                   = undef
       $package_ee_release                  = undef
       $package_ee_repos                    = undef
       $package_ee_package_name             = undef
@@ -319,17 +306,14 @@ class docker::params {
       $package_key_source                  = undef
       $package_key_check_source            = undef
       $package_source_location             = undef
-      $package_key_id                      = undef
       $package_repos                       = undef
       $package_release                     = undef
       $package_ce_key_source               = undef
       $package_ce_source_location          = undef
-      $package_ce_key_id                   = undef
       $package_ce_repos                    = undef
       $package_ce_release                  = undef
       $package_ee_source_location          = undef
       $package_ee_key_source               = undef
-      $package_ee_key_id                   = undef
       $package_ee_release                  = undef
       $package_ee_repos                    = undef
       $package_ee_package_name             = undef

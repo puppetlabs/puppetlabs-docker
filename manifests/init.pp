@@ -312,12 +312,10 @@
 # @param docker_ce_cli_package_name
 # @param docker_ce_source_location
 # @param docker_ce_key_source
-# @param docker_ce_key_id
 # @param docker_ce_release
 # @param docker_package_location
 # @param docker_package_key_source
 # @param docker_package_key_check_source
-# @param docker_package_key_id
 # @param docker_package_release
 # @param docker_engine_start_command
 # @param docker_engine_package_name
@@ -326,7 +324,6 @@
 # @param docker_ee_package_name
 # @param docker_ee_source_location
 # @param docker_ee_key_source
-# @param docker_ee_key_id
 # @param docker_ee_repos
 # @param docker_ee_release
 # @param package_release
@@ -359,12 +356,10 @@ class docker (
   String[1]                               $docker_ce_cli_package_name        = $docker::params::docker_ce_cli_package_name,
   Optional[String]                        $docker_ce_source_location         = $docker::params::package_ce_source_location,
   Optional[String]                        $docker_ce_key_source              = $docker::params::package_ce_key_source,
-  Optional[String]                        $docker_ce_key_id                  = $docker::params::package_ce_key_id,
   Optional[String]                        $docker_ce_release                 = $docker::params::package_ce_release,
   Optional[String]                        $docker_package_location           = $docker::params::package_source_location,
   Optional[String]                        $docker_package_key_source         = $docker::params::package_key_source,
   Optional[Boolean]                       $docker_package_key_check_source   = $docker::params::package_key_check_source,
-  Optional[String]                        $docker_package_key_id             = $docker::params::package_key_id,
   Optional[String]                        $docker_package_release            = $docker::params::package_release,
   String                                  $docker_engine_start_command       = $docker::params::docker_engine_start_command,
   String                                  $docker_engine_package_name        = $docker::params::docker_engine_package_name,
@@ -373,7 +368,6 @@ class docker (
   Optional[String]                        $docker_ee_package_name            = $docker::params::package_ee_package_name,
   Optional[String]                        $docker_ee_source_location         = $docker::params::package_ee_source_location,
   Optional[String]                        $docker_ee_key_source              = $docker::params::package_ee_key_source,
-  Optional[String]                        $docker_ee_key_id                  = $docker::params::package_ee_key_id,
   Optional[String]                        $docker_ee_repos                   = $docker::params::package_ee_repos,
   Optional[String]                        $docker_ee_release                 = $docker::params::package_ee_release,
   Optional[Variant[String,Array[String]]] $tcp_bind                          = $docker::params::tcp_bind,
@@ -550,7 +544,6 @@ class docker (
       $package_location         = $docker::docker_ee_source_location
       $package_key_source       = $docker::docker_ee_key_source
       $package_key_check_source = $docker_package_key_check_source
-      $package_key              = $docker::docker_ee_key_id
       $package_repos            = $docker::docker_ee_repos
       $release                  = $docker::docker_ee_release
       $docker_start_command     = $docker::docker_ee_start_command
@@ -560,7 +553,6 @@ class docker (
         'Debian' : {
           $package_location   = $docker_ce_source_location
           $package_key_source = $docker_ce_key_source
-          $package_key        = $docker_ce_key_id
           $package_repos      = $docker_ce_channel
           $release            = $docker_ce_release
         }
@@ -588,7 +580,6 @@ class docker (
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
-        $package_key              = $docker_package_key_id
         $package_repos            = 'main'
         $release                  = $docker_package_release
       }
