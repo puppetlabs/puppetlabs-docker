@@ -169,6 +169,8 @@ class docker::params {
       }
       $package_source_location       = 'http://apt.dockerproject.org/repo'
       $package_key_source            = 'https://apt.dockerproject.org/gpg'
+      $package_key_name              = 'docker.asc'
+      $package_key_path              = '/usr/share/keyrings'
       $package_key_check_source      = undef
       $package_ee_source_location    = $docker_ee_source_location
       $package_ee_key_source         = $docker_ee_key_source
@@ -212,6 +214,8 @@ class docker::params {
       $package_ee_source_location  = $docker_ee_source_location
       $package_key_check_source    = true
       $package_key_source          = 'https://yum.dockerproject.org/gpg'
+      $package_key_name            = undef
+      $package_key_path            = undef
       $package_release             = undef
       $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['major']}"
       $pin_upstream_package_source = undef
@@ -241,6 +245,8 @@ class docker::params {
       $package_source_location             = undef
       $package_key_source                  = undef
       $package_key_check_source            = undef
+      $package_key_name                    = undef
+      $package_key_path                    = undef
       $package_ee_source_location          = undef
       $package_ee_package_name             = $docker_ee_package_name
       $package_ee_key_source               = undef
@@ -268,6 +274,8 @@ class docker::params {
       $socket_group                        = $socket_group_default
       $package_key_source                  = undef
       $package_key_check_source            = undef
+      $package_key_name                    = undef
+      $package_key_path                    = undef
       $package_source_location             = undef
       $package_repos                       = undef
       $package_release                     = undef
@@ -305,6 +313,8 @@ class docker::params {
       $socket_group                        = $socket_group_default
       $package_key_source                  = undef
       $package_key_check_source            = undef
+      $package_key_name                    = undef
+      $package_key_path                    = undef
       $package_source_location             = undef
       $package_repos                       = undef
       $package_release                     = undef

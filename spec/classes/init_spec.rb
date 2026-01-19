@@ -105,6 +105,8 @@ describe 'docker', type: :class do
             'docker_package_key_check_source' => defaults['package_key_check_source'],
             'docker_package_key_source' => defaults['package_key_source'],
             'docker_package_location' => defaults['package_source_location'],
+            'docker_package_key_name' => defaults['package_key_name'],
+            'docker_package_key_path' => defaults['package_key_path'],
             'docker_package_release' => defaults['package_release'],
             'docker_users' => [],
             'ensure' => defaults['package_ensure'],

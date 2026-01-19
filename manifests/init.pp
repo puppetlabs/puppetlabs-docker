@@ -315,6 +315,8 @@
 # @param docker_ce_release
 # @param docker_package_location
 # @param docker_package_key_source
+# @param docker_package_key_name
+# @param docker_package_key_path
 # @param docker_package_key_check_source
 # @param docker_package_release
 # @param docker_engine_start_command
@@ -359,6 +361,8 @@ class docker (
   Optional[String]                        $docker_ce_release                 = $docker::params::package_ce_release,
   Optional[String]                        $docker_package_location           = $docker::params::package_source_location,
   Optional[String]                        $docker_package_key_source         = $docker::params::package_key_source,
+  Optional[String]                        $docker_package_key_name           = $docker::params::package_key_name,
+  Optional[Stdlib::Absolutepath]          $docker_package_key_path           = $docker::params::package_key_path,
   Optional[Boolean]                       $docker_package_key_check_source   = $docker::params::package_key_check_source,
   Optional[String]                        $docker_package_release            = $docker::params::package_release,
   String                                  $docker_engine_start_command       = $docker::params::docker_engine_start_command,
@@ -544,6 +548,8 @@ class docker (
       $package_location         = $docker::docker_ee_source_location
       $package_key_source       = $docker::docker_ee_key_source
       $package_key_check_source = $docker_package_key_check_source
+      $package_key_name         = $docker_package_key_name
+      $package_key_path         = $docker_package_key_path
       $package_repos            = $docker::docker_ee_repos
       $release                  = $docker::docker_ee_release
       $docker_start_command     = $docker::docker_ee_start_command
@@ -553,6 +559,8 @@ class docker (
         'Debian' : {
           $package_location   = $docker_ce_source_location
           $package_key_source = $docker_ce_key_source
+          $package_key_name   = $docker_package_key_name
+          $package_key_path   = $docker_package_key_path
           $package_repos      = $docker_ce_channel
           $release            = $docker_ce_release
         }
@@ -580,6 +588,8 @@ class docker (
         $package_location         = $docker_package_location
         $package_key_source       = $docker_package_key_source
         $package_key_check_source = $docker_package_key_check_source
+        $package_key_name         = $docker_package_key_name
+        $package_key_path         = $docker_package_key_path
         $package_repos            = 'main'
         $release                  = $docker_package_release
       }
