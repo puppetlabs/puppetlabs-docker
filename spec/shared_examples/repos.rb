@@ -45,7 +45,7 @@ shared_examples 'repos' do |params, facts|
             'src' => false
           },
           'keyring' => "#{key_path}/#{key_name}",
-          'require' => "Apt::Keyring[#{key_name}]"
+          'require' => "Apt::Keyring[#{key_name}]",
         )
       }
 
