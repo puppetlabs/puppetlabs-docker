@@ -66,7 +66,7 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
       if compose_services[service_name]['extends']
         image = get_image(compose_services[service_name]['extends'], compose_services)
       elsif compose_services[service_name]['build']
-        image = "#{name}_#{service_name}"
+        image = "#{name}-#{service_name}"
       end
     end
     image
