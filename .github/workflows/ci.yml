@@ -8,14 +8,14 @@ on:
     
 jobs:
   Spec:
-    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@ubuntu-22-test"
     with:
       runs_on: "ubuntu-24.04"
     secrets: "inherit"
 
   Acceptance:
     needs: Spec
-    uses: "puppetlabs/cat-github-actions/.github/workflows/module_acceptance.yml@main"
+    uses: "puppetlabs/cat-github-actions/.github/workflows/module_acceptance.yml@ubuntu-22-test"
     with:
       flags: '--provision-prefer provision_service --provision-exclude docker --arch-exclude arm --puppetlabs --nightly'
     secrets: "inherit"
