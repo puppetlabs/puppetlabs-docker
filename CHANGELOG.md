@@ -5,7 +5,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v10.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.1) - 2024-07-12
+## [v10.3.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.3.0) - 2025-04-14
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.2.0...v10.3.0)
+
+### Other
+
+- (MODULES-11475): Fix formatting in docker run and service manifests [#1017](https://github.com/puppetlabs/puppetlabs-docker/pull/1017) ([span786](https://github.com/span786))
+- Update package source to use rhel repo instead of deprecated centos. [#999](https://github.com/puppetlabs/puppetlabs-docker/pull/999) ([jbagleyjr](https://github.com/jbagleyjr))
+
+## [v10.2.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.2.0) - 2025-03-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.1.0...v10.2.0)
+
+### Added
+
+- (GH-962) Allow Amazon Linux 2 and newer versions [#972](https://github.com/puppetlabs/puppetlabs-docker/pull/972) ([rjd1](https://github.com/rjd1))
+
+## [v10.1.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.1.0) - 2024-12-18
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.0.1...v10.1.0)
+
+### Added
+
+- Add support for EL9 [#1007](https://github.com/puppetlabs/puppetlabs-docker/pull/1007) ([ghoneycutt](https://github.com/ghoneycutt))
+
+## [v10.0.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.0.1) - 2024-07-13
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.0.0...v10.0.1)
 
