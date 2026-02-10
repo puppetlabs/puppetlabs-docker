@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.4.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.4.0) - 2026-02-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.3.0...v10.4.0)
+
+### Changed
+
+- Use modern APT keyrings on Debian family [#965](https://github.com/puppetlabs/puppetlabs-docker/pull/965) ([kenyon](https://github.com/kenyon))
+
+### Added
+
+- MODULES-11639: Review PR #1029 (use apt keyring to manage gpg key) for puppetlabs-docker [#1041](https://github.com/puppetlabs/puppetlabs-docker/pull/1041) ([span786](https://github.com/span786))
+
+### Other
+
+- (MODULES-11645) Ignore services with restart option as 'no' in exists? method [#1046](https://github.com/puppetlabs/puppetlabs-docker/pull/1046) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- (CAT-2370) Prepare module for Puppetcore [#1032](https://github.com/puppetlabs/puppetlabs-docker/pull/1032) ([skyamgarp](https://github.com/skyamgarp))
+- use apt keyring to manage gpg key [#1029](https://github.com/puppetlabs/puppetlabs-docker/pull/1029) ([techsk8](https://github.com/techsk8))
+- remove dependency on cgroupfs-mount for Debian trixie [#1024](https://github.com/puppetlabs/puppetlabs-docker/pull/1024) ([zen-fu](https://github.com/zen-fu))
+- (CAT-2296) Update github runner image to ubuntu-24.04 [#1019](https://github.com/puppetlabs/puppetlabs-docker/pull/1019) ([shubhamshinde360](https://github.com/shubhamshinde360))
+
 ## [v10.3.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.3.0) - 2025-04-14
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.2.0...v10.3.0)
@@ -447,7 +467,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - (FM-8151) Add Windows Server 2019 support [#493](https://github.com/puppetlabs/puppetlabs-docker/pull/493) ([eimlav](https://github.com/eimlav))
 - Support for docker machine download and install [#466](https://github.com/puppetlabs/puppetlabs-docker/pull/466) ([acurus-puppetmaster](https://github.com/acurus-puppetmaster))
-- Add service_provider parameter to docker::run [#376](https://github.com/puppetlabs/puppetlabs-docker/pull/376) ([jameslikeslinux](https://github.com/jameslikeslinux))
+- Add service_provider parameter to docker::run [#376](https://github.com/puppetlabs/puppetlabs-docker/pull/376) ([puppetjoy](https://github.com/puppetjoy))
 
 ### Fixed
 
