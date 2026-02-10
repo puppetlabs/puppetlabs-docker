@@ -22,7 +22,14 @@ class docker::repos (
       $package_repos = $docker::package_repos
 
       if ($docker::use_upstream_package_source) {
+
+        # https://swarmfarm.atlassian.net/browse/CS-14235
+        # We are removing docker from being a self-managed source here,
+        # But this module is a bit poorly written for our purposes
+        # This is a hardcoding of removal of this element to clean up all machines with this in the fleet
+        $_swarmfarm_docker_remove_apt_source = 'absent'
         apt::source { 'docker':
+          ensure       => $_swarmfarm_docker_remove_apt_source,
           location     => $location,
           architecture => $architecture,
           release      => $release,
