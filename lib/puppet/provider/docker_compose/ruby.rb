@@ -40,6 +40,9 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
     compose_services = compose_output['services']
 
+    # Remove services with restart: 'no' from the compose_services list as they are not expected to be running.
+    compose_services.reject! { |_k, v| v['restart'] == 'no' }
+
     return false if compose_services.count != compose_containers.uniq.count
 
     counts = Hash[*compose_services.each.map { |key, array|
