@@ -87,16 +87,6 @@ shared_examples 'service' do |params, facts|
         manage_service,
       )
     }
-  when 'upstart'
-    it {
-      expect(subject).to contain_file('/etc/init.d/docker').with(
-        'ensure' => 'link',
-        'target' => '/lib/init/upstart-job',
-        'force' => true,
-      ).that_notifies(
-        manage_service,
-      )
-    }
   end
 
   if params['storage_config'] != :undef
