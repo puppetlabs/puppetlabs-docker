@@ -53,14 +53,14 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
                     else
                       'hello-world:latest'
                     end
-    let(:pp1) do
+    let(:ppone) do
       "
           class {'docker': #{docker_args}}
           docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}' }
       "
     end
 
-    let(:pp2) do
+    let(:pptwo) do
       "
           class {'docker': #{docker_args}}
           docker::run {'servercore': image => '#{image_changed}', restart => 'always', net => '#{docker_network}' }
@@ -68,11 +68,11 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
 
     it 'creates servercore with first image' do
-      expect(docker_run_idempotent_apply(pp1)).to be true
+      expect(docker_run_idempotent_apply(ppone)).to be true
     end
 
     it 'detect image change and apply the change' do
-      apply_manifest(pp2, catch_failures: true)
+      apply_manifest(pptwo, catch_failures: true)
       run_shell('docker inspect --format="{{ .Config.Image }}" servercore') do |r|
         expect(r.stdout).to match(%r{#{image_changed}})
       end
@@ -88,14 +88,14 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
       volumes2 = "volumes => ['volume-1:#{volume_location}volume_1', 'volume-2:#{volume_location}volume_2']"
     end
 
-    let(:pp1) do
+    let(:ppone) do
       "
           class {'docker': #{docker_args}}
           docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}', #{volumes1}}
       "
     end
 
-    let(:pp2) do
+    let(:pptwo) do
       "
           class {'docker': #{docker_args}}
           docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}', #{volumes2}}
@@ -103,11 +103,11 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
 
     it "creates servercore with #{volumes1}" do
-      expect(docker_run_idempotent_apply(pp1)).to be true
+      expect(docker_run_idempotent_apply(ppone)).to be true
     end
 
     it "creates servercore with #{volumes2}" do
-      apply_manifest(pp2, catch_failures: true)
+      apply_manifest(pptwo, catch_failures: true)
       run_shell('docker inspect servercore --format="{{ json .Mounts }}"') do |r|
         inspect_result = JSON.parse(r.stdout)
         inspect_result = inspect_result.map { |item| item['Name'] }.sort
@@ -120,14 +120,14 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     ports1 = "ports => ['4444']"
     ports2 = "ports => ['4444', '4445']"
 
-    let(:pp1) do
+    let(:ppone) do
       "
           class {'docker': #{docker_args}}
           docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}', #{ports1}}
       "
     end
 
-    let(:pp2) do
+    let(:pptwo) do
       "
           class {'docker': #{docker_args}}
           docker::run {'servercore': image => '#{docker_image}', restart => 'always', net => '#{docker_network}', #{ports2}}
@@ -135,11 +135,11 @@ describe 'docker trigger parameters change', if: fetch_puppet_version > 5 do
     end
 
     it 'creates servercore with ports => ["4444"]' do
-      expect(docker_run_idempotent_apply(pp1)).to be true
+      expect(docker_run_idempotent_apply(ppone)).to be true
     end
 
     it 'creates servercore with ports => ["4444", "4445"]' do
-      apply_manifest(pp2, catch_failures: true)
+      apply_manifest(pptwo, catch_failures: true)
       run_shell('docker inspect servercore --format="{{ json .HostConfig.PortBindings }}"') do |r|
         inspect_result = JSON.parse(r.stdout)
         inspect_result = inspect_result.keys.map { |item| item.split('/')[0] }.sort

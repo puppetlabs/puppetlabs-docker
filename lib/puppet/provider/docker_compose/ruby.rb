@@ -20,7 +20,6 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
   def exists?
     Puppet.info("Checking for compose project #{name}")
-    compose_services = {}
     compose_containers = []
 
     set_tmpdir
