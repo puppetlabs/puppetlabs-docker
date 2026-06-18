@@ -6,5 +6,4 @@
 --no-autoloader_layout-check
 --no-documentation-check
 --no-single_quote_string_with_variables-check
---no-anchor_resource-check
 --ignore-paths=.vendor/**/*.pp,.bundle/**/*.pp,pkg/**/*.pp,spec/**/*.pp,tests/**/*.pp,types/**/*.pp,vendor/**/*.pp
