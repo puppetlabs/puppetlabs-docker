@@ -16,8 +16,7 @@ describe Puppet::Type.type(:docker_compose).provider(:ruby) do
   describe '#exists?' do
     before(:each) do
       allow(Puppet::Util::Platform).to receive(:windows?).and_return(false)
-      allow(provider).to receive(:execute).and_return(YAML.safe_load("services:\n  web:\n    image: mysql\n    restart: always\n"))
-      allow(provider).to receive(:docker).and_return("'db-mysql'\n")
+      allow(provider).to receive_messages(execute: YAML.safe_load("services:\n  web:\n    image: mysql\n    restart: always\n"), docker: "'db-mysql'\n")
     end
 
     it 'ignores services with restart: no' do
