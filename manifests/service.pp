@@ -367,14 +367,6 @@ class docker::service (
         refreshonly => true,
       }
     }
-    'upstart': {
-      file { '/etc/init.d/docker':
-        ensure => 'link',
-        target => '/lib/init/upstart-job',
-        force  => true,
-        notify => $_manage_service,
-      }
-    }
     default: {}
   }
 
