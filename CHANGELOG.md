@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.4.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.4.1) - 2026-06-25
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.4.0...v10.4.1)
+
+### Fixed
+
+- Do not limit puppetlabs/apt requirement < v12 [#1056](https://github.com/puppetlabs/puppetlabs-docker/pull/1056) ([mpdude](https://github.com/mpdude))
+
+### Other
+
+- (MODULES-11840) Allow puppetlabs/stdlib 10.x [#1057](https://github.com/puppetlabs/puppetlabs-docker/pull/1057) ([imaqsood](https://github.com/imaqsood))
+- Fix argument order on compose up [#1037](https://github.com/puppetlabs/puppetlabs-docker/pull/1037) ([deligatedgeek](https://github.com/deligatedgeek))
+
 ## [v10.4.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.4.0) - 2026-02-10
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.3.0...v10.4.0)
