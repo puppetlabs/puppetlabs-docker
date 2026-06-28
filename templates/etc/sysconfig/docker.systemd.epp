@@ -8,7 +8,7 @@ OPTIONS="<% if $root_dir { %><%= $root_dir_flag %> <%= $root_dir %><% } -%>
  --ip-forward=<%= $ip_forward -%>
  --iptables=<%= $iptables -%>
  --ip-masq=<%= $ip_masq -%>
-<% if $icc { %> --icc=<%= $icc %><% } -%>
+<% unless $icc == undef { %> --icc=<%= $icc %><% } -%>
 <% if type($registry_mirror, 'generalized') == String { %> --registry-mirror=<%= $registry_mirror %><% } -%>
 <% if String(type($registry_mirror, 'generalized')).index('Array') == 0 { %><% $registry_mirror.each |$param| { %> --registry-mirror=<%= $param %><% } %><% } -%>
 <% if $fixed_cidr { %> --fixed-cidr <%= $fixed_cidr %><% } -%>
