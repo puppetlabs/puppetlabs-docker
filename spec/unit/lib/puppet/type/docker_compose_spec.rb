@@ -23,13 +23,13 @@ describe compose do
 
   it 'has expected properties' do
     properties.each do |property|
-      expect(compose.properties.map(&:name)).to be_include(property)
+      expect(compose.properties.map(&:name)).to include(property)
     end
   end
 
   it 'has expected parameters' do
     params.each do |param|
-      expect(compose.parameters).to be_include(param)
+      expect(compose.parameters).to include(param)
     end
   end
 

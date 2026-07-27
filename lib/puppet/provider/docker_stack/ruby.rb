@@ -14,7 +14,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
     stack_services = {}
     stack_containers = []
     resource[:compose_files].each do |file|
-      compose_file = YAML.safe_load(File.read(file), [], [], true)
+      compose_file = YAML.safe_load_file(file, [], [], true)
       # rubocop:disable Style/StringLiterals
       containers = docker([
                             'ps',
@@ -79,7 +79,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
   end
 
   def bundle_file
-    return resource[:bundle_file].map { |x| ['-c', x] }.flatten unless resource[:bundle_file].nil?
+    resource[:bundle_file]&.map { |x| ['-c', x] }&.flatten
   end
 
   def compose_files

@@ -13,7 +13,6 @@ class docker::params {
   $docker_ee_start_command           = 'dockerd'
   $docker_ee_source_location         = undef
   $docker_ee_key_source              = undef
-  $docker_ee_key_id                  = undef
   $docker_ee_repos                   = stable
   $tcp_bind                          = undef
   $tls_enable                        = false
@@ -47,8 +46,7 @@ class docker::params {
   $dns                               = undef
   $dns_search                        = undef
   $proxy                             = undef
-  $compose_base_url                  = 'https://github.com/docker/compose/releases/download'
-  $compose_symlink_name              = 'docker-compose'
+  $compose_version                   = undef
   $no_proxy                          = undef
   $execdriver                        = undef
   $storage_driver                    = undef
@@ -90,16 +88,12 @@ class docker::params {
   $docker_command                    = 'docker'
 
   if ($facts['os']['family'] == 'windows') {
-    $compose_install_path   = "${facts['docker_program_files_path']}/Docker"
-    $compose_version        = '1.29.2'
     $docker_ee_package_name = 'Docker'
     $machine_install_path   = "${facts['docker_program_files_path']}/Docker"
     $tls_cacert             = "${facts['docker_program_data_path']}/docker/certs.d/ca.pem"
     $tls_cert               = "${facts['docker_program_data_path']}/docker/certs.d/server-cert.pem"
     $tls_key                = "${facts['docker_program_data_path']}/docker/certs.d/server-key.pem"
   } else {
-    $compose_install_path   = '/usr/local/bin'
-    $compose_version        = '1.29.2'
     $docker_ee_package_name = 'docker-ee'
     $machine_install_path   = '/usr/local/bin'
     $tls_cacert             = '/etc/docker/tls/ca.pem'
@@ -168,7 +162,6 @@ class docker::params {
 
       $package_ce_source_location    = "https://download.docker.com/linux/${os_lc}"
       $package_ce_key_source         = "https://download.docker.com/linux/${os_lc}/gpg"
-      $package_ce_key_id             = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
       if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
         $package_ce_release            = $facts['os']['lsb']['distcodename']
       } else {
@@ -176,11 +169,11 @@ class docker::params {
       }
       $package_source_location       = 'http://apt.dockerproject.org/repo'
       $package_key_source            = 'https://apt.dockerproject.org/gpg'
+      $package_key_name              = 'docker.asc'
+      $package_key_path              = '/usr/share/keyrings'
       $package_key_check_source      = undef
-      $package_key_id                = '58118E89F3A912897C070ADBF76221572C52609D'
       $package_ee_source_location    = $docker_ee_source_location
       $package_ee_key_source         = $docker_ee_key_source
-      $package_ee_key_id             = $docker_ee_key_id
       if (versioncmp($facts['facterversion'], '2.4.6') <= 0) {
         $package_ee_release            = $facts['os']['lsb']['distcodename']
       } else {
@@ -211,19 +204,18 @@ class docker::params {
 
       $apt_source_pin_level        = undef
       $detach_service_in_init      = false
-      $package_ce_key_id           = undef
-      $package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
+      $package_ce_key_source       = 'https://download.docker.com/linux/rhel/gpg'
       $package_ce_release          = undef
-      $package_ce_source_location  = "https://download.docker.com/linux/centos/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
-      $package_ee_key_id           = $docker_ee_key_id
+      $package_ce_source_location  = "https://download.docker.com/linux/rhel/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
       $package_ee_key_source       = $docker_ee_key_source
       $package_ee_package_name     = $docker_ee_package_name
       $package_ee_release          = undef
       $package_ee_repos            = $docker_ee_repos
       $package_ee_source_location  = $docker_ee_source_location
       $package_key_check_source    = true
-      $package_key_id              = undef
       $package_key_source          = 'https://yum.dockerproject.org/gpg'
+      $package_key_name            = undef
+      $package_key_path            = undef
       $package_release             = undef
       $package_source_location     = "https://yum.dockerproject.org/repo/main/centos/${facts['os']['release']['major']}"
       $pin_upstream_package_source = undef
@@ -247,18 +239,17 @@ class docker::params {
       $docker_group                        = 'docker'
       $package_ce_source_location          = undef
       $package_ce_key_source               = undef
-      $package_ce_key_id                   = undef
       $package_ce_repos                    = undef
       $package_ce_release                  = undef
-      $package_key_id                      = undef
       $package_release                     = undef
       $package_source_location             = undef
       $package_key_source                  = undef
       $package_key_check_source            = undef
+      $package_key_name                    = undef
+      $package_key_path                    = undef
       $package_ee_source_location          = undef
       $package_ee_package_name             = $docker_ee_package_name
       $package_ee_key_source               = undef
-      $package_ee_key_id                   = undef
       $package_ee_repos                    = undef
       $package_ee_release                  = undef
       $use_upstream_package_source         = undef
@@ -283,18 +274,17 @@ class docker::params {
       $socket_group                        = $socket_group_default
       $package_key_source                  = undef
       $package_key_check_source            = undef
+      $package_key_name                    = undef
+      $package_key_path                    = undef
       $package_source_location             = undef
-      $package_key_id                      = undef
       $package_repos                       = undef
       $package_release                     = undef
       $package_ce_key_source               = undef
       $package_ce_source_location          = undef
-      $package_ce_key_id                   = undef
       $package_ce_repos                    = undef
       $package_ce_release                  = undef
       $package_ee_source_location          = undef
       $package_ee_key_source               = undef
-      $package_ee_key_id                   = undef
       $package_ee_release                  = undef
       $package_ee_repos                    = undef
       $package_ee_package_name             = undef
@@ -323,18 +313,17 @@ class docker::params {
       $socket_group                        = $socket_group_default
       $package_key_source                  = undef
       $package_key_check_source            = undef
+      $package_key_name                    = undef
+      $package_key_path                    = undef
       $package_source_location             = undef
-      $package_key_id                      = undef
       $package_repos                       = undef
       $package_release                     = undef
       $package_ce_key_source               = undef
       $package_ce_source_location          = undef
-      $package_ce_key_id                   = undef
       $package_ce_repos                    = undef
       $package_ce_release                  = undef
       $package_ee_source_location          = undef
       $package_ee_key_source               = undef
-      $package_ee_key_id                   = undef
       $package_ee_release                  = undef
       $package_ee_repos                    = undef
       $package_ee_package_name             = undef
@@ -365,7 +354,10 @@ class docker::params {
   # https://github.com/docker/docker/issues/4734
   $prerequired_packages = $facts['os']['family'] ? {
     'Debian' => $facts['os']['name'] ? {
-      'Debian' => ['cgroupfs-mount',],
+      'Debian' => $facts['os']['distro']['codename'] ? {
+        /bullseye|bookworm/ => ['cgroupfs-mount',],
+        default    => []
+      },
       'Ubuntu' => ['cgroup-lite', 'apparmor',],
       default  => [],
     },

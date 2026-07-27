@@ -3,8 +3,6 @@
 def get_defaults(_facts)
   bip                               = :undef
   bridge                            = :undef
-  compose_base_url                  = 'https://github.com/docker/compose/releases/download'
-  compose_symlink_name              = 'docker-compose'
   curl_ensure                       = true
   default_gateway                   = :undef
   default_gateway_ipv6              = :undef
@@ -30,7 +28,6 @@ def get_defaults(_facts)
   docker_ce_start_command           = 'dockerd'
   docker_command                    = 'docker'
   docker_ee                         = false
-  docker_ee_key_id                  = :undef
   docker_ee_key_source              = :undef
   docker_ee_repos                   = 'stable'
   docker_ee_source_location         = :undef
@@ -88,18 +85,15 @@ def get_defaults(_facts)
   tmp_dir                           = '/tmp/'
   tmp_dir_config                    = true
   version                           = :undef
+  compose_version                   = :undef
 
   if _facts[:os]['family'] == 'windows'
-    compose_install_path   = "#{_facts['docker_program_files_path']}/Docker"
-    compose_version        = '1.21.2'
     docker_ee_package_name = 'Docker'
     machine_install_path   = "#{_facts['docker_program_files_path']}/Docker"
     tls_cacert             = "#{_facts['docker_program_data_path']}/docker/certs.d/ca.pem"
     tls_cert               = "#{_facts['docker_program_data_path']}/docker/certs.d/server-cert.pem"
     tls_key                = "#{_facts['docker_program_data_path']}/docker/certs.d/server-key.pem"
   else
-    compose_install_path   = '/usr/local/bin'
-    compose_version        = '1.9.0'
     docker_ee_package_name = 'docker-ee'
     machine_install_path   = '/usr/local/bin'
     tls_cacert             = '/etc/docker/tls/ca.pem'
@@ -135,19 +129,18 @@ def get_defaults(_facts)
     storage_setup_file            = :undef
     use_upstream_package_source   = true
 
-    package_ce_key_id             = '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
     package_ce_key_source         = "https://download.docker.com/linux/#{os_lc}/gpg"
     package_ce_release            = _facts[:os]['distro']['codename']
     package_ce_source_location    = "https://download.docker.com/linux/#{os_lc}"
-    package_ee_key_id             = docker_ee_key_id
     package_ee_key_source         = docker_ee_key_source
     package_ee_package_name       = docker_ee_package_name
     package_ee_release            = _facts[:os]['distro']['codename']
     package_ee_repos              = docker_ee_repos
     package_ee_source_location    = docker_ee_source_location
     package_key_check_source      = :undef
-    package_key_id                = '58118E89F3A912897C070ADBF76221572C52609D'
     package_key_source            = 'https://apt.dockerproject.org/gpg'
+    package_key_name              = 'docker.asc'
+    package_key_path              = '/usr/share/keyrings'
     package_source_location       = 'http://apt.dockerproject.org/repo'
 
     detach_service_in_init = service_provider != 'systemd'
@@ -167,19 +160,18 @@ def get_defaults(_facts)
 
     apt_source_pin_level        = :undef
     detach_service_in_init      = false
-    package_ce_key_id           = :undef
     package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
     package_ce_release          = :undef
     package_ce_source_location  = "https://download.docker.com/linux/centos/#{_facts[:os]['release']['major']}/#{_facts[:os]['architecture']}/#{docker_ce_channel}"
-    package_ee_key_id           = docker_ee_key_id
     package_ee_key_source       = docker_ee_key_source
     package_ee_package_name     = docker_ee_package_name
     package_ee_release          = :undef
     package_ee_repos            = docker_ee_repos
     package_ee_source_location  = docker_ee_source_location
     package_key_check_source    = true
-    package_key_id              = :undef
     package_key_source          = 'https://yum.dockerproject.org/gpg'
+    package_key_name            = :undef
+    package_key_path            = :undef
     package_release             = :undef
     package_source_location     = "https://yum.dockerproject.org/repo/main/centos/#{_facts[:os]['release']['major']}"
     pin_upstream_package_source = :undef
@@ -208,18 +200,17 @@ def get_defaults(_facts)
     docker_group                        = 'docker'
     package_ce_source_location          = :undef
     package_ce_key_source               = :undef
-    package_ce_key_id                   = :undef
     package_ce_repos                    = :undef
     package_ce_release                  = :undef
-    package_key_id                      = :undef
     package_release                     = :undef
     package_source_location             = :undef
     package_key_source                  = :undef
     package_key_check_source            = :undef
+    package_key_name                    = :undef
+    package_key_path                    = :undef
     package_ee_source_location          = :undef
     package_ee_package_name             = docker_ee_package_name
     package_ee_key_source               = :undef
-    package_ee_key_id                   = :undef
     package_ee_repos                    = :undef
     package_ee_release                  = :undef
     use_upstream_package_source         = :undef
@@ -243,18 +234,17 @@ def get_defaults(_facts)
     socket_group                        = socket_group_default
     package_key_source                  = :undef
     package_key_check_source            = :undef
+    package_key_name                    = :undef
+    package_key_path                    = :undef
     package_source_location             = :undef
-    package_key_id                      = :undef
     package_repos                       = :undef
     package_release                     = :undef
     package_ce_key_source               = :undef
     package_ce_source_location          = :undef
-    package_ce_key_id                   = :undef
     package_ce_repos                    = :undef
     package_ce_release                  = :undef
     package_ee_source_location          = :undef
     package_ee_key_source               = :undef
-    package_ee_key_id                   = :undef
     package_ee_release                  = :undef
     package_ee_repos                    = :undef
     package_ee_package_name             = :undef
@@ -282,18 +272,17 @@ def get_defaults(_facts)
     socket_group                        = socket_group_default
     package_key_source                  = :undef
     package_key_check_source            = :undef
+    package_key_name                    = :undef
+    package_key_path                    = :undef
     package_source_location             = :undef
-    package_key_id                      = :undef
     package_repos                       = :undef
     package_release                     = :undef
     package_ce_key_source               = :undef
     package_ce_source_location          = :undef
-    package_ce_key_id                   = :undef
     package_ce_repos                    = :undef
     package_ce_release                  = :undef
     package_ee_source_location          = :undef
     package_ee_key_source               = :undef
-    package_ee_key_id                   = :undef
     package_ee_release                  = :undef
     package_ee_repos                    = :undef
     package_ee_package_name             = :undef
@@ -340,9 +329,6 @@ def get_defaults(_facts)
     'apt_source_pin_level' => apt_source_pin_level,
     'bip' => bip,
     'bridge' => bridge,
-    'compose_base_url' => compose_base_url,
-    'compose_install_path' => compose_install_path,
-    'compose_symlink_name' => compose_symlink_name,
     'compose_version' => compose_version,
     'curl_ensure' => curl_ensure,
     'default_gateway' => default_gateway,
@@ -371,7 +357,6 @@ def get_defaults(_facts)
     'docker_ce_start_command' => docker_ce_start_command,
     'docker_command' => docker_command,
     'docker_ee' => docker_ee,
-    'docker_ee_key_id' => docker_ee_key_id,
     'docker_ee_key_source' => docker_ee_key_source,
     'docker_ee_package_name' => docker_ee_package_name,
     'docker_ee_repos' => docker_ee_repos,
@@ -407,12 +392,10 @@ def get_defaults(_facts)
     'nuget_package_provider_version' => nuget_package_provider_version,
     'os_lc' => os_lc,
     'overlay2_override_kernel_check' => overlay2_override_kernel_check,
-    'package_ce_key_id' => package_ce_key_id,
     'package_ce_key_source' => package_ce_key_source,
     'package_ce_release' => package_ce_release,
     'package_ce_repos' => package_ce_repos,
     'package_ce_source_location' => package_ce_source_location,
-    'package_ee_key_id' => package_ee_key_id,
     'package_ee_key_source' => package_ee_key_source,
     'package_ee_package_name' => package_ee_package_name,
     'package_ee_release' => package_ee_release,
@@ -420,8 +403,9 @@ def get_defaults(_facts)
     'package_ee_source_location' => package_ee_source_location,
     'package_ensure' => package_ensure,
     'package_key_check_source' => package_key_check_source,
-    'package_key_id' => package_key_id,
     'package_key_source' => package_key_source,
+    'package_key_name' => package_key_name,
+    'package_key_path' => package_key_path,
     'package_name' => package_name,
     'package_release' => package_release,
     'package_repos' => package_repos,

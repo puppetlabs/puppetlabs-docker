@@ -319,7 +319,7 @@ class docker::service (
 
     $dirs.each |$dir| {
       file { $dir:
-        ensure  => directory,
+        ensure => directory,
       }
     }
   }
