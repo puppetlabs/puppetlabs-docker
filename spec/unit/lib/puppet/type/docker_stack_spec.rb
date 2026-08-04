@@ -21,13 +21,13 @@ describe stack do
 
   it 'has expected properties' do
     properties.each do |property|
-      expect(stack.properties.map(&:name)).to be_include(property)
+      expect(stack.properties.map(&:name)).to include(property)
     end
   end
 
   it 'has expected parameters' do
     params.each do |param|
-      expect(stack.parameters).to be_include(param)
+      expect(stack.parameters).to include(param)
     end
   end
 

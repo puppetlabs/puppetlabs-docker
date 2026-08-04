@@ -53,3 +53,8 @@ RSpec/NamedSubject:
     - 'spec/defines/plugin_spec.rb'
     - 'spec/defines/run_spec.rb'
     - 'spec/defines/services_spec.rb'
+
+# Offense count: 6
+RSpec/IndexedLet:
+  Exclude:
+    - 'spec/acceptance/docker_params_changed_spec.rb'

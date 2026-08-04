@@ -60,7 +60,7 @@ RSpec.configure do |c|
 
   # Configure all nodes in nodeset
   c.before :suite do
-    if os[:family] == 'debian' || os[:family] == 'ubuntu'
+    if ['debian', 'ubuntu'].include?(os[:family])
       run_shell('apt-get update -y')
       # run_shell('apt-get upgrade -y')
       run_shell('apt-get install -y lsb-release')

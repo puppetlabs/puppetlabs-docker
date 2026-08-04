@@ -92,6 +92,43 @@ describe 'docker compose', :win_broken do
     end
   end
 
+  context 'Creating compose projects with services having restart: no' do
+    before(:all) do
+      # Create a compose file with one service having restart: no
+      compose_content = <<-YAML
+version: '3.8'
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+  web:
+    image: nginx
+    restart: no
+YAML
+      create_remote_file(hosts, "#{tmp_path}/docker-compose-restart-no.yml", compose_content)
+    end
+
+    let(:install_pp) do
+      <<-MANIFEST
+        docker_compose { 'restart_test':
+          compose_files => ['#{tmp_path}/docker-compose-restart-no.yml'],
+          ensure => present,
+        }
+      MANIFEST
+    end
+
+    it 'is idempotent' do
+      idempotent_apply(install_pp)
+    end
+
+    it 'finds the running service but ignores the restart: no service' do
+      # Assuming the compose file has one service with restart: always and one with restart: no
+      run_shell('docker inspect restart_test-db_1', expect_failures: false)
+      # The web service with restart: no should not be running
+      run_shell('docker inspect restart_test-web_1', expect_failures: true)
+    end
+  end
+
   context 'Requesting a specific version of compose' do
     let(:version) do
       '2.25.0'

@@ -5,7 +5,7 @@ require 'spec_helper_acceptance'
 if os[:kernel] == 'windows'
   docker_args = 'docker_ee => true'
   default_image = 'winamd64/hello-seattle'
-  default_image_tag = if os[:release][:major] == '2019' || os[:release][:major] == '2022'
+  default_image_tag = if ['2019', '2022'].include?(os[:release][:major])
                         'nanoserver'
                       else
                         'nanoserver-sac2016'
@@ -40,7 +40,6 @@ else
   default_docker_exec_lr_command = '/bin/sh -c "touch /root/test_file.txt; while true; do echo hello world; sleep 1; done"'
   default_docker_exec_command = 'touch /root/test_file.txt'
   docker_mount_path = '/root'
-  storage_driver = 'devicemapper'
   storage_driver = if os[:family] == 'RedHat'
                      'devicemapper'
                    else
