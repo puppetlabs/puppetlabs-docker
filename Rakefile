@@ -18,6 +18,13 @@ PuppetLint.configuration.send('disable_single_quote_string_with_variables')
 # (Puppet 9 lane, Ruby 3.4+): the two lanes demand opposite indentation for nested
 # hashes, so no single manifest layout can satisfy both. See MODULES-11726 / MODULES-11700.
 PuppetLint.configuration.send('disable_strict_indent')
+# exec_idempotency and params_not_optional_with_undef are new checks pulled in by
+# voxpupuli-puppet-lint-plugins 7.0 (required for the Puppet 9 lane). Both only flag
+# intentional code here: the image.pp exec is `~>`-triggered off a notify, the
+# services.pp execs are `docker service update`/`scale` (non-idempotent by design),
+# and run.pp's `Variant[...,Undef] $net = undef` is equivalent to Optional[...].
+PuppetLint.configuration.send('disable_exec_idempotency')
+PuppetLint.configuration.send('disable_params_not_optional_with_undef')
 PuppetLint.configuration.fail_on_warnings = true
 PuppetLint.configuration.ignore_paths = [".vendor/**/*.pp", ".bundle/**/*.pp", "pkg/**/*.pp", "spec/**/*.pp", "tests/**/*.pp", "types/**/*.pp", "vendor/**/*.pp"]
 
