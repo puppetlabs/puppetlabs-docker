@@ -12,6 +12,8 @@ shared_examples 'registry' do |title, params, facts, defaults|
   receipt      = params['receipt']
 
   docker_command = defaults['docker_command']
+  sensitive_pw   = password.respond_to?(:unwrap) && facts[:os]['family'] != 'windows'
+  password       = password.unwrap if password.respond_to?(:unwrap)
 
   if facts[:os]['family'] == 'windows'
     exec_environment = ["PATH=#{facts['docker_program_files_path']}/Docker/"]
@@ -34,6 +36,9 @@ shared_examples 'registry' do |title, params, facts, defaults|
     if username != :undef && password != :undef && email != :undef && version != :undef && version =~ %r{1[.][1-9]0?}
       auth_cmd         = "#{docker_command} login -u '#{username}' -p \"#{password_env}\" -e '#{email}' #{server}"
       auth_environment = "password=#{password}"
+    elsif username != :undef && password != :undef && sensitive_pw
+      auth_cmd         = "printf '%s' '#{password.gsub("'", "'\\\\''")}' | #{docker_command} login -u '#{username}' --password-stdin #{server}"
+      auth_environment = ''
     elsif username != :undef && password != :undef
       auth_cmd         = "#{docker_command} login -u '#{username}' -p \"#{password_env}\" #{server}"
       auth_environment = "password=#{password}"
@@ -48,7 +53,9 @@ shared_examples 'registry' do |title, params, facts, defaults|
 
   docker_auth = "#{title}#{auth_environment}#{auth_cmd}#{local_user}"
 
-  exec_env = if auth_environment == ''
+  exec_env = if sensitive_pw
+               exec_environment
+             elsif auth_environment == ''
                exec_environment << "docker_auth=#{docker_auth}"
              else
                exec_environment << auth_environment << "docker_auth=#{docker_auth}"
@@ -112,7 +119,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
   it {
     expect(subject).to contain_exec("#{title} auth").with(
       'environment' => exec_env,
-      'command' => auth_command,
+      'command' => sensitive_pw ? sensitive(auth_command) : auth_command,
       'user' => exec_user,
       'path' => exec_path,
       'timeout' => exec_timeout,
