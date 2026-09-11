@@ -11,42 +11,16 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
 
   def exists?
     Puppet.info("Checking for stack #{name}")
-    stack_services = {}
-    stack_containers = []
-    resource[:compose_files].each do |file|
-      compose_file = YAML.safe_load_file(file, [], [], true)
-      # rubocop:disable Style/StringLiterals
-      containers = docker([
-                            'ps',
-                            '--format',
-                            "{{.Label \"com.docker.swarm.service.name\"}}-{{.Image}}",
-                            '--filter',
-                            "label=com.docker.stack.namespace=#{name}",
-                          ]).split("\n").each do |c|
-                            c.slice!("#{name}_")
-                          end
-      stack_containers.push(*containers)
-      stack_containers.uniq!
-      # rubocop:enable Style/StringLiterals
-      case compose_file['version']
-      when %r{^3(\.[0-7])?$}
-        stack_services.merge!(compose_file['services'])
-      else
-        raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-      end
-    end
+    stack_services = compose_stack_services
+    swarm_services = swarm_service_images
+    return false if stack_services.empty? || swarm_services.size != stack_services.size
 
-    return false if stack_services.count != stack_containers.count
-
-    counts = Hash[*stack_services.each.map { |key, array|
-                    image = array['image'] || get_image(key, stack_services)
-                    image = "#{image}:latest" unless image.include?(':')
+    counts = Hash[*stack_services.each.map { |key, spec|
+                    image = canonical_image(spec['image'] || get_image(key, stack_services))
                     Puppet.info("Checking for compose service #{key} #{image}")
-                    ["#{key}-#{image}", stack_containers.count("#{key}-#{image}")]
+                    ["#{key}-#{image}", swarm_services.count("#{key}-#{image}")]
                   }.flatten]
-    # No containers found for the project
     if counts.empty? ||
-       # Containers described in the compose file are not running
        counts.any? { |_k, v| v.zero? }
       false
     else
@@ -84,5 +58,43 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
 
   def compose_files
     resource[:compose_files].map { |x| ['-c', x] }.flatten
+  end
+
+  def compose_stack_services
+    stack_services = {}
+    resource[:compose_files].each do |file|
+      compose_file = Puppet::Util::Yaml.safe_load(File.read(file))
+      case compose_file['version']
+      when %r{^3(\.[0-8])?$}
+        stack_services.merge!(compose_file['services'])
+      else
+        raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
+      end
+    end
+    stack_services
+  end
+
+  def swarm_service_images
+    docker(['stack', 'services', '--format', '{{.Name}} {{.Image}}', name])
+      .split("\n")
+      .reject(&:empty?)
+      .map { |line|
+        svc, image = line.split(' ', 2)
+        "#{svc.delete_prefix("#{name}_")}-#{canonical_image(image)}"
+      }
+  rescue Puppet::ExecutionFailure
+    []
+  end
+
+  # Swarm pins resolved images as repo:tag@sha256:…. Compare repo:tag only.
+  # :latest is added only when the last path segment has no colon, so
+  # registry:5000/foo is untagged and registry:5000/foo:1.0 is not.
+  def canonical_image(image)
+    return if image.nil? || image.empty?
+
+    image = image.sub(/@sha256:[0-9a-f]+\z/i, '')
+    return "#{image}:latest" unless image.rpartition('/').last.include?(':')
+
+    image
   end
 end
