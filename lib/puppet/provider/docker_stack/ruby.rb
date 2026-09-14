@@ -78,10 +78,10 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
     docker(['stack', 'services', '--format', '{{.Name}} {{.Image}}', name])
       .split("\n")
       .reject(&:empty?)
-      .map { |line|
+      .map do |line|
         svc, image = line.split(' ', 2)
         "#{svc.delete_prefix("#{name}_")}-#{canonical_image(image)}"
-      }
+      end
   rescue Puppet::ExecutionFailure
     []
   end
@@ -92,7 +92,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
   def canonical_image(image)
     return if image.nil? || image.empty?
 
-    image = image.sub(/@sha256:[0-9a-f]+\z/i, '')
+    image = image.sub(%r{@sha256:[0-9a-f]+\z}i, '')
     return "#{image}:latest" unless image.rpartition('/').last.include?(':')
 
     image
