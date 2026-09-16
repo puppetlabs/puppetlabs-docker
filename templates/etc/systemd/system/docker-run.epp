@@ -16,8 +16,8 @@ After=<%= $after.unique.join(" ") %>
 Wants=<%= $wants.unique.join(" ") %>
 Requires=<%= $requires.unique.join(" ") %>
 <%- if $have_systemd_v230 { -%>
-StartLimitIntervalSec=20
-StartLimitBurst=3
+StartLimitIntervalSec=<%= $systemd_start_limit_interval_sec %>
+StartLimitBurst=<%= $systemd_start_limit_burst %>
 <% } -%>
 <%- if $extra_systemd_parameters['Unit'] { -%>
 	<%- $extra_systemd_parameters['Unit'].each |$key, $value| { %>
@@ -28,8 +28,8 @@ StartLimitBurst=3
 [Service]
 Restart=<%= $systemd_restart %>
 <%- unless $have_systemd_v230 { -%>
-StartLimitInterval=20
-StartLimitBurst=3
+StartLimitInterval=<%= $systemd_start_limit_interval_sec %>
+StartLimitBurst=3<%= $systemd_start_limit_burst %>
 <% } -%>
 TimeoutStartSec=0
 RestartSec=5
