@@ -204,9 +204,18 @@ class docker::params {
 
       $apt_source_pin_level        = undef
       $detach_service_in_init      = false
-      $package_ce_key_source       = 'https://download.docker.com/linux/rhel/gpg'
+      # Docker publishes EL packages under both linux/centos and linux/rhel, but it
+      # retired linux/rhel/7 while still shipping EL7 builds (up to docker-ce 26.1.4)
+      # under linux/centos/7. Point EL7 at the centos path and leave EL8+ on rhel,
+      # which is where this branch has pointed since e08575f. The signing key is
+      # byte-identical between the two paths.
+      $package_ce_distro_path      = ($facts['os']['release']['major'] == '7') ? {
+        true    => 'centos',
+        default => 'rhel',
+      }
+      $package_ce_key_source       = "https://download.docker.com/linux/${package_ce_distro_path}/gpg"
       $package_ce_release          = undef
-      $package_ce_source_location  = "https://download.docker.com/linux/rhel/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
+      $package_ce_source_location  = "https://download.docker.com/linux/${package_ce_distro_path}/${facts['os']['release']['major']}/${facts['os']['architecture']}/${docker_ce_channel}"
       $package_ee_key_source       = $docker_ee_key_source
       $package_ee_package_name     = $docker_ee_package_name
       $package_ee_release          = undef
