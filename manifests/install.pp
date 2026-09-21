@@ -1,6 +1,6 @@
 # @summary
 #  Module to install an up-to-date version of Docker from a package repository.
-#  Only for Debian, Red Hat and Windows
+#  Only for Arch Linux, Debian, Red Hat and Windows
 #
 # @param version
 #   The package version to install, used to set the package name.
@@ -29,8 +29,13 @@ class docker::install (
   $docker_start_command = $docker::docker_start_command
 
   if $facts['os']['family'] and ! $docker::acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
-      fail('This module only works on Debian, RedHat or Windows.')
+    assert_type(Pattern[/^(Archlinux|Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
+      fail('This module only works on Arch Linux, Debian, RedHat or Windows.')
+    }
+  }
+  if $facts['os']['family'] == 'Archlinux' and $docker::version and $docker::ensure != 'absent' {
+    assert_type(Pattern[/^(present|installed|latest)$/], $docker::version) |$a, $b| {
+      fail('Installing a specific Docker version is not supported on Arch Linux; pacman can only install the current package.')
     }
   }
   if $docker::version and $docker::ensure != 'absent' {
@@ -85,6 +90,9 @@ class docker::install (
           ensure_resource('package', $dependent_packages, {
               ensure => $ensure,
           })
+          # Remove packages in dependency order, since package managers such as pacman refuse to remove a package that
+          # another installed package depends on
+          Package <| title == 'docker-compose-plugin' |> -> Package['docker'] -> Package[$dependent_packages]
         }
       } else {
         if $ensure == 'absent' {

@@ -132,13 +132,16 @@ describe 'docker::registry', type: :define do
           end
 
           let :pre_condition do
+            # pacman cannot install a specific package version, so Arch Linux does not accept one
+            docker_version = (facts[:os]['family'] == 'Archlinux') ? '' : "version => \"#{params['version']}\","
+
             <<-MANIFEST
             function pw_hash($foo, $bar, $asdf) {
               return '$6$foobar$v8j5roVj0D8t.Ipwvk0RrMHiZfZRoBMeVQDywxUKFtdRI2EFRi2X6tbOigjpOsa9UDVzgIBtcl2ZEGcM.jnZZ.'
             }
 
             class { 'docker':
-              version => "#{params['version']}",
+              #{docker_version}
               *       => #{docker_params},
             }
             MANIFEST
