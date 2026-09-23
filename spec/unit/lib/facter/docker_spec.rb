@@ -50,7 +50,12 @@ describe 'Facter::Util::Fact' do
 
   describe 'docker fact with composer network' do
     before :each do
-      allow(Facter.fact(:interfaces)).to receive(:value).and_return('br-c5810f1e3113,docker0,eth0,lo')
+      allow(Facter.fact('networking.interfaces')).to receive(:value).and_return({
+        'br-c5810f1e3113' => {},
+        'docker0' => {},
+        'eth0' => {},
+        'lo' => {},
+      })
     end
 
     it do
