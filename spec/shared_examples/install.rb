@@ -66,7 +66,7 @@ shared_examples 'install' do |_params, _facts|
           it {
             expect(subject).to contain_package(dependent_package).with(
               'ensure' => ensure_value,
-            )
+            ).that_requires('Package[docker]')
           }
         end
       end

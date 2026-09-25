@@ -527,7 +527,7 @@ define docker::run (
       }
       default: {
         if $facts['os']['family'] != 'windows' {
-          fail('Docker needs a Debian or RedHat based system.')
+          fail('Docker needs an Arch Linux, Debian or RedHat based system.')
         }
         elsif $ensure == 'present' {
           fail('Restart parameter is required for Windows')
