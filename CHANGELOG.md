@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v10.4.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.4.1) - 2026-06-28
+## [v10.5.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.5.0) - 2026-09-23
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.4.1...v10.5.0)
+
+### Added
+
+- (MODULES-11718) Add puppet 9 support in puppetlabs-docker [#1065](https://github.com/puppetlabs/puppetlabs-docker/pull/1065) ([imaqsood](https://github.com/imaqsood))
+
+### Fixed
+
+- (MODULES-11929) Point EL7 at the centos Docker CE repo path [#1067](https://github.com/puppetlabs/puppetlabs-docker/pull/1067) ([imaqsood](https://github.com/imaqsood))
+
+## [v10.4.1](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.4.1) - 2026-06-29
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.4.0...v10.4.1)
 
