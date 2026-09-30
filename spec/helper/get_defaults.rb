@@ -160,9 +160,11 @@ def get_defaults(_facts)
 
     apt_source_pin_level        = :undef
     detach_service_in_init      = false
-    package_ce_key_source       = 'https://download.docker.com/linux/centos/gpg'
+    # Must track the same EL7-vs-EL8+ split as docker::params; see the comment there.
+    package_ce_distro_path      = (_facts[:os]['release']['major'] == '7') ? 'centos' : 'rhel'
+    package_ce_key_source       = "https://download.docker.com/linux/#{package_ce_distro_path}/gpg"
     package_ce_release          = :undef
-    package_ce_source_location  = "https://download.docker.com/linux/centos/#{_facts[:os]['release']['major']}/#{_facts[:os]['architecture']}/#{docker_ce_channel}"
+    package_ce_source_location  = "https://download.docker.com/linux/#{package_ce_distro_path}/#{_facts[:os]['release']['major']}/#{_facts[:os]['architecture']}/#{docker_ce_channel}"
     package_ee_key_source       = docker_ee_key_source
     package_ee_package_name     = docker_ee_package_name
     package_ee_release          = :undef
