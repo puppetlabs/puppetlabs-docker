@@ -13,7 +13,19 @@ tests = {
 }
 
 describe 'docker::compose', type: :class do
-  on_supported_os.each do |os, os_facts|
+  supported_os = on_supported_os.merge(
+    'opensuse-16-x86_64' => {
+      os: {
+        'family' => 'Suse',
+        'name' => 'OpenSuSE',
+        'architecture' => 'x86_64',
+        'release' => { 'full' => '16.0', 'major' => '16' },
+        'distro' => { 'codename' => 'n/a' },
+      },
+    },
+  )
+
+  supported_os.each do |os, os_facts|
     ##
     ## set some needed facts
     ##
@@ -33,8 +45,9 @@ describe 'docker::compose', type: :class do
         context title do
           params = {
             'ensure' => 'present',
-            'version' => defaults['compose_version']
+            'version' => defaults['compose_version'],
           }.merge(local_params)
+          example_params = params.merge('manage_package' => defaults['manage_package'])
 
           let(:facts) do
             facts
@@ -44,7 +57,7 @@ describe 'docker::compose', type: :class do
             params
           end
 
-          include_examples 'compose', params, facts
+          include_examples 'compose', example_params, facts
         end
       end
     end

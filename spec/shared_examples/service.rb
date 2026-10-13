@@ -119,6 +119,14 @@ shared_examples 'service' do |params, facts|
         manage_service,
       )
     }
+
+    if facts[:os]['family'] == 'Suse'
+      it {
+        expect(subject).to contain_file(service_config).with_content(
+          %r{^DOCKER_OPTS=".*--ip-forward=.*--iptables=.*--ip-masq=},
+        )
+      }
+    end
   end
 
   if params['manage_service']
