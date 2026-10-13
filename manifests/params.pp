@@ -300,7 +300,7 @@ class docker::params {
       $package_ee_release                  = undef
       $package_ee_repos                    = undef
       $package_ee_package_name             = undef
-      $use_upstream_package_source         = true
+      $use_upstream_package_source         = false
       $service_overrides_template          = undef
       $socket_overrides_template           = undef
       $socket_override                     = false
