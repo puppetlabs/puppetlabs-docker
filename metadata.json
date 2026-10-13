@@ -50,9 +50,9 @@
       ]
     },
     {
-      "operatingsystem": "OpenSuSE",
+      "operatingsystem": "openSUSE",
       "operatingsystemrelease": [
-        "16.0"
+        "15"
       ]
     },
     {

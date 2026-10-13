@@ -13,19 +13,7 @@ tests = {
 }
 
 describe 'docker::compose', type: :class do
-  supported_os = on_supported_os.merge(
-    'opensuse-16-x86_64' => {
-      os: {
-        'family' => 'Suse',
-        'name' => 'OpenSuSE',
-        'architecture' => 'x86_64',
-        'release' => { 'full' => '16.0', 'major' => '16' },
-        'distro' => { 'codename' => 'n/a' },
-      },
-    },
-  )
-
-  supported_os.each do |os, os_facts|
+  on_supported_os.each do |os, os_facts|
     ##
     ## set some needed facts
     ##

@@ -54,7 +54,7 @@ class { 'docker':
 
 The latest Docker [repositories](https://docs.docker.com/engine/installation/linux/docker-ce/debian/#set-up-the-repository) are now the default repositories for version 17.06 and above. If you are using an older version, the repositories are still configured based on the version number passed into the module.
 
-On openSUSE Leap 16.0, the module uses the enabled SUSE repositories and their native `docker` package. Set `version` to an available RPM version to pin it. `docker::compose` installs SUSE's `docker-compose` CLI plugin package, used with `docker compose`. The module manages `/etc/sysconfig/docker` using SUSE's `DOCKER_OPTS` setting, and restarts Docker when the rendered options change.
+On openSUSE Leap 15, the module uses the enabled SUSE repositories and their native `docker` package. Set `version` to an available RPM version to pin it. `docker::compose` installs SUSE's `docker-compose` CLI plugin package, used with `docker compose`. The module manages `/etc/sysconfig/docker` using SUSE's `DOCKER_OPTS` setting, and restarts Docker when the rendered options change.
 
 To ensure the module configures the latest repositories, add the following code to the manifest file:
 
