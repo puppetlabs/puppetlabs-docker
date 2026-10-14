@@ -1010,6 +1010,9 @@ For information on classes, types, and functions, see the [REFERENCE.md](https:/
 
 This module supports:
 
+* AlmaLinux 8
+* Centos 7.0
+* Centos 8.0
 * EL 7 - limited support available, see note below.
 * EL 8
 * EL 9
@@ -1017,6 +1020,11 @@ This module supports:
 * Debian 9.0
 * Debian 10
 * Debian 11
+* OracleLinux
+* Rocky 8
+* ScientificLinux 7
+* SLES 12
+* SLES 15
 * Ubuntu 18.04
 * Ubuntu 20.04
 * Ubuntu 22.04
