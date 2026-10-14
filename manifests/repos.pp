@@ -23,6 +23,12 @@ class docker::repos (
       $key_name      = $docker::package_key_name
       $key_path      = $docker::package_key_path
 
+      if $architecture == 'aarch64' {
+        $_architecture = 'arm64'
+      } else {
+        $_architecture = $architecture
+      }
+
       if ($docker::use_upstream_package_source) {
         apt::keyring { $key_name:
           ensure => present,
@@ -33,7 +39,7 @@ class docker::repos (
         apt::source { 'docker':
           ensure       => present,
           location     => $location,
-          architecture => $architecture,
+          architecture => $_architecture,
           release      => $release,
           repos        => $package_repos,
           include      => {
