@@ -21,7 +21,15 @@ shared_examples 'registry' do |title, params, facts, defaults|
     password_env     = '$env:password'
     exec_user        = nil
   else
-    exec_environment = []
+    local_user_home = if params['local_user_home'] && params['local_user_home'] != :undef
+                        params['local_user_home']
+                      elsif local_user == 'root'
+                        '/root'
+                      else
+                        "/home/#{local_user}"
+                      end
+
+    exec_environment = ["HOME=#{local_user_home}"]
     exec_path        = ['/bin', '/usr/bin']
     exec_timeout     = 0
     exec_provider    = nil
