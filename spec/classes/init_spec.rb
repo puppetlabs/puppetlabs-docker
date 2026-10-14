@@ -58,6 +58,9 @@ describe 'docker', type: :class do
 
     context "on #{os}" do
       tests.each do |title, local_params|
+        # pacman cannot install a specific package version; see the Arch Linux contexts below
+        next if facts[:os]['family'] == 'Archlinux' && local_params['version'] && local_params['ensure'] != 'absent'
+
         context title do
           params = {
             'acknowledge_unsupported_os' => false,
@@ -216,6 +219,52 @@ describe 'docker', type: :class do
             include_examples 'service', params, facts
           end
         end
+      end
+
+      next unless facts[:os]['family'] == 'Archlinux'
+
+      context 'with default values on Arch Linux' do
+        let(:facts) { facts }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_package('docker').with_ensure('present').with_name('docker') }
+        it { is_expected.not_to contain_apt__source('docker') }
+        it { is_expected.not_to contain_yumrepo('docker') }
+        it { is_expected.to contain_file('/etc/conf.d').with_ensure('directory') }
+        it { is_expected.to contain_file('/etc/conf.d/docker').that_notifies('Service[docker]') }
+        it { is_expected.to contain_file('/etc/conf.d/docker-storage').that_notifies('Service[docker]') }
+
+        it {
+          is_expected.to contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf')
+            .with_content(%r{^EnvironmentFile=-/etc/conf\.d/docker$})
+            .with_content(%r{^ExecStart=/usr/bin/dockerd \$OPTIONS})
+        }
+
+        it { is_expected.to contain_service('docker').with_provider('systemd') }
+      end
+
+      context 'with ensure => absent on Arch Linux' do
+        let(:facts) { facts }
+        let(:params) { { 'ensure' => 'absent' } }
+
+        it { is_expected.to contain_package('docker').with_ensure('absent').with_name('docker') }
+        it { is_expected.to contain_package('containerd').with_ensure('absent').that_requires('Package[docker]') }
+      end
+
+      ['latest', 'present'].each do |version|
+        context "with version => #{version} on Arch Linux" do
+          let(:facts) { facts }
+          let(:params) { { 'version' => version } }
+
+          it { is_expected.to contain_package('docker').with_ensure(version) }
+        end
+      end
+
+      context 'with a specific version on Arch Linux' do
+        let(:facts) { facts }
+        let(:params) { { 'version' => '1:29.0.0-1' } }
+
+        it { is_expected.to compile.and_raise_error(%r{Installing a specific Docker version is not supported on Arch Linux}) }
       end
     end
   end

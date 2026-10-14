@@ -332,9 +332,12 @@ describe 'docker::run', type: :define do
           end
 
           let :pre_condition do
+            # pacman cannot install a specific package version, so Arch Linux does not accept one
+            docker_version = (facts[:os]['family'] == 'Archlinux') ? '' : "version => \"#{params['version']}\","
+
             <<-MANIFEST
             class { 'docker':
-              version => "#{params['version']}",
+              #{docker_version}
               *       => #{docker_params},
             }
             MANIFEST

@@ -111,6 +111,8 @@ class { 'docker':
 }
 ```
 
+On Arch Linux, the docker module installs Docker from the official Arch Linux repositories (the `docker` package, plus `docker-compose` when using `docker::compose`) and does not manage any package repositories. Because Arch Linux is a rolling release and `pacman` cannot install specific package versions, the `version` parameters of the `docker` and `docker::compose` classes only accept `present`, `installed` or `latest` on Arch Linux; leave them unset to install the current packages. The daemon and storage options are written to `/etc/conf.d/docker` and `/etc/conf.d/docker-storage`, and loaded by a systemd drop-in for `docker.service`.
+
 By default, the Docker daemon binds to a unix socket at `/var/run/docker.sock`. To change this parameter and update the binding parameter to a tcp socket, add the following code to the manifest file:
 
 ```puppet
@@ -1010,6 +1012,7 @@ For information on classes, types, and functions, see the [REFERENCE.md](https:/
 
 This module supports:
 
+* Arch Linux (rolling release, using the packages from the official repositories)
 * EL 7 - limited support available, see note below.
 * EL 8
 * EL 9
