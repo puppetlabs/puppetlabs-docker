@@ -28,12 +28,7 @@ Puppet::Type.type(:docker_stack).provide(:ruby) do
       stack_containers.push(*containers)
       stack_containers.uniq!
       # rubocop:enable Style/StringLiterals
-      case compose_file['version']
-      when %r{^3(\.[0-7])?$}
-        stack_services.merge!(compose_file['services'])
-      else
-        raise(Puppet::Error, "Unsupported docker compose file syntax version \"#{compose_file['version']}\"!")
-      end
+      stack_services.merge!(compose_file['services'] || {})
     end
 
     return false if stack_services.count != stack_containers.count
