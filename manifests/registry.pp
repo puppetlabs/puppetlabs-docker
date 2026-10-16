@@ -13,7 +13,12 @@
 #
 # @param password
 #   Password for authentication to private Docker registry. Leave undef if
-#   auth is not required.
+#   auth is not required. May be given as Sensitive: on Linux the password is
+#   then fed to `docker login --password-stdin` from a Sensitive exec command
+#   instead of the exec environment, and the receipt hash is Sensitive too, so
+#   it is neither stored in the catalog (PuppetDB) nor shown in reports. On
+#   Windows (and for Docker <= 1.10 with `email`) the value is unwrapped and
+#   handled like a plain String.
 #
 # @param pass_hash
 #   The hash to be used for receipt. If left as undef, a hash will be generated
@@ -38,7 +43,7 @@ define docker::registry (
   Optional[String]      $server          = $title,
   Enum[present,absent]  $ensure          = 'present',
   Optional[String]      $username        = undef,
-  Optional[String]      $password        = undef,
+  Optional[Variant[String, Sensitive[String]]] $password = undef,
   Optional[String]      $pass_hash       = undef,
   Optional[String]      $email           = undef,
   String                $local_user      = 'root',
@@ -49,6 +54,9 @@ define docker::registry (
   include docker::params
 
   $docker_command = $docker::params::docker_command
+
+  $_password  = if $password =~ Sensitive { $password.unwrap } else { $password }
+  $_sensitive = ($password =~ Sensitive) and ($facts['os']['family'] != 'windows')
 
   if $facts['os']['family'] == 'windows' {
     $exec_environment = ["PATH=${facts['docker_program_files_path']}/Docker/",]
@@ -76,12 +84,17 @@ define docker::registry (
   }
 
   if $ensure == 'present' {
-    if $username != undef and $password != undef and $email != undef and $version != undef and $version =~ /1[.][1-9]0?/ {
+    if $username != undef and $_password != undef and $email != undef and $version != undef and $version =~ /1[.][1-9]0?/ {
       $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" -e '${email}' ${server}"
-      $auth_environment = "password=${password}"
-    } elsif $username != undef and $password != undef {
+      $auth_environment = "password=${_password}"
+    } elsif $username != undef and $_password != undef and $_sensitive {
+      # Password only in the (Sensitive) command, never in the environment.
+      $_password_quoted = regsubst($_password, "'", "'\\\\''", 'G')
+      $auth_cmd         = "printf '%s' '${_password_quoted}' | ${docker_command} login -u '${username}' --password-stdin ${server}"
+      $auth_environment = ''
+    } elsif $username != undef and $_password != undef {
       $auth_cmd         = "${docker_command} login -u '${username}' -p \"${password_env}\" ${server}"
-      $auth_environment = "password=${password}"
+      $auth_environment = "password=${_password}"
     } else {
       $auth_cmd         = "${docker_command} login ${server}"
       $auth_environment = ''
@@ -93,7 +106,10 @@ define docker::registry (
 
   $docker_auth = "${title}${auth_environment}${auth_cmd}${local_user}"
 
-  if $auth_environment != '' {
+  if $_sensitive {
+    # $docker_auth embeds the password; only needed at runtime on Windows.
+    $exec_env = $exec_environment
+  } elsif $auth_environment != '' {
     $exec_env = concat($exec_environment, $auth_environment, "docker_auth=${docker_auth}")
   } else {
     $exec_env = concat($exec_environment, "docker_auth=${docker_auth}")
@@ -116,7 +132,7 @@ define docker::registry (
 
       file { "/${_local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}":
         ensure  => $ensure,
-        content => $_pass_hash,
+        content => if $_sensitive { Sensitive($_pass_hash) } else { $_pass_hash },
         owner   => $local_user,
         group   => $local_user,
         notify  => Exec["${title} auth"],
@@ -149,7 +165,7 @@ define docker::registry (
 
   exec { "${title} auth":
     environment => Deferred('docker::env', [$exec_env]),
-    command     => Deferred('sprintf', [$_auth_command]),
+    command     => if $_sensitive { Sensitive($_auth_command) } else { Deferred('sprintf', [$_auth_command]) },
     user        => $exec_user,
     path        => $exec_path,
     timeout     => $exec_timeout,
