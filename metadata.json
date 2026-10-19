@@ -50,6 +50,12 @@
       ]
     },
     {
+      "operatingsystem": "openSUSE",
+      "operatingsystemrelease": [
+        "15"
+      ]
+    },
+    {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
         "2016",
