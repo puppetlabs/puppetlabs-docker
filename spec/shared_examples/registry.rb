@@ -104,7 +104,7 @@ shared_examples 'registry' do |title, params, facts, defaults|
       it {
         expect(subject).to contain_file('/${local_user_home}/registry-auth-puppet_receipt_${server_strip}_${local_user}').with(
           'ensure' => ensure_value,
-          'content' => _pass_hash,
+          'content' => sensitive_pw ? sensitive(_pass_hash) : _pass_hash,
           'owner' => local_user,
           'group' => local_user,
         ).that_notifies(
