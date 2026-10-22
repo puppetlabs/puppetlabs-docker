@@ -58,6 +58,15 @@ define docker::registry (
   $_password  = if $password =~ Sensitive { $password.unwrap } else { $password }
   $_sensitive = ($password =~ Sensitive) and ($facts['os']['family'] != 'windows')
 
+  if $password =~ Sensitive {
+    if $facts['os']['family'] == 'windows' {
+      fail('docker::registry: a Sensitive password is not supported on Windows (it would be exposed in the exec environment)')
+    }
+    if $email != undef and $version != undef and $version =~ /1[.][1-9]0?/ {
+      fail('docker::registry: a Sensitive password cannot be combined with `email` on Docker <= 1.10 (it needs the password in the environment)')
+    }
+  }
+
   if $facts['os']['family'] == 'windows' {
     $exec_environment = ["PATH=${facts['docker_program_files_path']}/Docker/",]
     $exec_timeout     = 3000

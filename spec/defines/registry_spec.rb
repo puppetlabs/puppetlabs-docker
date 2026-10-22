@@ -114,6 +114,9 @@ describe 'docker::registry', type: :define do
 
     context "on #{os}" do
       tests.each do |title, local_params|
+        # Sensitive passwords are rejected on Windows (see guard specs below)
+        next if os.include?('windows') && local_params['password'].respond_to?(:unwrap)
+
         context title do
           params = {
             'server' => title,
