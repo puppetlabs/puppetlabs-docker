@@ -24,6 +24,7 @@ jobs:
         --arch-exclude arm
         --puppetlabs
         --nightly
+        --platform-exclude centos-8
         --collection-platform-exclude 9:centos-7
         --collection-platform-exclude 9:debian-10
         --collection-platform-exclude 9:ubuntu-18.04
