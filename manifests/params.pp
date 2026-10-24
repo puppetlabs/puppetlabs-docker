@@ -4,7 +4,10 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
-  $docker_ce_package_name            = 'docker-ce'
+  $docker_ce_package_name            = $facts['os']['family'] ? {
+    'Suse'  => 'docker',
+    default => 'docker-ce',
+  }
   $docker_ce_cli_package_name        = 'docker-ce-cli'
   $docker_engine_start_command       = 'docker daemon'
   $docker_engine_package_name        = 'docker-engine'
@@ -297,7 +300,7 @@ class docker::params {
       $package_ee_release                  = undef
       $package_ee_repos                    = undef
       $package_ee_package_name             = undef
-      $use_upstream_package_source         = true
+      $use_upstream_package_source         = false
       $service_overrides_template          = undef
       $socket_overrides_template           = undef
       $socket_override                     = false
@@ -310,10 +313,10 @@ class docker::params {
       $detach_service_in_init              = true
       $repo_opt                            = undef
       $nowarn_kernel                       = false
-      $service_config                      = undef
+      $service_config                      = '/etc/sysconfig/docker'
       $storage_config                      = undef
       $storage_setup_file                  = undef
-      $service_config_template             = undef
+      $service_config_template             = 'docker/etc/sysconfig/docker.suse.epp'
       $pin_upstream_package_source         = undef
       $apt_source_pin_level                = undef
     }
@@ -374,7 +377,10 @@ class docker::params {
     default  => [],
   }
 
-  $dependent_packages = [$docker_ce_cli_package_name, 'containerd.io',]
+  $dependent_packages = $facts['os']['family'] ? {
+    'Suse'  => [],
+    default => [$docker_ce_cli_package_name, 'containerd.io',],
+  }
 
   if($service_provider == 'systemd') {
     # systemd v230 adds new StartLimitIntervalSec, StartLimitBurst

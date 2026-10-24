@@ -51,7 +51,7 @@ shared_examples 'service' do |params, facts|
       expect(subject).to contain_file('/etc/systemd/system/docker.service.d').with_ensure('directory')
     }
 
-    if params['service_overrides_template']
+    if params['service_overrides_template'] && params['service_overrides_template'] != :undef
       it {
         expect(subject).to contain_file('/etc/systemd/system/docker.service.d/service-overrides.conf').with(
           'ensure' => 'file',
@@ -119,6 +119,14 @@ shared_examples 'service' do |params, facts|
         manage_service,
       )
     }
+
+    if facts[:os]['family'] == 'Suse'
+      it {
+        expect(subject).to contain_file(service_config).with_content(
+          %r{^DOCKER_OPTS=".*--ip-forward=.*--iptables=.*--ip-masq=},
+        )
+      }
+    end
   end
 
   if params['manage_service']
