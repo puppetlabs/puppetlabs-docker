@@ -47,8 +47,7 @@ jobs:
         --collection-platform-exclude 9:debian-10
         --collection-platform-exclude 9:ubuntu-18.04
         --collection-platform-exclude 9:ubuntu-20.04
-        --platform-include 'debian-1[012]'
-        --platform-include 'centos-8'
+        --platform-include 'debian-11'
       ruby_version: "3.2"
       service_url: 'https://facade-modules-12065-sshd-last-6f3kfepqcq-ew.a.run.app/v1/provision'
     secrets: "inherit"
