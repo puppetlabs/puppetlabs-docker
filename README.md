@@ -923,7 +923,9 @@ docker::registry_auth::registries:
 ```
 
 To keep the password out of the catalog stored in PuppetDB and out of reports, pass it as `Sensitive`
-(on Linux it is then supplied via `docker login --password-stdin` from a Sensitive exec command):
+(it is then supplied via `docker login --password-stdin` from a Sensitive exec command).
+This is Linux only, cannot be combined with `email` on Docker <= 1.10, and does not support `Deferred` values.
+The password is briefly visible to local users in the process list (`ps`) while `docker login` runs:
 
 ```puppet
 docker::registry { 'example.docker.io:5000':
