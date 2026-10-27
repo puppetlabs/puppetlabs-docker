@@ -27,9 +27,31 @@ spec/spec_helper.rb:
   unmanaged: false
 .github/workflows/ci.yml:
   unmanaged: true
+  acceptance_flags:
+  - "--provision-prefer provision_service"
+  - "--provision-exclude docker"
+  - "--arch-exclude arm"
+  - "--puppetlabs"
+  - "--nightly"
+  - "--platform-exclude centos-8"
+  - "--collection-platform-exclude 9:centos-7"
+  - "--collection-platform-exclude 9:debian-10"
+  - "--collection-platform-exclude 9:ubuntu-18.04"
+  - "--collection-platform-exclude 9:ubuntu-20.04"
 .github/workflows/nightly.yml:
   unmanaged: true
   cron: '50 0 * * *'
+  acceptance_flags:
+  - "--provision-prefer provision_service"
+  - "--provision-exclude docker"
+  - "--arch-exclude arm"
+  - "--puppetlabs"
+  - "--nightly"
+  - "--platform-exclude centos-8"
+  - "--collection-platform-exclude 9:centos-7"
+  - "--collection-platform-exclude 9:debian-10"
+  - "--collection-platform-exclude 9:ubuntu-18.04"
+  - "--collection-platform-exclude 9:ubuntu-20.04"
 .github/workflows/release.yml:
   unmanaged: false
 .travis.yml:
