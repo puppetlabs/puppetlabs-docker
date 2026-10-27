@@ -32,7 +32,12 @@ Facter.add(:docker_user_temp_path) do
 end
 
 docker_command = if Facter.value(:kernel) == 'windows'
-                   'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
+                   # Invoke PowerShell by its absolute path. When the Puppet agent runs as the
+                   # SYSTEM service, its PATH frequently omits the WindowsPowerShell directory, so
+                   # a bare 'powershell' cannot be resolved by Facter and fails with
+                   # "command not found" even when docker itself is on the PATH.
+                   powershell = "#{ENV.fetch('SystemRoot', 'C:\\Windows')}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                   "\"#{powershell}\" -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker"
                  else
                    'docker'
                  end

@@ -6,7 +6,8 @@ require 'json'
 describe 'Facter::Util::Fact' do
   let(:docker_command) do
     if Facter.value(:kernel) == 'windows'
-      'powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker'
+      powershell = "#{ENV.fetch('SystemRoot', 'C:\\Windows')}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+      "\"#{powershell}\" -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -c docker"
     else
       'docker'
     end
