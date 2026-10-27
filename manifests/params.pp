@@ -4,7 +4,6 @@ class docker::params {
   $version                           = undef
   $ensure                            = present
   $docker_ce_start_command           = 'dockerd'
-  $docker_ce_package_name            = 'docker-ce'
   $docker_ce_cli_package_name        = 'docker-ce-cli'
   $docker_engine_start_command       = 'docker daemon'
   $docker_engine_package_name        = 'docker-engine'
@@ -86,6 +85,13 @@ class docker::params {
   $docker_msft_provider_version      = undef
   $nuget_package_provider_version    = undef
   $docker_command                    = 'docker'
+
+  # Arch Linux ships Docker (engine and CLI) as the 'docker' package in its
+  # official repositories rather than using Docker's upstream 'docker-ce' packages.
+  $docker_ce_package_name = $facts['os']['family'] ? {
+    'Archlinux' => 'docker',
+    default     => 'docker-ce',
+  }
 
   if ($facts['os']['family'] == 'windows') {
     $docker_ee_package_name = 'Docker'
@@ -239,6 +245,46 @@ class docker::params {
       }
       $repo_opt = undef
     }
+    'Archlinux' : {
+      # Docker, containerd and the compose plugin are all packaged in the official
+      # Arch Linux repositories, so there is no upstream package source to manage.
+      $service_after_override      = undef
+      $service_config              = '/etc/conf.d/docker'
+      $service_config_template     = 'docker/etc/sysconfig/docker.systemd.epp'
+      $service_hasrestart          = true
+      $service_hasstatus           = true
+      $service_overrides_template  = 'docker/etc/systemd/system/docker.service.d/service-overrides-archlinux.conf.epp'
+      $service_provider            = 'systemd'
+      $socket_override             = false
+      $socket_overrides_template   = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
+      $storage_config              = '/etc/conf.d/docker-storage'
+      $storage_setup_file          = undef
+      $use_upstream_package_source = false
+
+      $apt_source_pin_level        = undef
+      $detach_service_in_init      = false
+      $docker_group                = $docker_group_default
+      $package_ce_key_source       = undef
+      $package_ce_release          = undef
+      $package_ce_source_location  = undef
+      $package_ee_key_source       = undef
+      $package_ee_package_name     = undef
+      $package_ee_release          = undef
+      $package_ee_repos            = undef
+      $package_ee_source_location  = undef
+      $package_key_check_source    = undef
+      $package_key_source          = undef
+      $package_key_name            = undef
+      $package_key_path            = undef
+      $package_release             = undef
+      $package_source_location     = undef
+      $pin_upstream_package_source = undef
+      $repo_opt                    = undef
+      $service_name                = $service_name_default
+      $socket_group                = $socket_group_default
+
+      include docker::systemd_reload
+    }
     'windows' : {
       $msft_nuget_package_provider_version = $nuget_package_provider_version
       $msft_provider_version               = $docker_msft_provider_version
@@ -374,7 +420,10 @@ class docker::params {
     default  => [],
   }
 
-  $dependent_packages = [$docker_ce_cli_package_name, 'containerd.io',]
+  $dependent_packages = $facts['os']['family'] ? {
+    'Archlinux' => ['containerd',],
+    default     => [$docker_ce_cli_package_name, 'containerd.io',],
+  }
 
   if($service_provider == 'systemd') {
     # systemd v230 adds new StartLimitIntervalSec, StartLimitBurst

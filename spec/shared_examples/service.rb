@@ -34,6 +34,12 @@ shared_examples 'service' do |params, facts|
     }
   end
 
+  if facts[:os]['family'] == 'Archlinux'
+    it {
+      expect(subject).to contain_file('/etc/conf.d').with_ensure('directory')
+    }
+  end
+
   if facts[:os]['family'] == 'windows'
     [
       "#{facts['docker_program_data_path']}/docker/",
