@@ -73,48 +73,52 @@ end
 # - timeout_secs - How long to wait for the host to come back
 # - interval_secs - Seconds between probes
 # - stable_probes - Consecutive successful probes needed after the reboot
-# - max_extra_reboots - Restarts allowed if a reboot is still pending after the host comes back
-def wait_for_windows_reboot(boot_time_before, timeout_secs: 1800, interval_secs: 10, stable_probes: 3, max_extra_reboots: 1)
+# - pending_clear_secs - How long to wait for servicing to clear the pending flag after the reboot
+def wait_for_windows_reboot(boot_time_before, timeout_secs: 1800, interval_secs: 10, stable_probes: 3, pending_clear_secs: 300)
   begin
     unless windows_reboot_pending?
       puts "No reboot pending (boot time #{boot_time_before}), not waiting"
       return
     end
   rescue StandardError => e
-    puts "Reboot-pending probe failed, assuming the reboot has started: #{e.message.lines.first.to_s.strip}"
+    puts "Reboot-pending probe failed, assuming the reboot has started: #{e.message[%r{"msg"=>"((?:\\"|[^"])+)"}, 1] || e.message.lines.first.to_s.strip}"
   end
 
   puts "Waiting up to #{timeout_secs / 60} minutes for the Windows host to reboot (boot time before: #{boot_time_before})"
   started = Time.now
-  extra_reboots = 0
-  loop do
-    stable = 0
-    until stable >= stable_probes
-      raise "Windows host did not come back from the reboot within #{timeout_secs / 60} minutes (boot time before: #{boot_time_before})" if Time.now - started > timeout_secs
+  stable = 0
+  until stable >= stable_probes
+    raise "Windows host did not come back from the reboot within #{timeout_secs / 60} minutes (boot time before: #{boot_time_before})" if Time.now - started > timeout_secs
 
-      sleep interval_secs
-      begin
-        boot_time_now = windows_boot_time
-      rescue StandardError
-        boot_time_now = nil
-      end
-      # Unreachable, or not rebooted yet: start counting again
-      stable = windows_rebooted_since?(boot_time_before, boot_time_now) ? stable + 1 : 0
-    end
-    puts "Windows host rebooted after #{(Time.now - started).round} seconds (boot time #{boot_time_before} -> #{boot_time_now})"
-    break unless windows_reboot_pending?
-    raise "A reboot is still pending (Component Based Servicing\\RebootPending) after #{extra_reboots + 1} reboots" if extra_reboots >= max_extra_reboots
-
-    # Otherwise the first manifest that includes the docker class would reboot the host mid-test
-    extra_reboots += 1
-    puts 'A reboot is still pending, restarting the Windows host again'
-    boot_time_before = boot_time_now
+    sleep interval_secs
     begin
-      run_shell('shutdown /r /t 5')
+      boot_time_now = windows_boot_time
     rescue StandardError
-      # The connection can drop as the host shuts down
+      boot_time_now = nil
     end
+    # Unreachable, or not rebooted yet: start counting again
+    stable = windows_rebooted_since?(boot_time_before, boot_time_now) ? stable + 1 : 0
   end
+  puts "Windows host rebooted after #{(Time.now - started).round} seconds (boot time #{boot_time_before} -> #{boot_time_now})"
+
+  # Servicing can still be finishing for a while after WinRM is back (seen on Windows-2022).
+  # Give it time, but don't fail the suite over it.
+  pending_since = Time.now
+  loop do
+    begin
+      pending = windows_reboot_pending?
+    rescue StandardError
+      pending = true # a WinRM hiccup: probe again
+    end
+    break unless pending
+
+    if Time.now - pending_since > pending_clear_secs
+      puts "A reboot is still pending #{pending_clear_secs} seconds after the reboot, continuing (a test manifest may trigger another reboot)"
+      return
+    end
+    sleep interval_secs
+  end
+  puts "No reboot pending after #{(Time.now - pending_since).round} seconds"
 end
 
 RSpec.configure do |c|
