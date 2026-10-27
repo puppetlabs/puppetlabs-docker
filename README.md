@@ -922,6 +922,18 @@ docker::registry_auth::registries:
     version: '<docker_version>'
 ```
 
+To keep the password out of the catalog stored in PuppetDB and out of reports, pass it as `Sensitive`
+(it is then supplied via `docker login --password-stdin` from a Sensitive exec command).
+This is Linux only, cannot be combined with `email` on Docker <= 1.10, and does not support `Deferred` values.
+The password is briefly visible to local users in the process list (`ps`) while `docker login` runs:
+
+```puppet
+docker::registry { 'example.docker.io:5000':
+  username => 'user',
+  password => Sensitive('secret'),
+}
+```
+
 If using Docker V1.11 or later, the docker login email flag has been deprecated. See the [docker_change_log](https://docs.docker.com/release-notes/docker-engine/#1110-2016-04-13).
 
 Add the following code to the manifest file:
