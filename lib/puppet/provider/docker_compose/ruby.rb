@@ -44,8 +44,8 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
 
     return false if compose_services.count != compose_containers.uniq.count
 
-    counts = Hash[*compose_services.each.map { |key, array|
-                    image = array['image'] || get_image(key, compose_services)
+    counts = Hash[*compose_services.each.map { |key, _array|
+                    image = get_image(key, compose_services)
                     Puppet.info("Checking for compose service #{key} #{image}")
                     [key, compose_containers.count("'#{key}-#{image}'")]
                   }.flatten]
@@ -71,7 +71,17 @@ Puppet::Type.type(:docker_compose).provide(:ruby) do
         image = "#{name}_#{service_name}"
       end
     end
-    image
+    normalize_image(image)
+  end
+
+  # `docker compose config` prints fully qualified image names
+  # (docker.io/library/postgres:18-alpine), while `docker ps` prints the
+  # short familiar form (postgres:18-alpine). Strip the implicit Docker Hub
+  # prefixes so the two can be compared.
+  def normalize_image(image)
+    return image if image.nil?
+
+    image.sub(%r{\Adocker\.io/}, '').sub(%r{\Alibrary/}, '')
   end
 
   def create
