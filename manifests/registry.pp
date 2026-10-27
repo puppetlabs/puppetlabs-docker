@@ -16,9 +16,10 @@
 #   auth is not required. May be given as Sensitive: on Linux the password is
 #   then fed to `docker login --password-stdin` from a Sensitive exec command
 #   instead of the exec environment, and the receipt hash is Sensitive too, so
-#   it is neither stored in the catalog (PuppetDB) nor shown in reports. On
-#   Windows (and for Docker <= 1.10 with `email`) the value is unwrapped and
-#   handled like a plain String.
+#   it is neither stored in the catalog (PuppetDB) nor shown in reports. A
+#   Sensitive password is rejected on Windows and together with `email` on
+#   Docker <= 1.10. `Deferred` values are not supported. During the login the
+#   password is briefly visible to local users in the process list (`ps`).
 #
 # @param pass_hash
 #   The hash to be used for receipt. If left as undef, a hash will be generated
