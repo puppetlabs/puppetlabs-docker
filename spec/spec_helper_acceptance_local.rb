@@ -3,6 +3,7 @@
 require 'puppet_litmus'
 require 'rspec/retry'
 require 'tempfile'
+require 'time'
 
 include PuppetLitmus # rubocop:disable Style/MixinUsage
 
@@ -44,6 +45,76 @@ end
 
 def fetch_puppet_version
   @fetch_puppet_version ||= run_shell('puppet --version').stdout.to_i
+end
+
+# Last boot time of the Windows host (UTC, ISO 8601); changes only when the host reboots.
+def windows_boot_time
+  run_shell("(Get-CimInstance Win32_OperatingSystem).LastBootUpTime.ToUniversalTime().ToString('o')").stdout.strip
+end
+
+def windows_reboot_pending?
+  run_shell("Test-Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Component Based Servicing\\RebootPending'").stdout.strip.casecmp?('true')
+end
+
+# LastBootUpTime is derived from the uptime and can shift by a few seconds (e.g. after a clock
+# sync), so only a jump of more than a minute counts as a reboot.
+def windows_rebooted_since?(boot_time_before, boot_time_now)
+  Time.iso8601(boot_time_now) - Time.iso8601(boot_time_before) > 60
+rescue ArgumentError, TypeError
+  false
+end
+
+# Installing Docker EE leaves a Component Based Servicing reboot pending. The reboot module
+# only starts it (shutdown /r /t 1) once `puppet apply` has exited, so WinRM can still answer
+# for a few seconds afterwards. Wait for the boot time to change, rather than for the first
+# successful command, so that no example runs into the reboot.
+# Params:
+# - boot_time_before - windows_boot_time taken before the manifest that may reboot the host
+# - timeout_secs - How long to wait for the host to come back
+# - interval_secs - Seconds between probes
+# - stable_probes - Consecutive successful probes needed after the reboot
+# - max_extra_reboots - Restarts allowed if a reboot is still pending after the host comes back
+def wait_for_windows_reboot(boot_time_before, timeout_secs: 1800, interval_secs: 10, stable_probes: 3, max_extra_reboots: 1)
+  begin
+    unless windows_reboot_pending?
+      puts "No reboot pending (boot time #{boot_time_before}), not waiting"
+      return
+    end
+  rescue StandardError => e
+    puts "Reboot-pending probe failed, assuming the reboot has started: #{e.message.lines.first.to_s.strip}"
+  end
+
+  puts "Waiting up to #{timeout_secs / 60} minutes for the Windows host to reboot (boot time before: #{boot_time_before})"
+  started = Time.now
+  extra_reboots = 0
+  loop do
+    stable = 0
+    until stable >= stable_probes
+      raise "Windows host did not come back from the reboot within #{timeout_secs / 60} minutes (boot time before: #{boot_time_before})" if Time.now - started > timeout_secs
+
+      sleep interval_secs
+      begin
+        boot_time_now = windows_boot_time
+      rescue StandardError
+        boot_time_now = nil
+      end
+      # Unreachable, or not rebooted yet: start counting again
+      stable = windows_rebooted_since?(boot_time_before, boot_time_now) ? stable + 1 : 0
+    end
+    puts "Windows host rebooted after #{(Time.now - started).round} seconds (boot time #{boot_time_before} -> #{boot_time_now})"
+    break unless windows_reboot_pending?
+    raise "A reboot is still pending (Component Based Servicing\\RebootPending) after #{extra_reboots + 1} reboots" if extra_reboots >= max_extra_reboots
+
+    # Otherwise the first manifest that includes the docker class would reboot the host mid-test
+    extra_reboots += 1
+    puts 'A reboot is still pending, restarting the Windows host again'
+    boot_time_before = boot_time_now
+    begin
+      run_shell('shutdown /r /t 5')
+    rescue StandardError
+      # The connection can drop as the host shuts down
+    end
+  end
 end
 
 RSpec.configure do |c|
@@ -154,11 +225,9 @@ RSpec.configure do |c|
     retry_on_error_matching(60, 5, %r{connection failure running}) do
       @windows_ip = ip
     end
+    boot_time_before = retry_on_error_matching(12, 5) { windows_boot_time }
     apply_manifest("class { 'docker': docker_ee => true, extra_parameters => '\"insecure-registries\": [ \"#{@windows_ip}:5000\" ]' }", catch_failures: true)
-    retry_on_error_matching(120, 5, %r{.*}) do
-      puts 'waiting for VM to restart..'
-      run_shell('ls') # random command to check connectivity to litmus host
-    end
+    wait_for_windows_reboot(boot_time_before)
     docker_path = 'C:\\Program Files\\Docker'
     retry_on_error_matching(120, 5, %r{.*}) do
       run_shell("set PATH \"%PATH%;C:\\Users\\Administrator\\AppData\\Local\\Temp;#{docker_path}\"")
