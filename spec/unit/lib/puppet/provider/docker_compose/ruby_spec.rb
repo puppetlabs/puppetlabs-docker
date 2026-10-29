@@ -31,5 +31,17 @@ describe Puppet::Type.type(:docker_compose).provider(:ruby) do
       # Only db should be considered, and it matches the running container
       expect(provider.exists?).to be true
     end
+
+    it 'matches fully qualified docker.io image names against docker ps output' do
+      # `docker compose config` normalizes images to docker.io/library/mysql,
+      # while `docker ps` reports the short form mysql
+      allow(Puppet::Util::Yaml).to receive(:safe_load).and_return({
+                                                                    'services' => {
+                                                                      'db' => { 'image' => 'docker.io/library/mysql', 'restart' => 'always' }
+                                                                    }
+                                                                  })
+
+      expect(provider.exists?).to be true
+    end
   end
 end
