@@ -40,6 +40,7 @@ jobs:
       flags: >-
         --provision-prefer provision_service
         --provision-exclude docker
+        --platform-exclude ubuntu-24.04
         --arch-exclude arm
         --puppetlabs
         --nightly
@@ -47,5 +48,26 @@ jobs:
         --collection-platform-exclude 9:debian-10
         --collection-platform-exclude 9:ubuntu-18.04
         --collection-platform-exclude 9:ubuntu-20.04
+      ruby_version: "3.2"
+    secrets: "inherit"
+
+  # The provision service has no usable ubuntu-2404-lts image (HTTP 500), so
+  # Ubuntu 24.04 is provisioned with the docker provisioner instead.
+  Acceptance_Ubuntu24:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.fork == false) ||
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.head.repo.fork == true &&
+       contains(github.event.pull_request.labels.*.name, 'allowed-for-ci'))
+    uses: "puppetlabs/cat-github-actions/.github/workflows/module_acceptance.yml@main"
+    with:
+      flags: >-
+        --provision-include docker
+        --platform-include ubuntu-24.04
+        --arch-exclude arm
+        --puppetlabs
+        --nightly
       ruby_version: "3.2"
     secrets: "inherit"
