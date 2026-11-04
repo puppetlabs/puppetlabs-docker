@@ -191,6 +191,10 @@
 #
 # @param read_only
 #
+# @param systemd_start_limit_interval_sec
+#
+# @param systemd_start_limit_burst
+#
 define docker::run (
   Optional[Pattern[/^[\S]*$/]]              $image                             = undef,
   Enum[present,absent]                      $ensure                            = 'present',
@@ -225,6 +229,8 @@ define docker::run (
   Optional[Boolean]                         $detach                            = undef,
   Optional[Variant[String,Array[String]]]   $extra_parameters                  = undef,
   String                                    $systemd_restart                   = 'on-failure',
+  Integer                                   $systemd_start_limit_interval_sec  = $docker::run_systemd_start_limit_interval_sec,
+  Integer                                   $systemd_start_limit_burst         = $docker::run_systemd_start_limit_burst,
   Variant[String,Hash]                      $extra_systemd_parameters          = {},
   Boolean                                   $pull_on_start                     = false,
   Variant[String,Array]                     $after                             = [],
@@ -619,19 +625,21 @@ define docker::run (
 
       if $service_provider_real == 'systemd' {
         $init_template_parameters = {
-          'depend_services_array'     => $depend_services_array,
-          'sanitised_after_array'     => $sanitised_after_array,
-          'service_prefix'            => $service_prefix,
-          'sanitised_depends_array'   => $sanitised_depends_array,
-          'title'                     => $title,
-          'have_systemd_v230'         => $docker::params::have_systemd_v230,
-          'extra_systemd_parameters'  => $extra_systemd_parameters,
-          'systemd_restart'           => $systemd_restart,
-          '_syslog_identifier'        => $_syslog_identifier,
-          'syslog_facility'           => $syslog_facility,
-          'sanitised_title'           => $sanitised_title,
-          'remain_after_exit'         => $remain_after_exit,
-          'service_name'              => $service_name,
+          'depend_services_array'            => $depend_services_array,
+          'sanitised_after_array'            => $sanitised_after_array,
+          'service_prefix'                   => $service_prefix,
+          'sanitised_depends_array'          => $sanitised_depends_array,
+          'title'                            => $title,
+          'have_systemd_v230'                => $docker::params::have_systemd_v230,
+          'extra_systemd_parameters'         => $extra_systemd_parameters,
+          'systemd_restart'                  => $systemd_restart,
+          'systemd_start_limit_interval_sec' => $systemd_start_limit_interval_sec,
+          'systemd_start_limit_burst'        => $systemd_start_limit_burst,
+          '_syslog_identifier'               => $_syslog_identifier,
+          'syslog_facility'                  => $syslog_facility,
+          'sanitised_title'                  => $sanitised_title,
+          'remain_after_exit'                => $remain_after_exit,
+          'service_name'                     => $service_name,
         }
       } elsif $service_provider_real == 'upstart' {
         $init_template_parameters = {
