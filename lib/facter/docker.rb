@@ -38,7 +38,7 @@ docker_command = if Facter.value(:kernel) == 'windows'
                  end
 
 def interfaces
-  Facter.value(:interfaces).split(',')
+  Facter.value('networking.interfaces').keys
 end
 
 Facter.add(:docker_version) do
