@@ -33,8 +33,8 @@ else
 end
 
 describe 'docker' do
-  package_name = os[:family] == 'suse' ? 'docker' : 'docker-ce'
-  port_check_command = os[:family] == 'suse' ? 'ss -ltn' : 'netstat -tlndp'
+  package_name = (os[:family] == 'suse') ? 'docker' : 'docker-ce'
+  port_check_command = (os[:family] == 'suse') ? 'ss -ltn' : 'netstat -tlndp'
   service_name = 'docker'
   command = 'docker'
 
