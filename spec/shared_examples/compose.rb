@@ -13,10 +13,18 @@ shared_examples 'compose' do |_params, _facts|
       end
 
     case _facts['os']['family']
+    when 'Archlinux'
+      it {
+        expect(subject).to contain_package('docker-compose-plugin').with(
+          ensure: ensure_value,
+          name: 'docker-compose',
+        ).without_require
+      }
     when 'Debian', 'RedHat'
       it {
         expect(subject).to contain_package('docker-compose-plugin').with(
           ensure: ensure_value,
+          name: 'docker-compose-plugin',
         )
       }
     end

@@ -2,7 +2,7 @@
 
 shared_examples 'params' do |_facts|
   case _facts[:os]['family']
-  when 'Debian'
+  when 'Archlinux', 'Debian'
     it {
       expect(subject).to contain_class('docker::params')
       expect(subject).to contain_class('docker::systemd_reload')

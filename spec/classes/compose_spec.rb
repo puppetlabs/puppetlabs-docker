@@ -47,6 +47,37 @@ describe 'docker::compose', type: :class do
           include_examples 'compose', params, facts
         end
       end
+
+      next unless facts[:os]['family'] == 'Archlinux'
+
+      context 'with default values on Arch Linux' do
+        let(:facts) { facts }
+
+        it {
+          expect(subject).to contain_package('docker-compose-plugin').with(
+            ensure: 'present',
+            name: 'docker-compose',
+          ).without_require
+        }
+      end
+
+      context 'with docker and compose absent on Arch Linux' do
+        let(:facts) { facts }
+        let(:params) { { 'ensure' => 'absent' } }
+        let(:pre_condition) { "class { 'docker': ensure => absent }" }
+
+        # the docker-compose package depends on docker, so pacman must remove it first
+        it { is_expected.to contain_package('docker-compose-plugin').with_ensure('absent').that_comes_before('Package[docker]') }
+      end
+
+      context 'with version => 1.7.0 on Arch Linux' do
+        let(:facts) { facts }
+        let(:params) { { 'version' => '1.7.0' } }
+
+        it {
+          expect(subject).to compile.and_raise_error(%r{Installing a specific Docker Compose version is not supported on Arch Linux})
+        }
+      end
     end
   end
 end
