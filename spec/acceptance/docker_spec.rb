@@ -33,7 +33,7 @@ else
 end
 
 describe 'docker' do
-  is_suse = os[:family].downcase == 'suse'
+  is_suse = ['suse', 'sles', 'opensuse'].include?(os[:family].downcase)
   package_name = is_suse ? 'docker' : 'docker-ce'
   port_check_command = is_suse ? 'ss -ltn' : 'netstat -tlndp'
   service_name = 'docker'
