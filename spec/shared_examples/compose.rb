@@ -12,12 +12,18 @@ shared_examples 'compose' do |_params, _facts|
         _params['ensure']
       end
 
-    case _facts['os']['family']
+    case _facts[:os]['family']
     when 'Debian', 'RedHat'
       it {
         expect(subject).to contain_package('docker-compose-plugin').with(
           ensure: ensure_value,
         )
+      }
+    when 'Suse'
+      it {
+        expect(subject).to contain_package('docker-compose').with(
+          ensure: ensure_value,
+        ).that_requires('Package[docker]')
       }
     end
   end

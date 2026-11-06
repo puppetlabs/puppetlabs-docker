@@ -33,7 +33,9 @@ else
 end
 
 describe 'docker' do
-  package_name = 'docker-ce'
+  is_suse = os[:family].downcase == 'suse'
+  package_name = is_suse ? 'docker' : 'docker-ce'
+  port_check_command = is_suse ? 'ss -ltn' : 'netstat -tlndp'
   service_name = 'docker'
   command = 'docker'
 
@@ -196,8 +198,8 @@ describe 'docker' do
       expect(result[:stdout]).to match %r{nginx -g 'daemon off;'}
     end
 
-    it 'netstat -tlndp' do
-      result = run_shell('netstat -tlndp')
+    it 'shows docker listening on port 80' do
+      result = run_shell(port_check_command)
       expect(result[:exit_code]).to eq 0
       expect(result[:stdout]).to match %r{0\.0\.0\.0:80}
     end
