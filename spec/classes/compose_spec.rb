@@ -33,8 +33,9 @@ describe 'docker::compose', type: :class do
         context title do
           params = {
             'ensure' => 'present',
-            'version' => defaults['compose_version']
+            'version' => defaults['compose_version'],
           }.merge(local_params)
+          example_params = params.merge('manage_package' => defaults['manage_package'])
 
           let(:facts) do
             facts
@@ -44,7 +45,7 @@ describe 'docker::compose', type: :class do
             params
           end
 
-          include_examples 'compose', params, facts
+          include_examples 'compose', example_params, facts
         end
       end
     end
