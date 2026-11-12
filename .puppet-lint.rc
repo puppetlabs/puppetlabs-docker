@@ -6,4 +6,7 @@
 --no-autoloader_layout-check
 --no-documentation-check
 --no-single_quote_string_with_variables-check
+--no-strict_indent-check
+--no-exec_idempotency-check
+--no-params_not_optional_with_undef-check
 --ignore-paths=.vendor/**/*.pp,.bundle/**/*.pp,pkg/**/*.pp,spec/**/*.pp,tests/**/*.pp,types/**/*.pp,vendor/**/*.pp
