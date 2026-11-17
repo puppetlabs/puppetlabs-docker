@@ -62,6 +62,14 @@ tests = {
     'pass_hash' => 'test1234',
     'receipt' => false
   },
+  'with username => user1, and password => Sensitive(secret)' => {
+    'ensure' => 'present',
+    'username' => 'user1',
+    'password' => RSpec::Puppet::Sensitive.new("se'cret"),
+    'version' => '17.06',
+    'pass_hash' => 'test1234',
+    'receipt' => false
+  },
   'with username => user1, and password => secret and local_user => testuser' => {
     'username' => 'user1',
     'password' => 'secret',
@@ -106,6 +114,9 @@ describe 'docker::registry', type: :define do
 
     context "on #{os}" do
       tests.each do |title, local_params|
+        # Sensitive passwords are rejected on Windows (see guard specs below)
+        next if os.include?('windows') && local_params['password'].respond_to?(:unwrap)
+
         context title do
           params = {
             'server' => title,
