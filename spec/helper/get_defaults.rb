@@ -23,7 +23,12 @@ def get_defaults(_facts)
   dns                               = :undef
   dns_search                        = :undef
   docker_ce_channel                 = 'stable'
-  docker_ce_package_name            = 'docker-ce'
+  docker_ce_package_name            = case _facts[:os]['family']
+                                      when 'Suse'
+                                        'docker'
+                                      else
+                                        'docker-ce'
+                                      end
   docker_ce_cli_package_name        = 'docker-ce-cli'
   docker_ce_start_command           = 'dockerd'
   docker_command                    = 'docker'
@@ -250,7 +255,7 @@ def get_defaults(_facts)
     package_ee_release                  = :undef
     package_ee_repos                    = :undef
     package_ee_package_name             = :undef
-    use_upstream_package_source         = true
+    use_upstream_package_source         = false
     service_overrides_template          = :undef
     socket_overrides_template           = :undef
     socket_override                     = false
@@ -263,10 +268,10 @@ def get_defaults(_facts)
     detach_service_in_init              = true
     repo_opt                            = :undef
     nowarn_kernel                       = false
-    service_config                      = :undef
+    service_config                      = '/etc/sysconfig/docker'
     storage_config                      = :undef
     storage_setup_file                  = :undef
-    service_config_template             = :undef
+    service_config_template             = 'docker/etc/sysconfig/docker.suse.epp'
     pin_upstream_package_source         = :undef
     apt_source_pin_level                = :undef
   else
@@ -309,7 +314,11 @@ def get_defaults(_facts)
     apt_source_pin_level                = :undef
   end
 
-  dependent_packages = [docker_ce_cli_package_name, 'containerd.io']
+  dependent_packages = if _facts[:os]['family'] == 'Suse'
+                         []
+                       else
+                         [docker_ce_cli_package_name, 'containerd.io']
+                       end
 
   prerequired_packages = case _facts[:os]['family']
                          when 'Debian'
