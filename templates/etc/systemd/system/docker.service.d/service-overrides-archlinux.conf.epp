@@ -1,0 +1,13 @@
+<% if $service_after_override { -%>
+[Unit]
+After=<%= $service_after_override %>
+
+<% } -%>
+[Service]
+EnvironmentFile=-/etc/conf.d/docker
+EnvironmentFile=-/etc/conf.d/docker-storage
+<% if $daemon_environment_files { %><% $daemon_environment_files.each |$param| { %>EnvironmentFile=-<%= $param %>
+<% } %><% } -%>
+ExecStart=
+ExecStart=/usr/bin/<%= $docker_start_command %> $OPTIONS \
+      $DOCKER_STORAGE_OPTIONS
