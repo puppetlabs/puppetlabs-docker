@@ -16,6 +16,11 @@ Gemfile:
     - gem: rspec-retry
 Rakefile:
   changelog_since_tag: 3.5.0
+  # puppet-lint checks the module disabled by hand (Rakefile/.puppet-lint.rc) (MODULES-11997 pdk update)
+  extra_disabled_lint_checks:
+  - strict_indent
+  - exec_idempotency
+  - params_not_optional_with_undef
 spec/spec_helper.rb:
   unmanaged: true
   coverage_report: true

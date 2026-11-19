@@ -24,8 +24,8 @@ describe Puppet::Type.type(:docker_compose).provider(:ruby) do
       allow(Puppet::Util::Yaml).to receive(:safe_load).and_return({
                                                                     'services' => {
                                                                       'web' => { 'image' => 'nginx', 'restart' => 'no' },
-                                                                      'db' => { 'image' => 'mysql', 'restart' => 'always' }
-                                                                    }
+                                                                      'db' => { 'image' => 'mysql', 'restart' => 'always' },
+                                                                    },
                                                                   })
 
       # Only db should be considered, and it matches the running container

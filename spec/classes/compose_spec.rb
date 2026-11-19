@@ -5,11 +5,11 @@ require 'spec_helper'
 tests = {
   'with default valus' => {},
   'with ensure => absent' => {
-    'ensure' => 'absent'
+    'ensure' => 'absent',
   },
   'with version => 1.7.0' => {
-    'version' => '1.7.0'
-  }
+    'version' => '1.7.0',
+  },
 }
 
 describe 'docker::compose', type: :class do
@@ -33,7 +33,7 @@ describe 'docker::compose', type: :class do
         context title do
           params = {
             'ensure' => 'present',
-            'version' => defaults['compose_version']
+            'version' => defaults['compose_version'],
           }.merge(local_params)
 
           let(:facts) do

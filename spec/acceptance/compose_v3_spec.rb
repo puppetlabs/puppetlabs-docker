@@ -95,16 +95,16 @@ describe 'docker compose', :win_broken do
   context 'Creating compose projects with services having restart: no' do
     before(:all) do
       # Create a compose file with one service having restart: no
-      compose_content = <<-YAML
-version: '3.8'
-services:
-  db:
-    image: mysql:5.7
-    restart: always
-  web:
-    image: nginx
-    restart: no
-YAML
+      compose_content = <<~YAML
+        version: '3.8'
+        services:
+          db:
+            image: mysql:5.7
+            restart: always
+          web:
+            image: nginx
+            restart: no
+      YAML
       create_remote_file(hosts, "#{tmp_path}/docker-compose-restart-no.yml", compose_content)
     end
 

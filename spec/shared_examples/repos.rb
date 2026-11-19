@@ -32,7 +32,7 @@ shared_examples 'repos' do |params, facts|
         expect(subject).to contain_apt__keyring(key_name).with(
           'ensure' => 'present',
           'source' => key_source,
-          'dir'    => key_path,
+          'dir' => key_path,
         )
 
         expect(subject).to contain_apt__source('docker').with(
@@ -42,7 +42,7 @@ shared_examples 'repos' do |params, facts|
           'release' => release,
           'repos' => package_repos,
           'include' => {
-            'src' => false
+            'src' => false,
           },
           'keyring' => "#{key_path}/#{key_name}",
           'require' => "Apt::Keyring[#{key_name}]",
