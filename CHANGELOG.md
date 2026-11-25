@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v10.6.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.6.0) - 2026-11-25
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.5.0...v10.6.0)
+
+### Added
+
+- (CAT-2124) Add support for Ubuntu 24 [#1002](https://github.com/puppetlabs/puppetlabs-docker/pull/1002) ([skyamgarp](https://github.com/skyamgarp))
+
+### Fixed
+
+- docker::registry: accept Sensitive password [#1066](https://github.com/puppetlabs/puppetlabs-docker/pull/1066) ([Scholdan](https://github.com/Scholdan))
+
 ## [v10.5.0](https://github.com/puppetlabs/puppetlabs-docker/tree/v10.5.0) - 2026-09-23
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-docker/compare/v10.4.1...v10.5.0)
