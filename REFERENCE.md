@@ -12,7 +12,7 @@
 * [`docker::compose`](#docker--compose): install Docker Compose using the recommended curl command.
 * [`docker::images`](#docker--images)
 * [`docker::install`](#docker--install): Module to install an up-to-date version of Docker from a package repository.
-Only for Debian, Red Hat and Windows
+Only for Arch Linux, Debian, Red Hat and Windows
 * [`docker::machine`](#docker--machine): install Docker Machine using the recommended curl command.
 * [`docker::networks`](#docker--networks)
 * [`docker::params`](#docker--params): Default parameter values for the docker module
@@ -1281,7 +1281,7 @@ Data type: `Hash`
 ### <a name="docker--install"></a>`docker::install`
 
 Module to install an up-to-date version of Docker from a package repository.
-Only for Debian, Red Hat and Windows
+Only for Arch Linux, Debian, Red Hat and Windows
 
 #### Parameters
 

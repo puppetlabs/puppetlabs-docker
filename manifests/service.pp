@@ -261,8 +261,8 @@ class docker::service (
   Optional[Variant[String,Array]]         $registry_mirror                   = $docker::registry_mirror,
   String                                  $root_dir_flag                     = $docker::root_dir_flag,
 ) {
-  unless $facts['os']['family'] =~ /(Debian|RedHat|windows)/ or $docker::acknowledge_unsupported_os {
-    fail('The docker::service class needs a Debian, Redhat or Windows based system.')
+  unless $facts['os']['family'] =~ /(Archlinux|Debian|RedHat|windows)/ or $docker::acknowledge_unsupported_os {
+    fail('The docker::service class needs an Arch Linux, Debian, Redhat or Windows based system.')
   }
 
   $dns_array              = any2array($dns)
@@ -490,6 +490,11 @@ class docker::service (
     'ipv6_cidr' => $ipv6_cidr,
     'default_gateway_ipv6' => $default_gateway_ipv6,
     'tmp_dir_config' => $tmp_dir_config,
+  }
+
+  if $facts['os']['family'] == 'Archlinux' {
+    # No base Arch Linux package creates /etc/conf.d, which holds the service and storage config
+    ensure_resource('file', '/etc/conf.d', { 'ensure' => 'directory' })
   }
 
   if $_service_config {
