@@ -302,7 +302,7 @@ class docker::params {
       $package_ee_package_name             = undef
       $use_upstream_package_source         = false
       $service_overrides_template          = undef
-      $socket_overrides_template           = undef
+      $socket_overrides_template           = 'docker/etc/systemd/system/docker.socket.d/socket-overrides.conf.epp'
       $socket_override                     = false
       $service_after_override              = undef
       $service_hasstatus                   = undef
