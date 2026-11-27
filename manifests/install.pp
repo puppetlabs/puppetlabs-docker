@@ -1,6 +1,6 @@
 # @summary
 #  Module to install an up-to-date version of Docker from a package repository.
-#  Only for Debian, Red Hat and Windows
+#  Supports Debian, Red Hat, SUSE and Windows
 #
 # @param version
 #   The package version to install, used to set the package name.
@@ -29,8 +29,8 @@ class docker::install (
   $docker_start_command = $docker::docker_start_command
 
   if $facts['os']['family'] and ! $docker::acknowledge_unsupported_os {
-    assert_type(Pattern[/^(Debian|RedHat|windows)$/], $facts['os']['family']) |$a, $b| {
-      fail('This module only works on Debian, RedHat or Windows.')
+    assert_type(Pattern[/^(Debian|RedHat|Suse|windows)$/], $facts['os']['family']) |$a, $b| {
+      fail('This module only works on Debian, RedHat, SUSE or Windows.')
     }
   }
   if $docker::version and $docker::ensure != 'absent' {
@@ -81,7 +81,7 @@ class docker::install (
               name   => $docker::docker_package_name,
         }))
 
-        if $ensure == 'absent' {
+        if $ensure == 'absent' and !empty($dependent_packages) {
           ensure_resource('package', $dependent_packages, {
               ensure => $ensure,
           })

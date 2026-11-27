@@ -51,6 +51,13 @@
       ]
     },
     {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "15",
+        "16"
+      ]
+    },
+    {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
         "2016",
